@@ -1,0 +1,11 @@
+{
+  "name": "Vua Tôm Càng Xanh",
+  "description": "Phần mềm cân Tôm Càng Xanh & quản lý thông minh 4.0",
+  "requestFramePermissions": [
+    "bluetooth",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
