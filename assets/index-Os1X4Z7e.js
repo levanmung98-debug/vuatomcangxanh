@@ -2613,12 +2613,103 @@ const saveTraderProfile = (p) => {
   localStorage.setItem(TOM_KEYS.TRADER_PROFILE, JSON.stringify(p));
 };
 
+// Tự động xoá hợp đồng sau 30 ngày cân xong (hoặc khi xoá trực tiếp)
+const cleanupExpiredContracts = () => {
+  try {
+    const raw = localStorage.getItem(TOM_KEYS.CONTRACTS);
+    if (!raw) return [];
+    const contracts = JSON.parse(raw);
+    if (!Array.isArray(contracts)) return [];
+
+    const now = Date.now();
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
+    let farmers = [];
+    try {
+      const fRaw = localStorage.getItem("annong_farmers");
+      if (fRaw) farmers = JSON.parse(fRaw);
+    } catch (e) {}
+
+    const weighedPonds = {};
+    farmers.forEach(f => {
+      if (f && f.id && f.weighed) {
+        weighedPonds[f.id] = f.weighingDate || f.weighedAt || f.updatedAt || new Date().toISOString();
+      }
+    });
+
+    let removedCount = 0;
+    const active = contracts.filter(c => {
+      if (!c || !c.id) return false;
+      const isWeighed = c.weighed === true || c.status === "COMPLETED" || !!weighedPonds[c.farmerId] || !!weighedPonds[c.pondId];
+      if (!isWeighed) return true; // Chưa cân thì giữ nguyên
+
+      const dateStr = c.weighedAt || c.completedAt || weighedPonds[c.farmerId] || weighedPonds[c.pondId] || c.weighingDate;
+      if (!dateStr) return true;
+
+      const finishTime = new Date(dateStr).getTime();
+      if (isNaN(finishTime)) return true;
+
+      if ((now - finishTime) > thirtyDaysMs) {
+        removedCount++;
+        try {
+          fetch(`/api/contracts/${encodeURIComponent(c.id)}`, { method: "DELETE" }).catch(() => {});
+        } catch (e) {}
+        return false; // Quá 30 ngày cân xong -> Tự động xoá
+      }
+      return true;
+    });
+
+    if (removedCount > 0) {
+      localStorage.setItem(TOM_KEYS.CONTRACTS, JSON.stringify(active));
+      try {
+        if (typeof BroadcastChannel !== "undefined") {
+          const ch = new BroadcastChannel("tom_contracts_channel");
+          ch.postMessage({ type: "CONTRACTS_CLEANED" });
+          ch.close();
+        }
+      } catch (e) {}
+      window.dispatchEvent(new CustomEvent("tom_contracts_cleaned"));
+    }
+    return active;
+  } catch (err) {
+    console.warn("Cleanup expired contracts error:", err);
+    return [];
+  }
+};
+
 const getContracts = () => {
   try {
+    const cleaned = cleanupExpiredContracts();
+    if (cleaned && cleaned.length > 0) return cleaned;
     const raw = localStorage.getItem(TOM_KEYS.CONTRACTS);
     if (raw) return JSON.parse(raw);
   } catch (e) {}
   return [];
+};
+
+// Xoá trực tiếp hợp đồng khỏi hệ thống
+const deleteContract = (id) => {
+  if (!id) return;
+  try {
+    const contracts = getContracts().filter(x => x && x.id !== id && x.farmerId !== id && x.pondId !== id);
+    localStorage.setItem(TOM_KEYS.CONTRACTS, JSON.stringify(contracts));
+  } catch (err) {
+    console.warn("Delete contract local error:", err);
+  }
+  // Gửi API xoá trên server ngay lập tức
+  try {
+    fetch(`/api/contracts/${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => {});
+  } catch (e) {}
+  // Phát thông điệp để UI cập nhật tức thì
+  try {
+    if (typeof BroadcastChannel !== "undefined") {
+      const ch = new BroadcastChannel("tom_contracts_channel");
+      ch.postMessage({ type: "CONTRACT_DELETED", contractId: id });
+      ch.close();
+    }
+  } catch (e) {}
+  window.dispatchEvent(new CustomEvent("tom_contract_deleted", { detail: { id } }));
+  window.dispatchEvent(new CustomEvent("tom_contract_updated"));
 };
 
 const saveContract = (c) => {
@@ -2635,17 +2726,46 @@ const saveContract = (c) => {
   } catch (err) {
     console.warn("Save contract local error:", err);
   }
+
+  // 1. Đồng bộ tức thì lên Server API
+  try {
+    fetch("/api/contracts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(c)
+    }).catch(() => {});
+  } catch (err) {}
+
+  // 2. Phát thông điệp qua BroadcastChannel & Event để bên app cập nhật trạng thái ngay lập tức
+  try {
+    if (typeof BroadcastChannel !== "undefined") {
+      const ch = new BroadcastChannel("tom_contracts_channel");
+      ch.postMessage({ type: "CONTRACT_UPDATED", contract: c, contractId: c.id });
+      ch.close();
+    }
+  } catch (err) {}
+  window.dispatchEvent(new CustomEvent("tom_contract_updated", { detail: c }));
+  if (c.farmerSigned || c.status === "SIGNED_LEGAL") {
+    window.dispatchEvent(new CustomEvent("tom_contract_signed", { detail: c }));
+  }
+
+  // 3. Dự phòng Cloud Firestore
   try {
     syncContractToCloud(c);
-  } catch (err) {
-    console.warn("Cloud contract sync trigger error:", err);
-  }
+  } catch (err) {}
   return c;
 };
 
 // Đồng bộ hợp đồng lên Cloud Firestore để khách xem từ bất kỳ thiết bị nào
 const syncContractToCloud = async (c) => {
   try {
+    // Luôn gửi tới server API trước
+    fetch("/api/contracts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(c)
+    }).catch(() => {});
+
     if (typeof Wu !== "undefined" && Wu && c && c.id) {
       const clean = sanitizeForFirestore(c);
       const docRef = Ju(Wu, "tom_contracts", c.id);
@@ -2656,10 +2776,24 @@ const syncContractToCloud = async (c) => {
   }
 };
 
-// Tải hợp đồng từ Cloud Firestore nếu thiết bị khách chưa lưu trong localStorage
+// Tải hợp đồng từ Server API hoặc Cloud Firestore
 const loadContractFromCloud = async (id) => {
+  if (!id) return null;
+  // Thử tải nhanh từ API Server
   try {
-    if (typeof Wu !== "undefined" && Wu && id) {
+    const res = await fetch(`/api/contracts/${encodeURIComponent(id)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.id) {
+        saveContract(data);
+        return data;
+      }
+    }
+  } catch (e) {}
+
+  // Dự phòng Firestore
+  try {
+    if (typeof Wu !== "undefined" && Wu) {
       const docRef = Ju(Wu, "tom_contracts", id);
       const snap = await ps(docRef);
       if (snap.exists()) {
@@ -2677,6 +2811,8 @@ const loadContractFromCloud = async (id) => {
 if (typeof window !== "undefined") {
   window.getContracts = getContracts;
   window.saveContract = saveContract;
+  window.deleteContract = deleteContract;
+  window.cleanupExpiredContracts = cleanupExpiredContracts;
   window.syncContractToCloud = syncContractToCloud;
   window.loadContractFromCloud = loadContractFromCloud;
 }
@@ -3084,31 +3220,61 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
   const priceVal = Number(contract.agreedPrice || 0);
 
   // Auto-generate elegant cursive electronic signature on canvas
+  // Định dạng thời gian ký thật theo giờ chuẩn Việt Nam
+  const getRealtimeSignedFormatted = () => {
+    const now = new Date();
+    const pad = (n) => n.toString().padStart(2, "0");
+    const hours = pad(now.getHours());
+    const minutes = pad(now.getMinutes());
+    const seconds = pad(now.getSeconds());
+    const day = pad(now.getDate());
+    const month = pad(now.getMonth() + 1);
+    const year = now.getFullYear();
+    return `${hours}:${minutes}:${seconds} ngày ${day}/${month}/${year}`;
+  };
+
+  // Tạo con dấu chữ ký điện tử số hóa sắc nét trên canvas
   const generateCursiveSignature = (name) => {
     try {
       const cv = document.createElement("canvas");
-      cv.width = 400;
-      cv.height = 160;
+      cv.width = 440;
+      cv.height = 180;
       const ctx = cv.getContext("2d");
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, cv.width, cv.height);
-      ctx.font = "italic bold 36px 'Dancing Script', 'Brush Script MT', 'Segoe Script', cursive, sans-serif";
+
+      // Chữ ký tay nghệ thuật
+      ctx.font = "italic bold 38px 'Dancing Script', 'Brush Script MT', 'Segoe Script', cursive, sans-serif";
       ctx.fillStyle = "#002b7a";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(name.trim() || "Chủ Ao", 200, 75);
+      ctx.fillText(name.trim() || "Chủ Ao", 220, 75);
 
+      // Nét gạch ký xác nhận
       ctx.beginPath();
       ctx.strokeStyle = "#002b7a";
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
-      ctx.moveTo(70, 110);
-      ctx.bezierCurveTo(150, 130, 270, 95, 330, 115);
+      ctx.moveTo(80, 115);
+      ctx.bezierCurveTo(170, 135, 290, 100, 360, 120);
       ctx.stroke();
 
+      const timeStr = getRealtimeSignedFormatted();
       ctx.font = "bold 11px sans-serif";
-      ctx.fillStyle = "#1e40af";
-      ctx.fillText("✓ E-SIGNED (LUẬT GDĐT 2023)", 200, 142);
+      ctx.fillStyle = "#047857";
+      ctx.fillText("✓ ĐÃ KÝ ĐIỆN TỬ: " + timeStr, 220, 145);
+
+      let verifiedMail = "";
+      try {
+        const u = localStorage.getItem("tom_customer_gmail_auth");
+        if (u) verifiedMail = JSON.parse(u).email || "";
+      } catch (e) {}
+      if (verifiedMail) {
+        ctx.font = "10px sans-serif";
+        ctx.fillStyle = "#475569";
+        ctx.fillText("Gmail: " + verifiedMail, 220, 163);
+      }
+
       return cv.toDataURL("image/png");
     } catch (e) {
       return null;
@@ -3133,13 +3299,15 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
       }
 
       const now = new Date();
-      const signedAtFormatted = now.toLocaleString("vi-VN", {
-        day: "2-digit", month: "2-digit", year: "numeric",
-        hour: "2-digit", minute: "2-digit", second: "2-digit"
-      });
-
+      const signedAtFormatted = getRealtimeSignedFormatted();
       const randomHex = Math.random().toString(16).substring(2, 8).toUpperCase();
       const legalTxId = `TCX-LEGAL-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}-${randomHex}`;
+
+      let verifiedGmail = "";
+      try {
+        const u = localStorage.getItem("tom_customer_gmail_auth");
+        if (u) verifiedGmail = JSON.parse(u).email || "";
+      } catch(e) {}
 
       const updated = {
         ...contract,
@@ -3157,20 +3325,50 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
           address: farmerAddress.trim(),
           agreed: true,
           signedAt: signedAtFormatted,
-          verifiedGmail: (() => { try { const u = localStorage.getItem("tom_customer_gmail_auth"); return u ? JSON.parse(u).email : ""; } catch(e) { return ""; } })()
+          verifiedGmail: verifiedGmail || contract.farmer?.verifiedGmail || ""
         },
         legalVerification: {
           lawStandard: "Luật Giao dịch điện tử số 20/2023/QH15 & Bộ luật Dân sự 2015",
           transactionId: legalTxId,
           timestamp: now.toISOString(),
+          signedAt: signedAtFormatted,
           signMethod: signMethod === "QUICK_NAME" ? "Ký nhanh xác thực danh tính theo họ tên" : "Ký tay số hóa qua màn hình cảm ứng",
           validStatus: "HỢP PHÁP VÀ CÓ HIỆU LỰC TOÀN PHẦN",
           sha256Checksum: `SHA256:${Math.random().toString(36).substring(2)}${Date.now().toString(36)}`.toUpperCase()
         }
       };
 
+      // 1. Lưu local
       saveContract(updated);
-      try { await syncContractToCloud(updated); } catch(e) {}
+
+      // 2. Gửi Server API tức thì
+      try {
+        await fetch("/api/contracts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updated)
+        });
+      } catch (err) {
+        console.warn("API sync contract warning:", err);
+      }
+
+      // 3. Phát BroadcastChannel để các tab & màn hình thương lái cập nhật ngay lập tức
+      try {
+        if (typeof BroadcastChannel !== "undefined") {
+          const ch = new BroadcastChannel("tom_contracts_channel");
+          ch.postMessage({ type: "CONTRACT_SIGNED", contract: updated, contractId: updated.id });
+          ch.close();
+        }
+      } catch (e) {}
+
+      // 4. Phát Window Events
+      window.dispatchEvent(new CustomEvent("tom_contract_signed", { detail: updated }));
+      window.dispatchEvent(new CustomEvent("tom_contract_updated", { detail: updated }));
+
+      // 5. Đồng bộ Cloud
+      try {
+        await syncContractToCloud(updated);
+      } catch (e) {}
 
       // Update URL hash with verified signed data
       try {
@@ -3697,23 +3895,45 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
 
   const fontClass = fontSize === "xl" ? "text-base sm:text-lg" : fontSize === "lg" ? "text-sm sm:text-base" : "text-xs sm:text-sm";
 
-  const handleFastGoogleLogin = () => {
-    const defaultEmail = (contract?.farmer?.phone ? `${contract.farmer.phone.replace(/[^0-9]/g, "")}@gmail.com` : "") || "";
-    const promptEmail = window.prompt("Nhập tài khoản Google / Gmail của bạn để xác thực vào xem hợp đồng:", defaultEmail);
-    if (!promptEmail) return;
-    const clean = promptEmail.trim().toLowerCase();
-    if (!clean.includes("@")) {
-      alert("Vui lòng nhập đúng định dạng Gmail (ví dụ: nguyenvana@gmail.com)");
-      return;
+  const [isLoggingIn, setIsLoggingIn] = w.useState(false);
+
+  // Đăng nhập bằng tài khoản Google / Gmail THẬT qua Firebase Google Auth Popup
+  const handleRealGoogleLogin = async () => {
+    try {
+      setIsLoggingIn(true);
+      if (typeof Pu === "undefined" || !Pu || typeof M1 === "undefined") {
+        throw new Error("Dịch vụ xác thực Google chưa sẵn sàng.");
+      }
+      const provider = new M1();
+      provider.setCustomParameters({ prompt: "select_account" });
+      const result = await O1(Pu, provider);
+      if (result && result.user) {
+        const u = result.user;
+        const user = {
+          email: (u.email || "").toLowerCase(),
+          name: u.displayName || farmerNameInput.trim() || contract?.farmer?.fullName || contract?.farmerName || "Chủ Ao Nuôi",
+          photoURL: u.photoURL || "",
+          uid: u.uid,
+          authenticatedAt: new Date().toISOString(),
+          provider: "google_oauth",
+          isRealGoogle: true
+        };
+        try { localStorage.setItem("tom_customer_gmail_auth", JSON.stringify(user)); } catch (err) {}
+        if (!farmerNameInput && u.displayName) setFarmerNameInput(u.displayName);
+        setCustomerUser(user);
+        return;
+      }
+    } catch (err) {
+      console.warn("Google popup login error:", err);
+      // Khi mở trong app Zalo/Facebook, popup thường bị chặn bởi In-App Browser
+      if (err && (err.code === "auth/popup-blocked" || err.code === "auth/popup-closed-by-user" || (err.message && err.message.includes("popup")))) {
+        alert("Cửa sổ đăng nhập Google bị chặn do đang mở trong Zalo/Facebook. Quý khách có thể bấm nút 'Mở bằng trình duyệt Chrome / Safari' hoặc nhập địa chỉ Gmail chính chủ ở ô bên dưới.");
+      } else {
+        alert("Đăng nhập Google: " + (err?.message || "Vui lòng thử lại hoặc nhập Gmail chính chủ bên dưới."));
+      }
+    } finally {
+      setIsLoggingIn(false);
     }
-    const user = {
-      email: clean,
-      name: farmerNameInput.trim() || contract?.farmer?.fullName || contract?.farmerName || "Chủ Ao Nuôi",
-      authenticatedAt: new Date().toISOString(),
-      provider: "google"
-    };
-    try { localStorage.setItem("tom_customer_gmail_auth", JSON.stringify(user)); } catch (e) {}
-    setCustomerUser(user);
   };
 
   const handleManualGmailLogin = (e) => {
@@ -3726,10 +3946,13 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
     const user = {
       email: clean,
       name: farmerNameInput.trim() || contract?.farmer?.fullName || contract?.farmerName || "Chủ Ao Nuôi",
+      photoURL: "",
+      uid: "gmail_" + clean.replace(/[^a-z0-9]/g, ""),
       authenticatedAt: new Date().toISOString(),
-      provider: "gmail"
+      provider: "manual_gmail",
+      isRealGoogle: false
     };
-    try { localStorage.setItem("tom_customer_gmail_auth", JSON.stringify(user)); } catch (e) {}
+    try { localStorage.setItem("tom_customer_gmail_auth", JSON.stringify(user)); } catch (err) {}
     setCustomerUser(user);
   };
 
@@ -3756,10 +3979,12 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
                 }),
                 c.jsxs("p", {
                   className: "text-xs text-slate-400 font-medium",
-                  children: ["Hồ sơ Hợp đồng: ", c.jsx("strong", { className: "text-emerald-400", children: contract?.id || contractId })]
+                  children: ["Hồ sơ Hợp đồng: ", c.jsx("strong", { className: "text-emerald-400 font-mono", children: contract?.id || contractId })]
                 })
               ]
             }),
+
+            // Thông tin tóm tắt hợp đồng
             c.jsxs("div", {
               className: "bg-slate-900/70 border border-slate-700/60 rounded-2xl p-3.5 space-y-2 text-xs",
               children: [
@@ -3774,7 +3999,7 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
                   className: "flex justify-between items-center text-slate-300",
                   children: [
                     c.jsx("span", { className: "text-slate-500", children: "Chủ ao (Bên B):" }),
-                    c.jsx("span", { className: "font-bold text-emerald-400", children: contract?.farmer?.fullName || contract?.farmerName || "Quý khách" })
+                    c.jsx("span", { className: "font-bold text-emerald-400 uppercase", children: contract?.farmer?.fullName || contract?.farmerName || "Quý khách" })
                   ]
                 }),
                 c.jsxs("div", {
@@ -3783,87 +4008,92 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
                     c.jsx("span", { className: "text-slate-500", children: "Loại tôm:" }),
                     c.jsx("span", { className: "font-bold text-amber-300", children: contract?.shrimpType || "Tôm Càng Xanh Loại 1" })
                   ]
+                }),
+                contract?.depositMoney && c.jsxs("div", {
+                  className: "flex justify-between items-center text-slate-300 border-t border-slate-800 pt-1.5",
+                  children: [
+                    c.jsx("span", { className: "text-slate-500", children: "Tiền đặt cọc:" }),
+                    c.jsx("span", { className: "font-black text-blue-400", children: `${Number(contract.depositMoney).toLocaleString()} đ` })
+                  ]
                 })
               ]
             }),
+
+            // Thông báo bảo mật pháp lý
             c.jsxs("div", {
               className: "p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-start gap-2.5 text-xs text-blue-300 leading-relaxed",
               children: [
                 c.jsx("span", { className: "text-base mt-0.5", children: "🛡️" }),
                 c.jsx("span", {
-                  children: "Để bảo mật điều khoản kinh tế và định danh pháp lý trước khi ký hợp đồng, quý khách vui lòng đăng nhập bằng tài khoản Gmail chính chủ."
+                  children: "Để bảo mật điều khoản kinh tế và định danh pháp lý trước khi ký hợp đồng, quý khách vui lòng đăng nhập bằng tài khoản Gmail thật."
                 })
               ]
             }),
+
+            // NÚT ĐĂNG NHẬP GOOGLE OAUTH THẬT
             c.jsxs("button", {
               type: "button",
-              onClick: () => handleFastGoogleLogin(),
-              className: "w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-800 rounded-2xl font-bold text-sm flex items-center justify-center gap-3 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all cursor-pointer",
+              disabled: isLoggingIn,
+              onClick: () => handleRealGoogleLogin(),
+              className: `w-full py-3.5 px-4 bg-white hover:bg-slate-100 text-slate-800 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all cursor-pointer ${isLoggingIn ? "opacity-75 cursor-wait" : ""}`,
               children: [
                 c.jsx("svg", {
-                  className: "w-5 h-5",
+                  className: "w-5 h-5 shrink-0",
                   viewBox: "0 0 24 24",
                   children: [
                     c.jsx("path", { fill: "#4285F4", d: "M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z" }),
                     c.jsx("path", { fill: "#34A853", d: "M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z" }),
-                    c.jsx("path", { fill: "#FBBC05", d: "M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z" }),
-                    c.jsx("path", { fill: "#EA4335", d: "M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.93 6.72-4.93z" })
+                    c.jsx("path", { fill: "#FBBC05", d: "M5.28 14.28c-.25-.72-.38-1.49-.38-2.28s.13-1.56.38-2.28V6.57H1.25C.45 8.17 0 9.97 0 12s.45 3.83 1.25 5.43l4.03-3.15z" }),
+                    c.jsx("path", { fill: "#EA4335", d: "M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.57l4.03 3.15c.95-2.83 3.6-4.97 6.72-4.97z" })
                   ]
                 }),
-                c.jsx("span", { children: "Đăng nhập nhanh với Google / Gmail" })
+                c.jsx("span", { children: isLoggingIn ? "Đang kết nối Google..." : "Đăng nhập nhanh bằng Gmail thật" })
               ]
             }),
+
+            // Phân cách hoặc
             c.jsxs("div", {
-              className: "flex items-center gap-3 text-slate-500 text-xs font-bold uppercase",
+              className: "flex items-center gap-3",
               children: [
                 c.jsx("div", { className: "flex-1 h-px bg-slate-700" }),
-                c.jsx("span", { children: "hoặc nhập Gmail của bạn" }),
+                c.jsx("span", { className: "text-[11px] uppercase tracking-wider text-slate-500 font-bold", children: "Hoặc nhập Gmail chính chủ" }),
                 c.jsx("div", { className: "flex-1 h-px bg-slate-700" })
               ]
             }),
+
+            // FORM NHẬP GMAIL THỦ CÔNG
             c.jsxs("form", {
               onSubmit: handleManualGmailLogin,
               className: "space-y-3",
               children: [
                 c.jsxs("div", {
                   children: [
-                    c.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "Địa chỉ Gmail (*)" }),
+                    c.jsx("label", { className: "block text-xs font-bold text-slate-400 mb-1", children: "Địa chỉ Gmail của Quý khách:" }),
                     c.jsx("input", {
                       type: "email",
                       required: true,
-                      value: gmailInput,
-                      onChange: (e) => { setGmailInput(e.target.value); setGmailError(""); },
                       placeholder: "ví dụ: nguyenvana@gmail.com",
-                      className: "w-full p-3 bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl text-xs text-white outline-none transition-colors"
-                    })
+                      value: gmailInput,
+                      onChange: (e) => {
+                        setGmailInput(e.target.value);
+                        setGmailError("");
+                      },
+                      className: "w-full px-4 py-3 bg-slate-900/90 border border-slate-700 rounded-xl text-white font-medium text-sm focus:outline-none focus:border-emerald-500 transition-colors"
+                    }),
+                    gmailError && c.jsx("p", { className: "text-xs text-red-400 font-medium mt-1", children: gmailError })
                   ]
                 }),
-                c.jsxs("div", {
-                  children: [
-                    c.jsx("label", { className: "block text-xs font-bold text-slate-300 mb-1", children: "Họ và tên chủ ao / người xem" }),
-                    c.jsx("input", {
-                      type: "text",
-                      value: farmerNameInput,
-                      onChange: (e) => setFarmerNameInput(e.target.value),
-                      placeholder: contract?.farmer?.fullName || "Nguyễn Văn A",
-                      className: "w-full p-3 bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl text-xs text-white outline-none transition-colors"
-                    })
-                  ]
-                }),
-                gmailError && c.jsx("p", { className: "text-red-400 text-xs font-bold", children: gmailError }),
-                c.jsxs("button", {
+                c.jsx("button", {
                   type: "submit",
-                  className: "w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer",
-                  children: [
-                    c.jsx("span", { children: "Xác nhận & Mở hợp đồng" }),
-                    c.jsx("span", { children: "➔" })
-                  ]
+                  className: "w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow-md active:scale-[0.99] transition-all cursor-pointer",
+                  children: "Xác thực Gmail & Mở Hợp Đồng"
                 })
               ]
             }),
+
             c.jsx("p", {
               className: "text-center text-[11px] text-slate-500",
-              children: "Hệ thống bảo mật xác thực chuẩn SSL 256-bit • Vua Tôm Càng Xanh"
+              children: "Hệ thống bảo mật giao dịch điện tử chuẩn SSL 256-bit • Vua Tôm Càng Xanh"
             })
           ]
         })
@@ -4695,6 +4925,80 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
   const [showShareModal, setShowShareModal] = w.useState(false);
   const [showSigningModal, setShowSigningModal] = w.useState(false);
   const [viewingMap, setViewingMap] = w.useState(false);
+  const [justSignedNotice, setJustSignedNotice] = w.useState(false);
+
+  // Đồng bộ khi prop contract thay đổi
+  w.useEffect(() => {
+    if (contract) setCData(contract);
+  }, [contract]);
+
+  // Lắng nghe cập nhật thời gian thực khi khách ký trên điện thoại
+  w.useEffect(() => {
+    const handleSync = (e) => {
+      const up = e.detail;
+      if (up && (up.id === cData.id || up.farmerId === cData.farmerId)) {
+        setCData(up);
+        setJustSignedNotice(true);
+        if (onUpdateContract) onUpdateContract(up);
+        setTimeout(() => setJustSignedNotice(false), 10000);
+      }
+    };
+    window.addEventListener("tom_contract_signed", handleSync);
+    window.addEventListener("tom_contract_updated", handleSync);
+
+    let bc = null;
+    try {
+      if (typeof BroadcastChannel !== "undefined") {
+        bc = new BroadcastChannel("tom_contracts_channel");
+        bc.onmessage = (ev) => {
+          if (ev.data && (ev.data.type === "CONTRACT_SIGNED" || ev.data.type === "CONTRACT_UPDATED")) {
+            const up = ev.data.contract;
+            if (up && (up.id === cData.id || up.farmerId === cData.farmerId)) {
+              setCData(up);
+              setJustSignedNotice(true);
+              if (onUpdateContract) onUpdateContract(up);
+              setTimeout(() => setJustSignedNotice(false), 10000);
+            }
+          }
+        };
+      }
+    } catch (e) {}
+
+    // Polling API Server liên tục mỗi 2 giây
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/contracts/${encodeURIComponent(cData.id)}`);
+        if (res.ok) {
+          const remote = await res.json();
+          if (remote && remote.farmerSigned && !cData.farmerSigned) {
+            setCData(remote);
+            saveContract(remote);
+            setJustSignedNotice(true);
+            if (onUpdateContract) onUpdateContract(remote);
+            setTimeout(() => setJustSignedNotice(false), 10000);
+          }
+        }
+      } catch (e) {}
+    }, 2000);
+
+    return () => {
+      window.removeEventListener("tom_contract_signed", handleSync);
+      window.removeEventListener("tom_contract_updated", handleSync);
+      if (bc) bc.close();
+      clearInterval(pollInterval);
+    };
+  }, [cData.id, cData.farmerId, cData.farmerSigned]);
+
+  // Xử lý xoá trực tiếp hợp đồng
+  const handleDeleteDirectly = () => {
+    const pondName = cData.farmer?.fullName || "chủ ao";
+    if (confirm(`Bạn có chắc chắn muốn XOÁ VĨNH VIỄN Hợp đồng #${cData.id} của ${pondName}?\n\nDữ liệu hợp đồng sẽ bị xoá khỏi máy và máy chủ ngay lập tức.`)) {
+      deleteContract(cData.id);
+      if (onClose) onClose();
+      alert("Đã xoá hợp đồng thành công!");
+    }
+  };
+
 
   const depositAmt = Number(cData.depositMoney ?? cData.deposit ?? 0);
   const priceVal = Number(cData.agreedPrice || 0);
@@ -4753,6 +5057,13 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                 children: [
                   c.jsxs("button", {
                     type: "button",
+                    onClick: handleDeleteDirectly,
+                    className: "px-3 py-2 bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors border border-red-200 dark:border-red-900 cursor-pointer active:scale-95",
+                    children: [c.jsx("span", { children: "🗑️" }), "Xoá Hợp Đồng"]
+                  }),
+
+                  c.jsxs("button", {
+                    type: "button",
                     onClick: () => setShowShareModal(true),
                     className: "px-3.5 py-2 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20 active:scale-95 transition-all cursor-pointer",
                     children: [c.jsx(ZaloIcon, { size: 16 }), "Gửi Khách Hàng (Zalo/QR)"]
@@ -4780,7 +5091,45 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
             ]
           }),
 
-          // Contract Body (Same Standard Legal Form)
+          
+          // Thông báo thời gian thực khi khách vừa ký
+          justSignedNotice && c.jsxs("div", {
+            className: "bg-emerald-600 text-white px-4 py-2.5 flex items-center justify-between text-xs font-bold animate-in fade-in duration-300 shadow-inner",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-2",
+                children: [
+                  c.jsx("span", { className: "text-base", children: "🎉" }),
+                  c.jsxs("span", {
+                    children: [
+                      "Khách hàng vừa ký hợp đồng thành công lúc: ",
+                      c.jsx("strong", { className: "underline text-amber-200", children: cData.farmerSignedAt || "Vừa xong" }),
+                      " • Trạng thái hợp đồng đã kích hoạt có hiệu lực ngay lập tức!"
+                    ]
+                  })
+                ]
+              }),
+              c.jsx("button", {
+                type: "button",
+                onClick: () => setJustSignedNotice(false),
+                className: "text-white/80 hover:text-white font-bold ml-2 cursor-pointer",
+                children: "✕"
+              })
+            ]
+          }),
+
+          // Thông tin chính sách lưu & tự động xoá sau 30 ngày
+          c.jsxs("div", {
+            className: "mx-4 sm:mx-6 mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl flex items-start gap-2.5 text-xs text-amber-900 dark:text-amber-200",
+            children: [
+              c.jsx("span", { className: "text-base shrink-0", children: "ℹ️" }),
+              c.jsx("p", {
+                className: "leading-relaxed",
+                children: "Hợp đồng được lưu an toàn và sẽ TỰ ĐỘNG XOÁ SAU 30 NGÀY kể từ ngày hoàn tất cân tôm. Bạn cũng có thể bấm nút 'Xoá Hợp Đồng' màu đỏ ở trên để xoá trực tiếp ngay lập tức."
+              })
+            ]
+          }),
+// Contract Body (Same Standard Legal Form)
           c.jsx("div", {
             className: "p-4 sm:p-8 overflow-y-auto space-y-6 text-xs sm:text-sm text-slate-800 dark:text-slate-200",
             children: [
@@ -5524,6 +5873,61 @@ const Cm = ({ setRoute: S }) => {
   const [selectedContractForView, setSelectedContractForView] = w.useState(null);
   const [selectedContractForShare, setSelectedContractForShare] = w.useState(null);
   const [locationPickerPond, setLocationPickerPond] = w.useState(null);
+  const [contractsList, setContractsList] = w.useState(() => (typeof getContracts === "function" ? getContracts() : []));
+
+  // Tự động kiểm tra dọn dẹp hợp đồng sau 30 ngày cân xong và cập nhật thời gian thực
+  w.useEffect(() => {
+    try {
+      if (typeof cleanupExpiredContracts === "function") cleanupExpiredContracts();
+      if (typeof getContracts === "function") setContractsList(getContracts());
+    } catch (e) {}
+
+    const onSync = () => {
+      try {
+        if (typeof getContracts === "function") setContractsList(getContracts());
+      } catch (e) {}
+    };
+
+    window.addEventListener("tom_contract_signed", onSync);
+    window.addEventListener("tom_contract_updated", onSync);
+    window.addEventListener("tom_contract_deleted", onSync);
+
+    let bc = null;
+    try {
+      if (typeof BroadcastChannel !== "undefined") {
+        bc = new BroadcastChannel("tom_contracts_channel");
+        bc.onmessage = () => {
+          if (typeof getContracts === "function") setContractsList(getContracts());
+        };
+      }
+    } catch (e) {}
+
+    let lastSync = 0;
+    const pollId = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/contracts/poll?since=${lastSync}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.contracts && data.contracts.length > 0) {
+            lastSync = data.serverTime || Date.now();
+            data.contracts.forEach(c => {
+              if (typeof saveContract === "function") saveContract(c);
+            });
+            if (typeof getContracts === "function") setContractsList(getContracts());
+          }
+        }
+      } catch (e) {}
+    }, 2500);
+
+    return () => {
+      window.removeEventListener("tom_contract_signed", onSync);
+      window.removeEventListener("tom_contract_updated", onSync);
+      window.removeEventListener("tom_contract_deleted", onSync);
+      if (bc) bc.close();
+      clearInterval(pollId);
+    };
+  }, []);
+
 
   // New Pond Form State
   const [v, _] = w.useState({
@@ -5616,7 +6020,9 @@ const Cm = ({ setRoute: S }) => {
   const handleDeletePond = (id) => {
     if (confirm("Bạn có chắc chắn muốn xóa chủ ao này khỏi hệ thống?")) {
       me.deleteFarmer(id);
+      if (typeof deleteContract === 'function') deleteContract(id);
       p(me.getFarmers());
+      if (typeof getContracts === 'function') setContractsList(getContracts());
     }
   };
 
@@ -6078,6 +6484,19 @@ const Cm = ({ setRoute: S }) => {
                             className: "flex items-center gap-2",
                             children: [
                               c.jsx("h3", { className: "font-black text-base text-gray-900 dark:text-gray-100 uppercase", children: pond.name }),
+                              (() => {
+                                const foundC = contractsList.find(c => c && (c.farmerId === pond.id || c.pondId === pond.id || c.id === pond.contractId));
+                                const isC = foundC?.status === "SIGNED_LEGAL" || !!foundC?.farmerSigned;
+                                if (!isC) return null;
+                                return c.jsxs("span", {
+                                  className: "px-2.5 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-full text-[10px] font-black flex items-center gap-1 shadow-xs animate-in fade-in",
+                                  children: [
+                                    c.jsx("span", { children: "✓" }),
+                                    "ĐÃ KÝ ĐIỆN TỬ",
+                                    foundC.farmerSignedAt && c.jsxs("span", { className: "font-medium opacity-75 hidden sm:inline", children: [" (", foundC.farmerSignedAt, ")"] })
+                                  ]
+                                });
+                              })(),
                               pond.phone && c.jsxs("a", {
                                 href: `tel:${pond.phone}`,
                                 className: "p-1.5 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-100 transition-colors",
@@ -6187,8 +6606,20 @@ const Cm = ({ setRoute: S }) => {
                               }
                               setSelectedContractForView(found);
                             },
-                            className: "px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 transition-colors cursor-pointer",
-                            children: [c.jsx(im, { size: 14 }), "Hợp Đồng"]
+                            className: (() => {
+                              const foundC = contractsList.find(c => c && (c.farmerId === pond.id || c.pondId === pond.id || c.id === pond.contractId));
+                              const isC = foundC?.status === "SIGNED_LEGAL" || !!foundC?.farmerSigned;
+                              return isC 
+                                ? "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                                : "px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 transition-colors cursor-pointer";
+                            })(),
+                            children: [
+                              c.jsx(im, { size: 14 }),
+                              (() => {
+                                const foundC = contractsList.find(c => c && (c.farmerId === pond.id || c.pondId === pond.id || c.id === pond.contractId));
+                                return (foundC?.status === "SIGNED_LEGAL" || !!foundC?.farmerSigned) ? "✓ Hợp Đồng Đã Ký" : "Hợp Đồng";
+                              })()
+                            ]
                           }),
 
                           // GPS Location Button
