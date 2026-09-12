@@ -1,0 +1,22 @@
+{
+  "name": "Vua Tôm Càng Xanh",
+  "short_name": "Vua Tôm",
+  "description": "Phần mềm cân Tôm Càng Xanh & quản lý thông minh 4.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#047857",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://iili.io/nd5686N.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://iili.io/nd5686N.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

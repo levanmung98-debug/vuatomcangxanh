@@ -1,18 +1,27 @@
-// Service Worker for Vua Tôm Càng Xanh PWA
-const CACHE_NAME = 'vuatomcangxanh-v1';
+// Service Worker for Vua Tôm Càng Xanh PWA - Full Offline & Online Support
+const CACHE_NAME = 'vuatomcangxanh-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/index.css',
-  '/manifest.json'
+  '/manifest.json',
+  '/manifest.webmanifest',
+  '/assets/index-Os1X4Z7e.js',
+  'https://iili.io/nd5686N.png',
+  'https://cdn.tailwindcss.com',
+  'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap'
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('Pre-caching assets warning:', err);
-      });
+      return Promise.allSettled(
+        STATIC_ASSETS.map(url =>
+          fetch(url, { mode: 'no-cors' }).then(res => {
+            if (res) return cache.put(url, res);
+          }).catch(err => console.warn('Cache prefetch non-fatal error:', url, err))
+        )
+      );
     })
   );
   self.skipWaiting();
@@ -34,29 +43,39 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests and non-API requests
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
 
-  // Network first with cache fallback
+  // For API requests, don't intercept unless network fails
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Stale-while-revalidate for local assets and external scripts
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        return caches.match(event.request).then((cached) => {
-          if (cached) return cached;
-          if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('/index.html');
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
           }
+          return networkResponse;
+        })
+        .catch(() => {
+          // If offline and request is navigation, return cached index.html
+          if (event.request.headers.get('accept')?.includes('text/html')) {
+            return caches.match('/index.html') || cachedResponse;
+          }
+          return cachedResponse;
         });
-      })
+
+      return cachedResponse || fetchPromise;
+    })
   );
 });
