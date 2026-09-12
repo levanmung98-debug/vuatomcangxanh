@@ -6906,7 +6906,7 @@ me.getBuyers = function() {
     const raw = localStorage.getItem(Ot.BUYERS);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) return parsed;
     }
     // Rich initial buyer directory with coordinates, representatives, prices, and vehicles
     const defaults = [
