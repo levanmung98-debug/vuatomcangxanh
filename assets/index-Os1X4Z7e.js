@@ -1265,8 +1265,7 @@ const Om = ({ setRoute: S, role: b }) => {
       impurityWeight: L,
       deposit: Number(A.deposit),
       paidAmount: Q ? remainingPayment : 0,
-      isPaidFull: targetGroup === "MARKET" ? false : Q,
-      weights: _,
+      isPaidFull: Q,     weights: _,
       totalBales: totalBalesAllTypes,
       totalGross: totalGrossAllTypes,
       totalNet: totalNetAllTypes,
@@ -5576,7 +5575,16 @@ const Xm_TraderConfig = ({ setRoute }) => {
     setNewTypePrice("");
   };
 
-  const handleDeleteShrimpType = (id) => {
+  const handleEditShrimpType = (t) => {
+    const newName = window.prompt("Nhập tên loại tôm mới:", t.name);
+    if (newName === null) return;
+    const newPrice = window.prompt("Nhập giá thu mua gợi ý mới (VNĐ/kg):", String(t.price));
+    if (newPrice === null) return;
+    const p = parseFloat(newPrice.replace(/[^0-9]/g, "")) || 0;
+    const updated = (profile.shrimpTypes || []).map(x => x.id === t.id ? { ...x, name: newName.trim(), price: p } : x);
+    setProfile({ ...profile, shrimpTypes: updated, shrimpSizes: updated });
+  };
+const handleDeleteShrimpType = (id) => {
     const updated = (profile.shrimpTypes || []).filter(x => x.id !== id);
     setProfile({ ...profile, shrimpTypes: updated, shrimpSizes: updated });
   };
@@ -5754,12 +5762,24 @@ const Xm_TraderConfig = ({ setRoute }) => {
                         })
                       ]
                     }),
-                    c.jsx("button", {
-                      type: "button",
-                      onClick: () => handleDeleteShrimpType(t.id),
-                      className: "p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors",
-                      title: "Xóa loại tôm này",
-                      children: c.jsx(Iu, { size: 18 })
+                    c.jsxs("div", {
+                      className: "flex items-center gap-1",
+                      children: [
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => handleEditShrimpType(t),
+                          className: "p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-xl transition-colors",
+                          title: "Chỉnh sửa loại tôm này",
+                          children: c.jsx("span", { className: "text-base", children: "✏️" })
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => handleDeleteShrimpType(t.id),
+                          className: "p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors",
+                          title: "Xóa loại tôm này",
+                          children: c.jsx(Iu, { size: 18 })
+                        })
+                      ]
                     })
                   ]
                 }, t.id))
@@ -8310,8 +8330,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
       deposit: 0,
       paidAmount: paidAmount,
       remainingDebt: remainingDebt,
-      isPaidFull: targetGroup === "MARKET" ? false : Q,
-      vehiclePlate: A.vehiclePlate || "",
+      isPaidFull: targetGroup === "MARKET" ? false : Q,     vehiclePlate: A.vehiclePlate || "",
       driverPhone: A.driverPhone || "",
       driverName: A.driverName || "",
       marketDeliveryTime: A.marketDeliveryTime || "",
