@@ -27,25 +27,7 @@ function saveContractsDb(data: Record<string, any>) {
 }
 
 function autoCleanContracts(db: Record<string, any>) {
-  const now = Date.now();
-  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
-  let changed = false;
-  for (const id of Object.keys(db)) {
-    const c = db[id];
-    if (!c) continue;
-    const isWeighed = c.weighed === true || c.status === 'COMPLETED';
-    if (isWeighed) {
-      const dateStr = c.weighedAt || c.completedAt || c.weighingDate;
-      if (dateStr) {
-        const time = new Date(dateStr).getTime();
-        if (!isNaN(time) && (now - time) > thirtyDaysMs) {
-          delete db[id];
-          changed = true;
-        }
-      }
-    }
-  }
-  if (changed) saveContractsDb(db);
+  // Permanent retention: Contracts are never automatically deleted after 30 days
   return db;
 }
 
@@ -86,7 +68,10 @@ const contractsApiPlugin = {
       const idMatch = pathname.match(/^\/api\/contracts\/([^/]+)$/);
       if (method === 'GET' && idMatch) {
         const contractId = decodeURIComponent(idMatch[1]);
-        const contract = db[contractId];
+        const contract = db[contractId] || 
+                         db[contractId.replace(/Đ/g, 'D')] || 
+                         db[contractId.replace(/D/g, 'Đ')] || 
+                         Object.values(db).find((c: any) => c && (c.id === contractId || c.id === contractId.replace(/Đ/g, 'D') || c.id === contractId.replace(/D/g, 'Đ')));
         if (contract) {
           res.statusCode = 200;
           return res.end(JSON.stringify(contract));

@@ -1,10 +1,11 @@
-const CACHE_NAME = 'vua-tom-cang-xanh-v1';
+const CACHE_NAME = 'vua-tom-cang-xanh-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/index.css',
-  '/assets/index-Os1X4Z7e.js'
+  '/assets/index-Os1X4Z7e.js',
+  'https://iili.io/nue4riJ.png'
 ];
 
 // Install Event

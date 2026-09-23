@@ -56,8 +56,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>Vua Tôm Càng Xanh - Cân Tôm & Quản Lý Hợp Đồng 4.0</title>
   <meta name="description" content="Phần mềm cân Tôm Càng Xanh & quản lý thông minh 4.0">
-  <link rel="icon" type="image/png" href="https://iili.io/nd5686N.png">
-  <link rel="apple-touch-icon" href="https://iili.io/nd5686N.png">
+  <link rel="icon" type="image/png" href="https://iili.io/nue4riJ.png">
+  <link rel="apple-touch-icon" href="https://iili.io/nue4riJ.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#047857">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -65,7 +65,7 @@
   <meta name="apple-mobile-web-app-title" content="Tôm Càng Xanh">
   <meta property="og:title" content="Vua Tôm Càng Xanh">
   <meta property="og:description" content="Phần mềm cân Tôm Càng Xanh & quản lý thông minh 4.0">
-  <meta property="og:image" content="https://iili.io/nd5686N.png">
+  <meta property="og:image" content="https://iili.io/nue4riJ.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -101,6 +101,50 @@
     }
     .role-card:active {
       transform: scale(0.95);
+    }
+    aside, nav, .sidebar-scroll {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
+    }
+    aside nav::-webkit-scrollbar {
+      width: 4px;
+    }
+    aside nav::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+    }
+    .dark aside nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #contract-print-area, #contract-print-area * {
+        visibility: visible;
+      }
+      #contract-print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 20px !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .print\:hidden {
+        display: none !important;
+      }
+      @page {
+        size: A4;
+        margin: 15mm 15mm 15mm 15mm;
+      }
     }
   </style>
 

@@ -1,5 +1,5 @@
 // Service Worker for Vua Tôm Càng Xanh PWA - Full Offline & Online Support
-const CACHE_NAME = 'vuatomcangxanh-v2';
+const CACHE_NAME = 'vuatomcangxanh-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -7,7 +7,7 @@ const STATIC_ASSETS = [
   '/manifest.json',
   '/manifest.webmanifest',
   '/assets/index-Os1X4Z7e.js',
-  'https://iili.io/nd5686N.png',
+  'https://iili.io/nue4riJ.png',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap'
 ];
