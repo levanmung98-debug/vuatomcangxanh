@@ -31,11 +31,73 @@ function autoCleanContracts(db: Record<string, any>) {
   return db;
 }
 
+function getTraderProfilePath() {
+  const dir = path.resolve(process.cwd(), 'tmp');
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  return path.join(dir, 'trader_profile.json');
+}
+
+function loadTraderProfile(): Record<string, any> | null {
+  try {
+    const file = getTraderProfilePath();
+    if (fs.existsSync(file)) {
+      return JSON.parse(fs.readFileSync(file, 'utf-8'));
+    }
+  } catch (e) {}
+  return null;
+}
+
+function saveTraderProfile(data: Record<string, any>) {
+  try {
+    const file = getTraderProfilePath();
+    fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (e) {}
+}
+
 const contractsApiPlugin = {
   name: 'contracts-api-server',
   configureServer(server: any) {
     server.middlewares.use((req: any, res: any, next: any) => {
       const url = req.url || '';
+
+      // Handler for /api/trader-profile
+      if (url.startsWith('/api/trader-profile')) {
+        const method = req.method;
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+        if (method === 'OPTIONS') {
+          res.statusCode = 204;
+          return res.end();
+        }
+
+        if (method === 'GET') {
+          const profile = loadTraderProfile();
+          res.statusCode = 200;
+          return res.end(JSON.stringify({ success: true, profile }));
+        }
+
+        if (method === 'POST' || method === 'PUT') {
+          let body = '';
+          req.on('data', (chunk: any) => { body += chunk; });
+          req.on('end', () => {
+            try {
+              const data = JSON.parse(body || '{}');
+              data._updatedAt = Date.now();
+              saveTraderProfile(data);
+              res.statusCode = 200;
+              return res.end(JSON.stringify({ success: true, profile: data }));
+            } catch (err: any) {
+              res.statusCode = 400;
+              return res.end(JSON.stringify({ error: 'Invalid JSON', details: err.message }));
+            }
+          });
+          return;
+        }
+      }
+
       if (!url.startsWith('/api/contracts')) {
         return next();
       }
@@ -126,6 +188,9 @@ const contractsApiPlugin = {
 
       next();
     });
+  },
+  configurePreviewServer(server: any) {
+    (this as any).configureServer(server);
   }
 };
 

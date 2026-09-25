@@ -1,0 +1,357 @@
+const Xm_TraderConfig = ({ setRoute }) => {
+  const [profile, setProfile] = w.useState(() => getTraderProfileV3());
+  const [savedToast, setSavedToast] = w.useState(false);
+
+  // New shrimp type inputs
+  const [newTypeName, setNewTypeName] = w.useState("");
+  const [newTypePrice, setNewTypePrice] = w.useState("");
+
+  // New catching spec input
+  const [newSpecText, setNewSpecText] = w.useState("");
+
+  const handleAddShrimpType = () => {
+    if (!newTypeName.trim()) {
+      alert("Vui lòng nhập tên loại tôm (vd: Tôm càng sen, Tôm càng xào, Tôm ngộp...)");
+      return;
+    }
+    const p = parseFloat(newTypePrice.replace(/[^0-9]/g, "")) || 0;
+    const newType = {
+      id: "st_" + Date.now(),
+      name: newTypeName.trim(),
+      price: p
+    };
+    const updated = [...(profile.shrimpTypes || []), newType];
+    setProfile({ ...profile, shrimpTypes: updated, shrimpSizes: updated });
+    setNewTypeName("");
+    setNewTypePrice("");
+  };
+
+  const handleEditShrimpType = (t) => {
+    const newName = window.prompt("Nhập tên loại tôm mới:", t.name);
+    if (newName === null) return;
+    const newPrice = window.prompt("Nhập giá thu mua gợi ý mới (VNĐ/kg):", String(t.price));
+    if (newPrice === null) return;
+    const p = parseFloat(newPrice.replace(/[^0-9]/g, "")) || 0;
+    const updated = (profile.shrimpTypes || []).map(x => x.id === t.id ? { ...x, name: newName.trim(), price: p } : x);
+    setProfile({ ...profile, shrimpTypes: updated, shrimpSizes: updated });
+  };
+const handleDeleteShrimpType = (id) => {
+    const updated = (profile.shrimpTypes || []).filter(x => x.id !== id);
+    setProfile({ ...profile, shrimpTypes: updated, shrimpSizes: updated });
+  };
+
+  const handleAddSpec = () => {
+    if (!newSpecText.trim()) return;
+    const newSpec = {
+      id: "c_" + Date.now(),
+      text: newSpecText.trim(),
+      defaultSelected: true
+    };
+    setProfile({
+      ...profile,
+      catchingSpecs: [...(profile.catchingSpecs || []), newSpec]
+    });
+    setNewSpecText("");
+  };
+
+  const handleDeleteSpec = (id) => {
+    setProfile({
+      ...profile,
+      catchingSpecs: (profile.catchingSpecs || []).filter(x => x.id !== id)
+    });
+  };
+
+  const handleSave = () => {
+    saveTraderProfileV3(profile);
+    setSavedToast(true);
+    setTimeout(() => setSavedToast(false), 3000);
+  };
+
+  return c.jsxs("div", {
+    className: "flex flex-col h-full bg-[#f8f9fa] dark:bg-[#121212] font-roboto overflow-y-auto pb-28",
+    children: [
+      // Top Bar
+      c.jsxs("div", {
+        className: "bg-[#2e7d32] dark:bg-[#1b4d1e] p-4 text-white flex items-center justify-between shadow-lg sticky top-0 z-40",
+        children: [
+          c.jsxs("div", {
+            className: "flex items-center gap-3",
+            children: [
+              c.jsx("button", {
+                onClick: () => setRoute(re.DASHBOARD),
+                className: "p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors",
+                children: c.jsx(On, { size: 24 })
+              }),
+              c.jsxs("div", {
+                children: [
+                  c.jsx("h1", { className: "text-lg font-black uppercase tracking-tight", children: "Thiết Lập Thông Tin Vựa & Loại Tôm" }),
+                  c.jsx("p", { className: "text-[10px] opacity-80 uppercase tracking-wider font-bold", children: "Thông tin pháp lý, danh mục loại tôm & điều khoản hợp đồng" })
+                ]
+              })
+            ]
+          }),
+          c.jsx("button", {
+            onClick: handleSave,
+            className: "bg-yellow-400 text-green-950 px-4 py-2 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-md active:scale-95",
+            children: [c.jsx(ec, { size: 16 }), "Lưu Cài Đặt"]
+          })
+        ]
+      }),
+
+      // Toast saved
+      savedToast && c.jsxs("div", {
+        className: "mx-4 mt-4 p-3 bg-emerald-600 text-white rounded-2xl flex items-center gap-2 shadow-lg font-bold text-xs animate-in slide-in-from-top-2",
+        children: [c.jsx(P1, { size: 18 }), " Đã lưu thiết lập thông tin vựa & danh mục loại tôm thành công!"]
+      }),
+
+      c.jsxs("div", {
+        className: "p-4 space-y-6 max-w-4xl mx-auto w-full",
+        children: [
+          // PHẦN 1: THÔNG TIN VỰA THU MUA
+          c.jsxs("div", {
+            className: "bg-white dark:bg-gray-900 p-5 rounded-[28px] shadow-sm border border-gray-100 dark:border-gray-800 space-y-4",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800",
+                children: [
+                  c.jsx(Fu, { size: 20, className: "text-green-600 dark:text-green-400" }),
+                  c.jsx("h3", { className: "font-black uppercase text-sm text-gray-800 dark:text-gray-100", children: "1. Thông tin Vựa / Cơ sở Thu mua (Bên A)" })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "grid grid-cols-1 sm:grid-cols-2 gap-3",
+                children: [
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "text-xs font-bold text-gray-500 block mb-1", children: "Tên thương lái / Cơ sở thu mua (*)" }),
+                      c.jsx("input", {
+                        type: "text",
+                        value: profile.fullName || "",
+                        onChange: (e) => setProfile({ ...profile, fullName: e.target.value }),
+                        className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm outline-none"
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "text-xs font-bold text-gray-500 block mb-1", children: "Số điện thoại liên hệ (*)" }),
+                      c.jsx("input", {
+                        type: "text",
+                        value: profile.phone || "",
+                        onChange: (e) => setProfile({ ...profile, phone: e.target.value }),
+                        className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm outline-none"
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "text-xs font-bold text-gray-500 block mb-1", children: "Số CCCD / CMND (*)" }),
+                      c.jsx("input", {
+                        type: "text",
+                        value: profile.idCard || "",
+                        onChange: (e) => setProfile({ ...profile, idCard: e.target.value }),
+                        className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm outline-none"
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "text-xs font-bold text-gray-500 block mb-1", children: "Địa chỉ vựa / cơ sở (*)" }),
+                      c.jsx("input", {
+                        type: "text",
+                        value: profile.address || "",
+                        onChange: (e) => setProfile({ ...profile, address: e.target.value }),
+                        className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm outline-none"
+                      })
+                    ]
+                  })
+                ]
+              })
+            ]
+          }),
+
+          // PHẦN 2: THIẾT LẬP DANH MỤC LOẠI TÔM (Thay vì size tôm)
+          c.jsxs("div", {
+            className: "bg-white dark:bg-gray-900 p-5 rounded-[28px] shadow-sm border border-gray-100 dark:border-gray-800 space-y-4",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex items-center gap-2",
+                    children: [
+                      c.jsx(pm, { size: 20, className: "text-amber-500" }),
+                      c.jsx("h3", { className: "font-black uppercase text-sm text-gray-800 dark:text-gray-100", children: "2. Thiết Lập Danh Mục Loại Tôm & Giá Gợi Ý (VNĐ/kg)" })
+                    ]
+                  }),
+                  c.jsxs("span", {
+                    className: "text-xs font-bold text-gray-400 uppercase",
+                    children: [(profile.shrimpTypes || []).length, " loại"]
+                  })
+                ]
+              }),
+              c.jsx("p", {
+                className: "text-xs text-gray-500 dark:text-gray-400 font-semibold",
+                children: "Cài đặt danh mục các loại tôm (vd: Tôm càng sen, Tôm càng xào, Tôm ngộp, Tôm lột, Tôm càng đại...). Khi bắt đầu cân, hệ thống sẽ cho phép chọn nhanh các loại tôm này."
+              }),
+
+              // Shrimp Types List
+              c.jsx("div", {
+                className: "space-y-2.5",
+                children: (profile.shrimpTypes || []).map((t) => c.jsxs("div", {
+                  className: "p-3.5 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-100 dark:border-gray-700/50 flex items-center justify-between gap-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex items-center gap-3",
+                      children: [
+                        c.jsx("div", { className: "w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 flex items-center justify-center font-black text-xs", children: "🦐" }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("p", { className: "font-black text-sm text-gray-800 dark:text-gray-100 uppercase", children: t.name }),
+                            c.jsxs("p", { className: "text-xs font-bold text-gray-400", children: ["Giá thu mua gợi ý: ", c.jsx("span", { className: "text-green-700 dark:text-green-400 font-black", children: (t.price || 0).toLocaleString("vi-VN") }), " đ/kg"] })
+                          ]
+                        })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex items-center gap-1",
+                      children: [
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => handleEditShrimpType(t),
+                          className: "p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-xl transition-colors",
+                          title: "Chỉnh sửa loại tôm này",
+                          children: c.jsx("span", { className: "text-base", children: "✏️" })
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => handleDeleteShrimpType(t.id),
+                          className: "p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl transition-colors",
+                          title: "Xóa loại tôm này",
+                          children: c.jsx(Iu, { size: 18 })
+                        })
+                      ]
+                    })
+                  ]
+                }, t.id))
+              }),
+
+              // Add New Shrimp Type Form
+              c.jsxs("div", {
+                className: "p-4 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50 rounded-2xl space-y-3",
+                children: [
+                  c.jsx("span", { className: "text-xs font-black uppercase text-amber-900 dark:text-amber-200 block", children: "+ Thêm loại tôm mới vào danh mục:" }),
+                  c.jsxs("div", {
+                    className: "grid grid-cols-1 sm:grid-cols-3 gap-2",
+                    children: [
+                      c.jsx("input", {
+                        type: "text",
+                        placeholder: "Tên loại tôm (vd: Tôm càng sen, Tôm càng xào...)",
+                        value: newTypeName,
+                        onChange: (e) => setNewTypeName(e.target.value),
+                        className: "sm:col-span-2 p-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-xs outline-none uppercase"
+                      }),
+                      c.jsx("input", {
+                        type: "number",
+                        placeholder: "Giá gợi ý (VNĐ/kg)",
+                        value: newTypePrice,
+                        onChange: (e) => setNewTypePrice(e.target.value),
+                        className: "p-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-xs outline-none text-right"
+                      })
+                    ]
+                  }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: handleAddShrimpType,
+                    className: "w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-black text-xs uppercase flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all",
+                    children: [c.jsx(As, { size: 16 }), "Thêm Loại Tôm Này"]
+                  })
+                ]
+              })
+            ]
+          }),
+
+          // PHẦN 3: QUY CÁCH BẮT & ĐIỀU KHOẢN HỢP ĐỒNG
+          c.jsxs("div", {
+            className: "bg-white dark:bg-gray-900 p-5 rounded-[28px] shadow-sm border border-gray-100 dark:border-gray-800 space-y-4",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800",
+                children: [
+                  c.jsx(im, { size: 20, className: "text-blue-600 dark:text-blue-400" }),
+                  c.jsx("h3", { className: "font-black uppercase text-sm text-gray-800 dark:text-gray-100", children: "3. Quy Cách Bắt & Điều Khoản Hợp Đồng Mặc Định" })
+                ]
+              }),
+
+              // Catching specs list
+              c.jsx("div", {
+                className: "space-y-2",
+                children: (profile.catchingSpecs || []).map((sp, idx) => c.jsxs("div", {
+                  className: "p-3 bg-gray-50 dark:bg-gray-800/60 rounded-xl border border-gray-100 dark:border-gray-700/50 flex items-center justify-between gap-3 text-xs font-semibold text-gray-800 dark:text-gray-200",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex items-center gap-2",
+                      children: [
+                        c.jsx(P1, { size: 14, className: "text-green-600 flex-shrink-0" }),
+                        c.jsx("span", { children: sp.text })
+                      ]
+                    }),
+                    c.jsx("button", {
+                      type: "button",
+                      onClick: () => handleDeleteSpec(sp.id),
+                      className: "p-1.5 text-gray-400 hover:text-red-600 rounded-lg",
+                      children: c.jsx(Iu, { size: 16 })
+                    })
+                  ]
+                }, sp.id || idx))
+              }),
+
+              // Add spec input
+              c.jsxs("div", {
+                className: "flex gap-2",
+                children: [
+                  c.jsx("input", {
+                    type: "text",
+                    placeholder: "Nhập quy cách bắt mới (vd: Quy cách trừ bì 100 con trừ 3 kg...)",
+                    value: newSpecText,
+                    onChange: (e) => setNewSpecText(e.target.value),
+                    className: "flex-1 p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-xs outline-none"
+                  }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: handleAddSpec,
+                    className: "px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black text-xs uppercase shadow-sm",
+                    children: "+ Thêm"
+                  })
+                ]
+              }),
+
+              // Default terms textarea
+              c.jsxs("div", {
+                className: "pt-2",
+                children: [
+                  c.jsx("label", { className: "text-xs font-bold text-gray-500 block mb-1", children: "Điều khoản bồi thường / phạt cọc mặc định:" }),
+                  c.jsx("textarea", {
+                    rows: 3,
+                    value: profile.defaultTerms || "",
+                    onChange: (e) => setProfile({ ...profile, defaultTerms: e.target.value }),
+                    className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold text-xs text-gray-800 dark:text-gray-200 outline-none"
+                  })
+                ]
+              })
+            ]
+          }),
+
+          // Save button bottom
+          c.jsx("button", {
+            type: "button",
+            onClick: handleSave,
+            className: "w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-black text-sm uppercase shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-transform",
+            children: [c.jsx(ec, { size: 20 }), "Lưu Toàn Bộ Thiết Lập Thông Tin"]
+          })
+        ]
+      })
+    ]
+  });
+};
+
