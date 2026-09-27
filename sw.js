@@ -1,18 +1,18 @@
-const CACHE_NAME = 'vua-tom-cang-xanh-v3';
+const CACHE_NAME = 'vua-tom-cang-xanh-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/index.css',
-  '/assets/index-Os1X4Z7e.js',
-  'https://iili.io/nue4riJ.png'
+  '/assets/index-Os1X4Z7e.js'
 ];
 
 // Install Event
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return Promise.allSettled(
+        ASSETS_TO_CACHE.map((url) => cache.add(url).catch(() => {}))
+      );
     })
   );
   self.skipWaiting();

@@ -147,5 +147,8 @@
     }
   ],
   "defaultTerms": "Hai bên cam kết thực hiện đúng thỏa thuận về số lượng, giá cả và quy cách bắt tôm theo hợp đồng điện tử đã ký kết. Nếu Bên B tự ý bán cho người khác sau khi đã nhận tiền đặt cọc thì Bên B phải hoàn trả toàn bộ số tiền cọc đã nhận và chịu phạt đền gấp đôi (02 lần) số tiền cọc cho Bên A; Nếu Bên A tự ý bỏ cọc thì mất toàn bộ số tiền cọc. Mọi tranh chấp được giải quyết theo quy định của Bộ luật Dân sự 2015 và Luật Thương mại.",
-  "_updatedAt": 1790331749706
+  "_updatedAt": 1790331749706,
+  "defaultShrimpType": "Tôm càng sen",
+  "rejectionSpec": "Dạt tôm mềm, ốp, gãy càng chuyển tính giá xào",
+  "tareSpec": "Trừ hao ráo nước chuẩn 1 kg / 100 kg"
 }
