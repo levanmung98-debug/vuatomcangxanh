@@ -164,15 +164,28 @@
   }
 }
 </script>
-  <script type="module" crossorigin src="/assets/index-Os1X4Z7e.js"></script>
+  <script type="module" crossorigin src="/assets/index-v7.js?v=20260930_v12"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-tn0RQdqM.css">
 </head>
 <body>
   <script>
+    // Force clean old PWA caches from earlier versions
+    if ('caches' in window) {
+      caches.keys().then((names) => {
+        names.forEach((name) => {
+          if (name !== 'vuatomcangxanh-v12') {
+            console.log('Clearing obsolete cache:', name);
+            caches.delete(name);
+          }
+        });
+      });
+    }
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then((reg) => {
+        navigator.serviceWorker.register('/sw.js?v=12').then((reg) => {
           console.log('PWA Service Worker registered:', reg.scope);
+          reg.update();
         }).catch((err) => {
           console.log('Service Worker registration skipped or failed:', err);
         });
