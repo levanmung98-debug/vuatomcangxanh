@@ -1,5 +1,5 @@
 // Service Worker for Vua Tôm Càng Xanh PWA - Version 7
-const CACHE_NAME = "vuatomcangxanh-v12";
+const CACHE_NAME = "vuatomcangxanh-v14";
 const STATIC_ASSETS = [
   "/",
   "/index.html",

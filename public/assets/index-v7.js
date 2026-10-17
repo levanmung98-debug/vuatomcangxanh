@@ -365,7 +365,7 @@ Error generating stack: `+a.message+`
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const Zd=K("Zap",[["path",{d:"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",key:"1xq2db"}]]),Tm=({children:S,activeRoute:b,setRoute:p,title:f,role:O,onLogout:D})=>{const[U,Y]=w.useState(!1);const touchRef=w.useRef({startX:0,startY:0});const A=b===re.DASHBOARD;const _=[{route:re.DASHBOARD,label:"Bàn làm việc",icon:c.jsx(sm,{size:22}),roles:["OWNER","FARMER"]},{route:re.OVERVIEW,label:"Tổng quan",icon:c.jsx(I1,{size:22}),roles:["OWNER","FARMER"]},{route:re.SALES,label:"Bán ra & Xuất tôm",icon:c.jsx(F1,{size:22}),roles:["OWNER","FARMER"]},{route:re.CUSTOMERS,label:"Khách hàng",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},{route:re.FARMERS,label:"Danh sách ao tôm",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},/* Vehicles menu tab removed */{route:re.HISTORY,label:"Lịch sử thu mua",icon:c.jsx(Fd,{size:22}),roles:["OWNER","FARMER"]},{route:re.INFO_CONFIG,label:"Thiết lập thông tin",icon:c.jsx(im,{size:22}),roles:["OWNER","FARMER"]},{route:re.SETTINGS,label:"Cấu hình hệ thống",icon:c.jsx(ym,{size:22}),roles:["OWNER","FARMER"]}].filter(z=>z.roles.includes(O));return c.jsxs("div",{className:"flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden transition-colors relative",onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(!U&&touchRef.current.startX<35&&dx>45&&dy<80){Y(!0)}},children:[A&&c.jsxs("header",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] text-white p-4 flex items-center justify-between shadow-lg z-30 animate-in slide-in-from-top duration-300",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("button",{onClick:()=>Y(!0),className:"p-1.5 hover:bg-green-700 dark:hover:bg-green-900 rounded-xl active:scale-90 transition-all",children:c.jsx(dm,{size:28})}),c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shadow-sm"}),c.jsxs("div",{children:[c.jsx("h1",{className:"text-xl font-black uppercase tracking-tight",children:"Vua Tôm Càng Xanh"}),c.jsx("p",{className:"text-[10px] uppercase font-bold opacity-70 tracking-widest",children:f})]})]}),c.jsx("div",{className:"flex items-center gap-2",children:c.jsx("span",{className:"text-[10px] font-black bg-white/20 px-2 py-1 rounded uppercase",children:O==="OWNER"?"Chủ Vựa":"Nông Dân"})})]}),U&&c.jsx("div",{className:"fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-in fade-in duration-200",onClick:()=>Y(!1)}),c.jsxs("aside",{onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(dx<-40&&dy<120){Y(!1)}},className:`fixed top-0 left-0 h-full max-h-[100dvh] w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 transform transition-all duration-300 ease-in-out shadow-2xl flex flex-col overflow-hidden ${U?"translate-x-0":"-translate-x-full pointer-events-none"}`,children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-6 text-white relative shrink-0",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-14 h-14 object-contain rounded-2xl mb-3 shadow-md bg-white/10 p-1"}),c.jsx("h2",{className:"text-3xl font-black italic mb-1 uppercase tracking-tighter",children:"Tôm Càng Xanh Pro"}),c.jsx("p",{className:"text-xs opacity-70",children:"Quản lý thủy sản & nông sản hiện đại"}),c.jsx("button",{onClick:()=>Y(!1),className:"absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full active:scale-90 transition-all",children:c.jsx(_a,{size:24})})]}),c.jsxs("nav",{className:"p-4 space-y-2 mt-1 flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y pb-28",children:[_.map(z=>c.jsxs("button",{onClick:()=>{p(z.route);Y(!1)},className:`w-full flex items-center gap-4 p-4 rounded-2xl font-bold transition-all ${b===z.route?"bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-400 font-black shadow-sm":"text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700 active:scale-[0.98]"}`,children:[c.jsx("span",{className:b===z.route?"text-green-600 dark:text-green-400":"text-gray-400 dark:text-gray-500",children:z.icon}),z.label]},z.route)),c.jsx("div",{className:"pt-4 mt-4 border-t dark:border-gray-800",children:c.jsxs("button",{onClick:()=>{Y(!1);D()},className:"w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95 transition-all",children:[c.jsx(rm,{size:22})," Đăng xuất"]})})]})]}),c.jsx("main",{className:"flex-1 overflow-auto bg-gray-50 dark:bg-[#121212]",children:S})]})},Ot={SESSIONS:"annong_sessions",FARMERS:"annong_farmers",VEHICLES:"annong_vehicles",SETTINGS:"annong_settings",LOGS:"annong_logs",SALES:"annong_sales",BUYERS:"annong_buyers"},Em={apiKey:"AIzaSyD8GC7v21FaMvs8Wgrq3RXmeKnrrO2wpEo",authDomain:"appcan-2c24e.firebaseapp.com",projectId:"appcan-2c24e",storageBucket:"appcan-2c24e.firebasestorage.app",messagingSenderId:"633698227291",appId:"1:633698227291:web:b3cbc303311dd125c75b7e"},eo=E1(Em),Wu=null/* Disabled dead remote Firestore to eliminate backend timeout */,Pu=A1(eo);const sanitizeForFirestore = (val) => {
+ */const Zd=K("Zap",[["path",{d:"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",key:"1xq2db"}]]),Tm=({children:S,activeRoute:b,setRoute:p,title:f,role:O,onLogout:D})=>{const[U,Y]=w.useState(!1);const touchRef=w.useRef({startX:0,startY:0});const A=b===re.DASHBOARD;const _=[{route:re.DASHBOARD,label:"Bàn làm việc",icon:c.jsx(sm,{size:22}),roles:["OWNER","FARMER"]},{route:re.OVERVIEW,label:"Tổng quan",icon:c.jsx(I1,{size:22}),roles:["OWNER","FARMER"]},{route:re.SALES,label:"Bán ra & Xuất tôm",icon:c.jsx(F1,{size:22}),roles:["OWNER","FARMER"]},{route:re.FINANCE,label:"Tài chính",icon:c.jsx(Ds,{size:22}),roles:["OWNER","FARMER"]},{route:re.CUSTOMERS,label:"Khách hàng",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},{route:re.FARMERS,label:"Danh sách ao tôm",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},/* Vehicles menu tab removed */{route:re.HISTORY,label:"Lịch sử thu mua",icon:c.jsx(Fd,{size:22}),roles:["OWNER","FARMER"]},{route:re.INFO_CONFIG,label:"Thiết lập thông tin",icon:c.jsx(im,{size:22}),roles:["OWNER","FARMER"]},{route:re.SETTINGS,label:"Cấu hình hệ thống",icon:c.jsx(ym,{size:22}),roles:["OWNER","FARMER"]}].filter(z=>z.roles.includes(O));return c.jsxs("div",{className:"flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden transition-colors relative",onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(!U&&touchRef.current.startX<35&&dx>45&&dy<80){Y(!0)}},children:[A&&c.jsxs("header",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] text-white p-4 flex items-center justify-between shadow-lg z-30 animate-in slide-in-from-top duration-300",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("button",{onClick:()=>Y(!0),className:"p-1.5 hover:bg-green-700 dark:hover:bg-green-900 rounded-xl active:scale-90 transition-all",children:c.jsx(dm,{size:28})}),c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shadow-sm"}),c.jsxs("div",{children:[c.jsx("h1",{className:"text-xl font-black uppercase tracking-tight",children:"Vua Tôm Càng Xanh"}),c.jsx("p",{className:"text-[10px] uppercase font-bold opacity-70 tracking-widest",children:f})]})]}),c.jsx("div",{className:"flex items-center gap-2",children:c.jsx("span",{className:"text-[10px] font-black bg-white/20 px-2 py-1 rounded uppercase",children:O==="OWNER"?"Chủ Vựa":"Nông Dân"})})]}),U&&c.jsx("div",{className:"fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-in fade-in duration-200",onClick:()=>Y(!1)}),c.jsxs("aside",{onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(dx<-40&&dy<120){Y(!1)}},className:`fixed top-0 left-0 h-full max-h-[100dvh] w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 transform transition-all duration-300 ease-in-out shadow-2xl flex flex-col overflow-hidden ${U?"translate-x-0":"-translate-x-full pointer-events-none"}`,children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-6 text-white relative shrink-0",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-14 h-14 object-contain rounded-2xl mb-3 shadow-md bg-white/10 p-1"}),c.jsx("h2",{className:"text-3xl font-black italic mb-1 uppercase tracking-tighter",children:"Tôm Càng Xanh Pro"}),c.jsx("p",{className:"text-xs opacity-70",children:"Quản lý thủy sản & nông sản hiện đại"}),c.jsx("button",{onClick:()=>Y(!1),className:"absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full active:scale-90 transition-all",children:c.jsx(_a,{size:24})})]}),c.jsxs("nav",{className:"p-4 space-y-2 mt-1 flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y pb-28",children:[_.map(z=>c.jsxs("button",{onClick:()=>{p(z.route);Y(!1)},className:`w-full flex items-center gap-4 p-4 rounded-2xl font-bold transition-all ${b===z.route?"bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-400 font-black shadow-sm":"text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700 active:scale-[0.98]"}`,children:[c.jsx("span",{className:b===z.route?"text-green-600 dark:text-green-400":"text-gray-400 dark:text-gray-500",children:z.icon}),z.label]},z.route)),c.jsx("div",{className:"pt-4 mt-4 border-t dark:border-gray-800",children:c.jsxs("button",{onClick:()=>{Y(!1);D()},className:"w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95 transition-all",children:[c.jsx(rm,{size:22})," Đăng xuất"]})})]})]}),c.jsx("main",{className:"flex-1 overflow-auto bg-gray-50 dark:bg-[#121212]",children:S})]})},Ot={SESSIONS:"annong_sessions",FARMERS:"annong_farmers",VEHICLES:"annong_vehicles",SETTINGS:"annong_settings",LOGS:"annong_logs",SALES:"annong_sales",BUYERS:"annong_buyers"},Em={apiKey:"AIzaSyD8GC7v21FaMvs8Wgrq3RXmeKnrrO2wpEo",authDomain:"appcan-2c24e.firebaseapp.com",projectId:"appcan-2c24e",storageBucket:"appcan-2c24e.firebasestorage.app",messagingSenderId:"633698227291",appId:"1:633698227291:web:b3cbc303311dd125c75b7e"},eo=E1(Em),Wu=null/* Disabled dead remote Firestore to eliminate backend timeout */,Pu=A1(eo);const sanitizeForFirestore = (val) => {
   if (val === null || val === undefined || typeof val !== "object") {
     return val === undefined ? null : val;
   }
@@ -409,7 +409,170 @@ const deserializeFromFirestore = (val) => {
   return result;
 };
 
-class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);if(await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0}),p.billingHistory&&Array.isArray(p.billingHistory))for(const O of p.billingHistory)O&&O.farmerPhone&&await this.pushToFarmerInbox(O)}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p))}catch(e){console.warn("Storage save error",e)}const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(b){if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const p=this.getSessions(),f=this.getFarmers(),O=this.getVehicles(),D={user:this.getUser(),lastUpdated:new Date().toISOString(),farmerDirectory:f,transportation:{list:O},billingHistory:p,config:this.getSettings()};Mn.syncToCloud(b,D)}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return alert(p.message),!1;const f=this.getSessions();return f.unshift(b),this.save(Ot.SESSIONS,f),!0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{const[p,f]=w.useState(!1),[O,D]=w.useState(!1),U=w.useMemo(()=>me.getSessions(),[]),Y=me.isPremium(),A=U.length,v=10,_=!Y&&A>=8,z=()=>{D(!0),setTimeout(()=>{D(!1),f(!1),alert("Cảm ơn bạn! Yêu cầu nâng cấp Premium đã được gửi đi. Đội ngũ Tôm Càng Xanh sẽ liên hệ bạn trong giây lát để hoàn tất thanh toán.")},1500)},L=[{title:"Lưu trữ không giới hạn",desc:"Xóa bỏ giới hạn 10 phiếu cân.",icon:c.jsx(Zd,{size:18})},{title:"Xuất báo cáo Excel/PDF",desc:"Gửi phiếu chuyên nghiệp qua Zalo.",icon:c.jsx(xm,{size:18})},{title:"Phân tích tài chính",desc:"Báo cáo lợi nhuận vận chuyển & kho.",icon:c.jsx(I1,{size:18})},{title:"Đồng bộ Nông dân",desc:"Tự động đẩy dữ liệu cho đối tác.",icon:c.jsx(Os,{size:18})},{title:"Hỗ trợ ưu tiên 24/7",desc:"Đường dây nóng xử lý sự cố tức thì.",icon:c.jsx(Pd,{size:18})}];return c.jsxs("div",{className:"p-4 space-y-6 bg-gray-50 dark:bg-[#121212] h-full overflow-y-auto pb-20 transition-colors relative",children:[/* Premium banner removed */c.jsxs("div",{className:"bg-[#1e4ea1] rounded-[40px] p-6 text-white shadow-2xl relative overflow-hidden",children:[c.jsxs("h2",{className:"text-3xl font-black italic uppercase tracking-tighter mb-6",children:["Dữ liệu ",b==="OWNER"?"Vựa":"Cá nhân"]}),c.jsxs("div",{className:"grid grid-cols-2 gap-3 relative z-10",children:[c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Phiếu đã lưu"}),c.jsxs("span",{className:"text-2xl font-black tabular-nums",children:[A," ",null]})]}),c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Trạng thái"}),c.jsx("span",{className:"text-sm font-black uppercase flex items-center gap-1",children:"Không giới hạn"})]})]}),c.jsx(Sm,{size:140,className:"absolute -right-8 -bottom-8 opacity-10"})]}),_&&c.jsxs("div",{className:"bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 animate-bounce",children:[c.jsx(Nm,{size:20}),c.jsx("p",{className:"text-[11px] font-black uppercase leading-tight",children:"Sắp đạt giới hạn lưu trữ! Hãy nâng cấp để không gián đoạn công việc."})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("button",{onClick:()=>S(re.WEIGHING),className:"col-span-2 bg-[#2e7d32] p-6 rounded-[35px] shadow-xl flex items-center justify-between text-white active:scale-95 border-b-8 border-green-900",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center",children:c.jsx($u,{size:32})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none",children:"Bắt đầu cân"}),c.jsx("span",{className:"text-[9px] font-bold opacity-70 uppercase tracking-widest",children:"Ghi chép sản lượng tức thì"})]})]}),c.jsx(em,{})]}),c.jsxs("button",{onClick:()=>S(re.SALES),className:"col-span-2 relative overflow-hidden bg-gradient-to-r from-[#1e4ea1] via-[#1d4ed8] to-[#0284c7] hover:brightness-105 text-white p-5 sm:p-6 rounded-[32px] shadow-xl shadow-blue-900/30 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group",children:[c.jsxs("div",{className:"flex items-center gap-4 relative z-10",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 group-hover:bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-xs border border-white/30 shadow-inner transition-colors",children:c.jsx(F1,{size:32,className:"text-white drop-shadow"})}),c.jsxs("div",{className:"text-left space-y-1",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none tracking-tight",children:"Bán Ra & Xuất Tôm"}),c.jsx("span",{className:"px-2 py-0.5 bg-emerald-400 text-gray-950 font-black text-[9px] rounded-full uppercase tracking-wider shadow-xs animate-pulse",children:"Không trừ bì"})]}),c.jsx("span",{className:"text-[10px] font-bold opacity-90 uppercase tracking-wider block text-blue-100",children:"🏢 Xí nghiệp • 🛒 Bán lẻ • 🏪 Chợ thủy hải sản"})]})]}),c.jsxs("div",{className:"flex items-center gap-2 relative z-10",children:[c.jsx("span",{className:"hidden md:inline text-xs font-black uppercase bg-white/20 px-3 py-1.5 rounded-xl backdrop-blur-xs",children:"Vào Bán"}),c.jsx(em,{})]}),c.jsx("div",{className:"absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"})]}),c.jsxs("button",{onClick:()=>S(re.HISTORY),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center",children:c.jsx(Fd,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Lịch sử"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Xem lại phiếu cân"})]})]}),c.jsxs("button",{onClick:()=>S(re.FARMERS),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center",children:c.jsx(Os,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Chủ Ao"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Danh sách ao tôm"})]})]})]}),p&&c.jsxs("div",{className:"fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 animate-in fade-in duration-300",children:[c.jsx("div",{className:"absolute inset-0 bg-black/60 backdrop-blur-md",onClick:()=>f(!1)}),c.jsxs("div",{className:"relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-[40px] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 duration-500",children:[c.jsxs("div",{className:"bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 p-8 text-white relative",children:[c.jsx("button",{onClick:()=>f(!1),className:"absolute top-6 right-6 p-2 bg-black/10 rounded-full hover:bg-black/20 transition-colors",children:c.jsx(_a,{size:20})}),c.jsxs("div",{className:"flex flex-col items-center text-center space-y-2",children:[c.jsx("div",{className:"bg-white/20 p-4 rounded-3xl backdrop-blur-sm mb-2 shadow-inner",children:c.jsx(Fu,{size:48,className:"text-yellow-200"})}),c.jsx("h3",{className:"text-3xl font-black uppercase italic tracking-tighter",children:"Tôm Càng Xanh Premium"}),c.jsx("p",{className:"text-xs font-bold opacity-80 uppercase tracking-widest",children:"Mở khóa toàn bộ tính năng chuyên nghiệp"})]}),c.jsx(bm,{className:"absolute top-10 left-10 opacity-20 animate-spin-slow",size:40})]}),c.jsxs("div",{className:"p-8 space-y-6",children:[c.jsx("div",{className:"space-y-4",children:L.map((te,Q)=>c.jsxs("div",{className:"flex items-start gap-4",children:[c.jsx("div",{className:"mt-1 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 p-2 rounded-xl",children:te.icon}),c.jsxs("div",{children:[c.jsx("h4",{className:"font-black text-gray-800 dark:text-gray-100 text-sm uppercase italic",children:te.title}),c.jsx("p",{className:"text-xs text-gray-500 dark:text-gray-400 font-bold leading-tight",children:te.desc})]}),c.jsx(lm,{size:18,className:"ml-auto text-green-500 mt-1 shrink-0"})]},Q))}),c.jsxs("div",{className:"pt-4 border-t dark:border-gray-800",children:[c.jsxs("div",{className:"flex justify-between items-center mb-6",children:[c.jsxs("div",{children:[c.jsx("span",{className:"text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase italic",children:"Gói trọn đời"}),c.jsx("p",{className:"text-2xl font-black text-gray-900 dark:text-white italic tracking-tighter",children:"999.000 VNĐ"})]}),c.jsx("div",{className:"bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-4 py-1 rounded-full text-[10px] font-black uppercase",children:"Ưu đãi -50%"})]}),c.jsx("button",{onClick:z,disabled:O,className:"w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white p-6 rounded-[30px] font-black uppercase text-lg shadow-xl shadow-orange-500/20 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50",children:O?c.jsx("div",{className:"w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"}):c.jsxs(c.Fragment,{children:[c.jsx(Zd,{size:24,fill:"currentColor"}),"Nâng cấp ngay"]})}),c.jsx("p",{className:"text-center text-[10px] text-gray-400 mt-4 font-bold uppercase",children:"Thanh toán an toàn • Hỗ trợ 24/7"})]})]})]})]})]})};class Am{static getRate(){switch(me.getSettings().voiceSpeed){case"rất nhanh":return 2;case"nhanh":return 1.5;case"vừa":return 1.2;case"chậm":return .8;case"rất chậm":return .5;default:return 1.2}}static speak(b){if(!("speechSynthesis"in window))return;try{window.speechSynthesis.cancel();setTimeout(()=>{try{const p=new SpeechSynthesisUtterance(String(b));p.lang="vi-VN";p.rate=this.getRate();window.speechSynthesis.speak(p);}catch(err){}},20);}catch(e){}}static speakWeight(b){if(b===null||b===undefined||b===""||b===0)return;const numStr=String(b).replace(".", " phẩy ").replace(",", " phẩy ");this.speak(`${numStr} ký`);}static playBeep(){const b=new(window.AudioContext||window.webkitAudioContext),p=b.createOscillator(),f=b.createGain();p.connect(f),f.connect(b.destination),p.type="sine",p.frequency.setValueAtTime(880,b.currentTime),f.gain.setValueAtTime(.1,b.currentTime),p.start(),p.stop(b.currentTime+.1)}}
+class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);if(await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0}),p.billingHistory&&Array.isArray(p.billingHistory))for(const O of p.billingHistory)O&&O.farmerPhone&&await this.pushToFarmerInbox(O)}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p))}catch(e){console.warn("Storage save error",e)}const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(b){if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const p=this.getSessions(),f=this.getFarmers(),O=this.getVehicles(),D={user:this.getUser(),lastUpdated:new Date().toISOString(),farmerDirectory:f,transportation:{list:O},billingHistory:p,config:this.getSettings()};Mn.syncToCloud(b,D)}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return alert(p.message),!1;const f=this.getSessions();return f.unshift(b),this.save(Ot.SESSIONS,f),!0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
+  const [dashDate, setDashDate] = w.useState(() => new Date().toISOString().split("T")[0]);
+  const dashSessions = w.useMemo(() => {
+    try {
+      return (me.getSessions && me.getSessions()) || [];
+    } catch(e) { return []; }
+  }, []);
+  const dashSales = w.useMemo(() => {
+    try {
+      return (me.getSales && me.getSales()) || [];
+    } catch(e) { return []; }
+  }, []);
+
+  // Filter today or selected date
+  const todayBuySessions = dashSessions.filter(s => s.date && s.date.startsWith(dashDate));
+  const activeBuySessions = todayBuySessions.length > 0 ? todayBuySessions : dashSessions.slice(0, 5);
+  const totalBuyKg = activeBuySessions.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
+  const totalBuyMoney = activeBuySessions.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+
+  // Completed sales
+  const completedSales = dashSales.filter(s => s.status === "COMPLETED" || s.status === "SETTLED" || s.isPaidFull);
+  const todayCompletedSales = completedSales.filter(s => s.date && s.date.startsWith(dashDate));
+  const activeCompletedSales = todayCompletedSales.length > 0 ? todayCompletedSales : completedSales.slice(0, 8);
+  const totalSoldKg = activeCompletedSales.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
+  const totalSoldMoney = activeCompletedSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+
+  // In-progress market (Chợ) and awaiting factory (Công ty)
+  const sellingMarketSales = dashSales.filter(s => s.targetGroup === "MARKET" && (s.status === "SELLING" || s.status === "PENDING_SETTLEMENT"));
+  const totalSellingPhi = sellingMarketSales.reduce((acc, s) => acc + Number(s.phiCount || s.totalBales || 0), 0);
+
+  const awaitingFactorySales = dashSales.filter(s => s.targetGroup === "FACTORY" && s.status === "AWAITING_RESULT");
+  const awaitingFactoryCount = awaitingFactorySales.length;
+
+  // Shrimp difference & loss rate
+  const diffKg = totalBuyKg > 0 && totalSoldKg > 0 ? (totalBuyKg - totalSoldKg) : 0;
+  const lossRate = totalBuyKg > 0 && totalSoldKg > 0 ? ((diffKg / totalBuyKg) * 100) : 0;
+  const _fmt = (n) => Number(n || 0).toLocaleString("vi-VN");
+  const _fmtKg = (n) => {
+    if (!n || n <= 0) return "0";
+    const r = Math.round(n * 10) / 10;
+    return Number.isInteger(r) ? String(r) : String(r);
+  };
+const[p,f]=w.useState(!1),[O,D]=w.useState(!1),U=w.useMemo(()=>me.getSessions(),[]),Y=me.isPremium(),A=U.length,v=10,_=!Y&&A>=8,z=()=>{D(!0),setTimeout(()=>{D(!1),f(!1),alert("Cảm ơn bạn! Yêu cầu nâng cấp Premium đã được gửi đi. Đội ngũ Tôm Càng Xanh sẽ liên hệ bạn trong giây lát để hoàn tất thanh toán.")},1500)},L=[{title:"Lưu trữ không giới hạn",desc:"Xóa bỏ giới hạn 10 phiếu cân.",icon:c.jsx(Zd,{size:18})},{title:"Xuất báo cáo Excel/PDF",desc:"Gửi phiếu chuyên nghiệp qua Zalo.",icon:c.jsx(xm,{size:18})},{title:"Phân tích tài chính",desc:"Báo cáo lợi nhuận vận chuyển & kho.",icon:c.jsx(I1,{size:18})},{title:"Đồng bộ Nông dân",desc:"Tự động đẩy dữ liệu cho đối tác.",icon:c.jsx(Os,{size:18})},{title:"Hỗ trợ ưu tiên 24/7",desc:"Đường dây nóng xử lý sự cố tức thì.",icon:c.jsx(Pd,{size:18})}];return c.jsxs("div",{className:"p-4 space-y-6 bg-gray-50 dark:bg-[#121212] h-full overflow-y-auto pb-20 transition-colors relative",children:[/* Premium banner removed */c.jsxs("div",{className:"bg-[#1e4ea1] rounded-[40px] p-6 text-white shadow-2xl relative overflow-hidden",children:[c.jsxs("h2",{className:"text-3xl font-black italic uppercase tracking-tighter mb-6",children:["Dữ liệu ",b==="OWNER"?"Vựa":"Cá nhân"]}),c.jsxs("div",{className:"grid grid-cols-2 gap-3 relative z-10",children:[c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Phiếu đã lưu"}),c.jsxs("span",{className:"text-2xl font-black tabular-nums",children:[A," ",null]})]}),c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Trạng thái"}),c.jsx("span",{className:"text-sm font-black uppercase flex items-center gap-1",children:"Không giới hạn"})]})]}),c.jsx(Sm,{size:140,className:"absolute -right-8 -bottom-8 opacity-10"})]}),_&&c.jsxs("div",{className:"bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 animate-bounce",children:[c.jsx(Nm,{size:20}),c.jsx("p",{className:"text-[11px] font-black uppercase leading-tight",children:"Sắp đạt giới hạn lưu trữ! Hãy nâng cấp để không gián đoạn công việc."})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("button",{onClick:()=>S(re.WEIGHING),className:"col-span-2 bg-[#2e7d32] p-6 rounded-[35px] shadow-xl flex items-center justify-between text-white active:scale-95 border-b-8 border-green-900",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center",children:c.jsx($u,{size:32})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none",children:"Bắt đầu cân"}),c.jsx("span",{className:"text-[9px] font-bold opacity-70 uppercase tracking-widest",children:"Ghi chép sản lượng tức thì"})]})]}),c.jsx(em,{})]}),c.jsxs("button",{onClick:()=>S(re.SALES),className:"col-span-2 relative overflow-hidden bg-gradient-to-r from-[#1e4ea1] via-[#1d4ed8] to-[#0284c7] hover:brightness-105 text-white p-5 sm:p-6 rounded-[32px] shadow-xl shadow-blue-900/30 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group",children:[c.jsxs("div",{className:"flex items-center gap-4 relative z-10",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 group-hover:bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-xs border border-white/30 shadow-inner transition-colors",children:c.jsx(F1,{size:32,className:"text-white drop-shadow"})}),c.jsxs("div",{className:"text-left space-y-1",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none tracking-tight",children:"Bán Ra & Xuất Tôm"}),c.jsx("span",{className:"px-2 py-0.5 bg-emerald-400 text-gray-950 font-black text-[9px] rounded-full uppercase tracking-wider shadow-xs animate-pulse",children:"Không trừ bì"})]}),c.jsx("span",{className:"text-[10px] font-bold opacity-90 uppercase tracking-wider block text-blue-100",children:"🏢 Xí nghiệp • 🛒 Bán lẻ • 🏪 Chợ thủy hải sản"})]})]}),c.jsxs("div",{className:"flex items-center gap-2 relative z-10",children:[c.jsx("span",{className:"hidden md:inline text-xs font-black uppercase bg-white/20 px-3 py-1.5 rounded-xl backdrop-blur-xs",children:"Vào Bán"}),c.jsx(em,{})]}),c.jsx("div",{className:"absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"})]}),c.jsxs("button",{onClick:()=>S(re.HISTORY),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center",children:c.jsx(Fd,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Lịch sử"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Xem lại phiếu cân"})]})]}),c.jsxs("button",{onClick:()=>S(re.FARMERS),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center",children:c.jsx(Os,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Chủ Ao"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Danh sách ao tôm"})]})]})]}),
+      // BẢNG CÂN ĐỐI THU MUA & XUẤT TÔM
+      c.jsxs("div", {
+        className: "bg-white dark:bg-gray-900 rounded-[35px] p-5 border border-gray-200 dark:border-gray-800 shadow-lg space-y-4 mt-2",
+        children: [
+          c.jsxs("div", {
+            className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-2",
+                children: [
+                  c.jsx("span", { className: "text-xl", children: "📊" }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("h3", { className: "text-base font-black uppercase italic tracking-tight text-gray-900 dark:text-white", children: "Cân Đối Thu Mua & Xuất Tôm" }),
+                      c.jsxs("p", { className: "text-[10px] font-bold text-gray-500", children: ["Ngày: ", dashDate, " • ", activeBuySessions.length, " phiếu mua • ", activeCompletedSales.length, " đơn bán"] })
+                    ]
+                  })
+                ]
+              }),
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => S(re.FINANCE),
+                className: "px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-black uppercase tracking-tight flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
+                children: [
+                  c.jsx("span", { children: "💰" }),
+                  "Tài Chính"
+                ]
+              })
+            ]
+          }),
+          // 4 Grid Columns: Mua Vào | Đã Bán | Đang Xuất Bán | Hao Hụt
+          c.jsxs("div", {
+            className: "grid grid-cols-2 sm:grid-cols-4 gap-2.5",
+            children: [
+              // Col 1: Mua Vào
+              c.jsxs("div", {
+                className: "bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-2xl border border-emerald-200 dark:border-emerald-800 space-y-1",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex items-center justify-between",
+                    children: [
+                      c.jsx("span", { className: "text-[10px] font-black uppercase text-emerald-800 dark:text-emerald-300", children: "📥 Mua Vào" }),
+                      c.jsx("span", { className: "text-xs", children: "⚖️" })
+                    ]
+                  }),
+                  c.jsxs("div", { className: "font-mono font-black text-lg text-emerald-900 dark:text-emerald-100 leading-none", children: [_fmtKg(totalBuyKg), " ", c.jsx("span", { className: "text-xs font-sans", children: "kg" })] }),
+                  c.jsxs("div", { className: "text-[11px] font-bold text-emerald-700 dark:text-emerald-400 font-mono truncate", children: [_fmt(totalBuyMoney), " đ"] })
+                ]
+              }),
+              // Col 2: Đã Bán Hoàn Tất
+              c.jsxs("div", {
+                className: "bg-blue-50 dark:bg-blue-950/40 p-3 rounded-2xl border border-blue-200 dark:border-blue-800 space-y-1",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex items-center justify-between",
+                    children: [
+                      c.jsx("span", { className: "text-[10px] font-black uppercase text-blue-800 dark:text-blue-300", children: "📤 Bán Ra (Xong)" }),
+                      c.jsx("span", { className: "text-xs", children: "💵" })
+                    ]
+                  }),
+                  c.jsxs("div", { className: "font-mono font-black text-lg text-blue-900 dark:text-blue-100 leading-none", children: [_fmtKg(totalSoldKg), " ", c.jsx("span", { className: "text-xs font-sans", children: "kg" })] }),
+                  c.jsxs("div", { className: "text-[11px] font-bold text-blue-700 dark:text-blue-400 font-mono truncate", children: [_fmt(totalSoldMoney), " đ"] })
+                ]
+              }),
+              // Col 3: Đang Bán / Chờ Kết Quả
+              c.jsxs("div", {
+                className: "bg-amber-50 dark:bg-amber-950/40 p-3 rounded-2xl border border-amber-200 dark:border-amber-800 space-y-1",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex items-center justify-between",
+                    children: [
+                      c.jsx("span", { className: "text-[10px] font-black uppercase text-amber-800 dark:text-amber-300", children: "⏳ Đang Bán" }),
+                      c.jsx("span", { className: "text-xs", children: "🚛" })
+                    ]
+                  }),
+                  c.jsxs("div", { className: "font-mono font-black text-lg text-amber-900 dark:text-amber-100 leading-none", children: [totalSellingPhi, " ", c.jsx("span", { className: "text-xs font-sans", children: "phi chợ" })] }),
+                  c.jsxs("div", { className: "text-[11px] font-bold text-amber-700 dark:text-amber-400 truncate", children: [awaitingFactoryCount, " đơn cty chờ kq"] })
+                ]
+              }),
+              // Col 4: Hao Hụt & Chênh Lệch
+              c.jsxs("div", {
+                className: "bg-purple-50 dark:bg-purple-950/40 p-3 rounded-2xl border border-purple-200 dark:border-purple-800 space-y-1",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex items-center justify-between",
+                    children: [
+                      c.jsx("span", { className: "text-[10px] font-black uppercase text-purple-800 dark:text-purple-300", children: "📉 Hao Hụt" }),
+                      c.jsx("span", { className: "text-xs", children: "🦐" })
+                    ]
+                  }),
+                  c.jsxs("div", { className: "font-mono font-black text-lg text-purple-900 dark:text-purple-100 leading-none", children: [diffKg > 0 ? "-" + _fmtKg(diffKg) : _fmtKg(diffKg), " ", c.jsx("span", { className: "text-xs font-sans", children: "kg" })] }),
+                  c.jsxs("div", {
+                    className: "text-[11px] font-bold " + (lossRate > 5 ? "text-red-600 dark:text-red-400" : "text-purple-700 dark:text-purple-400") + " font-mono",
+                    children: [lossRate > 0 ? ("Hao " + lossRate.toFixed(1) + "%") : "Cân đối"]
+                  })
+                ]
+              })
+            ]
+          }),
+          // Shortcut CTA to Finance tab
+          c.jsxs("div", {
+            onClick: () => S(re.FINANCE),
+            className: "p-3 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 dark:from-indigo-950/40 dark:to-purple-950/40 rounded-2xl border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-between cursor-pointer hover:border-indigo-400 transition-all",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-2.5",
+                children: [
+                  c.jsx("div", { className: "w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm", children: "💰" }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("span", { className: "text-xs font-black uppercase text-indigo-950 dark:text-indigo-200 block", children: "Quyết Toán Tài Chính & Chia Lời Lỗ Hùn Vốn" }),
+                      c.jsx("span", { className: "text-[10px] text-gray-500 dark:text-gray-400 font-bold", children: "Góp vốn • Hạch toán chi phí • Chia lãi theo tỷ lệ %" })
+                    ]
+                  })
+                ]
+              }),
+              c.jsx("span", { className: "text-indigo-600 dark:text-indigo-400 text-sm font-black", children: "➔" })
+            ]
+          })
+        ]
+      }),p&&c.jsxs("div",{className:"fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 animate-in fade-in duration-300",children:[c.jsx("div",{className:"absolute inset-0 bg-black/60 backdrop-blur-md",onClick:()=>f(!1)}),c.jsxs("div",{className:"relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-[40px] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 duration-500",children:[c.jsxs("div",{className:"bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 p-8 text-white relative",children:[c.jsx("button",{onClick:()=>f(!1),className:"absolute top-6 right-6 p-2 bg-black/10 rounded-full hover:bg-black/20 transition-colors",children:c.jsx(_a,{size:20})}),c.jsxs("div",{className:"flex flex-col items-center text-center space-y-2",children:[c.jsx("div",{className:"bg-white/20 p-4 rounded-3xl backdrop-blur-sm mb-2 shadow-inner",children:c.jsx(Fu,{size:48,className:"text-yellow-200"})}),c.jsx("h3",{className:"text-3xl font-black uppercase italic tracking-tighter",children:"Tôm Càng Xanh Premium"}),c.jsx("p",{className:"text-xs font-bold opacity-80 uppercase tracking-widest",children:"Mở khóa toàn bộ tính năng chuyên nghiệp"})]}),c.jsx(bm,{className:"absolute top-10 left-10 opacity-20 animate-spin-slow",size:40})]}),c.jsxs("div",{className:"p-8 space-y-6",children:[c.jsx("div",{className:"space-y-4",children:L.map((te,Q)=>c.jsxs("div",{className:"flex items-start gap-4",children:[c.jsx("div",{className:"mt-1 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 p-2 rounded-xl",children:te.icon}),c.jsxs("div",{children:[c.jsx("h4",{className:"font-black text-gray-800 dark:text-gray-100 text-sm uppercase italic",children:te.title}),c.jsx("p",{className:"text-xs text-gray-500 dark:text-gray-400 font-bold leading-tight",children:te.desc})]}),c.jsx(lm,{size:18,className:"ml-auto text-green-500 mt-1 shrink-0"})]},Q))}),c.jsxs("div",{className:"pt-4 border-t dark:border-gray-800",children:[c.jsxs("div",{className:"flex justify-between items-center mb-6",children:[c.jsxs("div",{children:[c.jsx("span",{className:"text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase italic",children:"Gói trọn đời"}),c.jsx("p",{className:"text-2xl font-black text-gray-900 dark:text-white italic tracking-tighter",children:"999.000 VNĐ"})]}),c.jsx("div",{className:"bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-4 py-1 rounded-full text-[10px] font-black uppercase",children:"Ưu đãi -50%"})]}),c.jsx("button",{onClick:z,disabled:O,className:"w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white p-6 rounded-[30px] font-black uppercase text-lg shadow-xl shadow-orange-500/20 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50",children:O?c.jsx("div",{className:"w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"}):c.jsxs(c.Fragment,{children:[c.jsx(Zd,{size:24,fill:"currentColor"}),"Nâng cấp ngay"]})}),c.jsx("p",{className:"text-center text-[10px] text-gray-400 mt-4 font-bold uppercase",children:"Thanh toán an toàn • Hỗ trợ 24/7"})]})]})]})]})]})};class Am{static getRate(){switch(me.getSettings().voiceSpeed){case"rất nhanh":return 2;case"nhanh":return 1.5;case"vừa":return 1.2;case"chậm":return .8;case"rất chậm":return .5;default:return 1.2}}static speak(b){if(!("speechSynthesis"in window))return;try{window.speechSynthesis.cancel();setTimeout(()=>{try{const p=new SpeechSynthesisUtterance(String(b));p.lang="vi-VN";p.rate=this.getRate();window.speechSynthesis.speak(p);}catch(err){}},20);}catch(e){}}static speakWeight(b){if(b===null||b===undefined||b===""||b===0)return;const numStr=String(b).replace(".", " phẩy ").replace(",", " phẩy ");this.speak(`${numStr} ký`);}static playBeep(){const b=new(window.AudioContext||window.webkitAudioContext),p=b.createOscillator(),f=b.createGain();p.connect(f),f.connect(b.destination),p.type="sine",p.frequency.setValueAtTime(880,b.currentTime),f.gain.setValueAtTime(.1,b.currentTime),p.start(),p.stop(b.currentTime+.1)}}
 const numberToWordsVN_v3 = (num) => {
   if (!num || isNaN(num) || num <= 0) return "Không đồng";
   const units = ["", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
@@ -8352,7 +8515,7 @@ const km=({setRoute:S})=>{const[b,p]=w.useState([]),[f,O]=w.useState([]),[D,U]=w
 
 
 // ==================== SALES FEATURE EXTENSION (3 TARGET GROUPS & NO TARE) ====================
-Ot.SALES = "annong_sales_v2";
+Ot.SALES = "annong_sales_v2";Ot.FINANCE = "annong_finance_v1";
 Ot.BUYERS = "annong_buyers_v2";
 
 // Extend me storage
@@ -8392,6 +8555,45 @@ me.addSale = function(sale) {
 me.deleteSale = function(id) {
   const list = me.getSales().filter(s => s.id !== id);
   me.saveSales(list);
+};
+
+
+me.getFinanceData = function() {
+  try {
+    const raw = localStorage.getItem(Ot.FINANCE);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && parsed.activeTrip) return parsed;
+    }
+  } catch(e) {}
+  return {
+    activeTrip: {
+      id: "trip_" + Date.now(),
+      name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
+      startDate: new Date().toISOString().split("T")[0],
+      investors: [
+        { id: "inv_1", name: "Tôi (Chủ vựa)", amount: 100000000 },
+        { id: "inv_2", name: "Anh B (Hùn vốn)", amount: 100000000 }
+      ],
+      shrimpPurchaseAuto: true,
+      shrimpPurchaseManualAmount: 0,
+      expenses: [
+        { id: "exp_1", category: "Tiền thuê xe / vận chuyển", amount: 1500000, note: "Xe giao tôm", date: new Date().toISOString() },
+        { id: "exp_2", category: "Tiền nước đá, oxy", amount: 600000, note: "20 cây đá + nạp oxy", date: new Date().toISOString() },
+        { id: "exp_3", category: "Tiền nhân công kéo / lựa tôm", amount: 1200000, note: "4 nhân công", date: new Date().toISOString() }
+      ],
+      revenueAuto: true,
+      revenueManualAmount: 0
+    },
+    savedTrips: []
+  };
+};
+me.saveFinanceData = function(data) {
+  try {
+    localStorage.setItem(Ot.FINANCE, JSON.stringify(data));
+  } catch(e) {
+    console.warn("Save finance data error", e);
+  }
 };
 
 me.getBuyers = function() {
@@ -9493,32 +9695,25 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
 
 
 // ==================== SCREEN 2: Xm_SalesScreen ====================
+
 const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
-  // Formatters
   const fmtKg = (n) => {
     if (!n || n <= 0) return "0";
-    const r = Math.round(n * 100) / 100;
+    const r = Math.round(n * 10) / 10;
     return Number.isInteger(r) ? String(r) : String(r);
   };
   const _e = ($) => Number($ || 0).toLocaleString("vi-VN");
-
   const p = w.useMemo(() => me.getSettings(), []);
-  const f = w.useRef(null);
 
-  // Target group: FACTORY | RETAIL | MARKET
+  // Target channel: RETAIL (Bán lẻ) | MARKET (Chợ) | FACTORY (Công ty)
   const [targetGroup, setTargetGroup] = w.useState(() => {
     try {
-      return localStorage.getItem("last_sale_target_group") || "FACTORY";
+      return localStorage.getItem("last_sale_target_group") || "RETAIL";
     } catch(e) {
-      return "FACTORY";
+      return "RETAIL";
     }
   });
 
-  // Mode: true = Cấu hình thông số (Parameters), false = Bàn cân 5x5 đang cân (Active Weighing Grid)
-  const [O, D] = w.useState(true);
-  const [promptReq, setPromptReq] = w.useState(null);
-
-  // Lists from local storage
   const [salesList, setSalesList] = w.useState([]);
   const [buyersList, setBuyersList] = w.useState([]);
   const refreshData = () => {
@@ -9531,1144 +9726,729 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     refreshData();
   }, []);
 
-  // Modals & dropdowns
-  const [showSettlementModal, setShowSettlementModal] = w.useState(false);
+  // Modal states
   const [showHistoryModal, setShowHistoryModal] = w.useState(false);
-  const [showBuyerDropdown, setShowBuyerDropdown] = w.useState(false);
-  const [buyerSearch, setBuyerSearch] = w.useState("");
-  const [showShrimpDropdown, setShowShrimpDropdown] = w.useState(false);
+  const [historyFilter, setHistoryFilter] = w.useState("ALL");
+  const [settlingSaleObj, setSettlingSaleObj] = w.useState(null); // For market or factory quick settle
+  const [settleKg, setSettleKg] = w.useState("");
+  const [settleMoney, setSettleMoney] = w.useState("");
+  const [showWeighGridModal, setShowWeighGridModal] = w.useState(false);
 
-  // Selected buyer object for factory custom price list
-  const [selectedBuyerObj, setSelectedBuyerObj] = w.useState(null);
+  // Common Form States
+  // 1. RETAIL STATES
+  const retailTypes = [
+    "Tôm càng sen Loại 1 (10-15 con)",
+    "Tôm càng sen Loại 2 (16-25 con)",
+    "Tôm càng xô tươi",
+    "Tôm trứng / tôm ôm trứng",
+    "Tôm oxy tươi sống",
+    "Tôm lột cấp đông"
+  ];
+  const [retailBuyerName, setRetailBuyerName] = w.useState("Khách Lẻ Mua Tại Vựa");
+  const [retailType, setRetailType] = w.useState(retailTypes[0]);
+  const [retailPrice, setRetailPrice] = w.useState(""); // Direct input, not fixed!
+  const [retailKg, setRetailKg] = w.useState("");
 
-  // Payment status: true = Đã thu đủ 100%, false = Ghi sổ nợ 100%
-  const [Q, se] = w.useState(true);
+  const retailMoney = (Number(retailPrice) || 0) * (Number(retailKg) || 0);
 
-  // Active parameter state (KHÔNG TRỪ BÌ - KHÔNG CỌC)
-  const [A, v] = w.useState(() => {
-    try {
-      const stored = localStorage.getItem("temp_sale_weighing_info_v3");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed) return parsed;
-      }
-    } catch(e) {}
-    return {
-      targetGroup: "FACTORY",
-      buyerName: "Công ty CP Thủy sản Camimex",
-      buyerPhone: "0290.3838383",
-      buyerAddress: "KCN Phường 8, TP. Cà Mau, Tỉnh Cà Mau",
-      buyerRepresentative: "Nguyễn Văn Cảnh (GĐ Thu mua)",
-      buyerLatitude: 9.1768,
-      buyerLongitude: 105.1524,
-      contractCode: "",
-      riceType: "Tôm càng sen size lớn (10-15 c/kg)",
-      price: 220000,
-      vehiclePlate: "",
-      driverPhone: "",
-      driverName: "",
-      marketDeliveryTime: "",
-      tareSpec: "Bán ra KHÔNG TRỪ BÌ (100% Cân thực tế = Tính tiền)"
-    };
-  });
-
-  // Save temp info
-  w.useEffect(() => {
-    try {
-      localStorage.setItem("temp_sale_weighing_info_v3", JSON.stringify({ ...A, targetGroup }));
-    } catch(e) {}
-  }, [A, targetGroup]);
-
-  // Handle buyer select
-  const handleSelectBuyer = (buyer) => {
-    const grpKey = buyer.targetGroup || "FACTORY";
-    setTargetGroup(grpKey);
-    setSelectedBuyerObj(buyer);
-    try {
-      localStorage.setItem("last_sale_target_group", grpKey);
-    } catch(e) {}
-
-    let shrimpName = A.riceType;
-    let shrimpPrice = A.price;
-    if (grpKey === "FACTORY" && Array.isArray(buyer.shrimpPrices) && buyer.shrimpPrices.length > 0) {
-      shrimpName = buyer.shrimpPrices[0].typeName;
-      shrimpPrice = buyer.shrimpPrices[0].price;
+  const handleSaveRetail = () => {
+    const kg = Number(retailKg) || 0;
+    const price = Number(retailPrice) || 0;
+    if (kg <= 0) {
+      alert("Vui lòng nhập số kg tôm bán lẻ!");
+      return;
     }
-
-    v(prev => ({
-      ...prev,
-      targetGroup: grpKey,
-      buyerName: buyer.name || "",
-      buyerPhone: buyer.phone || "",
-      buyerAddress: buyer.address || "",
-      buyerRepresentative: buyer.representative || "",
-      buyerLatitude: buyer.latitude || null,
-      buyerLongitude: buyer.longitude || null,
-      riceType: shrimpName,
-      price: shrimpPrice,
-      vehiclePlate: buyer.defaultVehiclePlate || prev.vehiclePlate || "",
-      driverPhone: buyer.defaultDriverPhone || prev.driverPhone || "",
-      driverName: buyer.defaultDriverName || prev.driverName || "",
-      marketDeliveryTime: buyer.marketDeliveryTime || prev.marketDeliveryTime || ""
-    }));
-    setShowBuyerDropdown(false);
-  };
-
-  // Check preselected buyer from Customers screen
-  w.useEffect(() => {
-    try {
-      const preselectedStr = localStorage.getItem("preselected_buyer_for_sale");
-      if (preselectedStr) {
-        const b = JSON.parse(preselectedStr);
-        if (b && b.name) {
-          localStorage.removeItem("preselected_buyer_for_sale");
-          handleSelectBuyer(b);
-        }
-      }
-    } catch(e) {}
-  }, []);
-
-  // Multi-type completed batches in current sale ticket
-  const [completedBatches, setCompletedBatches] = w.useState([]);
-
-  // Active 5x5 weighing tables for current shrimp type
-  const [_, z] = w.useState([Array(5).fill(0).map(() => Array(5).fill(0))]);
-
-  // Calculations for current active table - KHÔNG TRỪ BÌ (Gross = Net)
-  const Oe = w.useMemo(() => _.flat(2).filter($ => $ > 0), [_]);
-  const De = w.useMemo(() => Math.round(Oe.reduce(($, Te) => $ + Te, 0) * 100) / 100, [Oe]); // Gross kg
-  const J = w.useMemo(() => Oe.length, [Oe]); // Bales / baskets count
-  const tareWeight = 0; // Market tare is resolved later
-  const currentNet = Math.round((De - tareWeight) * 100) / 100;
-  const memoizedCurrentMoney = w.useMemo(() => Math.round(currentNet * Number(A.price || 0)), [currentNet, A.price]);
-  const currentMoney = targetGroup === "MARKET" ? 0 : memoizedCurrentMoney;
-
-  // Aggregate sums across completed batches + active batch
-  const totalNetAllTypes = w.useMemo(() => {
-    const prevNet = completedBatches.reduce((acc, b) => acc + (b.net || 0), 0);
-    return Math.round((prevNet + currentNet) * 100) / 100;
-  }, [completedBatches, currentNet]);
-
-  const totalGrossAllTypes = w.useMemo(() => {
-    const prevGross = completedBatches.reduce((acc, b) => acc + (b.gross || 0), 0);
-    return Math.round((prevGross + De) * 100) / 100;
-  }, [completedBatches, De]);
-
-  const totalBalesAllTypes = w.useMemo(() => {
-    const prevBales = completedBatches.reduce((acc, b) => acc + (b.bales || 0), 0);
-    return prevBales + J;
-  }, [completedBatches, J]);
-
-  const totalMoneyAllTypesRaw = w.useMemo(() => {
-    const prevMoney = completedBatches.reduce((acc, b) => acc + (b.money || 0), 0);
-    return prevMoney + currentMoney;
-  }, [completedBatches, currentMoney]);
-
-  const totalMoneyFinal = w.useMemo(() => {
-    if (p.currencyRounding === "1000") return Math.round(totalMoneyAllTypesRaw / 1000) * 1000;
-    if (p.currencyRounding === "500") return Math.round(totalMoneyAllTypesRaw / 500) * 500;
-    return totalMoneyAllTypesRaw;
-  }, [totalMoneyAllTypesRaw, p.currencyRounding]);
-
-  // Switch target group
-  const handleSelectTargetGroup = (groupKey) => {
-    setTargetGroup(groupKey);
-    try {
-      localStorage.setItem("last_sale_target_group", groupKey);
-    } catch(e) {}
-    const buyersInGroup = buyersList.filter(b => (b.targetGroup || "FACTORY") === groupKey);
-    if (buyersInGroup.length > 0) {
-      handleSelectBuyer(buyersInGroup[0]);
-    } else {
-      setSelectedBuyerObj(null);
-      const def = SALE_GROUPS[groupKey];
-      const firstShrimp = def && def.defaultShrimpTypes && def.defaultShrimpTypes[0];
-      v(prev => ({
-        ...prev,
-        targetGroup: groupKey,
-        buyerName: groupKey === "FACTORY" ? "Xí nghiệp Thủy sản" : (groupKey === "MARKET" ? "Vựa tôm chợ đầu mối" : "Khách lẻ tại vựa"),
-        buyerPhone: "",
-        buyerAddress: "",
-        buyerRepresentative: "",
-        buyerLatitude: null,
-        buyerLongitude: null,
-        riceType: firstShrimp ? firstShrimp.typeName : prev.riceType,
-        price: firstShrimp ? firstShrimp.price : prev.price,
-        vehiclePlate: "",
-        driverPhone: "",
-        driverName: "",
-        marketDeliveryTime: ""
-      }));
+    if (price <= 0) {
+      alert("Vui lòng nhập đơn giá bán lẻ tại thời điểm này!");
+      return;
     }
-  };
-
-  // Available shrimp types list
-  const availableShrimpTypes = w.useMemo(() => {
-    if (targetGroup === "FACTORY" && selectedBuyerObj && Array.isArray(selectedBuyerObj.shrimpPrices) && selectedBuyerObj.shrimpPrices.length > 0) {
-      return selectedBuyerObj.shrimpPrices.map(sp => ({
-        name: sp.typeName,
-        price: sp.price,
-        desc: "Đơn giá theo hợp đồng xí nghiệp"
-      }));
-    }
-    const def = SALE_GROUPS[targetGroup];
-    if (def && def.defaultShrimpTypes) {
-      return def.defaultShrimpTypes.map(st => ({
-        name: st.typeName,
-        price: st.price,
-        desc: st.desc || ""
-      }));
-    }
-    return [
-      { name: "Tôm càng sen size lớn (10-15 c/kg)", price: 220000, desc: "Hàng xuất khẩu loại 1" },
-      { name: "Tôm càng sen size trung (16-25 c/kg)", price: 180000, desc: "Hàng chợ / nhà hàng" },
-      { name: "Tôm càng xào (size 30-40 c/kg)", price: 135000, desc: "Hàng tiêu thụ nội địa" },
-      { name: "Tôm ngộp / ướp đá", price: 110000, desc: "Đông lạnh bảo quản đá" }
-    ];
-  }, [targetGroup, selectedBuyerObj]);
-
-  // Chuyển loại tôm cân tiếp (Multi-shrimp batching)
-  const handleSwitchShrimpType = () => {
-    if (currentNet > 0 || J > 0) {
-      const newBatch = {
-        typeName: A.riceType,
-        unitPrice: Number(A.price),
-        weights: _,
-        bales: J,
-        gross: De,
-        tare: tareWeight,
-        net: currentNet,
-        money: currentMoney
-      };
-      setCompletedBatches(prev => [...prev, newBatch]);
-      // Reset tables for new type
-      z([Array(5).fill(0).map(() => Array(5).fill(0))]);
-    }
-    // Switch to parameter view so user selects new type & price
-    D(true);
-  };
-
-  // Top-right button: "Cân" (Switch to weigh mode) or "Lưu" (Open Settlement)
-  const Ue = () => {
-    if (O) {
-      D(false);
-      setTimeout(() => {
-        if (f.current) f.current.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    } else {
-      setShowSettlementModal(true);
-    }
-  };
-
-  // Final Commit & Save Session
-  const handleConfirmSaveSession = () => {
-    const allBatches = [...completedBatches];
-    if (currentNet > 0 || J > 0) {
-      allBatches.push({
-        typeName: A.riceType,
-        unitPrice: Number(A.price),
-        weights: _,
-        bales: J,
-        gross: De,
-        tare: tareWeight,
-        net: currentNet,
-        money: currentMoney
-      });
-    }
-
-    const saleId = Date.now().toString();
-    const grp = SALE_GROUPS[targetGroup] || SALE_GROUPS.FACTORY;
-    const codePrefix = grp.id === "FACTORY" ? "XN" : (grp.id === "MARKET" ? "CHO" : "BL");
-    const paidAmount = Q ? totalMoneyFinal : 0;
-    const remainingDebt = Q ? 0 : totalMoneyFinal;
-
     const newSale = {
-      id: saleId,
-      status: targetGroup === "MARKET" ? "PENDING_SETTLEMENT" : "PAID",
-      code: codePrefix + "-" + saleId.slice(-6),
-      targetGroup: targetGroup,
-      targetGroupLabel: grp.label,
-      buyerName: A.buyerName || (targetGroup === "FACTORY" ? "Xí nghiệp tôm" : (targetGroup === "MARKET" ? "Vựa tôm chợ" : "Khách bán lẻ")),
-      buyerPhone: A.buyerPhone || "",
-      buyerAddress: A.buyerAddress || "",
-      buyerRepresentative: A.buyerRepresentative || "",
-      buyerLatitude: A.buyerLatitude || null,
-      buyerLongitude: A.buyerLongitude || null,
-      contractCode: A.contractCode || "",
-      riceType: allBatches.length > 1 ? allBatches.map(b => b.typeName).join(", ") : A.riceType,
+      id: "sale_" + Date.now(),
+      code: "BL-" + String(Date.now()).slice(-4),
       date: new Date().toISOString(),
-      unitPrice: Number(A.price),
-      tareRatio: 0,
-      impurityWeight: 0,
-      deposit: 0,
-      paidAmount: paidAmount,
-      remainingDebt: remainingDebt,
-      isPaidFull: targetGroup === "MARKET" ? false : Q,     vehiclePlate: A.vehiclePlate || "",
-      driverPhone: A.driverPhone || "",
-      driverName: A.driverName || "",
-      marketDeliveryTime: A.marketDeliveryTime || "",
-      totalGross: totalGrossAllTypes,
-      totalTare: completedBatches.reduce((acc, b) => acc + (b.tare || 0), 0) + tareWeight,
-      totalNet: totalNetAllTypes,
-      totalBales: totalBalesAllTypes,
-      totalMoney: totalMoneyFinal,
-      weights: _,
-      batches: allBatches,
-      notes: "Phiếu cân xuất bán không trừ bì (100% Cân = Tính tiền)"
+      targetGroup: "RETAIL",
+      status: "COMPLETED",
+      isPaidFull: true,
+      buyerName: retailBuyerName.trim() || "Khách Lẻ Tại Vựa",
+      buyerPhone: "",
+      buyerAddress: "Tại vựa Tôm Càng Xanh",
+      riceType: retailType,
+      unitPrice: price,
+      totalNet: kg,
+      totalGross: kg,
+      totalBales: 1,
+      totalMoney: kg * price,
+      batches: [{
+        typeName: retailType,
+        unitPrice: price,
+        net: kg,
+        gross: kg,
+        bales: 1,
+        money: kg * price
+      }],
+      notes: "Bán lẻ thanh toán ngay - giá tại thời điểm bán"
     };
 
     me.addSale(newSale);
     refreshData();
-    setShowSettlementModal(false);
-
-    // Reset session
-    setCompletedBatches([]);
-    z([Array(5).fill(0).map(() => Array(5).fill(0))]);
-    D(true);
-
-    alert("✅ Đã lưu thành công phiếu xuất bán: " + newSale.code + " (" + newSale.buyerName + ")");
+    setRetailKg("");
+    alert("✅ Đã lưu thành công đơn bán lẻ: " + _e(newSale.totalMoney) + " đ (" + fmtKg(newSale.totalNet) + " kg)");
   };
 
-  // Share Zalo
-  const handleShareZalo = () => {
-    const allBatches = [...completedBatches];
-    if (currentNet > 0 || J > 0) {
-      allBatches.push({
-        typeName: A.riceType,
-        unitPrice: Number(A.price),
-        bales: J,
-        net: currentNet,
-        money: currentMoney
-      });
+  // 2. MARKET (CHỢ ĐẦU MỐI) STATES
+  const [marketBuyerName, setMarketBuyerName] = w.useState("Vựa Chợ Đầu Mối Bình Điền");
+  const [marketPhiCount, setMarketPhiCount] = w.useState(""); // Số lượng phi oxy giao đi
+  const [marketVehiclePlate, setMarketVehiclePlate] = w.useState("69C-123.45");
+  const [marketDriver, setMarketDriver] = w.useState("");
+  const [marketTime, setMarketTime] = w.useState(() => {
+    const now = new Date();
+    return now.getHours() + ":" + String(now.getMinutes()).padStart(2, "0");
+  });
+
+  const handleSaveMarketStep1 = () => {
+    const phi = Number(marketPhiCount) || 0;
+    if (phi <= 0) {
+      alert("Vui lòng nhập số lượng phi (thùng/phi oxy) giao đi chợ!");
+      return;
     }
-    const grp = SALE_GROUPS[targetGroup] || SALE_GROUPS.FACTORY;
-    let msg = "🦐 [PHIẾU XUẤT BÁN TÔM - " + grp.label.toUpperCase() + "]\n";
-    msg += "Khách hàng: " + A.buyerName + (A.buyerPhone ? " (" + A.buyerPhone + ")" : "") + "\n";
-    if (A.buyerRepresentative) msg += "Đại diện: " + A.buyerRepresentative + "\n";
-    if (targetGroup === "MARKET" && A.vehiclePlate) msg += "Biển số xe: " + A.vehiclePlate + (A.driverPhone ? " (SĐT: " + A.driverPhone + ")" : "") + "\n";
-    msg += "Ngày xuất: " + new Date().toLocaleDateString("vi-VN") + "\n";
-    msg += "Quy cách: KHÔNG TRỪ BÌ (100% Cân thực tế)\n";
-    msg += "-----------------------------\n";
-    allBatches.forEach((b, idx) => {
-      msg += (idx + 1) + ". " + b.typeName + ": " + fmtKg(b.net) + " kg x " + Number(b.unitPrice).toLocaleString() + " đ = " + Number(b.money).toLocaleString() + " đ\n";
-    });
-    msg += "-----------------------------\n";
-    msg += "Tổng sản lượng xuất: " + fmtKg(totalNetAllTypes) + " kg (" + totalBalesAllTypes + " rổ)\n";
-    msg += "TỔNG TIỀN HÀNG: " + _e(totalMoneyFinal) + " VNĐ\n";
-    msg += "(" + numberToWordsVN_v3(totalMoneyFinal) + ")\n";
-    msg += "Trạng thái: " + (Q ? "ĐÃ THU ĐỦ 100%" : "GHI SỔ NỢ 100%") + "\n";
-    msg += "Kính chúc Quý đối tác kinh doanh phát tài!";
+    const newSale = {
+      id: "sale_" + Date.now(),
+      code: "CHO-" + String(Date.now()).slice(-4),
+      date: new Date().toISOString(),
+      targetGroup: "MARKET",
+      status: "SELLING", // ĐANG BÁN
+      isPaidFull: false,
+      buyerName: marketBuyerName.trim() || "Chợ Đầu Mối",
+      phiCount: phi,
+      vehiclePlate: marketVehiclePlate.trim(),
+      driverName: marketDriver.trim(),
+      marketDeliveryTime: marketTime,
+      totalNet: 0,
+      totalGross: 0,
+      totalBales: phi,
+      totalMoney: 0,
+      notes: "Đơn giao chợ đầu mối đang bán - chờ chốt kg và tiền thực nhận"
+    };
 
-    const zaloUrl = "https://zalo.me/share?text=" + encodeURIComponent(msg);
-    window.open(zaloUrl, "_blank");
+    me.addSale(newSale);
+    refreshData();
+    setMarketPhiCount("");
+    alert("🚚 Đã lưu đơn giao chợ: " + phi + " phi oxy (" + newSale.buyerName + "). Trạng thái: ĐANG BÁN");
   };
+
+  // 3. FACTORY (CÔNG TY / NHÀ MÁY) STATES
+  const factoryBuyers = [
+    "Công ty CP Thủy sản Camimex",
+    "Tập đoàn Thủy hải sản Minh Phú",
+    "Công ty CP Chế biến Thủy sản Quốc Việt",
+    "Công ty Thủy sản Cases Cà Mau"
+  ];
+  const [factoryBuyerName, setFactoryBuyerName] = w.useState(factoryBuyers[0]);
+  const [factoryShrimpType, setFactoryShrimpType] = w.useState("Tôm càng sen size lớn (10-15 c/kg)");
+  const [factoryDeliveredKg, setFactoryDeliveredKg] = w.useState("");
+
+  const handleSaveFactoryStep1 = () => {
+    const kg = Number(factoryDeliveredKg) || 0;
+    const now = new Date();
+    const timeFullStr = now.toLocaleDateString("vi-VN") + " " + now.getHours() + ":" + String(now.getMinutes()).padStart(2, "0");
+
+    const newSale = {
+      id: "sale_" + Date.now(),
+      code: "CTY-" + String(Date.now()).slice(-4),
+      date: new Date().toISOString(),
+      targetGroup: "FACTORY",
+      status: "AWAITING_RESULT", // CHỜ KẾT QUẢ
+      isPaidFull: false,
+      buyerName: factoryBuyerName.trim(),
+      riceType: factoryShrimpType,
+      factoryDeliveredKg: kg,
+      totalNet: kg,
+      totalGross: kg,
+      totalMoney: 0,
+      exportTime: timeFullStr,
+      notes: "Xuất giao công ty lúc " + timeFullStr + " - đang chờ kết quả nghiệm thu"
+    };
+
+    me.addSale(newSale);
+    refreshData();
+    setFactoryDeliveredKg("");
+    alert("🏭 Đã xuất giao công ty " + newSale.buyerName + ". Trạng thái: CHỜ KẾT QUẢ");
+  };
+
+  // Quick Settle Action (For Market or Factory)
+  const handleSaveQuickSettle = () => {
+    if (!settlingSaleObj) return;
+    const kg = Number(settleKg) || 0;
+    const money = Number(settleMoney) || 0;
+    if (kg <= 0 || money <= 0) {
+      alert("Vui lòng nhập đầy đủ số kg và tổng tiền thực nhận!");
+      return;
+    }
+
+    const updates = {
+      status: "COMPLETED",
+      isPaidFull: true,
+      totalNet: kg,
+      totalGross: kg,
+      totalMoney: money,
+      settledAt: new Date().toISOString(),
+      notes: settlingSaleObj.targetGroup === "MARKET"
+        ? "Đã chốt đơn chợ: " + fmtKg(kg) + " kg - thực nhận " + _e(money) + " đ (sau trừ hoa hồng)"
+        : "Đã nghiệm thu công ty: " + fmtKg(kg) + " kg - thanh toán " + _e(money) + " đ"
+    };
+
+    me.updateSale(settlingSaleObj.id, updates);
+    refreshData();
+    setSettlingSaleObj(null);
+    setSettleKg("");
+    setSettleMoney("");
+    alert("✅ Đã chốt đơn thành công! Doanh thu đã được cộng dồn vào hệ thống.");
+  };
+
+  // Filtered lists for in-progress items
+  const activeSellingMarketSales = salesList.filter(s => s.targetGroup === "MARKET" && (s.status === "SELLING" || s.status === "PENDING_SETTLEMENT"));
+  const activeAwaitingFactorySales = salesList.filter(s => s.targetGroup === "FACTORY" && s.status === "AWAITING_RESULT");
 
   return c.jsxs("div", {
-    className: "flex flex-col h-screen bg-[#f1f3f4] dark:bg-[#121212] font-roboto select-none overflow-hidden transition-colors",
+    className: "flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden text-gray-900 dark:text-gray-100",
     children: [
-      // Top Header: EXACT OM PREVIOUS STYLE
-      c.jsxs("div", {
-        className: "bg-[#1a237e] dark:bg-[#0d134d] px-4 py-3 flex items-center justify-between shadow-xl z-50",
+      // Header
+      c.jsxs("header", {
+        className: "bg-gradient-to-r from-[#141b63] via-[#1e4ea1] to-[#0284c7] text-white p-4 shadow-xl shrink-0 flex items-center justify-between",
         children: [
-          // Back button
-          c.jsx("button", {
-            onClick: () => {
-              setRoute(re.DASHBOARD);
-            },
-            className: "p-2 text-white bg-white/10 rounded-2xl active:scale-90",
-            children: c.jsx(On, { size: 24 })
-          }),
-          // Center Title & Buyer Badge
           c.jsxs("div", {
-            className: "flex flex-col items-center flex-1 mx-3 text-center",
+            className: "flex items-center gap-3",
             children: [
-              c.jsx("span", {
-                className: "font-black text-white text-lg uppercase italic truncate w-full tracking-tighter",
-                children: A.buyerName || "Khách Mua Tôm"
+              c.jsx("button", {
+                type: "button",
+                onClick: () => setRoute(re.DASHBOARD),
+                className: "p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all cursor-pointer active:scale-90",
+                children: c.jsx(On, { size: 20 })
               }),
               c.jsxs("div", {
-                className: "text-[9px] font-black text-blue-200 uppercase italic bg-white/10 px-2 py-0.5 rounded-full mt-1 flex items-center gap-1",
                 children: [
-                  targetGroup === "FACTORY" && c.jsxs(c.Fragment, { children: ["🏢 ", A.buyerRepresentative ? "Xí nghiệp: " + A.buyerRepresentative : "Xí Nghiệp Tôm Xuất Khẩu"] }),
-                  targetGroup === "MARKET" && c.jsxs(c.Fragment, { children: [c.jsx(tc, { size: 10 }), " ", A.vehiclePlate ? "Xe: " + A.vehiclePlate : "🏪 Chợ Thủy Hải Sản"] }),
-                  targetGroup === "RETAIL" && c.jsxs(c.Fragment, { children: ["🛒 Khách Bán Lẻ Tại Vựa"] })
+                  c.jsxs("h1", {
+                    className: "text-lg font-black uppercase italic tracking-tight flex items-center gap-1.5 leading-none",
+                    children: [
+                      c.jsx("span", { children: "🦐" }),
+                      "Bán Ra & Xuất Tôm"
+                    ]
+                  }),
+                  c.jsx("span", {
+                    className: "text-[10px] font-bold opacity-80 uppercase tracking-widest block mt-0.5",
+                    children: "Bán lẻ • Chợ đầu mối • Nhà máy công ty"
+                  })
                 ]
               })
             ]
           }),
-          // Right Button: Cân / Lưu (EXACT OM STYLE)
-          c.jsxs("button", {
-            onClick: Ue,
-            className: `h-12 px-5 rounded-2xl flex items-center gap-2 font-black shadow-lg transition-all active:scale-95 border-b-4 ${
-              O
-                ? "bg-yellow-400 text-blue-900 border-yellow-700"
-                : "bg-green-600 text-white border-green-900"
-            }`,
-            children: [
-              O ? c.jsx(mm, { size: 22, fill: "currentColor" }) : c.jsx(ec, { size: 22 }),
-              c.jsx("span", {
-                className: "uppercase text-xl italic tracking-tighter",
-                children: O ? "Cân" : "Lưu"
-              })
-            ]
-          })
-        ]
-      }),
-
-      // Sub-bar under Header: Target Group Segment & Shortcut Buttons
-      c.jsxs("div", {
-        className: "bg-[#141b63] dark:bg-[#080d38] px-4 py-2 flex items-center justify-between gap-2 border-t border-white/10 shadow-sm shrink-0",
-        children: [
-          // 3 Target Groups (Segmented Pill Switcher)
           c.jsxs("div", {
-            className: "flex items-center gap-1 bg-black/20 p-1 rounded-2xl",
-            children: [
-              c.jsxs("button", {
-                type: "button",
-                onClick: () => handleSelectTargetGroup("FACTORY"),
-                className: `px-3 py-1.5 rounded-xl text-xs font-black uppercase italic transition-all flex items-center gap-1.5 ${
-                  targetGroup === "FACTORY"
-                    ? "bg-yellow-400 text-blue-950 shadow-md scale-[1.02]"
-                    : "text-blue-100 hover:bg-white/10"
-                }`,
-                children: [c.jsx("span", { children: "🏢" }), "Xí Nghiệp"]
-              }),
-              c.jsxs("button", {
-                type: "button",
-                onClick: () => handleSelectTargetGroup("RETAIL"),
-                className: `px-3 py-1.5 rounded-xl text-xs font-black uppercase italic transition-all flex items-center gap-1.5 ${
-                  targetGroup === "RETAIL"
-                    ? "bg-yellow-400 text-blue-950 shadow-md scale-[1.02]"
-                    : "text-blue-100 hover:bg-white/10"
-                }`,
-                children: [c.jsx("span", { children: "🛒" }), "Bán Lẻ"]
-              }),
-              c.jsxs("button", {
-                type: "button",
-                onClick: () => handleSelectTargetGroup("MARKET"),
-                className: `px-3 py-1.5 rounded-xl text-xs font-black uppercase italic transition-all flex items-center gap-1.5 ${
-                  targetGroup === "MARKET"
-                    ? "bg-yellow-400 text-blue-950 shadow-md scale-[1.02]"
-                    : "text-blue-100 hover:bg-white/10"
-                }`,
-                children: [c.jsx("span", { children: "🏪" }), "Chợ"]
-              })
-            ]
-          }),
-          // History & Customers Quick Links
-          c.jsxs("div", {
-            className: "flex items-center gap-1.5",
+            className: "flex items-center gap-2",
             children: [
               c.jsxs("button", {
                 type: "button",
                 onClick: () => setShowHistoryModal(true),
-                className: "px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase italic flex items-center gap-1 active:scale-95 transition-all",
+                className: "px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase flex items-center gap-1 active:scale-95 transition-all cursor-pointer",
                 children: [c.jsx(Fd, { size: 14 }), "Lịch Sử"]
               }),
               c.jsxs("button", {
                 type: "button",
-                onClick: () => setRoute(re.CUSTOMERS),
-                className: "px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase italic flex items-center gap-1 active:scale-95 transition-all",
-                children: [c.jsx(Os, { size: 14 }), "Khách Hàng"]
+                onClick: () => setRoute(re.FINANCE),
+                className: "px-3 py-1.5 bg-yellow-400 text-blue-950 font-black rounded-xl text-xs uppercase flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
+                children: [c.jsx("span", { children: "💰" }), "Tài Chính"]
               })
             ]
           })
         ]
       }),
 
-      // Main Scroll Area: EXACT OM STYLE
-      c.jsxs("div", {
-        className: "flex-1 overflow-y-auto bg-white dark:bg-[#181818] scroll-smooth pb-20 transition-colors",
-        children: [
-          // Parameters Panel: EXACT OM STYLE
-          c.jsxs("div", {
-            className: `p-4 space-y-4 transition-all duration-500 ${!O && p.lockParamsDuringWeighing ? "opacity-30 pointer-events-none" : ""}`,
-            children: [
-              // 2 NÚT BẤM CÓ DANH MỤC THẢ XUỐNG: KHÁCH HÀNG / ĐỐI TÁC & LOẠI TÔM
-              c.jsxs("div", {
-                className: "grid grid-cols-2 gap-4 relative z-20",
-                children: [
-                  // Nút 1: Chọn Khách Hàng / Đối Tác
-                  c.jsxs("div", {
-                    className: "space-y-1 relative",
-                    children: [
-                      c.jsxs("div", {
-                        className: "flex justify-between items-center ml-1",
-                        children: [
-                          c.jsx("label", {
-                            className: "text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase italic",
-                            children: targetGroup === "FACTORY" ? "Xí Nghiệp Thu Mua" : (targetGroup === "MARKET" ? "Vựa Chợ Đầu Mối" : "Khách Hàng Bán Lẻ")
-                          }),
-                          c.jsx("button", {
-                            type: "button",
-                            onClick: () => {
-                              setPromptReq({ title: "Nhập tên khách hàng mới hoặc đối tác:", defaultVal: A.buyerName || "", onConfirm: (newName) => {
-                                if (newName && newName.trim()) v({ ...A, buyerName: newName.trim() });
-                              }});
-                            },
-                            className: "text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase italic underline",
-                            children: "Đổi tên"
-                          })
-                        ]
-                      }),
-                      // Dropdown Trigger Button
-                      c.jsxs("button", {
-                        type: "button",
-                        onClick: () => {
-                          setShowBuyerDropdown(!showBuyerDropdown);
-                          setShowShrimpDropdown(false);
-                        },
-                        className: `w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-[0.98] ${
-                          showBuyerDropdown
-                            ? "bg-blue-50 border-blue-500 dark:bg-blue-950/40 dark:border-blue-400 shadow-md"
-                            : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                        }`,
-                        children: [
-                          c.jsxs("div", {
-                            className: "truncate flex-1 pr-2",
-                            children: [
-                              c.jsx("div", {
-                                className: "text-base font-black text-gray-800 dark:text-gray-100 uppercase truncate",
-                                children: A.buyerName || "Chọn Khách Hàng..."
-                              }),
-                              c.jsx("div", {
-                                className: "text-[10px] font-bold text-gray-400 font-mono truncate",
-                                children: A.buyerPhone || A.buyerRepresentative || "Khách mua tự do"
-                              })
-                            ]
-                          }),
-                          c.jsx("span", {
-                            className: `text-xs font-black text-gray-500 transition-transform duration-200 ${showBuyerDropdown ? "rotate-180" : ""}`,
-                            children: "▼"
-                          })
-                        ]
-                      }),
-                      // Dropdown Menu List
-                      showBuyerDropdown && c.jsxs("div", {
-                        className: "absolute left-0 right-0 top-full mt-1.5 z-[90] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto p-2 space-y-1.5",
-                        children: [
-                          // Search Box in Dropdown
-                          c.jsxs("div", {
-                            className: "relative mb-1",
-                            children: [
-                              c.jsx(Id, { size: 14, className: "absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" }),
-                              c.jsx("input", {
-                                type: "text",
-                                placeholder: "Tìm tên hoặc SĐT khách...",
-                                value: buyerSearch,
-                                onChange: e => setBuyerSearch(e.target.value),
-                                onClick: e => e.stopPropagation(),
-                                className: "w-full pl-8 pr-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-xl text-xs font-bold outline-none border border-gray-200 dark:border-gray-700"
-                              })
-                            ]
-                          }),
-                          // Option 1: Quick Custom Buyer
-                          c.jsxs("button", {
-                            type: "button",
-                            onClick: () => {
-                              setPromptReq({ title: "Nhập tên khách hàng tự do:", defaultVal: targetGroup === "RETAIL" ? "Khách Lẻ Mua Tại Vựa" : "Khách Mua Tự Do", onConfirm: (customName) => {
-                                if (customName) v(prev => ({ ...prev, buyerName: customName, buyerPhone: "", buyerRepresentative: "" }));
-                              }});
-                              setShowBuyerDropdown(false);
-                            },
-                            className: "w-full p-2.5 bg-yellow-50 dark:bg-yellow-950/30 hover:bg-yellow-100 rounded-xl text-left flex items-center gap-2 border border-yellow-200 dark:border-yellow-800/40 text-yellow-900 dark:text-yellow-200",
-                            children: [
-                              c.jsx(As, { size: 14, className: "text-yellow-700" }),
-                              c.jsxs("div", {
-                                children: [
-                                  c.jsx("div", { className: "font-black text-xs uppercase", children: "+ Nhập Khách Mới / Tự Do" }),
-                                  c.jsx("div", { className: "text-[9px] text-yellow-700 dark:text-yellow-400", children: "Cân nhanh không cần lưu danh bạ" })
-                                ]
-                              })
-                            ]
-                          }),
-                          // Filtered buyers list
-                          buyersList.filter(b => {
-                            if (buyerSearch) {
-                              const q = buyerSearch.toLowerCase();
-                              return (b.name || "").toLowerCase().includes(q) || (b.phone || "").includes(q);
-                            }
-                            return (b.targetGroup || "FACTORY") === targetGroup;
-                          }).map(b => c.jsxs("button", {
-                            key: b.id || b.name,
-                            type: "button",
-                            onClick: () => handleSelectBuyer(b),
-                            className: "w-full p-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl text-left border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors",
-                            children: [
-                              c.jsxs("div", {
-                                className: "flex justify-between items-start",
-                                children: [
-                                  c.jsx("div", { className: "font-black text-xs uppercase text-gray-800 dark:text-gray-100", children: b.name }),
-                                  c.jsx("span", {
-                                    className: "text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300",
-                                    children: b.targetGroup === "FACTORY" ? "Xí Nghiệp" : (b.targetGroup === "MARKET" ? "Chợ" : "Bán Lẻ")
-                                  })
-                                ]
-                              }),
-                              c.jsxs("div", {
-                                className: "text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-2 truncate",
-                                children: [
-                                  b.phone && c.jsxs("span", { children: ["📞 ", b.phone] }),
-                                  b.representative && c.jsxs("span", { className: "text-blue-600 dark:text-blue-400 font-bold truncate", children: ["👤 ", b.representative] })
-                                ]
-                              })
-                            ]
-                          }))
-                        ]
-                      })
-                    ]
-                  }),
-                  // Nút 2: Chọn Loại / Size Tôm
-                  c.jsxs("div", {
-                    className: "space-y-1 relative",
-                    children: [
-                      c.jsxs("div", {
-                        className: "flex justify-between items-center ml-1",
-                        children: [
-                          c.jsx("label", {
-                            className: "text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase italic",
-                            children: "Loại / Size Tôm"
-                          }),
-                          c.jsx("button", {
-                            type: "button",
-                            onClick: () => {
-                              setPromptReq({ title: "Nhập tên loại tôm mới:", defaultVal: A.riceType || "", onConfirm: (customType) => {
-                                if (customType && customType.trim()) {
-                                  setTimeout(() => {
-                                    if (targetGroup === "MARKET") {
-                                      v(prev => ({ ...prev, riceType: customType.trim(), price: 0 }));
-                                    } else {
-                                      setPromptReq({ title: "Nhập đơn giá xuất bán (đ/kg):", defaultVal: String(A.price || "180000"), onConfirm: (customPrice) => {
-                                        v(prev => ({ ...prev, riceType: customType.trim(), price: Number(customPrice) || prev.price }));
-                                      }});
-                                    }
-                                  }, 100);
-                                }
-                              }});
-                            },
-                            className: "text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase italic underline",
-                            children: "Khác"
-                          })
-                        ]
-                      }),
-                      // Dropdown Trigger Button
-                      c.jsxs("button", {
-                        type: "button",
-                        onClick: () => {
-                          setShowShrimpDropdown(!showShrimpDropdown);
-                          setShowBuyerDropdown(false);
-                        },
-                        className: `w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-[0.98] ${
-                          showShrimpDropdown
-                            ? "bg-blue-50 border-blue-500 dark:bg-blue-950/40 dark:border-blue-400 shadow-md"
-                            : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                        }`,
-                        children: [
-                          c.jsxs("div", {
-                            className: "truncate flex-1 pr-2",
-                            children: [
-                              c.jsxs("div", {
-                                className: "text-base font-black text-blue-950 dark:text-blue-200 uppercase truncate flex items-center gap-1.5",
-                                children: [
-                                  c.jsx("span", { children: "🦐" }),
-                                  c.jsx("span", { children: A.riceType || "Chọn Loại Tôm..." })
-                                ]
-                              }),
-                              c.jsxs("div", {
-                                className: "text-[10px] font-bold text-gray-400 font-mono",
-                                children: [Number(A.price || 0).toLocaleString(), " đ/kg"]
-                              })
-                            ]
-                          }),
-                          c.jsx("span", {
-                            className: `text-xs font-black text-gray-500 transition-transform duration-200 ${showShrimpDropdown ? "rotate-180" : ""}`,
-                            children: "▼"
-                          })
-                        ]
-                      }),
-                      // Dropdown Menu List
-                      showShrimpDropdown && c.jsxs("div", {
-                        className: "absolute left-0 right-0 top-full mt-1.5 z-[90] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto p-2 space-y-1 animate-in fade-in",
-                        children: [
-                          availableShrimpTypes.map(item => c.jsxs("button", {
-                            key: item.name,
-                            type: "button",
-                            onClick: () => {
-                              v(prev => ({
-                                ...prev,
-                                riceType: item.name,
-                                price: item.price || prev.price
-                              }));
-                              setShowShrimpDropdown(false);
-                            },
-                            className: `w-full p-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl text-left border transition-colors flex items-center justify-between ${
-                              (A.riceType || "").toLowerCase() === item.name.toLowerCase()
-                                ? "border-green-500 bg-green-50/50 dark:bg-green-950/30"
-                                : "border-transparent hover:border-gray-200 dark:hover:border-gray-700"
-                            }`,
-                            children: [
-                              c.jsxs("div", {
-                                children: [
-                                  c.jsx("div", { className: "font-black text-xs uppercase text-gray-800 dark:text-gray-100", children: item.name }),
-                                  item.desc && c.jsx("div", { className: "text-[9px] text-gray-400 italic", children: item.desc })
-                                ]
-                              }),
-                              item.price && c.jsxs("div", {
-                                className: "text-right shrink-0",
-                                children: [
-                                  c.jsxs("span", { className: "font-mono font-bold text-xs text-green-700 dark:text-green-400", children: [Number(item.price).toLocaleString(), "đ"] }),
-                                  c.jsx("span", { className: "text-[9px] text-gray-400 block", children: "/kg" })
-                                ]
-                              })
-                            ]
-                          })),
-                          // Custom type button
-                          c.jsxs("button", {
-                            type: "button",
-                            onClick: () => {
-                              setPromptReq({ title: "Nhập tên loại tôm khác:", defaultVal: "", onConfirm: (customName) => {
-                                if (customName && customName.trim()) {
-                                  setTimeout(() => {
-                                    if (targetGroup === "MARKET") {
-                                      v(prev => ({ ...prev, riceType: customName.trim(), price: 0 }));
-                                    } else {
-                                      setPromptReq({ title: "Nhập đơn giá bán (đ/kg):", defaultVal: "180000", onConfirm: (customPrice) => {
-                                        v(prev => ({ ...prev, riceType: customName.trim(), price: Number(customPrice) || prev.price }));
-                                      }});
-                                    }
-                                  }, 100);
-                                }
-                              }});
-                              setShowShrimpDropdown(false);
-                            },
-                            className: "w-full p-2 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-center text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mt-1",
-                            children: "+ Nhập Loại Tôm Khác"
-                          })
-                        ]
-                      })
-                    ]
-                  })
-                ]
-              }),
-
-              // Big Bright Yellow Net Weight Box: EXACT OM PREVIOUS STYLE
-              c.jsxs("div", {
-                className: "bg-[#fff176] dark:bg-yellow-700/90 p-6 rounded-[30px] shadow-xl border-b-[6px] border-yellow-600 dark:border-yellow-900 flex justify-between items-center active:translate-y-1 transition-all",
-                children: [
-                  c.jsxs("div", {
-                    children: [
-                      c.jsx("span", {
-                        className: "text-[11px] font-black text-yellow-900 dark:text-yellow-100 uppercase italic block leading-none mb-1",
-                        children: completedBatches.length > 0 ? "Tổng Tôm Xuất (Tất Cả Loại)" : "Tôm Xuất Bán (Không Trừ Bì)"
-                      }),
-                      c.jsxs("span", {
-                        className: "text-5xl font-black text-black dark:text-white italic tracking-tighter tabular-nums leading-none",
-                        children: [
-                          fmtKg(totalNetAllTypes),
-                          " ",
-                          c.jsx("span", { className: "text-xl", children: "KG" })
-                        ]
-                      }),
-                      // Multi-type breakdown preview if more than one batch
-                      completedBatches.length > 0 && c.jsxs("div", {
-                        className: "mt-2 flex flex-wrap gap-1.5",
-                        children: [
-                          completedBatches.map((b, i) => c.jsxs("span", {
-                            key: i,
-                            className: "text-[10px] font-black bg-black/10 dark:bg-white/10 px-2 py-0.5 rounded-full text-black dark:text-white",
-                            children: [b.typeName, ": ", fmtKg(b.net), " kg"]
-                          })),
-                          currentNet > 0 && c.jsxs("span", {
-                            className: "text-[10px] font-black bg-green-800 text-white px-2 py-0.5 rounded-full",
-                            children: [A.riceType, " (đang cân): ", fmtKg(currentNet), " kg"]
-                          })
-                        ]
-                      })
-                    ]
-                  }),
-                  c.jsx(Ds, { size: 70, className: "opacity-10 text-yellow-900 dark:text-white rotate-12" })
-                ]
-              }),
-
-              // Two Cards: Giá Bán (kg) & Quy Cách Trừ Bì: EXACT OM STYLE
-              c.jsxs("div", {
-                className: "space-y-3",
-                children: [
-                  c.jsxs("div", {
-                    className: "grid grid-cols-1 gap-4",
-                    children: [
-                      targetGroup !== "MARKET" ? c.jsxs("div", {
-                        className: "bg-white dark:bg-gray-800 p-4 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors",
-                        children: [
-                          c.jsx("label", {
-                            className: "text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase italic mb-2 block",
-                            children: "Giá Bán (đ/kg)"
-                          }),
-                          c.jsx("input", {
-                            type: "number",
-                            value: A.price,
-                            onChange: $ => v({ ...A, price: $.target.value }),
-                            className: "w-full text-right text-3xl font-black text-[#1a237e] dark:text-blue-300 outline-none bg-transparent"
-                          })
-                        ]
-                      }) : c.jsxs("div", {
-                        className: "bg-white dark:bg-gray-800 p-4 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm transition-colors flex flex-col justify-center items-center text-center",
-                        children: [
-                          c.jsx("span", { className: "text-sm font-black text-amber-600 uppercase italic mb-1", children: "KHÔNG TRỪ BÌ" }),
-                          c.jsx("span", { className: "text-xs font-bold text-gray-500", children: "Trừ bì & Hoa hồng quyết toán sau" })
-                        ]
-                      })
-                    ]
-                  }),
-
-                  // Extra transport fields for Market (Chợ)
-                  targetGroup === "MARKET" && c.jsxs("div", {
-                    className: "grid grid-cols-2 gap-4",
-                    children: [
-                      c.jsxs("div", {
-                        className: "bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xs",
-                        children: [
-                          c.jsx("label", { className: "text-[9px] font-black text-gray-400 uppercase italic block mb-1", children: "Biển Số Xe / Tài Xế" }),
-                          c.jsx("input", {
-                            type: "text",
-                            placeholder: "VD: 69C-123.45",
-                            value: A.vehiclePlate,
-                            onChange: e => v({ ...A, vehiclePlate: e.target.value }),
-                            className: "w-full text-xs font-bold text-gray-800 dark:text-gray-200 bg-transparent outline-none"
-                          })
-                        ]
-                      }),
-                      c.jsxs("div", {
-                        className: "bg-white dark:bg-gray-800 p-3 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xs",
-                        children: [
-                          c.jsx("label", { className: "text-[9px] font-black text-gray-400 uppercase italic block mb-1", children: "SĐT / Giờ Xuất Xe" }),
-                          c.jsx("input", {
-                            type: "text",
-                            placeholder: "VD: 0912... - 22:00",
-                            value: A.driverPhone || A.marketDeliveryTime,
-                            onChange: e => v({ ...A, driverPhone: e.target.value }),
-                            className: "w-full text-xs font-bold text-gray-800 dark:text-gray-200 bg-transparent outline-none"
-                          })
-                        ]
-                      })
-                    ]
-                  }),
-
-                  // Black Payment Card: EXACT OM PREVIOUS STYLE
-                  c.jsxs("div", {
-                    className: "bg-[#1e1e1e] dark:bg-black text-white p-6 rounded-[35px] shadow-2xl flex flex-col gap-1 border-b-8 border-black active:translate-y-1 transition-all",
-                    children: [
-                      c.jsxs("div", {
-                        className: "flex justify-between items-center",
-                        children: [
-                          c.jsx("span", {
-                            className: "text-[11px] font-black text-yellow-400 uppercase italic tracking-widest",
-                            children: "Thanh Toán Tiền Hàng"
-                          }),
-                          c.jsx("div", {
-                            className: `px-4 py-1.5 rounded-xl font-black text-[11px] uppercase cursor-pointer ${
-                              Q ? "bg-green-600" : "bg-gray-700 text-gray-400"
-                            }`,
-                            onClick: () => se(!Q),
-                            children: Q ? "Đã Thu Đủ" : "Ghi Nợ"
-                          })
-                        ]
-                      }),
-                      c.jsxs("span", {
-                        className: "text-4xl font-black text-red-500 dark:text-red-400 tabular-nums leading-none tracking-tighter",
-                        children: [
-                          _e(totalMoneyFinal),
-                          " ",
-                          c.jsx("span", { className: "text-sm font-bold opacity-30 italic", children: "VNĐ" })
-                        ]
-                      }),
-                      c.jsx("p", {
-                        className: "text-[11px] text-gray-400 italic font-semibold mt-1",
-                        children: numberToWordsVN_v3(totalMoneyFinal)
-                      })
-                    ]
-                  })
-                ]
-              })
-            ]
-          }),
-
-          // Weighing Tables Area: EXACT OM PREVIOUS STYLE
-          c.jsxs("div", {
-            ref: f,
-            className: `px-3 transition-all duration-700 ${O ? "opacity-20 pointer-events-none translate-y-10" : "translate-y-0"}`,
-            children: [
-              // Badge indicating active shrimp type being weighed
-              c.jsxs("div", {
-                className: "flex items-center justify-between mb-3 px-2",
-                children: [
-                  c.jsxs("div", {
-                    className: "flex items-center gap-2",
-                    children: [
-                      c.jsx("span", {
-                        className: "w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"
-                      }),
-                      c.jsxs("span", {
-                        className: "text-xs font-black uppercase text-gray-700 dark:text-gray-300 italic",
-                        children: ["Đang cân bán: ", A.riceType, " (", Number(A.price).toLocaleString(), " đ/kg) - KHÔNG TRỪ BÌ"]
-                      })
-                    ]
-                  }),
-                  // Multi-type action: Chuyển loại tôm
-                  c.jsxs("button", {
-                    onClick: handleSwitchShrimpType,
-                    className: "px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase italic shadow flex items-center gap-1.5 active:scale-95 transition-all",
-                    children: [
-                      c.jsx(As, { size: 14 }),
-                      "Cân Loại Khác"
-                    ]
-                  })
-                ]
-              }),
-              // The 5x5 Tables
-              _.map(($, Te) => c.jsx(Mm, {
-                weights: $,
-                onWeightsChange: Pe => {
-                  const et = [..._];
-                  et[Te] = Pe;
-                  z(et);
-                },
-                page: Te + 1,
-                onPageChange: () => {
-                  if (Te === _.length - 1) {
-                    z([..._, Array(5).fill(0).map(() => Array(5).fill(0))]);
-                  }
-                }
-              }, Te)),
-              // Big Dashed "Sửa Thông Số" Button: EXACT OM PREVIOUS STYLE
-              !O && c.jsxs("div", {
-                className: "pb-40 pt-10 flex flex-col items-center gap-6",
-                children: [
-                  c.jsxs("button", {
-                    onClick: () => D(true),
-                    className: "w-full py-10 text-gray-400 dark:text-gray-500 font-black uppercase text-sm italic border-4 border-dashed border-gray-300 dark:border-gray-700 rounded-[40px] flex flex-col items-center gap-3 active:bg-gray-50 dark:active:bg-gray-800 transition-colors",
-                    children: [
-                      c.jsx(tm, { size: 40 }),
-                      "Sửa Thông Số"
-                    ]
-                  }),
-                  c.jsxs("button", {
-                    onClick: handleSwitchShrimpType,
-                    className: "w-full py-5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black uppercase text-base italic rounded-[28px] shadow-lg flex items-center justify-center gap-3 active:scale-95 transition-all",
-                    children: [
-                      c.jsx(As, { size: 24 }),
-                      "Cân Tiếp Loại Tôm Tiếp Theo"
-                    ]
-                  }),
-                  c.jsxs("button", {
-                    onClick: () => setShowSettlementModal(true),
-                    className: "w-full py-5 bg-gradient-to-r from-green-600 to-emerald-700 text-white font-black uppercase text-base italic rounded-[28px] shadow-lg flex items-center justify-center gap-3 active:scale-95 transition-all",
-                    children: [
-                      c.jsx(ec, { size: 24 }),
-                      "Hoàn Tất & Lưu Phiếu Xuất"
-                    ]
-                  })
-                ]
-              })
-            ]
-          })
-        ]
-      }),
-
-      // Settlement Modal: EXACT OM PREVIOUS STYLE
-      promptReq && c.jsxs("div", {
-        className: "fixed inset-0 bg-black/60 z-[200] flex items-center justify-center p-4 backdrop-blur-sm",
+      // Channel Selector Pills (3 Distinct Methods)
+      c.jsx("div", {
+        className: "bg-[#0f172a] p-2.5 shrink-0 border-b border-white/10 shadow-sm",
         children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-800 p-6 rounded-2xl w-full max-w-sm shadow-2xl animate-in zoom-in duration-200",
+          className: "grid grid-cols-3 gap-2 max-w-xl mx-auto",
           children: [
-            c.jsx("h3", { className: "font-black text-sm mb-4 text-gray-900 dark:text-white uppercase", children: promptReq.title }),
-            c.jsx("input", {
-              autoFocus: true,
-              defaultValue: promptReq.defaultVal,
-              id: "customPromptInput",
-              className: "w-full p-3 border-2 border-blue-500 rounded-xl dark:bg-gray-900 dark:text-white font-bold text-lg mb-5 outline-none"
-            }),
-            c.jsxs("div", {
-              className: "flex gap-3 justify-end",
+            c.jsxs("button", {
+              type: "button",
+              onClick: () => {
+                setTargetGroup("RETAIL");
+                try { localStorage.setItem("last_sale_target_group", "RETAIL"); } catch(e) {}
+              },
+              className: `py-2.5 px-2 rounded-2xl text-xs font-black uppercase italic transition-all flex flex-col items-center gap-0.5 cursor-pointer ${
+                targetGroup === "RETAIL"
+                  ? "bg-emerald-500 text-white shadow-lg scale-[1.02]"
+                  : "bg-white/10 text-gray-300 hover:bg-white/20"
+              }`,
               children: [
-                c.jsx("button", { onClick: () => setPromptReq(null), className: "px-5 py-2.5 bg-gray-200 dark:bg-gray-700 font-bold rounded-xl", children: "Hủy" }),
-                c.jsx("button", {
-                  onClick: () => {
-                    const val = document.getElementById("customPromptInput").value;
-                    promptReq.onConfirm(val);
-                    setPromptReq(null);
-                  },
-                  className: "px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg",
-                  children: "Xác nhận"
-                })
+                c.jsx("span", { className: "text-base leading-none", children: "🛒" }),
+                c.jsx("span", { children: "1. Bán Lẻ" }),
+                c.jsx("span", { className: "text-[9px] font-normal opacity-80", children: "Đơn giá nhập tay" })
+              ]
+            }),
+            c.jsxs("button", {
+              type: "button",
+              onClick: () => {
+                setTargetGroup("MARKET");
+                try { localStorage.setItem("last_sale_target_group", "MARKET"); } catch(e) {}
+              },
+              className: `py-2.5 px-2 rounded-2xl text-xs font-black uppercase italic transition-all flex flex-col items-center gap-0.5 cursor-pointer ${
+                targetGroup === "MARKET"
+                  ? "bg-amber-500 text-blue-950 shadow-lg scale-[1.02]"
+                  : "bg-white/10 text-gray-300 hover:bg-white/20"
+              }`,
+              children: [
+                c.jsx("span", { className: "text-base leading-none", children: "🏪" }),
+                c.jsx("span", { children: "2. Chợ Đầu Mối" }),
+                c.jsx("span", { className: "text-[9px] font-normal opacity-80", children: "Giao phi ➔ Chốt tiền" })
+              ]
+            }),
+            c.jsxs("button", {
+              type: "button",
+              onClick: () => {
+                setTargetGroup("FACTORY");
+                try { localStorage.setItem("last_sale_target_group", "FACTORY"); } catch(e) {}
+              },
+              className: `py-2.5 px-2 rounded-2xl text-xs font-black uppercase italic transition-all flex flex-col items-center gap-0.5 cursor-pointer ${
+                targetGroup === "FACTORY"
+                  ? "bg-blue-600 text-white shadow-lg scale-[1.02]"
+                  : "bg-white/10 text-gray-300 hover:bg-white/20"
+              }`,
+              children: [
+                c.jsx("span", { className: "text-base leading-none", children: "🏢" }),
+                c.jsx("span", { children: "3. Công Ty" }),
+                c.jsx("span", { className: "text-[9px] font-normal opacity-80", children: "Giao ➔ Nghiệm thu" })
               ]
             })
           ]
         })
       }),
-      showSettlementModal && c.jsx("div", {
-        className: "fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm",
+
+      // Main Form Area
+      c.jsx("div", {
+        className: "flex-1 overflow-y-auto p-4 space-y-4 max-w-2xl mx-auto w-full pb-28",
         children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-900 w-full max-w-lg rounded-[35px] p-6 shadow-2xl space-y-5 border border-gray-200 dark:border-gray-800 max-h-[90vh] flex flex-col",
+          className: "space-y-4",
           children: [
-            // Modal Header
-            c.jsxs("div", {
-              className: "flex justify-between items-center border-b pb-3",
+            // =========================================================================
+            // 1. PHƯƠNG THỨC 1: BÁN LẺ
+            // =========================================================================
+            targetGroup === "RETAIL" && c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 rounded-[32px] p-5 border border-emerald-200 dark:border-emerald-800 shadow-lg space-y-4 animate-in fade-in duration-200",
               children: [
                 c.jsxs("div", {
-                  children: [
-                    c.jsx("h3", {
-                      className: "text-xl font-black uppercase italic tracking-tight text-gray-900 dark:text-white",
-                      children: "Quyết Toán Phiếu Xuất Bán Tôm"
-                    }),
-                    c.jsx("p", {
-                      className: "text-xs text-gray-500 font-bold",
-                      children: `${A.buyerName} - ${new Date().toLocaleDateString("vi-VN")}`
-                    })
-                  ]
-                }),
-                c.jsx("button", {
-                  onClick: () => setShowSettlementModal(false),
-                  className: "p-2 text-gray-400 hover:text-gray-600 rounded-full",
-                  children: c.jsx(_a, { size: 20 })
-                })
-              ]
-            }),
-            // Breakdown Content
-            c.jsxs("div", {
-              className: "overflow-y-auto flex-1 space-y-4 pr-1 text-sm",
-              children: [
-                // Table of batches
-                c.jsx("div", {
-                  className: "rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden",
-                  children: c.jsxs("table", {
-                    className: "w-full text-left border-collapse",
-                    children: [
-                      c.jsx("thead", {
-                        className: "bg-gray-100 dark:bg-gray-800 text-xs font-black text-gray-500 uppercase",
-                        children: c.jsxs("tr", {
-                          children: [
-                            c.jsx("th", { className: "p-2.5", children: "Loại tôm" }),
-                            c.jsx("th", { className: "p-2.5 text-right", children: "Sạch (kg)" }),
-                            c.jsx("th", { className: "p-2.5 text-right", children: "Giá" }),
-                            c.jsx("th", { className: "p-2.5 text-right", children: "Thành tiền" })
-                          ]
-                        })
-                      }),
-                      c.jsxs("tbody", {
-                        className: "divide-y divide-gray-100 dark:divide-gray-800 font-bold",
-                        children: [
-                          completedBatches.map((b, i) => c.jsxs("tr", {
-                            key: i,
-                            children: [
-                              c.jsxs("td", { className: "p-2.5", children: [b.typeName, " (", b.bales, " rổ)"] }),
-                              c.jsx("td", { className: "p-2.5 text-right text-green-700 dark:text-green-400 font-black", children: fmtKg(b.net) }),
-                              c.jsx("td", { className: "p-2.5 text-right", children: Number(b.unitPrice).toLocaleString() }),
-                              c.jsxs("td", { className: "p-2.5 text-right text-red-600 font-black", children: [_e(b.money), " đ"] })
-                            ]
-                          })),
-                          (currentNet > 0 || completedBatches.length === 0) && c.jsxs("tr", {
-                            children: [
-                              c.jsxs("td", { className: "p-2.5", children: [A.riceType, " (", J, " rổ)"] }),
-                              c.jsx("td", { className: "p-2.5 text-right text-green-700 dark:text-green-400 font-black", children: fmtKg(currentNet) }),
-                              c.jsx("td", { className: "p-2.5 text-right", children: Number(A.price).toLocaleString() }),
-                              c.jsxs("td", { className: "p-2.5 text-right text-red-600 font-black", children: [_e(currentMoney), " đ"] })
-                            ]
-                          })
-                        ]
-                      })
-                    ]
-                  })
-                }),
-                // Summary Numbers
-                c.jsxs("div", {
-                  className: "p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl space-y-2 border border-gray-100 dark:border-gray-800",
-                  children: [
-                    c.jsxs("div", {
-                      className: "flex justify-between",
-                      children: [
-                        c.jsx("span", { className: "text-gray-500 font-bold", children: "Tổng sản lượng tôm xuất:" }),
-                        c.jsxs("span", { className: "font-black text-gray-900 dark:text-gray-100", children: [fmtKg(totalNetAllTypes), " kg (", totalBalesAllTypes, " rổ)"] })
-                      ]
-                    }),
-                    c.jsxs("div", {
-                      className: "flex justify-between text-emerald-700 dark:text-emerald-400",
-                      children: [
-                        c.jsx("span", { className: "font-bold", children: "Quy cách trừ bì:" }),
-                        c.jsx("span", { className: "font-black", children: "0 kg (Không trừ bì)" })
-                      ]
-                    }),
-                    c.jsxs("div", {
-                      className: "flex justify-between items-baseline pt-2 border-t border-gray-200 dark:border-gray-700",
-                      children: [
-                        c.jsx("span", { className: "font-black uppercase text-sm text-gray-800 dark:text-gray-200", children: "Tổng tiền thu:" }),
-                        c.jsxs("span", { className: "text-2xl font-black text-red-600", children: [_e(totalMoneyFinal), " VNĐ"] })
-                      ]
-                    }),
-                    c.jsx("p", {
-                      className: "text-xs italic text-gray-500 text-right font-bold pt-1",
-                      children: numberToWordsVN_v3(totalMoneyFinal)
-                    })
-                  ]
-                }),
-                // Payment Status Switch
-                c.jsxs("div", {
-                  onClick: () => se(!Q),
-                  className: `p-3 rounded-2xl flex items-center justify-between cursor-pointer border ${
-                    Q
-                      ? "bg-green-50 border-green-300 text-green-800 dark:bg-green-950/30 dark:border-green-800 dark:text-green-300"
-                      : "bg-amber-50 border-amber-300 text-amber-800 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300"
-                  }`,
+                  className: "border-b border-gray-100 dark:border-gray-800 pb-3",
                   children: [
                     c.jsxs("div", {
                       className: "flex items-center gap-2",
                       children: [
-                        c.jsx(P1, { size: 18 }),
-                        c.jsx("span", {
-                          className: "font-black uppercase text-xs",
-                          children: Q ? "Đã thu đủ 100% tiền hàng" : "Ghi sổ nợ (Chưa thu tiền)"
-                        })
+                        c.jsx("span", { className: "px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-black text-xs uppercase", children: "🛒 Kênh Bán Lẻ" }),
+                        c.jsx("span", { className: "text-xs font-bold text-gray-500", children: "Không áp giá cố định • Nhập giá trực tiếp" })
                       ]
                     }),
-                    c.jsx("span", {
-                      className: "text-xs font-bold underline",
-                      children: "Đổi"
+                    c.jsx("h3", { className: "text-base font-black uppercase text-gray-900 dark:text-white mt-1", children: "Tạo Đơn Bán Lẻ Nhanh" })
+                  ]
+                }),
+
+                // Khách hàng
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Tên Khách Mua Lẻ" }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: retailBuyerName,
+                      onChange: e => setRetailBuyerName(e.target.value),
+                      className: "w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-sm outline-none"
                     })
                   ]
-                })
-              ]
-            }),
-            // Action Buttons
-            c.jsxs("div", {
-              className: "space-y-2 pt-2 border-t border-gray-100 dark:border-gray-800",
-              children: [
+                }),
+
+                // Danh mục các loại tôm (Loại 1, Loại 2, Tôm trứng, Tôm xô...)
                 c.jsxs("div", {
-                  className: "grid grid-cols-2 gap-2",
+                  className: "space-y-1.5",
                   children: [
-                    c.jsxs("button", {
-                      onClick: handleShareZalo,
-                      className: "py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl flex items-center justify-center gap-2 text-xs uppercase italic active:scale-95 transition-all",
+                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block", children: "Danh Mục Loại Tôm Bán Lẻ (Bấm Chọn Nhanh)" }),
+                    c.jsx("div", {
+                      className: "grid grid-cols-2 gap-1.5",
+                      children: retailTypes.map(t => c.jsxs("button", {
+                        key: t,
+                        type: "button",
+                        onClick: () => setRetailType(t),
+                        className: `p-2.5 rounded-xl text-left text-xs font-bold transition-all border ${
+                          retailType === t
+                            ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-900 dark:text-emerald-200 shadow-xs"
+                            : "bg-gray-50 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                        }`,
+                        children: [
+                          c.jsx("span", { className: "block truncate", children: t }),
+                          retailType === t && c.jsx("span", { className: "text-[9px] font-black text-emerald-600 block mt-0.5", children: "✓ Đang chọn" })
+                        ]
+                      }))
+                    })
+                  ]
+                }),
+
+                // 2 Ô nhập: Đơn Giá (nhập tay trực tiếp) & Số Kg
+                c.jsxs("div", {
+                  className: "grid grid-cols-2 gap-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "space-y-1",
                       children: [
-                        c.jsx(xm, { size: 18 }),
-                        "Gửi Zalo"
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-400 block", children: "Đơn Giá Bán (đ/kg) *" }),
+                        c.jsx("input", {
+                          type: "number",
+                          placeholder: "VD: 220000",
+                          value: retailPrice,
+                          onChange: e => setRetailPrice(e.target.value),
+                          className: "w-full p-3 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border-2 border-emerald-400 font-mono font-black text-xl text-emerald-900 dark:text-emerald-100 outline-none"
+                        }),
+                        c.jsx("span", { className: "text-[9px] text-gray-400 block", children: "Nhập giá tại thời điểm bán" })
                       ]
                     }),
-                    c.jsxs("button", {
-                      onClick: () => window.print(),
-                      className: "py-3 px-4 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-black rounded-2xl flex items-center justify-center gap-2 text-xs uppercase italic active:scale-95 transition-all",
+                    c.jsxs("div", {
+                      className: "space-y-1",
                       children: [
-                        c.jsx(Ms, { size: 18 }),
-                        "In Phiếu"
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-blue-700 dark:text-blue-400 block", children: "Số Lượng (Kg) *" }),
+                        c.jsx("input", {
+                          type: "number",
+                          step: "any",
+                          placeholder: "VD: 15.5",
+                          value: retailKg,
+                          onChange: e => setRetailKg(e.target.value),
+                          className: "w-full p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border-2 border-blue-400 font-mono font-black text-xl text-blue-900 dark:text-blue-100 outline-none"
+                        }),
+                        c.jsx("span", { className: "text-[9px] text-gray-400 block", children: "Khối lượng thực tế" })
                       ]
                     })
                   ]
                 }),
+
+                // Big Total Money Card
+                c.jsxs("div", {
+                  className: "p-4 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl text-white flex justify-between items-center shadow-lg",
+                  children: [
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("span", { className: "text-[11px] font-black uppercase tracking-wider block opacity-90", children: "Thành Tiền Bán Lẻ" }),
+                        c.jsxs("div", {
+                          className: "text-3xl font-black font-mono tracking-tight",
+                          children: [_e(retailMoney), " ", c.jsx("span", { className: "text-base font-sans font-bold", children: "VNĐ" })]
+                        })
+                      ]
+                    }),
+                    c.jsx("div", { className: "text-3xl opacity-30", children: "💵" })
+                  ]
+                }),
+
+                // Complete Button
                 c.jsxs("button", {
-                  onClick: handleConfirmSaveSession,
-                  className: "w-full py-4 bg-green-600 hover:bg-green-700 text-white font-black text-base uppercase italic tracking-tight rounded-2xl shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all",
+                  type: "button",
+                  onClick: handleSaveRetail,
+                  className: "w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl text-base uppercase italic shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer",
                   children: [
                     c.jsx(ec, { size: 22 }),
-                    "Xác Nhận & Hoàn Tất Phiếu Xuất"
+                    "Lưu & Hoàn Tất Đơn Bán Lẻ"
+                  ]
+                })
+              ]
+            }),
+
+            // =========================================================================
+            // 2. PHƯƠNG THỨC 2: BÁN CHỢ ĐẦU MỐI (2 BƯỚC)
+            // =========================================================================
+            targetGroup === "MARKET" && c.jsxs("div", {
+              className: "space-y-4 animate-in fade-in duration-200",
+              children: [
+                // STEP 1 CARD
+                c.jsxs("div", {
+                  className: "bg-white dark:bg-gray-900 rounded-[32px] p-5 border border-amber-200 dark:border-amber-800 shadow-lg space-y-4",
+                  children: [
+                    c.jsxs("div", {
+                      className: "border-b border-gray-100 dark:border-gray-800 pb-3",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex items-center gap-2",
+                          children: [
+                            c.jsx("span", { className: "px-2.5 py-1 rounded-xl bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-black text-xs uppercase", children: "Bước 1: Giao Hàng Đi Chợ" }),
+                            c.jsx("span", { className: "text-xs font-bold text-amber-600", children: "Trạng thái: Đang bán" })
+                          ]
+                        }),
+                        c.jsx("h3", { className: "text-base font-black uppercase text-gray-900 dark:text-white mt-1", children: "Xuất Xe Giao Chợ / Vựa Đầu Mối" })
+                      ]
+                    }),
+
+                    // Tên chợ
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Tên Chợ / Vựa Tiếp Nhận" }),
+                        c.jsx("input", {
+                          type: "text",
+                          value: marketBuyerName,
+                          onChange: e => setMarketBuyerName(e.target.value),
+                          className: "w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-sm outline-none"
+                        })
+                      ]
+                    }),
+
+                    // SỐ LƯỢNG PHI (THÙNG/PHI OXY) GIAO ĐI
+                    c.jsxs("div", {
+                      className: "p-4 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border-2 border-amber-400 space-y-1.5",
+                      children: [
+                        c.jsx("label", { className: "text-xs font-black uppercase text-amber-900 dark:text-amber-200 block", children: "SỐ LƯỢNG PHI (THÙNG / PHI OXY) GIAO ĐI *" }),
+                        c.jsxs("div", {
+                          className: "flex items-center gap-3",
+                          children: [
+                            c.jsx("input", {
+                              type: "number",
+                              placeholder: "VD: 10",
+                              value: marketPhiCount,
+                              onChange: e => setMarketPhiCount(e.target.value),
+                              className: "w-full p-3 rounded-xl bg-white dark:bg-gray-800 border border-amber-300 font-mono font-black text-2xl text-amber-950 dark:text-amber-100 outline-none text-center"
+                            }),
+                            c.jsx("span", { className: "font-black text-sm uppercase text-amber-800 dark:text-amber-300 shrink-0", children: "PHI OXY" })
+                          ]
+                        }),
+                        c.jsx("span", { className: "text-[10px] text-gray-500 block italic", children: "Lưu số lượng phi giao xe, kg và tiền thực nhận sẽ chốt ở Bước 2 khi vựa bán xong." })
+                      ]
+                    }),
+
+                    // Xe và tài xế & giờ
+                    c.jsxs("div", {
+                      className: "grid grid-cols-2 gap-3",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Biển Số Xe" }),
+                            c.jsx("input", {
+                              type: "text",
+                              value: marketVehiclePlate,
+                              onChange: e => setMarketVehiclePlate(e.target.value),
+                              className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Giờ Xuất Bến" }),
+                            c.jsx("input", {
+                              type: "text",
+                              value: marketTime,
+                              onChange: e => setMarketTime(e.target.value),
+                              className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                            })
+                          ]
+                        })
+                      ]
+                    }),
+
+                    // Submit button Step 1
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: handleSaveMarketStep1,
+                      className: "w-full py-4 bg-gradient-to-r from-amber-500 to-yellow-500 text-blue-950 font-black rounded-2xl text-base uppercase italic shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer",
+                      children: [
+                        c.jsx("span", { children: "🚚" }),
+                        "Giao Hàng Đi Chợ (Lưu 'Đang Bán')"
+                      ]
+                    })
+                  ]
+                }),
+
+                // STEP 2: ACTIVE SELLING MARKET ORDERS
+                c.jsxs("div", {
+                  className: "bg-white dark:bg-gray-900 rounded-[32px] p-5 border border-gray-200 dark:border-gray-800 shadow-sm space-y-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center",
+                      children: [
+                        c.jsxs("h3", {
+                          className: "text-xs font-black uppercase text-gray-700 dark:text-gray-300 flex items-center gap-1.5",
+                          children: [
+                            c.jsx("span", { children: "⏳" }),
+                            "Đơn Chợ Đang Bán (Chờ Chốt Tiền): ",
+                            c.jsx("span", { className: "text-amber-600", children: activeSellingMarketSales.length })
+                          ]
+                        }),
+                        c.jsx("span", { className: "text-[10px] text-gray-400 font-bold", children: "Bước 2: Chốt tiền" })
+                      ]
+                    }),
+                    activeSellingMarketSales.length === 0 ? c.jsx("p", {
+                      className: "text-xs text-gray-400 italic py-4 text-center",
+                      children: "Không có đơn chợ nào đang chờ chốt."
+                    }) : activeSellingMarketSales.map(sale => c.jsxs("div", {
+                      key: sale.id,
+                      className: "p-3.5 bg-amber-50/60 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3",
+                      children: [
+                        c.jsxs("div", {
+                          className: "space-y-0.5",
+                          children: [
+                            c.jsxs("div", {
+                              className: "flex items-center gap-2",
+                              children: [
+                                c.jsx("span", { className: "font-black text-sm text-gray-900 dark:text-white", children: sale.buyerName }),
+                                c.jsxs("span", { className: "px-2 py-0.5 bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 font-black text-[10px] rounded-full", children: [sale.phiCount || 0, " phi oxy"] })
+                              ]
+                            }),
+                            c.jsxs("div", {
+                              className: "text-[11px] text-gray-500 flex gap-3",
+                              children: [
+                                c.jsxs("span", { children: ["📅 ", new Date(sale.date).toLocaleDateString("vi-VN")] }),
+                                sale.vehiclePlate && c.jsxs("span", { children: ["Xe: ", sale.vehiclePlate] })
+                              ]
+                            })
+                          ]
+                        }),
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => {
+                            setSettlingSaleObj(sale);
+                            setSettleKg(sale.totalNet ? String(sale.totalNet) : "");
+                            setSettleMoney(sale.totalMoney ? String(sale.totalMoney) : "");
+                          },
+                          className: "w-full sm:w-auto px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
+                          children: [
+                            c.jsx("span", { children: "📝" }),
+                            "Chốt Đơn Chợ"
+                          ]
+                        })
+                      ]
+                    }))
+                  ]
+                })
+              ]
+            }),
+
+            // =========================================================================
+            // 3. PHƯƠNG THỨC 3: BÁN CHO CÔNG TY / NHÀ MÁY (2 BƯỚC)
+            // =========================================================================
+            targetGroup === "FACTORY" && c.jsxs("div", {
+              className: "space-y-4 animate-in fade-in duration-200",
+              children: [
+                // STEP 1 CARD
+                c.jsxs("div", {
+                  className: "bg-white dark:bg-gray-900 rounded-[32px] p-5 border border-blue-200 dark:border-blue-800 shadow-lg space-y-4",
+                  children: [
+                    c.jsxs("div", {
+                      className: "border-b border-gray-100 dark:border-gray-800 pb-3",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex items-center gap-2",
+                          children: [
+                            c.jsx("span", { className: "px-2.5 py-1 rounded-xl bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-black text-xs uppercase", children: "Bước 1: Giao Hàng Cho Công Ty" }),
+                            c.jsx("span", { className: "text-xs font-bold text-blue-600", children: "Trạng thái: Chờ kết quả" })
+                          ]
+                        }),
+                        c.jsx("h3", { className: "text-base font-black uppercase text-gray-900 dark:text-white mt-1", children: "Xuất Tôm Cho Nhà Máy / Doanh Nghiệp" })
+                      ]
+                    }),
+
+                    // Chọn công ty từ danh mục
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Tên Công Ty / Nhà Máy Thu Mua" }),
+                        c.jsx("select", {
+                          value: factoryBuyerName,
+                          onChange: e => setFactoryBuyerName(e.target.value),
+                          className: "w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-sm outline-none text-gray-900 dark:text-white",
+                          children: factoryBuyers.map(fb => c.jsx("option", { value: fb, children: fb }, fb))
+                        })
+                      ]
+                    }),
+
+                    // Loại tôm
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Loại Tôm Hợp Đồng Xuất Giao" }),
+                        c.jsx("input", {
+                          type: "text",
+                          value: factoryShrimpType,
+                          onChange: e => setFactoryShrimpType(e.target.value),
+                          className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                        })
+                      ]
+                    }),
+
+                    // Số lượng giao đi sơ bộ
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Số Lượng Xuất Giao (Kg) Ước Tính / Cân Vựa" }),
+                        c.jsx("input", {
+                          type: "number",
+                          step: "any",
+                          placeholder: "VD: 850.5",
+                          value: factoryDeliveredKg,
+                          onChange: e => setFactoryDeliveredKg(e.target.value),
+                          className: "w-full p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border-2 border-blue-400 font-mono font-black text-xl text-blue-900 dark:text-blue-100 outline-none"
+                        })
+                      ]
+                    }),
+
+                    // Submit button Step 1
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: handleSaveFactoryStep1,
+                      className: "w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black rounded-2xl text-base uppercase italic shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer",
+                      children: [
+                        c.jsx("span", { children: "🏭" }),
+                        "Giao Hàng Cho Công Ty (Lưu 'Chờ Kết Quả')"
+                      ]
+                    })
+                  ]
+                }),
+
+                // STEP 2: ACTIVE AWAITING FACTORY ORDERS
+                c.jsxs("div", {
+                  className: "bg-white dark:bg-gray-900 rounded-[32px] p-5 border border-gray-200 dark:border-gray-800 shadow-sm space-y-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center",
+                      children: [
+                        c.jsxs("h3", {
+                          className: "text-xs font-black uppercase text-gray-700 dark:text-gray-300 flex items-center gap-1.5",
+                          children: [
+                            c.jsx("span", { children: "⏳" }),
+                            "Đơn Công Ty Chờ Nghiệm Thu: ",
+                            c.jsx("span", { className: "text-blue-600", children: activeAwaitingFactorySales.length })
+                          ]
+                        }),
+                        c.jsx("span", { className: "text-[10px] text-gray-400 font-bold", children: "Bước 2: Nghiệm thu" })
+                      ]
+                    }),
+                    activeAwaitingFactorySales.length === 0 ? c.jsx("p", {
+                      className: "text-xs text-gray-400 italic py-4 text-center",
+                      children: "Không có đơn công ty nào đang chờ nghiệm thu."
+                    }) : activeAwaitingFactorySales.map(sale => c.jsxs("div", {
+                      key: sale.id,
+                      className: "p-3.5 bg-blue-50/60 dark:bg-blue-950/30 rounded-2xl border border-blue-200 dark:border-blue-900/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3",
+                      children: [
+                        c.jsxs("div", {
+                          className: "space-y-0.5",
+                          children: [
+                            c.jsx("div", { className: "font-black text-sm text-gray-900 dark:text-white", children: sale.buyerName }),
+                            c.jsxs("div", {
+                              className: "text-[11px] text-gray-500 flex gap-3",
+                              children: [
+                                c.jsxs("span", { children: ["📅 Xuất: ", sale.exportTime || new Date(sale.date).toLocaleDateString("vi-VN")] }),
+                                sale.factoryDeliveredKg > 0 && c.jsxs("span", { children: ["Giao: ", fmtKg(sale.factoryDeliveredKg), " kg"] })
+                              ]
+                            })
+                          ]
+                        }),
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => {
+                            setSettlingSaleObj(sale);
+                            setSettleKg(sale.totalNet ? String(sale.totalNet) : "");
+                            setSettleMoney(sale.totalMoney ? String(sale.totalMoney) : "");
+                          },
+                          className: "w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
+                          children: [
+                            c.jsx("span", { children: "📝" }),
+                            "Nhập Nghiệm Thu"
+                          ]
+                        })
+                      ]
+                    }))
                   ]
                 })
               ]
@@ -10677,7 +10457,77 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
         })
       }),
 
-      // History Modal: Lịch Sử Xuất Bán Tôm
+      // MODAL: CHỐT ĐƠN / NGHIỆM THU NHANH
+      settlingSaleObj && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
+          children: [
+            c.jsxs("div", {
+              children: [
+                c.jsx("h3", {
+                  className: "font-black text-base uppercase text-gray-900 dark:text-white",
+                  children: settlingSaleObj.targetGroup === "MARKET" ? "Chốt Đơn Chợ Đầu Mối" : "Nghiệm Thu Đơn Công Ty"
+                }),
+                c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: [settlingSaleObj.buyerName, " • Mã: ", settlingSaleObj.code] })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "space-y-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Tổng số kg tôm bán được / nghiệm thu *" }),
+                    c.jsx("input", {
+                      type: "number",
+                      step: "any",
+                      placeholder: "VD: 320.5",
+                      value: settleKg,
+                      onChange: e => setSettleKg(e.target.value),
+                      className: "w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-lg font-mono outline-none focus:border-green-500"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Tổng số tiền thực nhận (VNĐ) *" }),
+                    c.jsx("input", {
+                      type: "number",
+                      placeholder: "VD: 68500000",
+                      value: settleMoney,
+                      onChange: e => setSettleMoney(e.target.value),
+                      className: "w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-lg font-mono outline-none focus:border-green-500 text-green-600 dark:text-green-400"
+                    }),
+                    settlingSaleObj.targetGroup === "MARKET" && c.jsx("span", {
+                      className: "text-[10px] text-gray-400 block mt-1",
+                      children: "Số tiền thực nhận sau khi đã trừ hoa hồng và chi phí của chợ"
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "flex gap-2 justify-end pt-2",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setSettlingSaleObj(null),
+                  className: "px-4 py-2.5 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold text-xs",
+                  children: "Hủy"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: handleSaveQuickSettle,
+                  className: "px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black text-xs uppercase shadow-md",
+                  children: "Lưu & Hoàn Tất"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+
+      // MODAL: LỊCH SỬ XUẤT BÁN
       showHistoryModal && c.jsx("div", {
         className: "fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm",
         children: c.jsxs("div", {
@@ -10694,56 +10544,45 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                     }),
                     c.jsxs("p", {
                       className: "text-xs text-gray-500 font-bold",
-                      children: ["Tổng số: ", salesList.length, " phiếu xuất bán"]
+                      children: ["Tổng số: ", salesList.length, " đơn hàng"]
                     })
                   ]
                 }),
                 c.jsx("button", {
+                  type: "button",
                   onClick: () => setShowHistoryModal(false),
                   className: "p-2 text-gray-400 hover:text-gray-600 rounded-full cursor-pointer",
                   children: c.jsx(_a, { size: 20 })
                 })
               ]
             }),
-            // Quick Filter Tabs & Summary
+            // Quick Filter Tabs
             c.jsxs("div", {
-              className: "flex flex-wrap items-center justify-between gap-2 bg-gray-50 dark:bg-gray-800/60 p-2.5 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs",
+              className: "flex gap-1.5 flex-wrap",
               children: [
-                c.jsxs("div", {
-                  className: "flex gap-1.5 flex-wrap",
-                  children: [
-                    c.jsx("button", {
-                      type: "button",
-                      onClick: () => setBuyerSearch(""),
-                      className: `px-3 py-1 rounded-xl font-bold cursor-pointer transition-all ${!buyerSearch ? "bg-blue-600 text-white shadow-xs" : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
-                      children: "Tất cả"
-                    }),
-                    c.jsx("button", {
-                      type: "button",
-                      onClick: () => setBuyerSearch("FACTORY"),
-                      className: `px-3 py-1 rounded-xl font-bold cursor-pointer transition-all ${buyerSearch === "FACTORY" ? "bg-blue-600 text-white shadow-xs" : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
-                      children: "🏢 Xí Nghiệp"
-                    }),
-                    c.jsx("button", {
-                      type: "button",
-                      onClick: () => setBuyerSearch("RETAIL"),
-                      className: `px-3 py-1 rounded-xl font-bold cursor-pointer transition-all ${buyerSearch === "RETAIL" ? "bg-blue-600 text-white shadow-xs" : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
-                      children: "🛒 Bán Lẻ"
-                    }),
-                    c.jsx("button", {
-                      type: "button",
-                      onClick: () => setBuyerSearch("MARKET"),
-                      className: `px-3 py-1 rounded-xl font-bold cursor-pointer transition-all ${buyerSearch === "MARKET" ? "bg-blue-600 text-white shadow-xs" : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
-                      children: "🏪 Chợ"
-                    })
-                  ]
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setHistoryFilter("ALL"),
+                  className: `px-3 py-1 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "ALL" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
+                  children: "Tất cả"
                 }),
-                c.jsxs("div", {
-                  className: "text-[11px] font-bold text-gray-600 dark:text-gray-300 flex items-center gap-2",
-                  children: [
-                    c.jsxs("span", { children: ["Tổng kg: ", c.jsx("strong", { className: "text-blue-600 dark:text-blue-400", children: fmtKg(salesList.reduce((acc, s) => acc + (s.totalNet || s.totalGross || 0), 0)) })] }),
-                    c.jsxs("span", { children: ["Tổng tiền: ", c.jsx("strong", { className: "text-red-600 dark:text-red-400", children: _e(salesList.reduce((acc, s) => acc + (s.totalMoney || 0), 0)) + " đ" })] })
-                  ]
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setHistoryFilter("RETAIL"),
+                  className: `px-3 py-1 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "RETAIL" ? "bg-emerald-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
+                  children: "🛒 Bán Lẻ"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setHistoryFilter("MARKET"),
+                  className: `px-3 py-1 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "MARKET" ? "bg-amber-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
+                  children: "🏪 Chợ Đầu Mối"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setHistoryFilter("FACTORY"),
+                  className: `px-3 py-1 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "FACTORY" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
+                  children: "🏢 Công Ty"
                 })
               ]
             }),
@@ -10752,20 +10591,14 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
               className: "overflow-y-auto flex-1 space-y-3 pr-1",
               children: (() => {
                 const filteredSales = salesList.filter(s => {
-                  if (buyerSearch === "FACTORY" || buyerSearch === "RETAIL" || buyerSearch === "MARKET") {
-                    return (s.targetGroup || "FACTORY") === buyerSearch;
-                  }
-                  if (buyerSearch) {
-                    const q = buyerSearch.toLowerCase();
-                    return (s.buyerName || "").toLowerCase().includes(q) || (s.code || "").toLowerCase().includes(q);
-                  }
-                  return true;
+                  if (historyFilter === "ALL") return true;
+                  return s.targetGroup === historyFilter;
                 });
 
                 if (filteredSales.length === 0) {
                   return c.jsx("p", {
                     className: "text-center text-gray-400 py-12 italic font-bold",
-                    children: "Chưa có phiếu xuất bán nào phù hợp."
+                    children: "Chưa có đơn hàng nào."
                   });
                 }
 
@@ -10782,11 +10615,20 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                             c.jsx("span", { className: "font-mono font-bold text-xs text-blue-600 dark:text-blue-400", children: sale.code }),
                             c.jsx("span", {
                               className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-200",
-                              children: sale.targetGroup === "FACTORY" ? "🏢 Xí Nghiệp" : (sale.targetGroup === "MARKET" ? "🏪 Chợ" : "🛒 Bán Lẻ")
+                              children: sale.targetGroup === "FACTORY" ? "🏢 Công Ty" : (sale.targetGroup === "MARKET" ? "🏪 Chợ" : "🛒 Bán Lẻ")
                             }),
+                            // Status Badge
                             c.jsx("span", {
-                              className: `text-[10px] font-bold px-2 py-0.5 rounded-full ${sale.isPaidFull ? "bg-green-100 text-green-800 dark:bg-green-950/60 dark:text-green-300" : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"}`,
-                              children: sale.isPaidFull ? "Đã thanh toán" : "Ghi nợ"
+                              className: `text-[10px] font-black px-2 py-0.5 rounded-full ${
+                                sale.status === "COMPLETED" || sale.isPaidFull
+                                  ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300"
+                                  : (sale.status === "SELLING"
+                                    ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                                    : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300")
+                              }`,
+                              children: sale.status === "COMPLETED" || sale.isPaidFull
+                                ? "✓ Đã Hoàn Tất"
+                                : (sale.status === "SELLING" ? "⏳ Đang Bán" : "⏳ Chờ Kết Quả")
                             })
                           ]
                         }),
@@ -10795,8 +10637,9 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                           className: "text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-x-3",
                           children: [
                             c.jsxs("span", { children: ["📅 ", new Date(sale.date).toLocaleDateString("vi-VN")] }),
-                            c.jsxs("span", { className: "font-bold text-gray-700 dark:text-gray-300", children: ["⚖️ ", fmtKg(sale.totalNet || sale.totalGross), " kg"] }),
-                            c.jsxs("span", { className: "font-black text-red-600 dark:text-red-400", children: ["💰 ", _e(sale.totalMoney), " đ"] })
+                            sale.totalNet > 0 && c.jsxs("span", { className: "font-bold text-gray-700 dark:text-gray-300", children: ["⚖️ ", fmtKg(sale.totalNet), " kg"] }),
+                            sale.totalMoney > 0 && c.jsxs("span", { className: "font-black text-emerald-600 dark:text-emerald-400", children: ["💰 ", _e(sale.totalMoney), " đ"] }),
+                            sale.phiCount > 0 && c.jsxs("span", { className: "font-bold text-amber-600", children: [sale.phiCount, " phi oxy"] })
                           ]
                         })
                       ]
@@ -10804,22 +10647,35 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                     c.jsxs("div", {
                       className: "flex items-center gap-2 w-full sm:w-auto justify-end",
                       children: [
+                        (sale.status === "SELLING" || sale.status === "AWAITING_RESULT") && c.jsx("button", {
+                          type: "button",
+                          onClick: () => {
+                            setShowHistoryModal(false);
+                            setSettlingSaleObj(sale);
+                            setSettleKg(sale.totalNet ? String(sale.totalNet) : "");
+                            setSettleMoney(sale.totalMoney ? String(sale.totalMoney) : "");
+                          },
+                          className: "px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-black uppercase cursor-pointer",
+                          children: sale.targetGroup === "MARKET" ? "Chốt Chợ" : "Nghiệm Thu"
+                        }),
                         c.jsx("button", {
+                          type: "button",
                           onClick: () => {
                             setShowHistoryModal(false);
                             if (onViewDetail) onViewDetail(sale);
                           },
-                          className: "px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold uppercase cursor-pointer active:scale-95 transition-all",
+                          className: "px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold uppercase cursor-pointer",
                           children: "Chi Tiết"
                         }),
                         c.jsx("button", {
+                          type: "button",
                           onClick: () => {
-                            if (confirm("Bạn có chắc chắn muốn xóa phiếu xuất bán này?")) {
+                            if (confirm("Bạn có chắc chắn muốn xóa đơn xuất bán này?")) {
                               me.deleteSale(sale.id);
                               refreshData();
                             }
                           },
-                          className: "p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg cursor-pointer active:scale-95 transition-all",
+                          className: "p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg cursor-pointer",
                           children: c.jsx(xm, { size: 16 })
                         })
                       ]
@@ -11262,7 +11118,7 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
                     c.jsx("span", {
                       className: "px-2.5 py-1 rounded-lg text-xs font-black uppercase " +
                         (sale.isPaidFull ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300" : "bg-red-100 text-red-800 dark:bg-red-950/80 dark:text-red-300"),
-                      children: sale.status === "PENDING_SETTLEMENT" ? "⏳ CHỜ QUYẾT TOÁN" : (sale.isPaidFull ? "✓ Đã thu đủ 100%" : ("Nợ lại: " + _e(sale.remainingDebt) + " đ"))
+                      children: (sale.status === "SELLING" || sale.status === "PENDING_SETTLEMENT") ? "⏳ ĐANG BÁN (CHỢ ĐẦU MỐI)" : (sale.status === "AWAITING_RESULT" ? "⏳ CHỜ KẾT QUẢ (CÔNG TY)" : (sale.isPaidFull || sale.status === "COMPLETED" ? "✓ ĐÃ HOÀN TẤT DOANH THU" : ("Nợ lại: " + _e(sale.remainingDebt) + " đ")))
                     })
                   ]
                 }),
@@ -11446,7 +11302,1842 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
     ]
   });
 };
-const BmMainApp=()=>{const[S,b]=w.useState(()=>{const u=me.getUser();if(u)u.role="OWNER";return u;}),[p,f]=w.useState(!0),[O,D]=w.useState(()=>me.getUser()?re.DASHBOARD:re.AUTH),[U,Y]=w.useState(null);w.useEffect(()=>{const _=D1(Pu,async z=>{var L,te;if(z){const Q=await Mn.loadFromCloud(z.uid),se=(Q==null?void 0:Q.user)||{uid:z.uid,phoneNumber:z.phoneNumber||"",displayName:z.displayName||"Người dùng",photoURL:z.photoURL||"",role:"OWNER",subscriptionStatus:((te=Q==null?void 0:Q.user)==null?void 0:te.subscriptionStatus)||"FREE",createdAt:new Date().toISOString()};se.role="OWNER";me.setUser(se),b(se),D(re.DASHBOARD)}else me.setUser(null),b(null),D(re.AUTH);f(!1)});return()=>_()},[]);const A=_=>{if(S){const z={...S,role:"OWNER"};me.setUser(z),b(z),D(re.DASHBOARD)}};if(p)return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center text-white",children:[c.jsx("div",{className:"w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"}),c.jsx("p",{className:"font-black uppercase italic text-sm",children:"Đang bảo mật kết nối..."})]});if(!S||O===re.AUTH)return c.jsx(Hm,{onSelect:A});const v=()=>{const _={setRoute:D,role:S.role};switch(O){case re.DASHBOARD:return c.jsx(Kd,{..._});case re.OVERVIEW:return c.jsx(Xm_OverviewTab,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.WEIGHING:return c.jsx(Om,{..._});case re.HISTORY:return c.jsx(_m,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.SESSION_DETAIL:return c.jsx(Dm,{..._,sessionId:U||""});case re.SALES:return c.jsx(Xm_SalesScreen,{..._,onViewDetail:z=>{Y(z);D(re.SALES_DETAIL);}});case re.CUSTOMERS:return c.jsx(Xm_CustomersScreen,{..._,onSelectForSale:z=>{D(re.SALES);}});case re.SALES_DETAIL:return c.jsx(Xm_SaleDetailScreen,{..._,sale:(typeof U==="object"?U:(me.getSales().find(s=>s.id===(typeof U==="string"?U:U?.id))||null)),onBack:()=>D(re.SALES)});case re.FARMERS:return c.jsx(Cm,{..._});case re.VEHICLES:return c.jsx(km,{..._});case re.INFO_CONFIG:return c.jsx(Xm_TraderConfig,{..._});case re.SETTINGS:return c.jsx(Um,{..._});case re.BLUETOOTH:return c.jsx(Rm,{..._});default:return c.jsx(Kd,{..._})}};return c.jsx(Tm,{activeRoute:O,setRoute:D,title:"Tôm Càng Xanh",role:S.role,onLogout:async()=>{await Mn.logout()},children:v()})},
+
+
+const Xm_FinanceScreen = ({ setRoute, role }) => {
+  const _fmt = (n) => Number(n || 0).toLocaleString("vi-VN");
+  const _fmtKg = (n) => {
+    if (!n || n <= 0) return "0";
+    const r = Math.round(n * 10) / 10;
+    return Number.isInteger(r) ? String(r) : String(r);
+  };
+
+  const [financeData, setFinanceData] = w.useState(() => me.getFinanceData());
+  const [sessions, setSessions] = w.useState(() => {
+    try { return (me.getSessions && me.getSessions()) || []; } catch(e) { return []; }
+  });
+  const [sales, setSales] = w.useState(() => {
+    try { return (me.getSales && me.getSales()) || []; } catch(e) { return []; }
+  });
+
+  const trip = financeData.activeTrip || {};
+  const [tripName, setTripName] = w.useState(trip.name || "Chuyến thu mua tôm");
+  const [tripDate, setTripDate] = w.useState(trip.startDate || new Date().toISOString().split("T")[0]);
+  const [tripNote, setTripNote] = w.useState(trip.note || "");
+  const [filterMode, setFilterMode] = w.useState(trip.filterMode || "DATE"); // "DATE" | "ALL"
+
+  // Modal states
+  // 1. Investor Modals (Add & Edit)
+  const [showInvestorModal, setShowInvestorModal] = w.useState(false);
+  const [editingInvestorId, setEditingInvestorId] = w.useState(null);
+  const [investorFormName, setInvestorFormName] = w.useState("");
+  const [investorFormAmount, setInvestorFormAmount] = w.useState("");
+
+  // 2. Expense Modals (Add & Edit)
+  const [showExpenseModal, setShowExpenseModal] = w.useState(false);
+  const [editingExpenseId, setEditingExpenseId] = w.useState(null);
+  const [expenseFormCat, setExpenseFormCat] = w.useState("Tiền thuê xe / vận chuyển");
+  const [expenseFormAmount, setExpenseFormAmount] = w.useState("");
+  const [expenseFormNote, setExpenseFormNote] = w.useState("");
+
+  // 3. Selection Modals (Sessions & Sales list)
+  const [showSessionsModal, setShowSessionsModal] = w.useState(false);
+  const [showSalesModal, setShowSalesModal] = w.useState(false);
+
+  // 4. Trip Settings & Saved Trips Modals
+  const [showTripSettingsModal, setShowTripSettingsModal] = w.useState(false);
+  const [showSavedTripsModal, setShowSavedTripsModal] = w.useState(false);
+  const [viewingSavedTrip, setViewingSavedTrip] = w.useState(null);
+  const [editingSavedTripId, setEditingSavedTripId] = w.useState(null);
+  const [editingSavedTripName, setEditingSavedTripName] = w.useState("");
+
+  // Helper to persist updates to localStorage
+  const updateActiveTrip = (updater) => {
+    setFinanceData(prev => {
+      const currentTrip = prev.activeTrip || {};
+      const updatedTrip = typeof updater === "function" ? updater(currentTrip) : { ...currentTrip, ...updater };
+      const nextData = { ...prev, activeTrip: updatedTrip };
+      me.saveFinanceData(nextData);
+      return nextData;
+    });
+  };
+
+  // =========================================================================
+  // 1. INVESTORS (VỐN GÓP)
+  // =========================================================================
+  const investors = trip.investors || [];
+  const totalCapital = investors.reduce((acc, inv) => acc + Number(inv.amount || 0), 0);
+
+  const handleOpenAddInvestor = () => {
+    setEditingInvestorId(null);
+    setInvestorFormName("");
+    setInvestorFormAmount("");
+    setShowInvestorModal(true);
+  };
+
+  const handleOpenEditInvestor = (inv) => {
+    setEditingInvestorId(inv.id);
+    setInvestorFormName(inv.name);
+    setInvestorFormAmount(String(inv.amount || ""));
+    setShowInvestorModal(true);
+  };
+
+  const handleSaveInvestorForm = () => {
+    if (!investorFormName.trim()) {
+      alert("Vui lòng nhập tên người góp vốn!");
+      return;
+    }
+    const amt = Number(investorFormAmount) || 0;
+    if (amt <= 0) {
+      alert("Vui lòng nhập số tiền vốn góp hợp lệ (lớn hơn 0)!");
+      return;
+    }
+
+    if (editingInvestorId) {
+      // Edit existing
+      updateActiveTrip(t => ({
+        ...t,
+        investors: (t.investors || []).map(i => i.id === editingInvestorId ? { ...i, name: investorFormName.trim(), amount: amt } : i)
+      }));
+    } else {
+      // Add new
+      const newInv = {
+        id: "inv_" + Date.now(),
+        name: investorFormName.trim(),
+        amount: amt
+      };
+      updateActiveTrip(t => ({
+        ...t,
+        investors: [...(t.investors || []), newInv]
+      }));
+    }
+    setShowInvestorModal(false);
+  };
+
+  const handleDeleteInvestor = (id) => {
+    if (investors.length <= 1) {
+      alert("Phải giữ lại ít nhất 1 người góp vốn để phân chia!");
+      return;
+    }
+    const target = investors.find(i => i.id === id);
+    if (confirm("Bạn có chắc chắn muốn xóa người góp vốn \"" + (target?.name || "") + "\"?")) {
+      updateActiveTrip(t => ({
+        ...t,
+        investors: (t.investors || []).filter(i => i.id !== id)
+      }));
+    }
+  };
+
+  // =========================================================================
+  // 2. EXPENSES (CHI PHÍ)
+  // =========================================================================
+  const expenseCategories = [
+    { label: "Tiền thuê xe / vận chuyển", icon: "🚛" },
+    { label: "Tiền nhân công kéo / lựa tôm", icon: "👷" },
+    { label: "Tiền ăn uống, bồi dưỡng", icon: "🍲" },
+    { label: "Tiền nước đá, oxy", icon: "🧊" },
+    { label: "Tiền bến bãi, cầu phà, lộ phí", icon: "🌉" },
+    { label: "Chi phí phát sinh khác", icon: "📝" }
+  ];
+
+  // Shrimp purchase calculations
+  const isShrimpAuto = trip.shrimpPurchaseAuto !== false;
+  const filteredSessions = sessions.filter(s => {
+    if (filterMode === "ALL") return true;
+    return s.date && s.date.startsWith(tripDate);
+  });
+  // Active selected sessions (if user toggled specific tickets)
+  const selectedSessionIds = trip.selectedSessionIds;
+  const effectiveSessions = Array.isArray(selectedSessionIds)
+    ? filteredSessions.filter(s => selectedSessionIds.includes(s.id))
+    : filteredSessions;
+
+  const autoShrimpPurchaseMoney = effectiveSessions.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+  const autoShrimpPurchaseKg = effectiveSessions.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
+  const shrimpPurchaseMoney = isShrimpAuto ? autoShrimpPurchaseMoney : Number(trip.shrimpPurchaseManualAmount || 0);
+
+  // Operating expenses calculations
+  const expenses = trip.expenses || [];
+  const totalOperationExpenses = expenses.reduce((acc, exp) => acc + Number(exp.amount || 0), 0);
+  const totalExpenses = shrimpPurchaseMoney + totalOperationExpenses;
+
+  const handleOpenAddExpense = () => {
+    setEditingExpenseId(null);
+    setExpenseFormCat("Tiền thuê xe / vận chuyển");
+    setExpenseFormAmount("");
+    setExpenseFormNote("");
+    setShowExpenseModal(true);
+  };
+
+  const handleOpenEditExpense = (exp) => {
+    setEditingExpenseId(exp.id);
+    setExpenseFormCat(exp.category || "Tiền thuê xe / vận chuyển");
+    setExpenseFormAmount(String(exp.amount || ""));
+    setExpenseFormNote(exp.note || "");
+    setShowExpenseModal(true);
+  };
+
+  const handleSaveExpenseForm = () => {
+    const amt = Number(expenseFormAmount) || 0;
+    if (amt <= 0) {
+      alert("Vui lòng nhập số tiền chi phí hợp lệ!");
+      return;
+    }
+
+    if (editingExpenseId) {
+      updateActiveTrip(t => ({
+        ...t,
+        expenses: (t.expenses || []).map(e => e.id === editingExpenseId ? {
+          ...e,
+          category: expenseFormCat,
+          amount: amt,
+          note: expenseFormNote.trim()
+        } : e)
+      }));
+    } else {
+      const newExp = {
+        id: "exp_" + Date.now(),
+        category: expenseFormCat,
+        amount: amt,
+        note: expenseFormNote.trim(),
+        date: new Date().toISOString()
+      };
+      updateActiveTrip(t => ({
+        ...t,
+        expenses: [...(t.expenses || []), newExp]
+      }));
+    }
+    setShowExpenseModal(false);
+  };
+
+  const handleDeleteExpense = (id) => {
+    const target = expenses.find(e => e.id === id);
+    if (confirm("Bạn có chắc chắn muốn xóa khoản chi \"" + (target?.category || "") + " (" + _fmt(target?.amount) + " đ)\"?")) {
+      updateActiveTrip(t => ({
+        ...t,
+        expenses: (t.expenses || []).filter(e => e.id !== id)
+      }));
+    }
+  };
+
+  // =========================================================================
+  // 3. REVENUE (DOANH THU)
+  // =========================================================================
+  const isRevenueAuto = trip.revenueAuto !== false;
+  const completedSales = sales.filter(s => s.status === "COMPLETED" || s.status === "SETTLED" || s.isPaidFull);
+  const filteredSales = completedSales.filter(s => {
+    if (filterMode === "ALL") return true;
+    return s.date && s.date.startsWith(tripDate);
+  });
+  const selectedSaleIds = trip.selectedSaleIds;
+  const effectiveSales = Array.isArray(selectedSaleIds)
+    ? filteredSales.filter(s => selectedSaleIds.includes(s.id))
+    : filteredSales;
+
+  const autoRevenueMoney = effectiveSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+  const autoRevenueKg = effectiveSales.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
+  const totalRevenue = isRevenueAuto ? autoRevenueMoney : Number(trip.revenueManualAmount || 0);
+
+  // Breakdown by channel
+  const retailRevenue = effectiveSales.filter(s => s.targetGroup === "RETAIL").reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+  const marketRevenue = effectiveSales.filter(s => s.targetGroup === "MARKET").reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+  const factoryRevenue = effectiveSales.filter(s => s.targetGroup === "FACTORY").reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+
+  // =========================================================================
+  // 4. NET PROFIT & DISTRIBUTION (QUYẾT TOÁN & PHÂN CHIA)
+  // =========================================================================
+  const netProfit = totalRevenue - totalExpenses;
+  const isProfit = netProfit >= 0;
+  const profitMarginPercent = totalExpenses > 0 ? ((netProfit / totalExpenses) * 100) : 0;
+
+  // Individual investor distribution
+  const investorPayouts = investors.map(inv => {
+    const shareRatio = totalCapital > 0 ? (Number(inv.amount || 0) / totalCapital) : 0;
+    const sharePercent = shareRatio * 100;
+    const profitShare = Math.round(netProfit * shareRatio);
+    const totalPayout = Number(inv.amount || 0) + profitShare;
+    return {
+      ...inv,
+      shareRatio,
+      sharePercent,
+      profitShare,
+      totalPayout
+    };
+  });
+
+  // Share statement via Zalo / Messenger
+  const handleShareZaloStatement = () => {
+    let msg = "🦐 [BẢNG QUYẾT TOÁN HÙN VỐN & CHIA LỜI LỖ TÔM]\n";
+    msg += "Chuyến: " + tripName + "\n";
+    msg += "Ngày: " + tripDate + "\n";
+    if (tripNote) msg += "Ghi chú: " + tripNote + "\n";
+    msg += "================================\n";
+    msg += "1. NGUỒN VỐN GÓP: " + _fmt(totalCapital) + " đ\n";
+    investors.forEach((inv, i) => {
+      const pct = totalCapital > 0 ? ((inv.amount / totalCapital) * 100).toFixed(1) : "0.0";
+      msg += "  " + (i + 1) + ". " + inv.name + ": " + _fmt(inv.amount) + " đ (" + pct + "%)\n";
+    });
+    msg += "--------------------------------\n";
+    msg += "2. TỔNG CHI PHÍ: " + _fmt(totalExpenses) + " đ\n";
+    msg += "  • Tiền mua tôm: " + _fmt(shrimpPurchaseMoney) + " đ (" + effectiveSessions.length + " phiếu, " + _fmtKg(autoShrimpPurchaseKg) + " kg)\n";
+    msg += "  • Chi phí vận hành: " + _fmt(totalOperationExpenses) + " đ\n";
+    expenses.forEach((e, i) => {
+      msg += "    - " + e.category + (e.note ? " [" + e.note + "]" : "") + ": " + _fmt(e.amount) + " đ\n";
+    });
+    msg += "--------------------------------\n";
+    msg += "3. TỔNG DOANH THU: " + _fmt(totalRevenue) + " đ\n";
+    if (effectiveSales.length > 0) {
+      if (retailRevenue > 0) msg += "  • Bán lẻ: " + _fmt(retailRevenue) + " đ\n";
+      if (marketRevenue > 0) msg += "  • Chợ đầu mối: " + _fmt(marketRevenue) + " đ\n";
+      if (factoryRevenue > 0) msg += "  • Công ty: " + _fmt(factoryRevenue) + " đ\n";
+    }
+    msg += "================================\n";
+    msg += "4. LỢI NHUẬN RÒNG: " + (isProfit ? "+" : "") + _fmt(netProfit) + " đ\n";
+    msg += "   Kết quả: " + (isProfit ? "LỜI (LÃI)" : "BỊ LỖ") + " " + Math.abs(profitMarginPercent).toFixed(1) + "%\n";
+    msg += "================================\n";
+    msg += "5. BẢNG TIỀN THỰC NHẬN CỦA TỪNG NGƯỜI:\n";
+    investorPayouts.forEach((p, i) => {
+      msg += "  " + (i + 1) + ". " + p.name + " (" + p.sharePercent.toFixed(1) + "%):\n";
+      msg += "     • Vốn gốc: " + _fmt(p.amount) + " đ\n";
+      msg += "     • " + (p.profitShare >= 0 ? "Chia lời: +" : "Chịu lỗ: ") + _fmt(p.profitShare) + " đ\n";
+      msg += "     ==> THỰC NHẬN: " + _fmt(p.totalPayout) + " VNĐ\n";
+    });
+    msg += "--------------------------------\n";
+    msg += "Vựa Tôm Càng Xanh - Đối soát minh bạch 100%.";
+
+    try {
+      navigator.clipboard.writeText(msg);
+      alert("✅ Đã sao chép bảng quyết toán chi tiết! Đang mở Zalo để gửi...");
+      window.open("https://zalo.me", "_blank");
+    } catch(e) {
+      alert("Nội dung quyết toán:\n\n" + msg);
+    }
+  };
+
+  // Archive and settle current trip
+  const handleSettleAndArchiveTrip = () => {
+    if (!confirm("Bạn có chắc chắn muốn khóa và lưu chuyến hạch toán này vào lịch sử? Dữ liệu chuyến sẽ được lưu trữ an toàn và một chuyến mới sẽ được khởi tạo.")) {
+      return;
+    }
+
+    const archivedTrip = {
+      ...trip,
+      name: tripName,
+      startDate: tripDate,
+      note: tripNote,
+      totalCapital,
+      shrimpPurchaseMoney,
+      shrimpPurchaseKg: autoShrimpPurchaseKg,
+      totalOperationExpenses,
+      totalExpenses,
+      totalRevenue,
+      revenueKg: autoRevenueKg,
+      netProfit,
+      isProfit,
+      profitMarginPercent,
+      investorPayouts,
+      settledAt: new Date().toISOString()
+    };
+
+    const newActiveTrip = {
+      id: "trip_" + Date.now(),
+      name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
+      startDate: new Date().toISOString().split("T")[0],
+      note: "",
+      investors: investors.map(i => ({ ...i })), // keep current investor directory
+      shrimpPurchaseAuto: true,
+      shrimpPurchaseManualAmount: 0,
+      selectedSessionIds: null,
+      expenses: [],
+      revenueAuto: true,
+      revenueManualAmount: 0,
+      selectedSaleIds: null
+    };
+
+    const nextData = {
+      activeTrip: newActiveTrip,
+      savedTrips: [archivedTrip, ...(financeData.savedTrips || [])]
+    };
+
+    me.saveFinanceData(nextData);
+    setFinanceData(nextData);
+    setTripName(newActiveTrip.name);
+    setTripDate(newActiveTrip.startDate);
+    setTripNote("");
+    alert("✅ Đã quyết toán thành công và lưu vào lịch sử chuyến!");
+  };
+
+  // Reset or create fresh trip
+  const handleResetTrip = () => {
+    if (confirm("Bạn có chắc chắn muốn đặt lại chuyến này? Các chi phí vận hành sẽ được xóa về 0, giữ nguyên danh sách người góp vốn.")) {
+      updateActiveTrip(t => ({
+        ...t,
+        expenses: [],
+        shrimpPurchaseManualAmount: 0,
+        revenueManualAmount: 0,
+        selectedSessionIds: null,
+        selectedSaleIds: null
+      }));
+      setShowTripSettingsModal(false);
+      alert("✅ Đã đặt lại dữ liệu chuyến!");
+    }
+  };
+
+  // Saved trip actions
+  const handleDeleteSavedTrip = (id) => {
+    if (confirm("Bạn có chắc chắn muốn xóa chuyến hạch toán này khỏi lịch sử? Thao tác này không thể hoàn tác.")) {
+      const nextSaved = (financeData.savedTrips || []).filter(t => t.id !== id);
+      const nextData = { ...financeData, savedTrips: nextSaved };
+      me.saveFinanceData(nextData);
+      setFinanceData(nextData);
+      if (viewingSavedTrip && viewingSavedTrip.id === id) setViewingSavedTrip(null);
+    }
+  };
+
+  const handleRestoreSavedTrip = (savedTrip) => {
+    if (confirm("Bạn có chắc chắn muốn khôi phục chuyến \"" + savedTrip.name + "\" làm chuyến đang hoạt động? Chuyến hiện tại chưa quyết toán sẽ được thay thế.")) {
+      const nextData = {
+        ...financeData,
+        activeTrip: { ...savedTrip, id: "trip_" + Date.now() }
+      };
+      me.saveFinanceData(nextData);
+      setFinanceData(nextData);
+      setTripName(savedTrip.name || "");
+      setTripDate(savedTrip.startDate || "");
+      setTripNote(savedTrip.note || "");
+      setShowSavedTripsModal(false);
+      setViewingSavedTrip(null);
+      alert("✅ Đã khôi phục chuyến thành công!");
+    }
+  };
+
+  const handleSaveEditSavedTripName = () => {
+    if (!editingSavedTripName.trim()) return;
+    const nextSaved = (financeData.savedTrips || []).map(t => {
+      if (t.id === editingSavedTripId) {
+        return { ...t, name: editingSavedTripName.trim() };
+      }
+      return t;
+    });
+    const nextData = { ...financeData, savedTrips: nextSaved };
+    me.saveFinanceData(nextData);
+    setFinanceData(nextData);
+    if (viewingSavedTrip && viewingSavedTrip.id === editingSavedTripId) {
+      setViewingSavedTrip({ ...viewingSavedTrip, name: editingSavedTripName.trim() });
+    }
+    setEditingSavedTripId(null);
+    setEditingSavedTripName("");
+  };
+
+  return c.jsxs("div", {
+    className: "flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden text-gray-900 dark:text-gray-100",
+    children: [
+      // Header
+      c.jsxs("header", {
+        className: "bg-gradient-to-r from-[#141b63] via-[#1e4ea1] to-[#0284c7] text-white p-4 shadow-xl shrink-0 flex items-center justify-between",
+        children: [
+          c.jsxs("div", {
+            className: "flex items-center gap-3",
+            children: [
+              c.jsx("button", {
+                type: "button",
+                onClick: () => setRoute(re.DASHBOARD),
+                className: "p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all cursor-pointer active:scale-90",
+                children: c.jsx(On, { size: 20 })
+              }),
+              c.jsxs("div", {
+                children: [
+                  c.jsxs("h1", {
+                    className: "text-lg font-black uppercase italic tracking-tight flex items-center gap-2 leading-none",
+                    children: [
+                      c.jsx("span", { children: "💰" }),
+                      "Tài Chính & Hùn Vốn"
+                    ]
+                  }),
+                  c.jsx("span", {
+                    className: "text-[10px] font-bold opacity-80 uppercase tracking-widest block mt-0.5",
+                    children: "Hùn vốn • Hạch toán chi phí • Chia lời lỗ theo chuyến"
+                  })
+                ]
+              })
+            ]
+          }),
+          c.jsxs("div", {
+            className: "flex items-center gap-2",
+            children: [
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => setShowTripSettingsModal(true),
+                className: "p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase transition-all cursor-pointer active:scale-95",
+                title: "Thiết lập chuyến",
+                children: c.jsx(ym, { size: 18 })
+              }),
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => setShowSavedTripsModal(true),
+                className: "px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase flex items-center gap-1 active:scale-95 transition-all cursor-pointer",
+                children: [c.jsx(Fd, { size: 14 }), "Lịch Sử (", (financeData.savedTrips || []).length, ")"]
+              }),
+              c.jsxs("button", {
+                type: "button",
+                onClick: handleShareZaloStatement,
+                className: "px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-black uppercase flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
+                children: ["Zalo"]
+              })
+            ]
+          })
+        ]
+      }),
+
+      // Main Scroll Container
+      c.jsx("div", {
+        className: "flex-1 overflow-y-auto p-4 space-y-5 max-w-4xl mx-auto w-full pb-28",
+        children: c.jsxs("div", {
+          className: "space-y-5",
+          children: [
+            // =========================================================================
+            // TOP BAR: THÔNG TIN VÀ THIẾT LẬP CHUYẾN
+            // =========================================================================
+            c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 p-4 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-3",
+              children: [
+                c.jsxs("div", {
+                  className: "flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex items-center gap-2.5 flex-1 w-full",
+                      children: [
+                        c.jsx("span", { className: "text-2xl", children: "🚢" }),
+                        c.jsxs("div", {
+                          className: "flex-1",
+                          children: [
+                            c.jsx("label", { className: "text-[10px] font-black text-gray-400 uppercase italic block", children: "Tên chuyến hàng / Kỳ thu mua" }),
+                            c.jsx("input", {
+                              type: "text",
+                              value: tripName,
+                              onChange: e => {
+                                setTripName(e.target.value);
+                                updateActiveTrip({ name: e.target.value });
+                              },
+                              className: "text-base font-black text-gray-900 dark:text-white bg-transparent outline-none w-full border-b border-dashed border-gray-300 dark:border-gray-700 pb-0.5 focus:border-indigo-500"
+                            })
+                          ]
+                        })
+                      ]
+                    }),
+                    // Date & Mode selector
+                    c.jsxs("div", {
+                      className: "flex items-center gap-2 w-full sm:w-auto",
+                      children: [
+                        c.jsx("label", { className: "text-xs font-bold text-gray-500", children: "Ngày:" }),
+                        c.jsx("input", {
+                          type: "date",
+                          value: tripDate,
+                          onChange: e => {
+                            setTripDate(e.target.value);
+                            updateActiveTrip({ startDate: e.target.value });
+                          },
+                          className: "px-3 py-1.5 bg-gray-100 dark:bg-gray-800 font-bold rounded-xl text-xs outline-none border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
+                        }),
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => {
+                            const newMode = filterMode === "DATE" ? "ALL" : "DATE";
+                            setFilterMode(newMode);
+                            updateActiveTrip({ filterMode: newMode });
+                          },
+                          className: `px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${
+                            filterMode === "ALL" ? "bg-indigo-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                          }`,
+                          children: [filterMode === "ALL" ? "Tất cả phiếu" : "Theo ngày"]
+                        })
+                      ]
+                    })
+                  ]
+                }),
+                // Optional Note
+                c.jsxs("div", {
+                  className: "flex items-center gap-2 pt-1 border-t border-gray-100 dark:border-gray-800",
+                  children: [
+                    c.jsx("span", { className: "text-xs text-gray-400", children: "📝" }),
+                    c.jsx("input", {
+                      type: "text",
+                      placeholder: "Ghi chú chuyến hàng (ví dụ: Xe 69C giao Bình Điền, ao Chú Năm...)",
+                      value: tripNote,
+                      onChange: e => {
+                        setTripNote(e.target.value);
+                        updateActiveTrip({ note: e.target.value });
+                      },
+                      className: "w-full text-xs bg-transparent outline-none text-gray-600 dark:text-gray-300 placeholder-gray-400"
+                    })
+                  ]
+                })
+              ]
+            }),
+
+            // =========================================================================
+            // KHU VỰC 1: QUẢN LÝ NGUỒN VỐN GÓP (ĐẦY ĐỦ THÊM, SỬA, XÓA, THIẾT LẬP)
+            // =========================================================================
+            c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 p-5 rounded-[32px] border border-gray-200 dark:border-gray-800 shadow-sm space-y-4",
+              children: [
+                c.jsxs("div", {
+                  className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+                  children: [
+                    c.jsxs("div", {
+                      children: [
+                        c.jsxs("h2", {
+                          className: "text-sm font-black uppercase text-gray-900 dark:text-white flex items-center gap-1.5",
+                          children: [c.jsx("span", { children: "1️⃣" }), "Nguồn Vốn Góp Ban Đầu"]
+                        }),
+                        c.jsx("p", { className: "text-[11px] text-gray-500 font-semibold", children: "Tự động tính toán tỷ lệ % và quỹ vốn lưu động khả dụng" })
+                      ]
+                    }),
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: handleOpenAddInvestor,
+                      className: "px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black uppercase flex items-center gap-1 active:scale-95 transition-all shadow-sm cursor-pointer",
+                      children: [c.jsx("span", { children: "+" }), "Thêm Người Góp"]
+                    })
+                  ]
+                }),
+
+                // Total Capital Card
+                c.jsxs("div", {
+                  className: "p-4 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 rounded-2xl text-blue-950 flex justify-between items-center shadow-md",
+                  children: [
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("span", { className: "text-[11px] font-black uppercase tracking-wider block opacity-80", children: "Tổng Quỹ Vốn Lưu Động Khả Dụng" }),
+                        c.jsxs("div", {
+                          className: "text-3xl font-black font-mono tracking-tight",
+                          children: [_fmt(totalCapital), " ", c.jsx("span", { className: "text-base font-sans font-bold", children: "VNĐ" })]
+                        })
+                      ]
+                    }),
+                    c.jsx("div", { className: "text-4xl opacity-30", children: "🏦" })
+                  ]
+                }),
+
+                // Multi-colored progress bar
+                investors.length > 0 && c.jsx("div", {
+                  className: "h-3.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex",
+                  children: investors.map((inv, idx) => {
+                    const pct = totalCapital > 0 ? (inv.amount / totalCapital) * 100 : 0;
+                    const colors = ["bg-blue-600", "bg-emerald-500", "bg-purple-600", "bg-amber-500", "bg-pink-500", "bg-cyan-500"];
+                    const color = colors[idx % colors.length];
+                    return c.jsx("div", {
+                      key: inv.id,
+                      style: { width: pct + "%" },
+                      className: color + " h-full transition-all duration-500",
+                      title: inv.name + ": " + pct.toFixed(1) + "%"
+                    });
+                  })
+                }),
+
+                // Investors list with EDIT & DELETE
+                c.jsx("div", {
+                  className: "space-y-2",
+                  children: investors.map((inv, idx) => {
+                    const pct = totalCapital > 0 ? ((inv.amount / totalCapital) * 100).toFixed(1) : "0.0";
+                    return c.jsxs("div", {
+                      key: inv.id,
+                      className: "p-3 bg-gray-50 dark:bg-gray-800/70 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex items-center gap-3",
+                          children: [
+                            c.jsx("div", {
+                              className: "w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-black text-xs flex items-center justify-center shrink-0",
+                              children: idx + 1
+                            }),
+                            c.jsxs("div", {
+                              children: [
+                                c.jsx("span", { className: "font-black text-sm text-gray-900 dark:text-white block", children: inv.name }),
+                                c.jsxs("span", { className: "text-[11px] font-bold text-gray-500 font-mono", children: [_fmt(inv.amount), " đ"] })
+                              ]
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "flex items-center gap-2",
+                          children: [
+                            c.jsxs("span", {
+                              className: "px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-black font-mono shadow-xs",
+                              children: [pct, "%"]
+                            }),
+                            // Edit button
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleOpenEditInvestor(inv),
+                              className: "p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg cursor-pointer",
+                              title: "Sửa người góp vốn",
+                              children: c.jsx("span", { className: "text-sm", children: "✎" })
+                            }),
+                            // Delete button
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleDeleteInvestor(inv.id),
+                              className: "p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg cursor-pointer",
+                              title: "Xóa người góp vốn",
+                              children: c.jsx(xm, { size: 16 })
+                            })
+                          ]
+                        })
+                      ]
+                    });
+                  })
+                })
+              ]
+            }),
+
+            // =========================================================================
+            // KHU VỰC 2: HẠCH TOÁN CHI PHÍ (TIỀN CHI) - ĐẦY ĐỦ THÊM, SỬA, XÓA
+            // =========================================================================
+            c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 p-5 rounded-[32px] border border-gray-200 dark:border-gray-800 shadow-sm space-y-4",
+              children: [
+                c.jsxs("div", {
+                  className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+                  children: [
+                    c.jsxs("div", {
+                      children: [
+                        c.jsxs("h2", {
+                          className: "text-sm font-black uppercase text-gray-900 dark:text-white flex items-center gap-1.5",
+                          children: [c.jsx("span", { children: "2️⃣" }), "Hạch Toán Chi Phí (Tiền Chi)"]
+                        }),
+                        c.jsx("p", { className: "text-[11px] text-gray-500 font-semibold", children: "Tiền mua tôm + Các chi phí vận hành (thuê xe, công, oxy, phà...)" })
+                      ]
+                    }),
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: handleOpenAddExpense,
+                      className: "px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-black uppercase flex items-center gap-1 active:scale-95 transition-all shadow-sm cursor-pointer",
+                      children: [c.jsx("span", { children: "+" }), "Thêm Chi Phí"]
+                    })
+                  ]
+                }),
+
+                // Tiền Mua Tôm
+                c.jsxs("div", {
+                  className: "p-4 bg-orange-50/70 dark:bg-orange-950/30 rounded-2xl border border-orange-200 dark:border-orange-900/60 space-y-2",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex items-center gap-2",
+                          children: [
+                            c.jsx("span", { className: "text-lg", children: "🦐" }),
+                            c.jsxs("div", {
+                              children: [
+                                c.jsx("span", { className: "font-black text-xs uppercase text-orange-900 dark:text-orange-200 block", children: "Tiền Mua Tôm Vào" }),
+                                c.jsxs("span", { className: "text-[10px] text-gray-500", children: [effectiveSessions.length, " phiếu cân • ", _fmtKg(autoShrimpPurchaseKg), " kg tôm"] })
+                              ]
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "flex items-center gap-1.5",
+                          children: [
+                            isShrimpAuto && c.jsx("button", {
+                              type: "button",
+                              onClick: () => setShowSessionsModal(true),
+                              className: "px-2 py-1 bg-white dark:bg-gray-800 border border-orange-300 rounded-lg text-[10px] font-bold text-orange-700 dark:text-orange-300 cursor-pointer",
+                              children: "📋 Chọn phiếu (" + effectiveSessions.length + ")"
+                            }),
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => updateActiveTrip(t => ({ ...t, shrimpPurchaseAuto: !isShrimpAuto })),
+                              className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all cursor-pointer ${
+                                isShrimpAuto
+                                  ? "bg-orange-600 text-white"
+                                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                              }`,
+                              children: [isShrimpAuto ? "✓ Tự động từ phiếu cân" : "✎ Nhập thủ công"]
+                            })
+                          ]
+                        })
+                      ]
+                    }),
+                    isShrimpAuto ? c.jsxs("div", {
+                      className: "font-mono font-black text-2xl text-orange-900 dark:text-orange-100",
+                      children: [_fmt(shrimpPurchaseMoney), " ", c.jsx("span", { className: "text-sm font-sans font-bold", children: "VNĐ" })]
+                    }) : c.jsxs("div", {
+                      className: "flex items-center gap-2 pt-1",
+                      children: [
+                        c.jsx("input", {
+                          type: "number",
+                          value: trip.shrimpPurchaseManualAmount || "",
+                          placeholder: "Nhập số tiền mua tôm thủ công...",
+                          onChange: e => updateActiveTrip(t => ({ ...t, shrimpPurchaseManualAmount: Number(e.target.value) || 0 })),
+                          className: "w-full p-2.5 bg-white dark:bg-gray-800 border-2 border-orange-400 rounded-xl font-mono font-black text-lg text-orange-900 dark:text-orange-100 outline-none"
+                        }),
+                        c.jsx("span", { className: "font-bold text-xs text-gray-500", children: "VNĐ" })
+                      ]
+                    })
+                  ]
+                }),
+
+                // Operating Expenses List with EDIT & DELETE
+                c.jsxs("div", {
+                  className: "space-y-2",
+                  children: [
+                    c.jsx("span", { className: "text-[11px] font-black uppercase text-gray-500 tracking-wider block", children: "Các Chi Phí Vận Hành Khác:" }),
+                    expenses.length === 0 ? c.jsx("p", {
+                      className: "text-xs text-gray-400 italic py-2 text-center",
+                      children: "Chưa có khoản chi phí vận hành nào. Bấm '+ Thêm Chi Phí' để nhập."
+                    }) : expenses.map(exp => c.jsxs("div", {
+                      key: exp.id,
+                      className: "p-3 bg-gray-50 dark:bg-gray-800/70 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("span", { className: "font-bold text-xs text-gray-900 dark:text-white block", children: exp.category }),
+                            exp.note && c.jsx("span", { className: "text-[11px] text-gray-500 block", children: exp.note })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "flex items-center gap-2",
+                          children: [
+                            c.jsxs("span", { className: "font-mono font-black text-sm text-red-600 dark:text-red-400", children: [_fmt(exp.amount), " đ"] }),
+                            // Edit expense button
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleOpenEditExpense(exp),
+                              className: "p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg cursor-pointer",
+                              title: "Sửa khoản chi",
+                              children: c.jsx("span", { className: "text-sm", children: "✎" })
+                            }),
+                            // Delete expense button
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleDeleteExpense(exp.id),
+                              className: "p-1.5 text-gray-400 hover:text-red-500 rounded-lg cursor-pointer",
+                              title: "Xóa khoản chi",
+                              children: c.jsx(xm, { size: 14 })
+                            })
+                          ]
+                        })
+                      ]
+                    }))
+                  ]
+                }),
+
+                // Total Expenses Summary
+                c.jsxs("div", {
+                  className: "p-4 bg-red-50 dark:bg-red-950/40 rounded-2xl border-2 border-red-200 dark:border-red-900/60 flex justify-between items-center",
+                  children: [
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("span", { className: "text-[11px] font-black uppercase text-red-800 dark:text-red-300 block", children: "TỔNG CHI PHÍ CHUYẾN NÀY" }),
+                        c.jsx("span", { className: "text-[10px] text-gray-500", children: "Tiền mua tôm + Các chi phí vận hành" })
+                      ]
+                    }),
+                    c.jsxs("span", {
+                      className: "font-mono font-black text-2xl text-red-700 dark:text-red-400",
+                      children: [_fmt(totalExpenses), " ", c.jsx("span", { className: "text-sm font-sans font-bold", children: "VNĐ" })]
+                    })
+                  ]
+                })
+              ]
+            }),
+
+            // =========================================================================
+            // KHU VỰC 3: TỔNG HỢP DOANH THU (TIỀN BÁN TÔM VỀ)
+            // =========================================================================
+            c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 p-5 rounded-[32px] border border-gray-200 dark:border-gray-800 shadow-sm space-y-4",
+              children: [
+                c.jsxs("div", {
+                  className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+                  children: [
+                    c.jsxs("div", {
+                      children: [
+                        c.jsxs("h2", {
+                          className: "text-sm font-black uppercase text-gray-900 dark:text-white flex items-center gap-1.5",
+                          children: [c.jsx("span", { children: "3️⃣" }), "Tổng Hợp Doanh Thu (Tiền Bán Về)"]
+                        }),
+                        c.jsx("p", { className: "text-[11px] text-gray-500 font-semibold", children: "Bán lẻ + Bán chợ (sau trừ hoa hồng) + Bán công ty" })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex items-center gap-1.5",
+                      children: [
+                        isRevenueAuto && c.jsx("button", {
+                          type: "button",
+                          onClick: () => setShowSalesModal(true),
+                          className: "px-2 py-1 bg-white dark:bg-gray-800 border border-emerald-300 rounded-lg text-[10px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer",
+                          children: "📋 Chọn đơn (" + effectiveSales.length + ")"
+                        }),
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => updateActiveTrip(t => ({ ...t, revenueAuto: !isRevenueAuto })),
+                          className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all cursor-pointer ${
+                            isRevenueAuto
+                              ? "bg-emerald-600 text-white"
+                              : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                          }`,
+                          children: [isRevenueAuto ? "✓ Tự động từ đơn bán" : "✎ Nhập thủ công"]
+                        })
+                      ]
+                    })
+                  ]
+                }),
+
+                // Total Revenue Card
+                c.jsxs("div", {
+                  className: "p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-2 border-emerald-200 dark:border-emerald-900/60 flex justify-between items-center",
+                  children: [
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("span", { className: "text-[11px] font-black uppercase text-emerald-800 dark:text-emerald-300 block", children: "TỔNG DOANH THU THỰC NHẬN" }),
+                        c.jsxs("span", { className: "text-[10px] text-gray-500", children: [effectiveSales.length, " đơn bán hoàn tất • ", _fmtKg(autoRevenueKg), " kg tôm"] })
+                      ]
+                    }),
+                    isRevenueAuto ? c.jsxs("span", {
+                      className: "font-mono font-black text-2xl text-emerald-700 dark:text-emerald-400",
+                      children: [_fmt(totalRevenue), " ", c.jsx("span", { className: "text-sm font-sans font-bold", children: "VNĐ" })]
+                    }) : c.jsxs("div", {
+                      className: "flex items-center gap-2",
+                      children: [
+                        c.jsx("input", {
+                          type: "number",
+                          value: trip.revenueManualAmount || "",
+                          placeholder: "Nhập doanh thu...",
+                          onChange: e => updateActiveTrip(t => ({ ...t, revenueManualAmount: Number(e.target.value) || 0 })),
+                          className: "w-44 p-2 bg-white dark:bg-gray-800 border-2 border-emerald-400 rounded-xl font-mono font-black text-lg text-emerald-700 dark:text-emerald-400 outline-none text-right"
+                        }),
+                        c.jsx("span", { className: "font-bold text-xs text-gray-500", children: "VNĐ" })
+                      ]
+                    })
+                  ]
+                }),
+
+                // Breakdown Channels
+                effectiveSales.length > 0 && c.jsxs("div", {
+                  className: "grid grid-cols-3 gap-2 text-xs",
+                  children: [
+                    c.jsxs("div", {
+                      className: "p-2 bg-gray-50 dark:bg-gray-800/60 rounded-xl",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] text-gray-400 block", children: "🛒 Bán lẻ" }),
+                        c.jsxs("span", { className: "font-mono font-bold text-gray-800 dark:text-gray-200", children: [_fmt(retailRevenue), " đ"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "p-2 bg-gray-50 dark:bg-gray-800/60 rounded-xl",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] text-gray-400 block", children: "🏪 Chợ đầu mối" }),
+                        c.jsxs("span", { className: "font-mono font-bold text-gray-800 dark:text-gray-200", children: [_fmt(marketRevenue), " đ"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "p-2 bg-gray-50 dark:bg-gray-800/60 rounded-xl",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] text-gray-400 block", children: "🏢 Công ty" }),
+                        c.jsxs("span", { className: "font-mono font-bold text-gray-800 dark:text-gray-200", children: [_fmt(factoryRevenue), " đ"] })
+                      ]
+                    })
+                  ]
+                })
+              ]
+            }),
+
+            // =========================================================================
+            // KHU VỰC 4: QUYẾT TOÁN LỜI / LỖ & CHIA TIỀN THEO TỶ LỆ
+            // =========================================================================
+            c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 p-5 rounded-[32px] border-2 border-blue-500/30 dark:border-blue-500/20 shadow-xl space-y-5",
+              children: [
+                c.jsxs("div", {
+                  className: "border-b border-gray-100 dark:border-gray-800 pb-3",
+                  children: [
+                    c.jsxs("h2", {
+                      className: "text-base font-black uppercase tracking-tight text-gray-900 dark:text-white flex items-center gap-2",
+                      children: [c.jsx("span", { children: "4️⃣" }), "Quyết Toán Lời / Lỗ & Chia Tiền Theo Tỷ Lệ"]
+                    }),
+                    c.jsx("p", { className: "text-xs text-gray-500 font-semibold", children: "Lợi nhuận ròng = Tổng Doanh Thu - Tổng Chi Phí. Chia đều chuẩn 100% tỷ lệ vốn góp." })
+                  ]
+                }),
+
+                // Net Profit Card
+                c.jsxs("div", {
+                  className: `p-5 rounded-3xl border-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 ${
+                    isProfit
+                      ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 text-emerald-900 dark:text-emerald-100"
+                      : "bg-red-50 dark:bg-red-950/40 border-red-400 text-red-900 dark:text-red-100"
+                  }`,
+                  children: [
+                    c.jsxs("div", {
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex items-center gap-2",
+                          children: [
+                            c.jsx("span", { className: "text-2xl", children: isProfit ? "📈" : "📉" }),
+                            c.jsx("span", {
+                              className: "text-xs font-black uppercase tracking-wider",
+                              children: isProfit ? "KẾT QUẢ KINH DOANH: CÓ LỜI (LÃI)" : "KẾT QUẢ KINH DOANH: BỊ LỖ"
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "text-3xl font-black font-mono tracking-tight mt-1",
+                          children: [isProfit ? "+" : "", _fmt(netProfit), " ", c.jsx("span", { className: "text-base font-sans font-bold", children: "VNĐ" })]
+                        })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "text-right",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-gray-500 block uppercase", children: "Tỷ suất sinh lời" }),
+                        c.jsxs("span", {
+                          className: `text-xl font-black font-mono ${isProfit ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`,
+                          children: [isProfit ? "+" : "", profitMarginPercent.toFixed(1), "%"]
+                        })
+                      ]
+                    })
+                  ]
+                }),
+
+                // Investor Distribution Table with Quick Edit & Integrity Total
+                c.jsxs("div", {
+                  className: "space-y-3",
+                  children: [
+                    c.jsx("span", { className: "text-xs font-black uppercase text-gray-700 dark:text-gray-300 block", children: "Bảng Chi Tiết Tiền Thực Nhận Của Từng Người:" }),
+                    c.jsx("div", {
+                      className: "overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800",
+                      children: c.jsxs("table", {
+                        className: "w-full text-left text-xs border-collapse",
+                        children: [
+                          c.jsx("thead", {
+                            className: "bg-gray-100 dark:bg-gray-800 text-[10px] font-black uppercase text-gray-500",
+                            children: c.jsxs("tr", {
+                              children: [
+                                c.jsx("th", { className: "p-3", children: "Người Góp Vốn" }),
+                                c.jsx("th", { className: "p-3 text-right", children: "Vốn Gốc" }),
+                                c.jsx("th", { className: "p-3 text-right", children: isProfit ? "Chia Lãi (+)" : "Chịu Lỗ (-)" }),
+                                c.jsx("th", { className: "p-3 text-right font-black text-blue-700 dark:text-blue-300", children: "TỔNG THỰC NHẬN" }),
+                                c.jsx("th", { className: "p-3 text-center", children: "Sửa" })
+                              ]
+                            })
+                          }),
+                          c.jsxs("tbody", {
+                            className: "divide-y divide-gray-100 dark:divide-gray-800 font-bold",
+                            children: [
+                              investorPayouts.map(p => c.jsxs("tr", {
+                                key: p.id,
+                                className: "hover:bg-gray-50 dark:hover:bg-gray-800/40",
+                                children: [
+                                  c.jsxs("td", {
+                                    className: "p-3",
+                                    children: [
+                                      c.jsx("div", { className: "font-black text-gray-900 dark:text-white", children: p.name }),
+                                      c.jsxs("span", { className: "text-[10px] text-blue-600 dark:text-blue-400 font-mono", children: ["Tỷ lệ: ", p.sharePercent.toFixed(1), "%"] })
+                                    ]
+                                  }),
+                                  c.jsx("td", { className: "p-3 text-right font-mono text-gray-600 dark:text-gray-400", children: _fmt(p.amount) }),
+                                  c.jsxs("td", {
+                                    className: `p-3 text-right font-mono font-black ${p.profitShare >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`,
+                                    children: [(p.profitShare >= 0 ? "+" : "") + _fmt(p.profitShare)]
+                                  }),
+                                  c.jsxs("td", {
+                                    className: "p-3 text-right font-mono font-black text-sm text-blue-700 dark:text-blue-300 bg-blue-50/50 dark:bg-blue-950/20",
+                                    children: [_fmt(p.totalPayout), " đ"]
+                                  }),
+                                  c.jsx("td", {
+                                    className: "p-3 text-center",
+                                    children: c.jsx("button", {
+                                      type: "button",
+                                      onClick: () => handleOpenEditInvestor(p),
+                                      className: "p-1 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-950 rounded cursor-pointer",
+                                      children: "✎"
+                                    })
+                                  })
+                                ]
+                              }, p.id)),
+                              // Integrity Total Footer
+                              c.jsxs("tr", {
+                                className: "bg-gray-100/80 dark:bg-gray-800/80 font-black text-xs border-t-2 border-gray-300 dark:border-gray-700",
+                                children: [
+                                  c.jsx("td", { className: "p-3 uppercase text-gray-600 dark:text-gray-300", children: "TỔNG CỘNG ĐỐI SOÁT" }),
+                                  c.jsxs("td", { className: "p-3 text-right font-mono text-gray-900 dark:text-white", children: [_fmt(totalCapital), " đ"] }),
+                                  c.jsxs("td", {
+                                    className: `p-3 text-right font-mono ${netProfit >= 0 ? "text-emerald-600" : "text-red-600"}`,
+                                    children: [(netProfit >= 0 ? "+" : "") + _fmt(netProfit), " đ"]
+                                  }),
+                                  c.jsxs("td", {
+                                    className: "p-3 text-right font-mono font-black text-sm text-blue-800 dark:text-blue-200 bg-blue-100/40 dark:bg-blue-900/30",
+                                    children: [_fmt(investorPayouts.reduce((a, b) => a + b.totalPayout, 0)), " đ"]
+                                  }),
+                                  c.jsx("td", { className: "p-3 text-center", children: "✓" })
+                                ]
+                              })
+                            ]
+                          })
+                        ]
+                      })
+                    })
+                  ]
+                }),
+
+                // Action Buttons
+                c.jsxs("div", {
+                  className: "pt-2 flex flex-col sm:flex-row gap-3",
+                  children: [
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: handleShareZaloStatement,
+                      className: "flex-1 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black rounded-2xl text-sm uppercase italic flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer",
+                      children: [
+                        c.jsx("span", { children: "📋" }),
+                        "Sao Chép Sao Kê / Chia Sẻ Zalo"
+                      ]
+                    }),
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: handleSettleAndArchiveTrip,
+                      className: "py-4 px-6 bg-gradient-to-r from-emerald-600 to-green-700 text-white font-black rounded-2xl text-sm uppercase italic flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer",
+                      children: [
+                        c.jsx("span", { children: "🔒" }),
+                        "Quyết Toán Chuyến Này"
+                      ]
+                    })
+                  ]
+                })
+              ]
+            })
+          ]
+        })
+      }),
+
+      // =========================================================================
+      // MODAL 1: THÊM / SỬA NGƯỜI GÓP VỐN
+      // =========================================================================
+      showInvestorModal && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
+          children: [
+            c.jsx("h3", {
+              className: "font-black text-base uppercase text-gray-900 dark:text-white",
+              children: editingInvestorId ? "✎ Sửa Người Góp Vốn" : "+ Thêm Người Góp Vốn"
+            }),
+            c.jsxs("div", {
+              className: "space-y-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Tên người góp vốn *" }),
+                    c.jsx("input", {
+                      type: "text",
+                      placeholder: "VD: Tôi, Anh B, Chị Lan...",
+                      value: investorFormName,
+                      onChange: e => setInvestorFormName(e.target.value),
+                      className: "w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-sm outline-none focus:border-indigo-500"
+                    }),
+                    // Quick names
+                    c.jsxs("div", {
+                      className: "flex flex-wrap gap-1 mt-1.5",
+                      children: ["Tôi (Chủ vựa)", "Anh B", "Anh C", "Chị Lan"].map(nm => c.jsx("button", {
+                        key: nm,
+                        type: "button",
+                        onClick: () => setInvestorFormName(nm),
+                        className: "px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded text-[10px] font-bold hover:bg-gray-200",
+                        children: nm
+                      }))
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Số tiền góp vốn (VNĐ) *" }),
+                    c.jsx("input", {
+                      type: "number",
+                      placeholder: "VD: 100000000",
+                      value: investorFormAmount,
+                      onChange: e => setInvestorFormAmount(e.target.value),
+                      className: "w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-lg font-mono outline-none focus:border-indigo-500"
+                    }),
+                    // Quick amount chips
+                    c.jsxs("div", {
+                      className: "flex flex-wrap gap-1.5 mt-2",
+                      children: [
+                        [20000000, "20tr"],
+                        [50000000, "50tr"],
+                        [100000000, "100tr"],
+                        [200000000, "200tr"],
+                        [500000000, "500tr"]
+                      ].map(([val, label]) => c.jsx("button", {
+                        key: val,
+                        type: "button",
+                        onClick: () => setInvestorFormAmount(String(val)),
+                        className: "px-2.5 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs font-bold font-mono text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-950",
+                        children: label
+                      }))
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "flex gap-2 justify-end pt-2",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowInvestorModal(false),
+                  className: "px-4 py-2.5 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold text-xs",
+                  children: "Hủy"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: handleSaveInvestorForm,
+                  className: "px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-xs uppercase shadow-md",
+                  children: editingInvestorId ? "Cập Nhật" : "Lưu Người Góp"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+
+      // =========================================================================
+      // MODAL 2: THÊM / SỬA CHI PHÍ VẬN HÀNH
+      // =========================================================================
+      showExpenseModal && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
+          children: [
+            c.jsx("h3", {
+              className: "font-black text-base uppercase text-gray-900 dark:text-white",
+              children: editingExpenseId ? "✎ Sửa Chi Phí Vận Hành" : "+ Thêm Chi Phí Vận Hành"
+            }),
+            c.jsxs("div", {
+              className: "space-y-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Danh mục chi phí" }),
+                    c.jsx("div", {
+                      className: "grid grid-cols-2 gap-1.5",
+                      children: expenseCategories.map(cat => c.jsxs("button", {
+                        key: cat.label,
+                        type: "button",
+                        onClick: () => setExpenseFormCat(cat.label),
+                        className: `p-2 rounded-xl text-[11px] font-bold text-left transition-all border ${
+                          expenseFormCat === cat.label
+                            ? "bg-orange-50 dark:bg-orange-950/40 border-orange-500 text-orange-900 dark:text-orange-200"
+                            : "bg-gray-50 dark:bg-gray-700/60 border-transparent text-gray-700 dark:text-gray-300"
+                        }`,
+                        children: [cat.icon, " ", cat.label]
+                      }))
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Số tiền chi (VNĐ) *" }),
+                    c.jsx("input", {
+                      type: "number",
+                      placeholder: "VD: 1500000",
+                      value: expenseFormAmount,
+                      onChange: e => setExpenseFormAmount(e.target.value),
+                      className: "w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-lg font-mono outline-none focus:border-orange-500"
+                    }),
+                    // Quick expense chips
+                    c.jsxs("div", {
+                      className: "flex flex-wrap gap-1.5 mt-2",
+                      children: [
+                        [200000, "200k"],
+                        [500000, "500k"],
+                        [1000000, "1tr"],
+                        [2000000, "2tr"],
+                        [5000000, "5tr"]
+                      ].map(([val, label]) => c.jsx("button", {
+                        key: val,
+                        type: "button",
+                        onClick: () => setExpenseFormAmount(String(val)),
+                        className: "px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs font-bold font-mono text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-950",
+                        children: label
+                      }))
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Ghi chú chi tiết (nếu có)" }),
+                    c.jsx("input", {
+                      type: "text",
+                      placeholder: "VD: Xe tải giao Camimex 12 phi...",
+                      value: expenseFormNote,
+                      onChange: e => setExpenseFormNote(e.target.value),
+                      className: "w-full p-2.5 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-xs outline-none"
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "flex gap-2 justify-end pt-2",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowExpenseModal(false),
+                  className: "px-4 py-2.5 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold text-xs",
+                  children: "Hủy"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: handleSaveExpenseForm,
+                  className: "px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase shadow-md",
+                  children: editingExpenseId ? "Cập Nhật" : "Lưu Khoản Chi"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+
+      // =========================================================================
+      // MODAL 3: CHỌN PHIẾU CÂN MUA TÔM ĐÓNG GÓP VÀO CHUYẾN
+      // =========================================================================
+      showSessionsModal && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[85vh] flex flex-col",
+          children: [
+            c.jsxs("div", {
+              className: "flex justify-between items-center border-b pb-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "Chọn Phiếu Mua Tôm Cho Chuyến Này" }),
+                    c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: ["Đang chọn: ", effectiveSessions.length, " / ", filteredSessions.length, " phiếu"] })
+                  ]
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowSessionsModal(false),
+                  className: "p-1.5 text-gray-400 hover:text-gray-600 rounded-full",
+                  children: c.jsx(_a, { size: 18 })
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "flex justify-between items-center text-xs",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => updateActiveTrip({ selectedSessionIds: null }),
+                  className: "text-blue-600 font-bold",
+                  children: "Chọn tất cả"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => updateActiveTrip({ selectedSessionIds: [] }),
+                  className: "text-gray-500 font-bold",
+                  children: "Bỏ chọn tất cả"
+                })
+              ]
+            }),
+            c.jsx("div", {
+              className: "overflow-y-auto flex-1 space-y-2 pr-1",
+              children: filteredSessions.length === 0 ? c.jsx("p", {
+                className: "text-center text-gray-400 py-12 italic text-xs font-bold",
+                children: "Không có phiếu cân thu mua nào trong ngày này."
+              }) : filteredSessions.map(sess => {
+                const isChecked = !Array.isArray(selectedSessionIds) || selectedSessionIds.includes(sess.id);
+                return c.jsxs("div", {
+                  key: sess.id,
+                  onClick: () => {
+                    let nextIds;
+                    if (!Array.isArray(selectedSessionIds)) {
+                      nextIds = filteredSessions.map(s => s.id).filter(id => id !== sess.id);
+                    } else if (selectedSessionIds.includes(sess.id)) {
+                      nextIds = selectedSessionIds.filter(id => id !== sess.id);
+                    } else {
+                      nextIds = [...selectedSessionIds, sess.id];
+                    }
+                    updateActiveTrip({ selectedSessionIds: nextIds });
+                  },
+                  className: `p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
+                    isChecked
+                      ? "bg-orange-50/80 dark:bg-orange-950/40 border-orange-400"
+                      : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-60"
+                  }`,
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex items-center gap-3",
+                      children: [
+                        c.jsx("input", {
+                          type: "checkbox",
+                          checked: isChecked,
+                          readOnly: true,
+                          className: "w-4 h-4 text-orange-600 rounded"
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("span", { className: "font-black text-xs text-gray-900 dark:text-white block", children: sess.farmerName || "Ao tôm" }),
+                            c.jsxs("span", { className: "text-[10px] text-gray-500 font-mono", children: [new Date(sess.date).toLocaleDateString("vi-VN"), " • ", _fmtKg(sess.totalNet || sess.totalGross), " kg"] })
+                          ]
+                        })
+                      ]
+                    }),
+                    c.jsxs("span", { className: "font-mono font-black text-sm text-orange-900 dark:text-orange-200", children: [_fmt(sess.totalMoney), " đ"] })
+                  ]
+                });
+              })
+            }),
+            c.jsx("div", {
+              className: "pt-2 flex justify-end",
+              children: c.jsx("button", {
+                type: "button",
+                onClick: () => setShowSessionsModal(false),
+                className: "px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase shadow-md",
+                children: "Xong"
+              })
+            })
+          ]
+        })
+      }),
+
+      // =========================================================================
+      // MODAL 4: CHỌN ĐƠN XUẤT BÁN ĐÓNG GÓP VÀO CHUYẾN
+      // =========================================================================
+      showSalesModal && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[85vh] flex flex-col",
+          children: [
+            c.jsxs("div", {
+              className: "flex justify-between items-center border-b pb-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "Chọn Đơn Xuất Bán Cho Chuyến Này" }),
+                    c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: ["Đang chọn: ", effectiveSales.length, " / ", filteredSales.length, " đơn"] })
+                  ]
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowSalesModal(false),
+                  className: "p-1.5 text-gray-400 hover:text-gray-600 rounded-full",
+                  children: c.jsx(_a, { size: 18 })
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "flex justify-between items-center text-xs",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => updateActiveTrip({ selectedSaleIds: null }),
+                  className: "text-emerald-600 font-bold",
+                  children: "Chọn tất cả"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => updateActiveTrip({ selectedSaleIds: [] }),
+                  className: "text-gray-500 font-bold",
+                  children: "Bỏ chọn tất cả"
+                })
+              ]
+            }),
+            c.jsx("div", {
+              className: "overflow-y-auto flex-1 space-y-2 pr-1",
+              children: filteredSales.length === 0 ? c.jsx("p", {
+                className: "text-center text-gray-400 py-12 italic text-xs font-bold",
+                children: "Không có đơn bán nào hoàn tất trong ngày này."
+              }) : filteredSales.map(sl => {
+                const isChecked = !Array.isArray(selectedSaleIds) || selectedSaleIds.includes(sl.id);
+                return c.jsxs("div", {
+                  key: sl.id,
+                  onClick: () => {
+                    let nextIds;
+                    if (!Array.isArray(selectedSaleIds)) {
+                      nextIds = filteredSales.map(s => s.id).filter(id => id !== sl.id);
+                    } else if (selectedSaleIds.includes(sl.id)) {
+                      nextIds = selectedSaleIds.filter(id => id !== sl.id);
+                    } else {
+                      nextIds = [...selectedSaleIds, sl.id];
+                    }
+                    updateActiveTrip({ selectedSaleIds: nextIds });
+                  },
+                  className: `p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
+                    isChecked
+                      ? "bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-400"
+                      : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-60"
+                  }`,
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex items-center gap-3",
+                      children: [
+                        c.jsx("input", {
+                          type: "checkbox",
+                          checked: isChecked,
+                          readOnly: true,
+                          className: "w-4 h-4 text-emerald-600 rounded"
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsxs("span", {
+                              className: "font-black text-xs text-gray-900 dark:text-white flex items-center gap-1.5",
+                              children: [
+                                c.jsx("span", { children: sl.targetGroup === "FACTORY" ? "🏢" : (sl.targetGroup === "MARKET" ? "🏪" : "🛒") }),
+                                sl.buyerName
+                              ]
+                            }),
+                            c.jsxs("span", { className: "text-[10px] text-gray-500 font-mono", children: [new Date(sl.date).toLocaleDateString("vi-VN"), " • ", _fmtKg(sl.totalNet || sl.totalGross), " kg"] })
+                          ]
+                        })
+                      ]
+                    }),
+                    c.jsxs("span", { className: "font-mono font-black text-sm text-emerald-800 dark:text-emerald-300", children: [_fmt(sl.totalMoney), " đ"] })
+                  ]
+                });
+              })
+            }),
+            c.jsx("div", {
+              className: "pt-2 flex justify-end",
+              children: c.jsx("button", {
+                type: "button",
+                onClick: () => setShowSalesModal(false),
+                className: "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase shadow-md",
+                children: "Xong"
+              })
+            })
+          ]
+        })
+      }),
+
+      // =========================================================================
+      // MODAL 5: THIẾT LẬP CHUYẾN (SETTINGS)
+      // =========================================================================
+      showTripSettingsModal && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
+          children: [
+            c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "⚙️ Thiết Lập Chuyến Hùn Vốn" }),
+            c.jsxs("div", {
+              className: "space-y-3 text-xs font-bold",
+              children: [
+                c.jsxs("button", {
+                  type: "button",
+                  onClick: () => {
+                    const newMode = filterMode === "DATE" ? "ALL" : "DATE";
+                    setFilterMode(newMode);
+                    updateActiveTrip({ filterMode: newMode });
+                    setShowTripSettingsModal(false);
+                  },
+                  className: "w-full p-3 rounded-2xl bg-gray-100 dark:bg-gray-700 text-left flex justify-between items-center cursor-pointer",
+                  children: [
+                    c.jsxs("span", { children: ["Chế độ lọc phiếu: ", c.jsx("b", { children: filterMode === "DATE" ? "Theo ngày" : "Tất cả" })] }),
+                    c.jsx("span", { className: "text-blue-600", children: "Đổi" })
+                  ]
+                }),
+                c.jsxs("button", {
+                  type: "button",
+                  onClick: handleResetTrip,
+                  className: "w-full p-3 rounded-2xl bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border border-orange-200 text-left flex justify-between items-center cursor-pointer",
+                  children: [
+                    c.jsx("span", { children: "🔄 Đặt lại chi phí chuyến này về 0" }),
+                    c.jsx("span", { children: "➔" })
+                  ]
+                }),
+                c.jsxs("button", {
+                  type: "button",
+                  onClick: () => {
+                    if (confirm("Khởi tạo chuyến mới tinh sạch hoàn toàn?")) {
+                      const newActiveTrip = {
+                        id: "trip_" + Date.now(),
+                        name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
+                        startDate: new Date().toISOString().split("T")[0],
+                        note: "",
+                        investors: [
+                          { id: "inv_1", name: "Tôi (Chủ vựa)", amount: 100000000 },
+                          { id: "inv_2", name: "Anh B (Hùn vốn)", amount: 100000000 }
+                        ],
+                        shrimpPurchaseAuto: true,
+                        shrimpPurchaseManualAmount: 0,
+                        expenses: [],
+                        revenueAuto: true,
+                        revenueManualAmount: 0
+                      };
+                      const nextData = { ...financeData, activeTrip: newActiveTrip };
+                      me.saveFinanceData(nextData);
+                      setFinanceData(nextData);
+                      setTripName(newActiveTrip.name);
+                      setTripDate(newActiveTrip.startDate);
+                      setTripNote("");
+                      setShowTripSettingsModal(false);
+                      alert("✅ Đã tạo chuyến mới tinh sạch!");
+                    }
+                  },
+                  className: "w-full p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 text-left flex justify-between items-center cursor-pointer",
+                  children: [
+                    c.jsx("span", { children: "✨ Tạo chuyến mới tinh sạch" }),
+                    c.jsx("span", { children: "➔" })
+                  ]
+                })
+              ]
+            }),
+            c.jsx("div", {
+              className: "flex justify-end pt-2",
+              children: c.jsx("button", {
+                type: "button",
+                onClick: () => setShowTripSettingsModal(false),
+                className: "px-5 py-2.5 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold text-xs",
+                children: "Đóng"
+              })
+            })
+          ]
+        })
+      }),
+
+      // =========================================================================
+      // MODAL 6: LỊCH SỬ CÁC CHUYẾN ĐÃ LƯU (ĐẦY ĐỦ XEM, SỬA, KHÔI PHỤC, XÓA)
+      // =========================================================================
+      showSavedTripsModal && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[85vh] flex flex-col",
+          children: [
+            c.jsxs("div", {
+              className: "flex justify-between items-center border-b pb-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "Lịch Sử Các Chuyến Hùn Vốn Đã Quyết Toán" }),
+                    c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: ["Tổng số: ", (financeData.savedTrips || []).length, " chuyến đã lưu"] })
+                  ]
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowSavedTripsModal(false),
+                  className: "p-1.5 text-gray-400 hover:text-gray-600 rounded-full",
+                  children: c.jsx(_a, { size: 18 })
+                })
+              ]
+            }),
+            c.jsx("div", {
+              className: "overflow-y-auto flex-1 space-y-3 pr-1",
+              children: (financeData.savedTrips || []).length === 0 ? c.jsx("p", {
+                className: "text-center text-gray-400 py-12 italic text-xs font-bold",
+                children: "Chưa có chuyến hùn vốn nào được lưu trước đây."
+              }) : (financeData.savedTrips || []).map((st, sIdx) => c.jsxs("div", {
+                key: st.id || sIdx,
+                className: "p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 space-y-2.5",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex justify-between items-start",
+                    children: [
+                      c.jsxs("div", {
+                        className: "space-y-0.5",
+                        children: [
+                          editingSavedTripId === st.id ? c.jsxs("div", {
+                            className: "flex items-center gap-1",
+                            children: [
+                              c.jsx("input", {
+                                type: "text",
+                                value: editingSavedTripName,
+                                onChange: e => setEditingSavedTripName(e.target.value),
+                                className: "p-1 border rounded text-xs font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                              }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: handleSaveEditSavedTripName,
+                                className: "px-2 py-1 bg-green-600 text-white rounded text-xs font-bold",
+                                children: "Lưu"
+                              }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => setEditingSavedTripId(null),
+                                className: "px-2 py-1 bg-gray-300 text-gray-700 rounded text-xs font-bold",
+                                children: "Hủy"
+                              })
+                            ]
+                          }) : c.jsxs("div", {
+                            className: "flex items-center gap-1.5",
+                            children: [
+                              c.jsx("h4", { className: "font-black text-sm text-gray-900 dark:text-white", children: st.name }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => {
+                                  setEditingSavedTripId(st.id);
+                                  setEditingSavedTripName(st.name || "");
+                                },
+                                className: "text-gray-400 hover:text-blue-600 text-xs",
+                                title: "Sửa tên chuyến",
+                                children: "✎"
+                              })
+                            ]
+                          }),
+                          c.jsxs("span", { className: "text-[10px] text-gray-400 block", children: ["Ngày: ", st.startDate, " • Quyết toán lúc: ", new Date(st.settledAt || Date.now()).toLocaleTimeString("vi-VN")] })
+                        ]
+                      }),
+                      c.jsx("span", {
+                        className: `px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${st.isProfit ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`,
+                        children: st.isProfit ? "LỜI" : "LỖ"
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "grid grid-cols-3 gap-2 text-[11px] text-gray-500 font-bold",
+                    children: [
+                      c.jsxs("div", { children: ["Vốn: ", c.jsx("b", { className: "text-gray-800 dark:text-gray-200", children: _fmt(st.totalCapital) })] }),
+                      c.jsxs("div", { children: ["Chi: ", c.jsx("b", { className: "text-red-600", children: _fmt(st.totalExpenses) })] }),
+                      c.jsxs("div", { children: ["Thu: ", c.jsx("b", { className: "text-green-600", children: _fmt(st.totalRevenue) })] })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700 text-xs font-black",
+                    children: [
+                      c.jsxs("span", {
+                        children: ["Lợi nhuận: ", c.jsx("b", { className: st.isProfit ? "text-green-600" : "text-red-600", children: [(st.isProfit ? "+" : "") + _fmt(st.netProfit) + " đ"] })]
+                      }),
+                      c.jsxs("div", {
+                        className: "flex items-center gap-1.5",
+                        children: [
+                          // Xem chi tiết
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => setViewingSavedTrip(st),
+                            className: "px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold cursor-pointer",
+                            children: "Xem Chi Tiết"
+                          }),
+                          // Khôi phục
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => handleRestoreSavedTrip(st),
+                            className: "px-2 py-1 bg-amber-500 text-white rounded-lg text-xs font-bold cursor-pointer",
+                            title: "Khôi phục làm chuyến hiện tại",
+                            children: "Khôi Phục"
+                          }),
+                          // Xóa
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => handleDeleteSavedTrip(st.id),
+                            className: "p-1 text-red-500 hover:bg-red-100 rounded-lg cursor-pointer",
+                            title: "Xóa chuyến",
+                            children: c.jsx(xm, { size: 14 })
+                          })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }))
+            })
+          ]
+        })
+      }),
+
+      // =========================================================================
+      // MODAL 7: XEM CHI TIẾT CHUYẾN ĐÃ LƯU
+      // =========================================================================
+      viewingSavedTrip && c.jsx("div", {
+        className: "fixed inset-0 z-[220] bg-black/70 flex items-center justify-center p-4 backdrop-blur-sm",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[90vh] flex flex-col",
+          children: [
+            c.jsxs("div", {
+              className: "flex justify-between items-center border-b pb-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: viewingSavedTrip.name }),
+                    c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: ["Ngày: ", viewingSavedTrip.startDate] })
+                  ]
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setViewingSavedTrip(null),
+                  className: "p-1.5 text-gray-400 hover:text-gray-600 rounded-full",
+                  children: c.jsx(_a, { size: 18 })
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "overflow-y-auto flex-1 space-y-4 pr-1 text-xs",
+              children: [
+                // Summary block
+                c.jsxs("div", {
+                  className: "p-3 bg-gray-50 dark:bg-gray-800 rounded-2xl grid grid-cols-2 gap-2 font-bold",
+                  children: [
+                    c.jsxs("div", { children: ["Vốn góp: ", c.jsx("b", { className: "text-blue-600 font-mono", children: _fmt(viewingSavedTrip.totalCapital) + " đ" })] }),
+                    c.jsxs("div", { children: ["Tổng chi phí: ", c.jsx("b", { className: "text-red-600 font-mono", children: _fmt(viewingSavedTrip.totalExpenses) + " đ" })] }),
+                    c.jsxs("div", { children: ["Tổng doanh thu: ", c.jsx("b", { className: "text-green-600 font-mono", children: _fmt(viewingSavedTrip.totalRevenue) + " đ" })] }),
+                    c.jsxs("div", { children: ["Lợi nhuận ròng: ", c.jsx("b", { className: (viewingSavedTrip.isProfit ? "text-green-600" : "text-red-600") + " font-mono", children: [(viewingSavedTrip.isProfit ? "+" : "") + _fmt(viewingSavedTrip.netProfit) + " đ"] })] })
+                  ]
+                }),
+                // Payout table
+                c.jsxs("div", {
+                  className: "space-y-1.5",
+                  children: [
+                    c.jsx("span", { className: "font-black uppercase text-gray-500 block text-[10px]", children: "Bảng Chia Tiền Thực Nhận:" }),
+                    c.jsx("div", {
+                      className: "rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden",
+                      children: c.jsxs("table", {
+                        className: "w-full text-left text-xs",
+                        children: [
+                          c.jsx("thead", {
+                            className: "bg-gray-100 dark:bg-gray-800 text-[10px] font-black uppercase text-gray-500",
+                            children: c.jsxs("tr", {
+                              children: [
+                                c.jsx("th", { className: "p-2", children: "Người Góp" }),
+                                c.jsx("th", { className: "p-2 text-right", children: "Vốn" }),
+                                c.jsx("th", { className: "p-2 text-right", children: "Lời/Lỗ" }),
+                                c.jsx("th", { className: "p-2 text-right font-black text-blue-600", children: "Thực Nhận" })
+                              ]
+                            })
+                          }),
+                          c.jsx("tbody", {
+                            className: "divide-y font-bold",
+                            children: (viewingSavedTrip.investorPayouts || []).map((p, idx) => c.jsxs("tr", {
+                              key: idx,
+                              children: [
+                                c.jsxs("td", { className: "p-2", children: [p.name, " (", (p.sharePercent || 0).toFixed(1), "%)"] }),
+                                c.jsx("td", { className: "p-2 text-right font-mono", children: _fmt(p.amount) }),
+                                c.jsxs("td", { className: "p-2 text-right font-mono " + (p.profitShare >= 0 ? "text-green-600" : "text-red-600"), children: [(p.profitShare >= 0 ? "+" : "") + _fmt(p.profitShare)] }),
+                                c.jsxs("td", { className: "p-2 text-right font-mono font-black text-blue-700 bg-blue-50/50", children: [_fmt(p.totalPayout), " đ"] })
+                              ]
+                            }, idx))
+                          })
+                        ]
+                      })
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "flex justify-between items-center pt-2 border-t",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => handleRestoreSavedTrip(viewingSavedTrip),
+                  className: "px-4 py-2 bg-amber-500 text-white rounded-xl font-bold text-xs cursor-pointer",
+                  children: "Khôi Phục Làm Chuyến Hiện Tại"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setViewingSavedTrip(null),
+                  className: "px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold text-xs",
+                  children: "Đóng"
+                })
+              ]
+            })
+          ]
+        })
+      })
+    ]
+  });
+};
+
+
+const BmMainApp=()=>{const[S,b]=w.useState(()=>{const u=me.getUser();if(u)u.role="OWNER";return u;}),[p,f]=w.useState(!0),[O,D]=w.useState(()=>me.getUser()?re.DASHBOARD:re.AUTH),[U,Y]=w.useState(null);w.useEffect(()=>{const _=D1(Pu,async z=>{var L,te;if(z){const Q=await Mn.loadFromCloud(z.uid),se=(Q==null?void 0:Q.user)||{uid:z.uid,phoneNumber:z.phoneNumber||"",displayName:z.displayName||"Người dùng",photoURL:z.photoURL||"",role:"OWNER",subscriptionStatus:((te=Q==null?void 0:Q.user)==null?void 0:te.subscriptionStatus)||"FREE",createdAt:new Date().toISOString()};se.role="OWNER";me.setUser(se),b(se),D(re.DASHBOARD)}else me.setUser(null),b(null),D(re.AUTH);f(!1)});return()=>_()},[]);const A=_=>{if(S){const z={...S,role:"OWNER"};me.setUser(z),b(z),D(re.DASHBOARD)}};if(p)return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center text-white",children:[c.jsx("div",{className:"w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"}),c.jsx("p",{className:"font-black uppercase italic text-sm",children:"Đang bảo mật kết nối..."})]});if(!S||O===re.AUTH)return c.jsx(Hm,{onSelect:A});const v=()=>{const _={setRoute:D,role:S.role};switch(O){case re.DASHBOARD:return c.jsx(Kd,{..._});case re.OVERVIEW:return c.jsx(Xm_OverviewTab,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.WEIGHING:return c.jsx(Om,{..._});case re.HISTORY:return c.jsx(_m,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.SESSION_DETAIL:return c.jsx(Dm,{..._,sessionId:U||""});case re.SALES:return c.jsx(Xm_SalesScreen,{..._,onViewDetail:z=>{Y(z);D(re.SALES_DETAIL);}});case re.FINANCE:return c.jsx(Xm_FinanceScreen,{..._});case re.CUSTOMERS:return c.jsx(Xm_CustomersScreen,{..._,onSelectForSale:z=>{D(re.SALES);}});case re.SALES_DETAIL:return c.jsx(Xm_SaleDetailScreen,{..._,sale:(typeof U==="object"?U:(me.getSales().find(s=>s.id===(typeof U==="string"?U:U?.id))||null)),onBack:()=>D(re.SALES)});case re.FARMERS:return c.jsx(Cm,{..._});case re.VEHICLES:return c.jsx(km,{..._});case re.INFO_CONFIG:return c.jsx(Xm_TraderConfig,{..._});case re.SETTINGS:return c.jsx(Um,{..._});case re.BLUETOOTH:return c.jsx(Rm,{..._});default:return c.jsx(Kd,{..._})}};return c.jsx(Tm,{activeRoute:O,setRoute:D,title:"Tôm Càng Xanh",role:S.role,onLogout:async()=>{await Mn.logout()},children:v()})},
 Bm=()=>{
   const _urlParams=new URLSearchParams(window.location.search);
   let _portalContractId=_urlParams.get("contract")||_urlParams.get("hd")||_urlParams.get("d")||_urlParams.get("c")||_urlParams.get("data")||_urlParams.get("id");
