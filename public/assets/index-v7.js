@@ -1432,14 +1432,8 @@ const Om = ({ setRoute: S, role: b }) => {
   };
 
   const handleSelectShrimpType = (typeName) => {
-    const found = traderProfile.shrimpTypes && traderProfile.shrimpTypes.find(t => t.name.toLowerCase() === typeName.toLowerCase());
-    if (found && found.price) {
-      v(prev => ({ ...prev, riceType: found.name, price: found.price }));
-    } else {
-      v(prev => ({ ...prev, riceType: typeName }));
-    }
+    v(prev => ({ ...prev, riceType: typeName }));
   };
-
   // Select farmer from contract
   const handleSelectContract = (contract) => {
     if (!contract) return;
@@ -1836,7 +1830,7 @@ const Om = ({ setRoute: S, role: b }) => {
                       })
                     ]
                   }),
-                  // Nút 2: Chọn Loại / Size Tôm (Có Dropdown thả xuống)
+                  // Nút 2: Chọn Loại / Size Tôm (Chỉ hiển thị tên loại tôm, không hiển thị giá)
                   c.jsxs("div", {
                     className: "space-y-1 relative",
                     children: [
@@ -1852,7 +1846,16 @@ const Om = ({ setRoute: S, role: b }) => {
                             onClick: () => {
                               const customType = prompt("Nhập tên loại tôm mới:", A.riceType || "");
                               if (customType && customType.trim()) {
-                                handleSelectShrimpType(customType.trim());
+                                const trimmed = customType.trim();
+                                handleSelectShrimpType(trimmed);
+                                try {
+                                  const saved = localStorage.getItem("annong_custom_shrimp_tags");
+                                  let tags = saved ? JSON.parse(saved) : [];
+                                  if (!tags.includes(trimmed)) {
+                                    tags.push(trimmed);
+                                    localStorage.setItem("annong_custom_shrimp_tags", JSON.stringify(tags));
+                                  }
+                                } catch(e) {}
                               }
                             },
                             className: "text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase italic underline",
@@ -1860,34 +1863,28 @@ const Om = ({ setRoute: S, role: b }) => {
                           })
                         ]
                       }),
-                      // Dropdown Trigger Button
+                      // Dropdown Trigger Button (Chỉ hiển thị tên loại tôm, không hiển thị giá)
                       c.jsxs("button", {
                         type: "button",
                         onClick: () => {
                           setShowShrimpDropdown(!showShrimpDropdown);
                           setShowFarmerDropdown(false);
                         },
-                        className: `w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-[0.98] ${
+                        className: `w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-[0.98] ${
                           showShrimpDropdown
                             ? "bg-blue-50 border-blue-500 dark:bg-blue-950/40 dark:border-blue-400 shadow-md"
                             : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300"
                         }`,
                         children: [
-                          c.jsxs("div", {
+                          c.jsx("div", {
                             className: "truncate flex-1 pr-2",
-                            children: [
-                              c.jsxs("div", {
-                                className: "text-base font-black text-blue-950 dark:text-blue-200 uppercase truncate flex items-center gap-1.5",
-                                children: [
-                                  c.jsx("span", { children: "🦐" }),
-                                  c.jsx("span", { children: A.riceType || "Chọn Loại Tôm..." })
-                                ]
-                              }),
-                              c.jsxs("div", {
-                                className: "text-[10px] font-bold text-gray-400 font-mono",
-                                children: [Number(A.price || 0).toLocaleString(), " đ/kg"]
-                              })
-                            ]
+                            children: c.jsxs("div", {
+                              className: "text-base font-black text-blue-950 dark:text-blue-200 uppercase truncate flex items-center gap-2",
+                              children: [
+                                c.jsx("span", { className: "text-xl", children: "🦐" }),
+                                c.jsx("span", { children: A.riceType || "Chọn Loại / Size Tôm..." })
+                              ]
+                            })
                           }),
                           c.jsx("span", {
                             className: `text-xs font-black text-gray-500 transition-transform duration-200 ${showShrimpDropdown ? "rotate-180" : ""}`,
@@ -1895,59 +1892,59 @@ const Om = ({ setRoute: S, role: b }) => {
                           })
                         ]
                       }),
-                      // Dropdown Menu List
+                      // Dropdown Menu List (Chỉ hiển thị tên loại tôm, không hiển thị giá tôm)
                       showShrimpDropdown && c.jsxs("div", {
                         className: "absolute left-0 right-0 top-full mt-1.5 z-[90] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto p-2 space-y-1 animate-in fade-in",
                         children: [
-                          // Shrimp items
-                          standardShrimpList.map(item => c.jsxs("button", {
-                            key: item.name,
-                            type: "button",
-                            onClick: () => {
-                              v(prev => ({
-                                ...prev,
-                                riceType: item.name,
-                                price: item.price || prev.price
-                              }));
-                              setShowShrimpDropdown(false);
-                            },
-                            className: `w-full p-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl text-left border transition-colors flex items-center justify-between ${
-                              (A.riceType || "").toLowerCase() === item.name.toLowerCase()
-                                ? "border-green-500 bg-green-50/50 dark:bg-green-950/30"
-                                : "border-transparent hover:border-gray-200 dark:hover:border-gray-700"
-                            }`,
-                            children: [
-                              c.jsxs("div", {
-                                children: [
-                                  c.jsx("div", { className: "font-black text-xs uppercase text-gray-800 dark:text-gray-100", children: item.name }),
-                                  item.desc && c.jsx("div", { className: "text-[9px] text-gray-400 italic", children: item.desc })
-                                ]
-                              }),
-                              item.price && c.jsxs("div", {
-                                className: "text-right shrink-0",
-                                children: [
-                                  c.jsxs("span", { className: "font-mono font-bold text-xs text-green-700 dark:text-green-400", children: [Number(item.price).toLocaleString(), "đ"] }),
-                                  c.jsx("span", { className: "text-[9px] text-gray-400 block", children: "/kg" })
-                                ]
-                              })
-                            ]
-                          })),
+                          // Shrimp items (Chỉ hiển thị tên loại tôm)
+                          standardShrimpList.map(item => {
+                            const isSelected = (A.riceType || "").toLowerCase() === item.name.toLowerCase();
+                            return c.jsxs("button", {
+                              key: item.name,
+                              type: "button",
+                              onClick: () => {
+                                v(prev => ({
+                                  ...prev,
+                                  riceType: item.name
+                                }));
+                                setShowShrimpDropdown(false);
+                              },
+                              className: `w-full p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl text-left border transition-colors flex items-center justify-between ${
+                                isSelected
+                                  ? "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-black"
+                                  : "border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+                              }`,
+                              children: [
+                                c.jsxs("div", {
+                                  className: "flex items-center gap-2.5",
+                                  children: [
+                                    c.jsx("span", { className: "text-lg", children: "🦐" }),
+                                    c.jsxs("div", {
+                                      children: [
+                                        c.jsx("div", { className: "font-black text-sm uppercase text-gray-900 dark:text-gray-100", children: item.name }),
+                                        item.desc && c.jsx("div", { className: "text-[10px] text-gray-400 italic", children: item.desc })
+                                      ]
+                                    })
+                                  ]
+                                }),
+                                isSelected && c.jsx("span", { className: "text-emerald-600 dark:text-emerald-400 font-black text-sm", children: "✓" })
+                              ]
+                            });
+                          }),
                           // Custom type button
-                          c.jsxs("button", {
+                          c.jsx("button", {
                             type: "button",
                             onClick: () => {
                               const customName = prompt("Nhập tên loại tôm khác:", "");
                               if (customName && customName.trim()) {
-                                const customPrice = prompt("Nhập đơn giá (đ/kg):", "120000");
                                 v(prev => ({
                                   ...prev,
-                                  riceType: customName.trim(),
-                                  price: Number(customPrice) || prev.price
+                                  riceType: customName.trim()
                                 }));
                               }
                               setShowShrimpDropdown(false);
                             },
-                            className: "w-full p-2 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-center text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mt-1",
+                            className: "w-full p-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-center text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mt-1 transition-colors",
                             children: "+ Nhập Loại Tôm Khác"
                           })
                         ]
@@ -2008,12 +2005,13 @@ const Om = ({ setRoute: S, role: b }) => {
                         children: [
                           c.jsx("label", {
                             className: "text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase italic mb-2 block",
-                            children: "Giá (kg)"
+                            children: "Đơn Giá Bán/Mua (đ/kg)"
                           }),
                           c.jsx("input", {
                             type: "number",
                             value: A.price,
                             onChange: $ => v({ ...A, price: $.target.value }),
+                            placeholder: "Tự nhập giá...",
                             className: "w-full text-right text-2xl font-black text-[#1a237e] dark:text-blue-300 outline-none bg-transparent"
                           })
                         ]
@@ -2093,7 +2091,7 @@ const Om = ({ setRoute: S, role: b }) => {
                       }),
                       c.jsxs("span", {
                         className: "text-xs font-black uppercase text-gray-700 dark:text-gray-300 italic",
-                        children: ["Đang cân: ", A.riceType, " (", Number(A.price).toLocaleString(), " đ/kg)"]
+                        children: ["Đang cân: ", A.riceType, Number(A.price) > 0 ? (" (" + Number(A.price).toLocaleString() + " đ/kg)") : " (Chưa nhập giá)"]
                       })
                     ]
                   }),
@@ -3332,41 +3330,57 @@ const numberToWordsVN = (num) => {
 // Tạo liên kết ngắn gọn, chuyên nghiệp gửi khách hàng
 // Standardized Contract Helpers & Storage
 const encodeContractToB64 = (obj) => {
-  if (!obj) return "";
+  if (!obj || !obj.id) return "";
   try {
     const compact = {
-      id: obj.id || "",
-      pondId: obj.pondId || "",
+      id: String(obj.id || "").replace(/Đ/g, "D"),
+      pondId: obj.pondId || obj.farmerId || "",
+      farmerId: obj.farmerId || obj.pondId || "",
       createdAt: obj.createdAt || new Date().toISOString(),
       status: obj.status || "PENDING_FARMER",
+      traderName: obj.traderName || obj.trader?.fullName || "Cơ Sở Thu Mua Tôm Càng Xanh",
+      traderPhone: obj.traderPhone || obj.trader?.phone || "",
+      traderAddress: obj.traderAddress || obj.trader?.address || "",
+      traderIdCard: obj.traderIdCard || obj.trader?.idCard || "",
+      farmerName: obj.farmerName || obj.farmer?.fullName || "Chủ ao",
+      farmerPhone: obj.farmerPhone || obj.farmer?.phone || "",
+      farmerAddress: obj.farmerAddress || obj.farmer?.address || "",
+      farmerIdCard: obj.farmerIdCard || obj.farmer?.idCard || "",
+      shrimpType: obj.shrimpType || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
+      weighingDate: obj.weighingDate || "",
+      weighingTime: obj.weighingTime || "06:00",
+      estimatedYield: obj.estimatedYield || 0,
+      agreedPrice: Number(obj.agreedPrice || obj.unitPrice || 0),
+      unitPrice: Number(obj.unitPrice || obj.agreedPrice || 0),
+      depositMoney: Number(obj.depositMoney ?? obj.deposit ?? 0),
+      deposit: Number(obj.depositMoney ?? obj.deposit ?? 0),
+      rejectionSpec: obj.rejectionSpec || "Tôm mềm, ốp, gãy càng dạt sang hàng xào",
+      tareSpec: obj.tareSpec || "Trừ hao ráo nước chuẩn 1kg/thùng cân",
+      qualityStandard: obj.qualityStandard || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước",
+      compensationTerms: obj.compensationTerms || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc",
+      farmerSigned: !!(obj.farmerSigned || obj.status === "SIGNED_LEGAL"),
+      farmerSignedAt: obj.farmerSignedAt || "",
+      farmerSignatureImg: obj.farmerSignatureImg || "",
+      traderSigned: !!obj.traderSigned,
+      traderSignature: obj.traderSignature || "",
+      legalVerification: obj.legalVerification || null,
       trader: {
-        fullName: obj.trader?.fullName || "Cơ Sở Thu Mua Tôm Càng Xanh",
-        phone: obj.trader?.phone || "",
-        idCard: obj.trader?.idCard || "",
-        address: obj.trader?.address || "",
+        fullName: obj.trader?.fullName || obj.traderName || "Cơ Sở Thu Mua Tôm Càng Xanh",
+        phone: obj.trader?.phone || obj.traderPhone || "",
+        idCard: obj.trader?.idCard || obj.traderIdCard || "",
+        address: obj.trader?.address || obj.traderAddress || "",
         agreed: true,
         signedAt: obj.trader?.signedAt || new Date().toLocaleString("vi-VN")
       },
       farmer: {
-        fullName: obj.farmer?.fullName || "Chủ ao",
-        phone: obj.farmer?.phone || "",
-        idCard: obj.farmer?.idCard || "",
-        address: obj.farmer?.address || "",
-        coordinates: obj.farmer?.coordinates || null,
-        agreed: !!obj.farmer?.agreed,
-        signedAt: obj.farmer?.signedAt || null
-      },
-      weighingDate: obj.weighingDate || "",
-      agreedPrice: Number(obj.agreedPrice || 0),
-      deposit: Number(obj.depositMoney ?? obj.deposit ?? 0),
-      depositMoney: Number(obj.depositMoney ?? obj.deposit ?? 0),
-      specs: obj.specs || [],
-      catchingSpecs: obj.catchingSpecs || (obj.specs || []).map(s => typeof s === "object" ? s : { text: s }),
-      shrimpSizes: obj.shrimpSizes || [],
-      farmerSigned: !!obj.farmerSigned,
-      farmerSignedAt: obj.farmerSignedAt || "",
-      farmerSignatureImg: obj.farmerSignatureImg || "",
-      legalVerification: obj.legalVerification || null
+        fullName: obj.farmer?.fullName || obj.farmerName || "Chủ ao",
+        phone: obj.farmer?.phone || obj.farmerPhone || "",
+        idCard: obj.farmer?.idCard || obj.farmerIdCard || "",
+        address: obj.farmer?.address || obj.farmerAddress || "",
+        coordinates: obj.farmer?.coordinates || (obj.pondLocation || null),
+        agreed: !!(obj.farmer?.agreed || obj.farmerSigned || obj.status === "SIGNED_LEGAL"),
+        signedAt: obj.farmer?.signedAt || obj.farmerSignedAt || null
+      }
     };
     const json = JSON.stringify(compact);
     const utf8Bytes = encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode(parseInt(p1, 16)));
@@ -3377,20 +3391,54 @@ const encodeContractToB64 = (obj) => {
     return "";
   }
 };
-
 const decodeContractFromB64 = (raw) => {
   if (!raw) return null;
   try {
-    let str = decodeURIComponent(raw.trim());
+    let str = decodeURIComponent(String(raw).trim());
     str = str.replace(/-/g, "+").replace(/_/g, "/").replace(/\s/g, "+");
     while (str.length % 4) str += "=";
     const binary = atob(str);
     const uri = Array.from(binary).map(ch => "%" + ("00" + ch.charCodeAt(0).toString(16)).slice(-2)).join("");
     const parsed = JSON.parse(decodeURIComponent(uri));
-    if (parsed && (parsed.id || parsed.farmer)) {
-      parsed.depositMoney = Number(parsed.depositMoney ?? parsed.deposit ?? 0);
+    if (parsed && (parsed.id || parsed.farmer || parsed.farmerName || parsed.fn)) {
+      parsed.depositMoney = Number(parsed.depositMoney ?? parsed.deposit ?? parsed.dp ?? 0);
       parsed.deposit = parsed.depositMoney;
-      parsed.agreedPrice = Number(parsed.agreedPrice || 0);
+      parsed.agreedPrice = Number(parsed.agreedPrice || parsed.unitPrice || parsed.pr || 0);
+      parsed.unitPrice = parsed.agreedPrice;
+      parsed.farmerName = parsed.farmerName || parsed.farmer?.fullName || parsed.fn || "Chủ ao";
+      parsed.farmerPhone = parsed.farmerPhone || parsed.farmer?.phone || parsed.fp || "";
+      parsed.farmerAddress = parsed.farmerAddress || parsed.farmer?.address || parsed.fa || "";
+      parsed.farmerIdCard = parsed.farmerIdCard || parsed.farmer?.idCard || parsed.fc || "";
+      parsed.traderName = parsed.traderName || parsed.trader?.fullName || parsed.tn || "Cơ Sở Thu Mua Tôm Càng Xanh";
+      parsed.traderPhone = parsed.traderPhone || parsed.trader?.phone || parsed.tp || "";
+      parsed.traderAddress = parsed.traderAddress || parsed.trader?.address || parsed.ta || "";
+      parsed.traderIdCard = parsed.traderIdCard || parsed.trader?.idCard || parsed.tc || "";
+      parsed.shrimpType = parsed.shrimpType || parsed.st || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên";
+      parsed.weighingDate = parsed.weighingDate || parsed.wd || "";
+      parsed.weighingTime = parsed.weighingTime || parsed.wt || "06:00";
+      parsed.estimatedYield = parsed.estimatedYield || parsed.ey || 0;
+      parsed.rejectionSpec = parsed.rejectionSpec || parsed.rj || "Tôm mềm, ốp, gãy càng dạt sang hàng xào";
+      parsed.tareSpec = parsed.tareSpec || parsed.tr || "Trừ hao ráo nước chuẩn 1kg/thùng cân";
+      parsed.qualityStandard = parsed.qualityStandard || parsed.qs || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước";
+      parsed.compensationTerms = parsed.compensationTerms || parsed.ct || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc";
+      if (!parsed.farmer) {
+        parsed.farmer = {
+          fullName: parsed.farmerName,
+          phone: parsed.farmerPhone,
+          address: parsed.farmerAddress,
+          idCard: parsed.farmerIdCard,
+          agreed: !!(parsed.farmerSigned || parsed.status === "SIGNED_LEGAL")
+        };
+      }
+      if (!parsed.trader) {
+        parsed.trader = {
+          fullName: parsed.traderName,
+          phone: parsed.traderPhone,
+          address: parsed.traderAddress,
+          idCard: parsed.traderIdCard,
+          agreed: true
+        };
+      }
       if (!parsed.catchingSpecs && parsed.specs) {
         parsed.catchingSpecs = parsed.specs.map(s => typeof s === "object" ? s : { text: s });
       }
@@ -3398,11 +3446,11 @@ const decodeContractFromB64 = (raw) => {
     }
   } catch (e1) {
     try {
-      let str = raw.trim();
+      let str = String(raw).trim();
       if (str.startsWith("{") && str.endsWith("}")) {
         return JSON.parse(str);
       }
-      const b2 = atob(raw.replace(/\s/g, "+"));
+      const b2 = atob(String(raw).replace(/\s/g, "+"));
       return JSON.parse(decodeURIComponent(escape(b2)));
     } catch (e2) {
       console.warn("Decode contract error:", e2);
@@ -3410,17 +3458,23 @@ const decodeContractFromB64 = (raw) => {
   }
   return null;
 };
-
 if (typeof window !== "undefined") {
   window.encodeContractToB64 = encodeContractToB64;
   window.decodeContractFromB64 = decodeContractFromB64;
 }
-
 const encodeContractForShare = (contract) => {
   if (!contract || !contract.id) return window.location.href;
-  try { syncContractToCloud(contract); } catch (e) {}
+  try { if (typeof saveContract === "function") saveContract(contract); } catch (e) {}
+  try { if (typeof syncContractToCloud === "function") syncContractToCloud(contract); } catch (e) {}
   const base = `${window.location.origin}${window.location.pathname}`;
   const cleanId = (contract.id || "").replace(/Đ/g, "D");
+  let b64 = "";
+  try {
+    b64 = encodeContractToB64(contract);
+  } catch (e) {}
+  if (b64) {
+    return `${base}?hd=${encodeURIComponent(cleanId)}&d=${encodeURIComponent(b64)}`;
+  }
   return `${base}?hd=${encodeURIComponent(cleanId)}`;
 };
 if (typeof window !== "undefined") {
@@ -3439,14 +3493,18 @@ const checkUrlContract = () => {
     if (dataPart && typeof decodeContractFromB64 === "function") {
       const decoded = decodeContractFromB64(dataPart);
       if (decoded && decoded.id) {
-        saveContract(decoded);
+        if (typeof saveContract === "function") saveContract(decoded);
         return decoded;
       }
     }
     const contractId = params.get("hd") || params.get("contract") || params.get("id") || (hash.startsWith("#hd=") ? hash.replace("#hd=", "") : "");
     if (contractId) {
-      const all = getContracts();
-      const found = all.find(x => x && (x.id === contractId || x.id === contractId.replace(/Đ/g, "D") || x.id === contractId.replace(/D/g, "Đ")));
+      const all = (typeof getContracts === "function") ? getContracts() : [];
+      const cleanQ = contractId.replace(/Đ/g, "D").trim().toUpperCase();
+      const found = all.find(x => x && (
+        (x.id && x.id.replace(/Đ/g, "D").trim().toUpperCase() === cleanQ) ||
+        (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanQ.replace(/[^0-9A-Z]/g, ""))
+      ));
       if (found) return found;
     }
   } catch (e) {
@@ -3454,7 +3512,9 @@ const checkUrlContract = () => {
   }
   return null;
 };
-window.checkUrlContract = checkUrlContract;
+if (typeof window !== "undefined") {
+  window.checkUrlContract = checkUrlContract;
+}
 // Standardized UI Icons
 const PinIcon = ({ className = "w-4 h-4", size = 16, style = {} }) => c.jsx("svg", {
   width: size, height: size,
@@ -4249,12 +4309,11 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
     const load = async () => {
       setLoading(true);
       let found = null;
-
       const params = new URLSearchParams(window.location.search);
       const hash = window.location.hash || "";
       const qId = params.get("hd") || params.get("contract") || params.get("id") || (hash.startsWith("#hd=") ? hash.replace("#hd=", "") : "") || (contractId && contractId !== "portal" && contractId !== "hash_portal" ? contractId : "");
 
-      // 1. Try URL parameters & Hash base64 (backward compatibility)
+      // 1. DIRECT INSTANT DECODE from URL ?d= or #c= (100% Reliable, 0ms, No server required!)
       try {
         let dataPart = params.get("d") || params.get("data") || params.get("c");
         if (!dataPart && hash) {
@@ -4262,10 +4321,16 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
           else if (hash.includes("d=")) dataPart = hash.split("d=")[1]?.split("&")[0];
           else if (hash.includes("data=")) dataPart = hash.split("data=")[1]?.split("&")[0];
         }
-        if (dataPart && window.decodeContractFromB64) {
-          found = window.decodeContractFromB64(dataPart);
+        if (dataPart && typeof decodeContractFromB64 === "function") {
+          found = decodeContractFromB64(dataPart);
           if (found && found.id) {
             saveContract(found);
+            if (isMounted) {
+              setContract(found);
+              setErrorMsg("");
+              setLoading(false);
+              return;
+            }
           }
         }
       } catch (e) {
@@ -4273,16 +4338,20 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
       }
 
       // 2. Try checkUrlContract / LocalStorage
-      if (!found && window.checkUrlContract) {
-        found = window.checkUrlContract();
+      if (!found && typeof checkUrlContract === "function") {
+        found = checkUrlContract();
       }
       if (!found && qId) {
-        const all = getContracts();
-        found = all.find(x => x && (x.id === qId || x.id === qId.replace(/Đ/g, "D") || x.id === qId.replace(/D/g, "Đ")));
+        const all = typeof getContracts === "function" ? getContracts() : [];
+        const cleanQ = qId.replace(/Đ/g, "D").trim().toUpperCase();
+        found = all.find(x => x && (
+          (x.id && x.id.replace(/Đ/g, "D").trim().toUpperCase() === cleanQ) ||
+          (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanQ.replace(/[^0-9A-Z]/g, ""))
+        ));
       }
 
-      // 3. Try Server API directly (Crucial for short link ?hd=ID opened on customer device!)
-      if (qId) {
+      // 3. Try Server API directly by ID (with retry)
+      if (!found && qId) {
         try {
           const res = await fetch(`/api/contracts/${encodeURIComponent(qId)}`);
           if (res.ok) {
@@ -4313,9 +4382,13 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
             const list = Array.isArray(listData) ? listData : (listData.contracts || []);
             if (Array.isArray(list) && list.length > 0) {
               if (qId) {
-                found = list.find(x => x && (x.id === qId || x.id === qId.replace(/Đ/g, "D") || x.id === qId.replace(/D/g, "Đ")));
+                const cleanQ = qId.replace(/Đ/g, "D").trim().toUpperCase();
+                found = list.find(x => x && (
+                  (x.id && x.id.replace(/Đ/g, "D").trim().toUpperCase() === cleanQ) ||
+                  (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanQ.replace(/[^0-9A-Z]/g, ""))
+                ));
               }
-              if (!found) found = list[list.length - 1];
+              if (!found && list.length === 1) found = list[0];
               if (found && found.id && typeof saveContract === "function") saveContract(found);
             }
           }
@@ -4332,7 +4405,6 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
         setLoading(false);
       }
     };
-
     load();
 
     // Lắng nghe cập nhật hợp đồng thời gian thực qua BroadcastChannel
@@ -4350,53 +4422,86 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
         };
       }
     } catch (e) {}
-
     return () => {
       isMounted = false;
       if (ch) ch.close();
     };
   }, [contractId]);
 
-  const handleManualDecode = () => {
+  const handleManualDecode = async () => {
     if (!pasteInput.trim()) return;
     try {
       let raw = pasteInput.trim();
       if (raw.includes("hd=")) raw = raw.split("hd=")[1]?.split("&")[0];
       else if (raw.includes("d=")) raw = raw.split("d=")[1]?.split("&")[0];
       else if (raw.includes("#c=")) raw = raw.split("#c=")[1]?.split("&")[0];
-      
-      const all = getContracts();
-      let found = all.find(x => x && (x.id === raw || x.id === raw.replace(/Đ/g, "D")));
+      raw = decodeURIComponent(raw).trim();
+
+      // 1. Try decode as B64
+      const b64Res = decodeContractFromB64(raw);
+      if (b64Res && b64Res.id) {
+        saveContract(b64Res);
+        setContract(b64Res);
+        setErrorMsg("");
+        return;
+      }
+
+      // 2. Try LocalStorage
+      const all = typeof getContracts === "function" ? getContracts() : [];
+      const cleanRaw = raw.replace(/Đ/g, "D").toUpperCase();
+      const rawDigits = raw.replace(/[^0-9]/g, "");
+      let found = all.find(x => x && (
+        (x.id && x.id.replace(/Đ/g, "D").toUpperCase() === cleanRaw) ||
+        (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanRaw.replace(/[^0-9A-Z]/g, "")) ||
+        (rawDigits.length >= 6 && x.id && String(x.id).includes(rawDigits)) ||
+        (x.farmerPhone && rawDigits.length >= 8 && x.farmerPhone.replace(/[^0-9]/g, "") === rawDigits)
+      ));
       if (found) {
         setContract(found);
         setErrorMsg("");
         return;
       }
-      
-      const res = decodeContractFromB64(raw);
-      if (res && res.id) {
-        saveContract(res);
-        setContract(res);
-        setErrorMsg("");
-      } else {
-        fetch(`/api/contracts/${encodeURIComponent(raw)}`)
-          .then(r => r.json())
-          .then(data => {
-            if (data && data.id) {
-              saveContract(data);
-              setContract(data);
-              setErrorMsg("");
-            } else {
-              alert("Không tìm thấy hợp đồng với mã này!");
-            }
-          })
-          .catch(() => alert("Không thể tìm thấy hợp đồng!"));
-      }
+
+      // 3. Try Server API direct
+      try {
+        const res = await fetch(`/api/contracts/${encodeURIComponent(cleanRaw)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.id) {
+            saveContract(data);
+            setContract(data);
+            setErrorMsg("");
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // 4. Try Server API list all
+      try {
+        const resList = await fetch("/api/contracts");
+        if (resList.ok) {
+          const listData = await resList.json();
+          const list = Array.isArray(listData) ? listData : (listData.contracts || []);
+          const match = list.find(x => x && (
+            (x.id && x.id.replace(/Đ/g, "D").toUpperCase() === cleanRaw) ||
+            (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanRaw.replace(/[^0-9A-Z]/g, "")) ||
+            (rawDigits.length >= 6 && x.id && String(x.id).includes(rawDigits)) ||
+            (x.farmerPhone && rawDigits.length >= 8 && x.farmerPhone.replace(/[^0-9]/g, "") === rawDigits)
+          ));
+          if (match) {
+            saveContract(match);
+            setContract(match);
+            setErrorMsg("");
+            return;
+          }
+        }
+      } catch (e) {}
+
+      alert("Không tìm thấy hợp đồng với mã hoặc liên kết này. Quý khách vui lòng kiểm tra lại mã hoặc nhờ cơ sở gửi lại link Zalo!");
     } catch(e) {
-      alert("Không thể giải mã dữ liệu hợp đồng!");
+      alert("Không thể giải mã dữ liệu hợp đồng: " + (e?.message || "Lỗi xử lý"));
     }
   };
-
   // Vietnamese Voice Reader
   const handleSpeakContract = () => {
     if (!contract) return;
@@ -11320,6 +11425,25 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     try { return (me.getSales && me.getSales()) || []; } catch(e) { return []; }
   });
 
+  const handleSyncFinance = () => {
+    try {
+      const freshSessions = (me.getSessions && me.getSessions()) || [];
+      const freshSales = (me.getSales && me.getSales()) || [];
+      setSessions(freshSessions);
+      setSales(freshSales);
+      updateActiveTrip(t => ({
+        ...t,
+        shrimpPurchaseAuto: true,
+        revenueAuto: true,
+        selectedSessionIds: null,
+        selectedSaleIds: null
+      }));
+      alert("✅ Đã đồng bộ thành công số tiền đi cân tôm và số tiền bán tôm mới nhất!");
+    } catch(e) {
+      alert("Lỗi đồng bộ: " + e.message);
+    }
+  };
+
   const trip = financeData.activeTrip || {};
   const [tripName, setTripName] = w.useState(trip.name || "Chuyến thu mua tôm");
   const [tripDate, setTripDate] = w.useState(trip.startDate || new Date().toISOString().split("T")[0]);
@@ -11444,13 +11568,17 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const isShrimpAuto = trip.shrimpPurchaseAuto !== false;
   const filteredSessions = sessions.filter(s => {
     if (filterMode === "ALL") return true;
-    return s.date && s.date.startsWith(tripDate);
+    if (!s.date) return true;
+    const sDate = s.date.split("T")[0];
+    return sDate === tripDate || s.date.startsWith(tripDate) || s.date.includes(tripDate);
   });
   // Active selected sessions (if user toggled specific tickets)
   const selectedSessionIds = trip.selectedSessionIds;
-  const effectiveSessions = Array.isArray(selectedSessionIds)
-    ? filteredSessions.filter(s => selectedSessionIds.includes(s.id))
-    : filteredSessions;
+  const effectiveSessions = (isShrimpAuto && (!selectedSessionIds || selectedSessionIds.length === 0))
+    ? filteredSessions
+    : (Array.isArray(selectedSessionIds) && selectedSessionIds.length > 0
+        ? filteredSessions.filter(s => selectedSessionIds.includes(s.id))
+        : filteredSessions);
 
   const autoShrimpPurchaseMoney = effectiveSessions.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
   const autoShrimpPurchaseKg = effectiveSessions.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
@@ -11527,12 +11655,16 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const completedSales = sales.filter(s => s.status === "COMPLETED" || s.status === "SETTLED" || s.isPaidFull);
   const filteredSales = completedSales.filter(s => {
     if (filterMode === "ALL") return true;
-    return s.date && s.date.startsWith(tripDate);
+    if (!s.date) return true;
+    const sDate = s.date.split("T")[0];
+    return sDate === tripDate || s.date.startsWith(tripDate) || s.date.includes(tripDate);
   });
   const selectedSaleIds = trip.selectedSaleIds;
-  const effectiveSales = Array.isArray(selectedSaleIds)
-    ? filteredSales.filter(s => selectedSaleIds.includes(s.id))
-    : filteredSales;
+  const effectiveSales = (isRevenueAuto && (!selectedSaleIds || selectedSaleIds.length === 0))
+    ? filteredSales
+    : (Array.isArray(selectedSaleIds) && selectedSaleIds.length > 0
+        ? filteredSales.filter(s => selectedSaleIds.includes(s.id))
+        : filteredSales);
 
   const autoRevenueMoney = effectiveSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
   const autoRevenueKg = effectiveSales.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
@@ -11765,6 +11897,13 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
           c.jsxs("div", {
             className: "flex items-center gap-2",
             children: [
+              c.jsxs("button", {
+                type: "button",
+                onClick: handleSyncFinance,
+                className: "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase transition-all cursor-pointer active:scale-95 flex items-center gap-1 shadow-sm",
+                title: "Đồng bộ số liệu cân & bán tôm mới nhất",
+                children: [c.jsx("span", { children: "🔄" }), " Đồng bộ"]
+              }),
               c.jsxs("button", {
                 type: "button",
                 onClick: () => setShowTripSettingsModal(true),

@@ -9,11 +9,22 @@ function getContractsDbPath() {
   return path.join(dir, 'contracts_db.json');
 }
 
+function getBackupContractsDbPath() {
+  const dir = path.resolve(process.cwd(), 'public');
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  return path.join(dir, 'contracts_db.json');
+}
+
 function loadContractsDb(): Record<string, any> {
   try {
     const file = getContractsDbPath();
     if (fs.existsSync(file)) {
-      return JSON.parse(fs.readFileSync(file, 'utf-8'));
+      const data = JSON.parse(fs.readFileSync(file, 'utf-8'));
+      if (data && Object.keys(data).length > 0) return data;
+    }
+    const backupFile = getBackupContractsDbPath();
+    if (fs.existsSync(backupFile)) {
+      return JSON.parse(fs.readFileSync(backupFile, 'utf-8'));
     }
   } catch (e) {}
   return {};
@@ -22,7 +33,12 @@ function loadContractsDb(): Record<string, any> {
 function saveContractsDb(data: Record<string, any>) {
   try {
     const file = getContractsDbPath();
-    fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf-8');
+    const str = JSON.stringify(data, null, 2);
+    fs.writeFileSync(file, str, 'utf-8');
+    try {
+      const backupFile = getBackupContractsDbPath();
+      fs.writeFileSync(backupFile, str, 'utf-8');
+    } catch (e2) {}
   } catch (e) {}
 }
 
@@ -129,11 +145,29 @@ const contractsApiPlugin = {
       // GET /api/contracts/:id
       const idMatch = pathname.match(/^\/api\/contracts\/([^/]+)$/);
       if (method === 'GET' && idMatch) {
-        const contractId = decodeURIComponent(idMatch[1]);
-        const contract = db[contractId] || 
-                         db[contractId.replace(/Đ/g, 'D')] || 
-                         db[contractId.replace(/D/g, 'Đ')] || 
-                         Object.values(db).find((c: any) => c && (c.id === contractId || c.id === contractId.replace(/Đ/g, 'D') || c.id === contractId.replace(/D/g, 'Đ')));
+        const rawId = decodeURIComponent(idMatch[1]).trim();
+        const cleanId = rawId.replace(/Đ/g, 'D').toUpperCase();
+        const digitsOnly = rawId.replace(/[^0-9]/g, '');
+
+        let contract = db[rawId] || 
+                       db[cleanId] || 
+                       db[rawId.replace(/D/g, 'Đ')] ||
+                       db['HDTCX-' + rawId] ||
+                       db['HDTCX-' + cleanId];
+
+        if (!contract) {
+          const list = Object.values(db);
+          contract = list.find((c: any) => {
+            if (!c || !c.id) return false;
+            const cId = String(c.id).replace(/Đ/g, 'D').trim().toUpperCase();
+            if (cId === cleanId) return true;
+            if (cId.replace(/[^0-9A-Z]/g, '') === cleanId.replace(/[^0-9A-Z]/g, '')) return true;
+            if (digitsOnly && digitsOnly.length >= 6 && String(c.id).includes(digitsOnly)) return true;
+            if (c.farmerId === rawId || c.pondId === rawId) return true;
+            return false;
+          });
+        }
+
         if (contract) {
           res.statusCode = 200;
           return res.end(JSON.stringify(contract));
@@ -151,11 +185,11 @@ const contractsApiPlugin = {
 
       // DELETE /api/contracts/:id
       if (method === 'DELETE' && idMatch) {
-        const contractId = decodeURIComponent(idMatch[1]);
-        if (db[contractId]) {
-          delete db[contractId];
-          saveContractsDb(db);
-        }
+        const contractId = decodeURIComponent(idMatch[1]).trim();
+        const cleanId = contractId.replace(/Đ/g, 'D').toUpperCase();
+        if (db[contractId]) delete db[contractId];
+        if (db[cleanId]) delete db[cleanId];
+        saveContractsDb(db);
         res.statusCode = 200;
         return res.end(JSON.stringify({ success: true, deletedId: contractId }));
       }
@@ -171,6 +205,8 @@ const contractsApiPlugin = {
               const now = Date.now();
               data._updatedAt = now;
               db[data.id] = data;
+              const cleanId = String(data.id).replace(/Đ/g, 'D').toUpperCase();
+              db[cleanId] = data;
               saveContractsDb(db);
               res.statusCode = 200;
               return res.end(JSON.stringify({ success: true, contract: data }));
