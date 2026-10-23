@@ -1396,11 +1396,14 @@ const Om = ({ setRoute: S, role: b }) => {
     }
   }, []);
 
-  // Auto-fill when shrimp type changes from predefined types
-  const standardShrimpList = w.useMemo(() => {
-    if (traderProfile.shrimpTypes && traderProfile.shrimpTypes.length > 0) {
-      return traderProfile.shrimpTypes;
-    }
+  // Dynamic list of shrimp types
+  const [shrimpTypesList, setShrimpTypesList] = w.useState(() => {
+    try {
+      const prof = getTraderProfileV3();
+      if (prof && prof.shrimpTypes && prof.shrimpTypes.length > 0) {
+        return prof.shrimpTypes;
+      }
+    } catch(e) {}
     return [
       { name: "Tôm càng sen", price: 160000, desc: "Tôm càng xanh loại 1, thịt chắc" },
       { name: "Tôm càng xào", price: 120000, desc: "Tôm càng size trung, tươi ngon" },
@@ -1410,16 +1413,94 @@ const Om = ({ setRoute: S, role: b }) => {
       { name: "Tôm thẻ chân trắng", price: 105000, desc: "Tôm thẻ công nghiệp" },
       { name: "Tôm sú oxy", price: 210000, desc: "Tôm sú sống oxy chạy hàng" }
     ];
-  }, [traderProfile]);
+  });
+  const standardShrimpList = shrimpTypesList;
 
-  const allFarmersList = w.useMemo(() => {
+  // Dynamic list of farmers
+  const [farmersList, setFarmersList] = w.useState(() => {
     try {
       const list = me.getFarmers();
       return Array.isArray(list) ? list : [];
     } catch(e) {
       return [];
     }
-  }, []);
+  });
+  const allFarmersList = farmersList;
+
+  // Add Farmer Modal States
+  const [showAddFarmerModal, setShowAddFarmerModal] = w.useState(false);
+  const [newFarmerName, setNewFarmerName] = w.useState("");
+  const [newFarmerPhone, setNewFarmerPhone] = w.useState("");
+  const [newFarmerAddress, setNewFarmerAddress] = w.useState("");
+
+  // Add Shrimp Type Modal States
+  const [showAddShrimpTypeModal, setShowAddShrimpTypeModal] = w.useState(false);
+  const [newShrimpTypeName, setNewShrimpTypeName] = w.useState("");
+  const [newShrimpTypeDesc, setNewShrimpTypeDesc] = w.useState("");
+
+  const handleSaveNewFarmer = () => {
+    if (!newFarmerName.trim()) {
+      alert("Vui lòng nhập họ tên chủ ao / nông dân!");
+      return;
+    }
+    const newFarmer = {
+      id: "farmer_" + Date.now(),
+      name: newFarmerName.trim(),
+      phone: newFarmerPhone.trim(),
+      address: newFarmerAddress.trim() || "Tại bờ ao",
+      defaultPrice: Number(A.price) || 160000,
+      defaultDeposit: 0,
+      shrimpType: A.riceType || "Tôm càng sen",
+      status: "ACTIVE",
+      createdAt: new Date().toISOString()
+    };
+    try {
+      me.addFarmer(newFarmer);
+      setFarmersList(me.getFarmers() || []);
+    } catch(e) {}
+    v(prev => ({
+      ...prev,
+      farmerName: newFarmer.name,
+      farmerPhone: newFarmer.phone,
+      contractId: ""
+    }));
+    setNewFarmerName("");
+    setNewFarmerPhone("");
+    setNewFarmerAddress("");
+    setShowAddFarmerModal(false);
+    setShowFarmerDropdown(false);
+    alert("✅ Đã thêm chủ ao \"" + newFarmer.name + "\" thành công!");
+  };
+
+  const handleSaveNewShrimpType = () => {
+    if (!newShrimpTypeName.trim()) {
+      alert("Vui lòng nhập tên loại tôm mới!");
+      return;
+    }
+    const name = newShrimpTypeName.trim();
+    const desc = newShrimpTypeDesc.trim() || "Tôm tuyển chọn tiêu chuẩn";
+    const newTypeObj = { id: "st_" + Date.now(), name, desc, price: 0 };
+    try {
+      const prof = getTraderProfileV3();
+      const updated = [...(prof.shrimpTypes || []), newTypeObj];
+      prof.shrimpTypes = updated;
+      prof.shrimpSizes = updated;
+      saveTraderProfileV3(prof);
+    } catch(e) {}
+    try {
+      const saved = localStorage.getItem("annong_custom_shrimp_tags");
+      let tags = saved ? JSON.parse(saved) : [];
+      if (!tags.includes(name)) tags.push(name);
+      localStorage.setItem("annong_custom_shrimp_tags", JSON.stringify(tags));
+    } catch(e) {}
+    setShrimpTypesList(prev => [...prev, newTypeObj]);
+    v(prev => ({ ...prev, riceType: name }));
+    setNewShrimpTypeName("");
+    setNewShrimpTypeDesc("");
+    setShowAddShrimpTypeModal(false);
+    setShowShrimpDropdown(false);
+    alert("✅ Đã thêm loại tôm \"" + name + "\" thành công!");
+  };
 
   const handleUpdateTare = (val) => {
     const num = Number(val) || 3.0;
@@ -1578,6 +1659,22 @@ const Om = ({ setRoute: S, role: b }) => {
       } catch(e) {}
     }
 
+    // Auto sync with finance data
+    try {
+      const fin = me.getFinanceData();
+      if (fin && fin.activeTrip) {
+        fin.activeTrip.shrimpPurchaseAuto = true;
+        fin.activeTrip.selectedSessionIds = null;
+        me.saveFinanceData(fin);
+      }
+    } catch(e) {}
+
+    const remCap = me.getRemainingCapital();
+    alert("✅ ĐÃ LƯU PHIẾU CÂN THÀNH CÔNG!\n\n" +
+          "💵 Tiền cân tôm: " + Number(totalMoneyFinal || 0).toLocaleString("vi-VN") + " VNĐ\n" +
+          "📉 Đã trừ tiền mua tôm vào nguồn vốn\n" +
+          "💰 SỐ VỐN CÒN LẠI: " + Number(remCap || 0).toLocaleString("vi-VN") + " VNĐ");
+
     localStorage.removeItem("active_vehicle_id");
     localStorage.removeItem("temp_weighing_info");
     setShowSettlementModal(false);
@@ -1645,6 +1742,10 @@ const Om = ({ setRoute: S, role: b }) => {
                 className: "font-black text-white text-lg uppercase italic truncate w-full tracking-tighter",
                 children: A.farmerName
               }),
+              c.jsxs("div", {
+                className: "text-[10px] font-black text-amber-200 uppercase bg-black/25 px-2.5 py-0.5 rounded-full mt-0.5 flex items-center gap-1 shadow-xs border border-amber-300/30",
+                children: ["💰 Vốn còn lại: ", Number(me.getRemainingCapital ? me.getRemainingCapital() : 200000000).toLocaleString("vi-VN"), " đ"]
+              }),
               U && c.jsxs("div", {
                 className: "text-[9px] font-black text-blue-200 uppercase italic bg-white/10 px-2 py-0.5 rounded-full mt-1",
                 children: [c.jsx(tc, { size: 10 }), " ", U.name]
@@ -1695,14 +1796,9 @@ const Om = ({ setRoute: S, role: b }) => {
                           }),
                           c.jsx("button", {
                             type: "button",
-                            onClick: () => {
-                              const newName = prompt("Nhập tên chủ ao mới hoặc khách lẻ:", A.farmerName || "");
-                              if (newName && newName.trim()) {
-                                v({ ...A, farmerName: newName.trim() });
-                              }
-                            },
-                            className: "text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase italic underline",
-                            children: "Đổi tên"
+                            onClick: () => setShowAddFarmerModal(true),
+                            className: "text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase italic font-bold",
+                            children: "+ Thêm Chủ Ao"
                           })
                         ]
                       }),
@@ -1742,6 +1838,24 @@ const Om = ({ setRoute: S, role: b }) => {
                       showFarmerDropdown && c.jsxs("div", {
                         className: "absolute left-0 right-0 top-full mt-1.5 z-[90] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto p-2 space-y-1.5",
                         children: [
+                          // Button + Thêm Chủ Ao Mới
+                          c.jsxs("button", {
+                            type: "button",
+                            onClick: () => {
+                              setShowAddFarmerModal(true);
+                              setShowFarmerDropdown(false);
+                            },
+                            className: "w-full p-2.5 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 rounded-xl text-left flex items-center gap-2 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 cursor-pointer",
+                            children: [
+                              c.jsx("span", { className: "text-base", children: "➕" }),
+                              c.jsxs("div", {
+                                children: [
+                                  c.jsx("div", { className: "font-black text-xs uppercase text-emerald-800 dark:text-emerald-300", children: "+ Thêm Chủ Ao Mới" }),
+                                  c.jsx("div", { className: "text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold", children: "Lưu vào danh sách & chọn cân ngay" })
+                                ]
+                              })
+                            ]
+                          }),
                           // Search Box in Dropdown
                           c.jsxs("div", {
                             className: "relative mb-1",
@@ -1761,13 +1875,15 @@ const Om = ({ setRoute: S, role: b }) => {
                           c.jsxs("button", {
                             type: "button",
                             onClick: () => {
-                              const customName = prompt("Nhập tên khách lẻ / chủ ao tự do:", "Khách Lẻ");
-                              if (customName) {
-                                v(prev => ({ ...prev, farmerName: customName, farmerPhone: "", contractId: "" }));
-                              }
+                              let customName = "Khách Lẻ";
+                              try {
+                                const input = prompt("Nhập tên khách lẻ / chủ ao tự do (hoặc để mặc định):", "Khách Lẻ");
+                                if (input && input.trim()) customName = input.trim();
+                              } catch(e) {}
+                              v(prev => ({ ...prev, farmerName: customName, farmerPhone: "", contractId: "" }));
                               setShowFarmerDropdown(false);
                             },
-                            className: "w-full p-2.5 bg-yellow-50 dark:bg-yellow-950/30 hover:bg-yellow-100 rounded-xl text-left flex items-center gap-2 border border-yellow-200 dark:border-yellow-800/40 text-yellow-900 dark:text-yellow-200",
+                            className: "w-full p-2.5 bg-yellow-50 dark:bg-yellow-950/30 hover:bg-yellow-100 rounded-xl text-left flex items-center gap-2 border border-yellow-200 dark:border-yellow-800/40 text-yellow-900 dark:text-yellow-200 cursor-pointer",
                             children: [
                               c.jsx(As, { size: 14, className: "text-yellow-700" }),
                               c.jsxs("div", {
@@ -1843,23 +1959,9 @@ const Om = ({ setRoute: S, role: b }) => {
                           }),
                           c.jsx("button", {
                             type: "button",
-                            onClick: () => {
-                              const customType = prompt("Nhập tên loại tôm mới:", A.riceType || "");
-                              if (customType && customType.trim()) {
-                                const trimmed = customType.trim();
-                                handleSelectShrimpType(trimmed);
-                                try {
-                                  const saved = localStorage.getItem("annong_custom_shrimp_tags");
-                                  let tags = saved ? JSON.parse(saved) : [];
-                                  if (!tags.includes(trimmed)) {
-                                    tags.push(trimmed);
-                                    localStorage.setItem("annong_custom_shrimp_tags", JSON.stringify(tags));
-                                  }
-                                } catch(e) {}
-                              }
-                            },
-                            className: "text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase italic underline",
-                            children: "Khác"
+                            onClick: () => setShowAddShrimpTypeModal(true),
+                            className: "text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase italic font-bold",
+                            children: "+ Thêm Loại Tôm"
                           })
                         ]
                       }),
@@ -1896,6 +1998,24 @@ const Om = ({ setRoute: S, role: b }) => {
                       showShrimpDropdown && c.jsxs("div", {
                         className: "absolute left-0 right-0 top-full mt-1.5 z-[90] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto p-2 space-y-1 animate-in fade-in",
                         children: [
+                          // Button + Thêm Loại Tôm Mới
+                          c.jsxs("button", {
+                            type: "button",
+                            onClick: () => {
+                              setShowAddShrimpTypeModal(true);
+                              setShowShrimpDropdown(false);
+                            },
+                            className: "w-full p-2.5 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 rounded-xl text-left flex items-center gap-2 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 cursor-pointer mb-1",
+                            children: [
+                              c.jsx("span", { className: "text-base", children: "➕" }),
+                              c.jsxs("div", {
+                                children: [
+                                  c.jsx("div", { className: "font-black text-xs uppercase text-emerald-800 dark:text-emerald-300", children: "+ Thêm Loại Tôm Mới" }),
+                                  c.jsx("div", { className: "text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold", children: "Lưu vào danh sách & chọn cân ngay" })
+                                ]
+                              })
+                            ]
+                          }),
                           // Shrimp items (Chỉ hiển thị tên loại tôm)
                           standardShrimpList.map(item => {
                             const isSelected = (A.riceType || "").toLowerCase() === item.name.toLowerCase();
@@ -2324,6 +2444,34 @@ const Om = ({ setRoute: S, role: b }) => {
                   ]
                 }),
 
+                // Capital Impact Box (Vốn ban đầu - Tiền cân tôm = Vốn còn lại)
+                c.jsxs("div", {
+                  className: "p-3.5 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-950/40 dark:to-yellow-950/30 rounded-2xl border-2 border-amber-300 dark:border-amber-700/60 space-y-1.5 shadow-xs text-xs",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center",
+                      children: [
+                        c.jsx("span", { className: "text-amber-900 dark:text-amber-200 font-bold", children: "🏦 Tổng vốn lưu động chuyến:" }),
+                        c.jsxs("span", { className: "font-mono font-bold text-gray-800 dark:text-gray-200", children: [Number(me.getRemainingCapital ? me.getRemainingCapital() : 200000000).toLocaleString("vi-VN"), " đ"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center text-red-600 font-bold",
+                      children: [
+                        c.jsx("span", { children: "📉 Trừ tiền mua tôm phiếu này:" }),
+                        c.jsxs("span", { className: "font-mono font-black", children: ["-", Number(totalMoneyFinal || 0).toLocaleString("vi-VN"), " đ"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center pt-1.5 border-t border-amber-300/60 dark:border-amber-700/60 text-sm font-black text-amber-950 dark:text-amber-100",
+                      children: [
+                        c.jsx("span", { children: "👉 VỐN CÒN LẠI DỰ KIẾN:" }),
+                        c.jsxs("span", { className: "font-mono font-black text-base text-emerald-700 dark:text-emerald-400", children: [Number((me.getRemainingCapital ? me.getRemainingCapital() : 200000000) - totalMoneyFinal).toLocaleString("vi-VN"), " VNĐ"] })
+                      ]
+                    })
+                  ]
+                }),
+
                 // Payment Status Switch
                 c.jsxs("div", {
                   onClick: () => se(!Q),
@@ -2384,6 +2532,181 @@ const Om = ({ setRoute: S, role: b }) => {
                     c.jsx(ec, { size: 22 }),
                     "Xác Nhận & Hoàn Tất Buổi Cân"
                   ]
+                })
+              ]
+            })
+          ]
+        })
+      }),
+
+      // MODAL 1: THÊM CHỦ AO MỚI
+      showAddFarmerModal && c.jsx("div", {
+        className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-800 space-y-4",
+          children: [
+            c.jsxs("div", {
+              className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+              children: [
+                c.jsxs("h3", {
+                  className: "text-base font-black text-gray-900 dark:text-gray-100 uppercase italic flex items-center gap-2",
+                  children: [
+                    c.jsx("span", { children: "🦐" }),
+                    "Thêm Chủ Ao Tôm Mới"
+                  ]
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowAddFarmerModal(false),
+                  className: "p-2 text-gray-400 hover:text-gray-600 rounded-full",
+                  children: c.jsx(_a, { size: 20 })
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "space-y-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Họ và tên chủ ao (*)"
+                    }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: newFarmerName,
+                      onChange: e => setNewFarmerName(e.target.value),
+                      placeholder: "Ví dụ: Chú Bảy Cà Mau, Anh Năm...",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Số điện thoại liên hệ"
+                    }),
+                    c.jsx("input", {
+                      type: "tel",
+                      value: newFarmerPhone,
+                      onChange: e => setNewFarmerPhone(e.target.value),
+                      placeholder: "Ví dụ: 0912345678",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Địa chỉ ao / Vị trí nuôi"
+                    }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: newFarmerAddress,
+                      onChange: e => setNewFarmerAddress(e.target.value),
+                      placeholder: "Ví dụ: Ấp 3, Thới Bình, Cà Mau",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "grid grid-cols-2 gap-3 pt-2",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowAddFarmerModal(false),
+                  className: "py-3 px-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 font-bold rounded-xl text-xs uppercase cursor-pointer",
+                  children: "Hủy bỏ"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: handleSaveNewFarmer,
+                  className: "py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase shadow-lg active:scale-95 transition-all cursor-pointer",
+                  children: "Lưu & Chọn Ngay"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+
+      // MODAL 2: THÊM LOẠI TÔM MỚI
+      showAddShrimpTypeModal && c.jsx("div", {
+        className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-800 space-y-4",
+          children: [
+            c.jsxs("div", {
+              className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+              children: [
+                c.jsxs("h3", {
+                  className: "text-base font-black text-gray-900 dark:text-gray-100 uppercase italic flex items-center gap-2",
+                  children: [
+                    c.jsx("span", { children: "⚖️" }),
+                    "Thêm Loại Tôm Mới"
+                  ]
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowAddShrimpTypeModal(false),
+                  className: "p-2 text-gray-400 hover:text-gray-600 rounded-full",
+                  children: c.jsx(_a, { size: 20 })
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "space-y-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Tên loại tôm (*)"
+                    }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: newShrimpTypeName,
+                      onChange: e => setNewShrimpTypeName(e.target.value),
+                      placeholder: "Ví dụ: Tôm lột, Tôm trứng, Tôm size 10...",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Mô tả / Tiêu chuẩn phân loại"
+                    }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: newShrimpTypeDesc,
+                      onChange: e => setNewShrimpTypeDesc(e.target.value),
+                      placeholder: "Ví dụ: Tôm sống tươi ngon, phân loại tại bờ ao",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "grid grid-cols-2 gap-3 pt-2",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowAddShrimpTypeModal(false),
+                  className: "py-3 px-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 font-bold rounded-xl text-xs uppercase cursor-pointer",
+                  children: "Hủy bỏ"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: handleSaveNewShrimpType,
+                  className: "py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase shadow-lg active:scale-95 transition-all cursor-pointer",
+                  children: "Lưu & Chọn Ngay"
                 })
               ]
             })
@@ -8701,6 +9024,25 @@ me.saveFinanceData = function(data) {
   }
 };
 
+me.getRemainingCapital = function() {
+  try {
+    const fin = me.getFinanceData();
+    const trip = (fin && fin.activeTrip) || {};
+    const investors = trip.investors || [];
+    const totalCapital = investors.reduce((acc, inv) => acc + Number(inv.amount || 0), 0) || 200000000;
+    const sessions = (me.getSessions && me.getSessions()) || [];
+    const totalBuyMoney = sessions.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+    const expenses = trip.expenses || [];
+    const totalExpenses = expenses.reduce((acc, e) => acc + Number(e.amount || 0), 0);
+    const sales = (me.getSales && me.getSales()) || [];
+    const completedSales = sales.filter(s => s.status === "COMPLETED" || s.status === "SETTLED" || s.isPaidFull);
+    const totalRevenue = completedSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+    return totalCapital - (totalBuyMoney + totalExpenses) + totalRevenue;
+  } catch(e) {
+    return 200000000;
+  }
+};
+
 me.getBuyers = function() {
   try {
     const raw = localStorage.getItem(Ot.BUYERS);
@@ -9897,7 +10239,11 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     me.addSale(newSale);
     refreshData();
     setRetailKg("");
-    alert("✅ Đã lưu thành công đơn bán lẻ: " + _e(newSale.totalMoney) + " đ (" + fmtKg(newSale.totalNet) + " kg)");
+    const remRetail = me.getRemainingCapital();
+    alert("✅ ĐÃ LƯU ĐƠN BÁN LẺ THÀNH CÔNG!\n\n" +
+          "💵 Tiền bán tôm: +" + _e(newSale.totalMoney) + " đ (" + fmtKg(newSale.totalNet) + " kg)\n" +
+          "📈 Tiền bán đã được cộng dồn vào quỹ vốn\n" +
+          "💰 SỐ VỐN HIỆN TẠI: " + _e(remRetail) + " VNĐ");
   };
 
   // 2. MARKET (CHỢ ĐẦU MỐI) STATES
@@ -10007,7 +10353,11 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     setSettlingSaleObj(null);
     setSettleKg("");
     setSettleMoney("");
-    alert("✅ Đã chốt đơn thành công! Doanh thu đã được cộng dồn vào hệ thống.");
+    const remSettle = me.getRemainingCapital();
+    alert("✅ ĐÃ CHỐT ĐƠN THÀNH CÔNG!\n\n" +
+          "💵 Tiền bán thực nhận: +" + _e(money) + " đ (" + fmtKg(kg) + " kg)\n" +
+          "📈 Tiền bán đã được cộng dồn vào quỹ vốn\n" +
+          "💰 SỐ VỐN HIỆN TẠI: " + _e(remSettle) + " VNĐ");
   };
 
   // Filtered lists for in-progress items
@@ -11681,6 +12031,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const netProfit = totalRevenue - totalExpenses;
   const isProfit = netProfit >= 0;
   const profitMarginPercent = totalExpenses > 0 ? ((netProfit / totalExpenses) * 100) : 0;
+  const remainingCapital = totalCapital - totalExpenses + totalRevenue;
 
   // Individual investor distribution
   const investorPayouts = investors.map(inv => {
@@ -11704,7 +12055,10 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     msg += "Ngày: " + tripDate + "\n";
     if (tripNote) msg += "Ghi chú: " + tripNote + "\n";
     msg += "================================\n";
-    msg += "1. NGUỒN VỐN GÓP: " + _fmt(totalCapital) + " đ\n";
+    msg += "💰 SỐ VỐN CÒN LẠI (QUỸ TIỀN MẶT HIỆN TẠI): " + _fmt(remainingCapital) + " đ\n";
+    msg += "   (Khấu trừ tiền mua tôm, chi phí và cộng dồn tiền bán)\n";
+    msg += "--------------------------------\n";
+    msg += "1. NGUỒN VỐN GÓP BAN ĐẦU: " + _fmt(totalCapital) + " đ\n";
     investors.forEach((inv, i) => {
       const pct = totalCapital > 0 ? ((inv.amount / totalCapital) * 100).toFixed(1) : "0.0";
       msg += "  " + (i + 1) + ". " + inv.name + ": " + _fmt(inv.amount) + " đ (" + pct + "%)\n";
@@ -12041,20 +12395,62 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Total Capital Card
+                // Real-Time Capital & Remaining Cash Balance Card
                 c.jsxs("div", {
-                  className: "p-4 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 rounded-2xl text-blue-950 flex justify-between items-center shadow-md",
+                  className: "p-4 bg-gradient-to-br from-amber-400 via-amber-300 to-yellow-400 rounded-3xl text-blue-950 shadow-lg space-y-3 border border-amber-300/60",
                   children: [
                     c.jsxs("div", {
+                      className: "flex justify-between items-start",
                       children: [
-                        c.jsx("span", { className: "text-[11px] font-black uppercase tracking-wider block opacity-80", children: "Tổng Quỹ Vốn Lưu Động Khả Dụng" }),
                         c.jsxs("div", {
-                          className: "text-3xl font-black font-mono tracking-tight",
-                          children: [_fmt(totalCapital), " ", c.jsx("span", { className: "text-base font-sans font-bold", children: "VNĐ" })]
+                          children: [
+                            c.jsx("span", { className: "text-[11px] font-black uppercase tracking-wider block text-blue-900/80", children: "💰 SỐ VỐN CÒN LẠI (QUỸ TIỀN MẶT HIỆN TẠI)" }),
+                            c.jsxs("div", {
+                              className: `text-3xl font-black font-mono tracking-tight ${remainingCapital < 0 ? "text-red-700" : "text-emerald-950"}`,
+                              children: [_fmt(remainingCapital), " ", c.jsx("span", { className: "text-base font-sans font-bold", children: "VNĐ" })]
+                            })
+                          ]
+                        }),
+                        c.jsx("span", {
+                          className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase shadow-sm ${remainingCapital >= 0 ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`,
+                          children: remainingCapital >= 0 ? "Đủ Vốn Khả Dụng" : "Âm Vốn Cần Nạp"
                         })
                       ]
                     }),
-                    c.jsx("div", { className: "text-4xl opacity-30", children: "🏦" })
+                    // Breakdown Formula
+                    c.jsxs("div", {
+                      className: "grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-amber-500/30 text-xs font-bold",
+                      children: [
+                        c.jsxs("div", {
+                          className: "bg-white/60 dark:bg-black/20 p-2 rounded-xl backdrop-blur-sm",
+                          children: [
+                            c.jsx("span", { className: "block text-[10px] text-gray-600 dark:text-gray-300 uppercase", children: "1. Vốn ban đầu" }),
+                            c.jsxs("span", { className: "font-mono font-black text-blue-900", children: [_fmt(totalCapital), " đ"] })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "bg-white/60 dark:bg-black/20 p-2 rounded-xl backdrop-blur-sm",
+                          children: [
+                            c.jsx("span", { className: "block text-[10px] text-red-600 uppercase", children: "2. Trừ mua tôm" }),
+                            c.jsxs("span", { className: "font-mono font-black text-red-700", children: ["-", _fmt(shrimpPurchaseMoney), " đ"] })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "bg-white/60 dark:bg-black/20 p-2 rounded-xl backdrop-blur-sm",
+                          children: [
+                            c.jsx("span", { className: "block text-[10px] text-amber-700 uppercase", children: "3. Trừ chi phí xe/công" }),
+                            c.jsxs("span", { className: "font-mono font-black text-amber-800", children: ["-", _fmt(totalOperationExpenses), " đ"] })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "bg-white/60 dark:bg-black/20 p-2 rounded-xl backdrop-blur-sm",
+                          children: [
+                            c.jsx("span", { className: "block text-[10px] text-emerald-700 uppercase", children: "4. Cộng bán tôm" }),
+                            c.jsxs("span", { className: "font-mono font-black text-emerald-800", children: ["+", _fmt(totalRevenue), " đ"] })
+                          ]
+                        })
+                      ]
+                    })
                   ]
                 }),
 
