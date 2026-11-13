@@ -409,28 +409,42 @@ const deserializeFromFirestore = (val) => {
   return result;
 };
 
-class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);if(await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0}),p.billingHistory&&Array.isArray(p.billingHistory))for(const O of p.billingHistory)O&&O.farmerPhone&&await this.pushToFarmerInbox(O)}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p))}catch(e){console.warn("Storage save error",e)}const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(b){if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const p=this.getSessions(),f=this.getFarmers(),O=this.getVehicles(),D={user:this.getUser(),lastUpdated:new Date().toISOString(),farmerDirectory:f,transportation:{list:O},billingHistory:p,config:this.getSettings()};Mn.syncToCloud(b,D)}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return alert(p.message),!1;const f=this.getSessions();return f.unshift(b),this.save(Ot.SESSIONS,f),!0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
-  const [dashDate, setDashDate] = w.useState(() => new Date().toISOString().split("T")[0]);
-  const dashSessions = w.useMemo(() => {
-    try {
-      return (me.getSessions && me.getSessions()) || [];
-    } catch(e) { return []; }
-  }, []);
-  const dashSales = w.useMemo(() => {
-    try {
-      return (me.getSales && me.getSales()) || [];
-    } catch(e) { return []; }
+class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0});if(p.billingHistory&&Array.isArray(p.billingHistory)){for(const O of p.billingHistory){O&&O.farmerPhone&&await this.pushToFarmerInbox(O);}}}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p));if(b===Ot.SETTINGS&&typeof document!=="undefined"){p&&p.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){console.warn("Storage save error",e)}emitAppDataUpdated_v4(b);const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(uidOverride){const f=this.getUser();const uid=uidOverride||(f&&f.uid);if(!uid||typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==uid)return;try{const p=this.getSessions(),dir=this.getFarmers(),veh=this.getVehicles();const sl=(this.getSales&&this.getSales())||JSON.parse(localStorage.getItem(Ot.SALES)||"[]");const fin=(this.getFinanceData&&this.getFinanceData())||JSON.parse(localStorage.getItem(Ot.FINANCE)||"null");const buy=(this.getBuyers&&this.getBuyers())||JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");const ctc=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");const prof=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");const D={user:f,lastUpdated:new Date().toISOString(),farmerDirectory:dir,transportation:{list:veh},billingHistory:p,config:this.getSettings(),sales:sl,finance:fin,buyers:buy,contracts:ctc,traderProfile:prof};Mn.syncToCloud(uid,D);}catch(err){console.warn("syncAllToCloud error:",err);}}static restoreFromCloud(Q){if(!Q||typeof Q!=="object")return;try{if(Array.isArray(Q.billingHistory)&&Q.billingHistory.length>0){const local=this.getSessions();const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.billingHistory.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SESSIONS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.farmerDirectory)&&Q.farmerDirectory.length>0){const local=this.getFarmers();const m=new Map();local.forEach(f=>f&&f.id&&m.set(f.id,f));Q.farmerDirectory.forEach(f=>f&&f.id&&m.set(f.id,f));localStorage.setItem(Ot.FARMERS,JSON.stringify(Array.from(m.values())));}if(Q.transportation&&Array.isArray(Q.transportation.list)&&Q.transportation.list.length>0){const local=this.getVehicles();const m=new Map();local.forEach(v=>v&&v.id&&m.set(v.id,v));Q.transportation.list.forEach(v=>v&&v.id&&m.set(v.id,v));localStorage.setItem(Ot.VEHICLES,JSON.stringify(Array.from(m.values())));}if(Q.config&&typeof Q.config==="object"){const cur=this.getSettings();localStorage.setItem(Ot.SETTINGS,JSON.stringify({...cur,...Q.config}));}if(Array.isArray(Q.sales)&&Q.sales.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.SALES)||"[]");}catch(e){}const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.sales.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SALES,JSON.stringify(Array.from(m.values())));}if(Q.finance&&typeof Q.finance==="object"){const localRaw=localStorage.getItem(Ot.FINANCE);if(!localRaw){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}else{try{const localFin=JSON.parse(localRaw);const sL=(localFin&&localFin.savedTrips)||[];const sC=(Q.finance&&Q.finance.savedTrips)||[];const tm=new Map();sL.forEach(t=>t&&t.id&&tm.set(t.id,t));sC.forEach(t=>t&&t.id&&tm.set(t.id,t));const mergedFin={...Q.finance,...localFin,savedTrips:Array.from(tm.values()),activeTrip:(localFin&&localFin.activeTrip)?localFin.activeTrip:Q.finance.activeTrip};localStorage.setItem(Ot.FINANCE,JSON.stringify(mergedFin));}catch(e){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}}}if(Array.isArray(Q.buyers)&&Q.buyers.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");}catch(e){}const m=new Map();local.forEach(b=>b&&b.id&&m.set(b.id,b));Q.buyers.forEach(b=>b&&b.id&&m.set(b.id,b));localStorage.setItem(Ot.BUYERS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.contracts)&&Q.contracts.length>0){let local=[];try{local=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");}catch(e){}const m=new Map();local.forEach(c=>c&&c.id&&m.set(c.id,c));Q.contracts.forEach(c=>c&&c.id&&m.set(c.id,c));localStorage.setItem("tom_electronic_contracts",JSON.stringify(Array.from(m.values())));}if(Q.traderProfile&&typeof Q.traderProfile==="object"){let cur={};try{cur=JSON.parse(localStorage.getItem("tom_trader_profile")||"{}");}catch(e){}const merged={...cur,...Q.traderProfile};localStorage.setItem("tom_trader_profile",JSON.stringify(merged));if(typeof window!=="undefined")window._cachedTraderProfile=merged;}}catch(err){console.warn("restoreFromCloud warning:",err);}}static async performCloudSync(){const u=this.getUser();if(!u||!u.uid)return{ok:false,message:"Chưa đăng nhập tài khoản Chủ Vựa"};try{const doc=await Mn.loadFromCloud(u.uid);if(doc){this.restoreFromCloud(doc);}this.syncAllToCloud(u.uid);try{const st=this.getSettings();if(typeof document!=="undefined"){st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){}if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("cloud_sync");}return{ok:true,message:"Đồng bộ đám mây thành công!"};}catch(err){return{ok:false,message:err&&err.message?err.message:"Lỗi đồng bộ"};}}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return alert(p.message),!1;const f=this.getSessions();return f.unshift(b),this.save(Ot.SESSIONS,f),!0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){let tpTare=1;try{const tp=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");if(tp&&tp.tarePer100Kg!==undefined&&tp.tarePer100Kg!=="")tpTare=Number(tp.tarePer100Kg);}catch(e){}const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,tarePer100Kg:tpTare,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
+  const [dashDate, setDashDate] = w.useState(() => getLocalYYYYMMDD_v4());
+  const [dashSessions, setDashSessions] = w.useState(() => {
+    try { return (me.getSessions && me.getSessions()) || []; } catch(e) { return []; }
+  });
+  const [dashSales, setDashSales] = w.useState(() => {
+    try { return (me.getSales && me.getSales()) || []; } catch(e) { return []; }
+  });
+  const [dashFinanceSummary, setDashFinanceSummary] = w.useState(() => (me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: 0, totalExpenses: 0, netProfit: 0, isProfit: true }));
+  w.useEffect(() => {
+    const syncDash = () => {
+      try {
+        setDashSessions((me.getSessions && me.getSessions()) || []);
+        setDashSales((me.getSales && me.getSales()) || []);
+        if (me.getFinanceSummary) setDashFinanceSummary(me.getFinanceSummary());
+      } catch(e) {}
+    };
+    window.addEventListener("app-data-updated", syncDash);
+    window.addEventListener("cloud_data_synced", syncDash);
+    window.addEventListener("focus", syncDash);
+    return () => {
+      window.removeEventListener("app-data-updated", syncDash);
+      window.removeEventListener("cloud_data_synced", syncDash);
+      window.removeEventListener("focus", syncDash);
+    };
   }, []);
 
   // Filter today or selected date
-  const todayBuySessions = dashSessions.filter(s => s.date && s.date.startsWith(dashDate));
+  const todayBuySessions = dashSessions.filter(s => s.date && isSameLocalDate_v4(s.date, dashDate));
   const activeBuySessions = todayBuySessions.length > 0 ? todayBuySessions : dashSessions.slice(0, 5);
   const totalBuyKg = activeBuySessions.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
   const totalBuyMoney = activeBuySessions.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
 
   // Completed sales
   const completedSales = dashSales.filter(s => s.status === "COMPLETED" || s.status === "SETTLED" || s.isPaidFull);
-  const todayCompletedSales = completedSales.filter(s => s.date && s.date.startsWith(dashDate));
+  const todayCompletedSales = completedSales.filter(s => s.date && isSameLocalDate_v4(s.date, dashDate));
   const activeCompletedSales = todayCompletedSales.length > 0 ? todayCompletedSales : completedSales.slice(0, 8);
   const totalSoldKg = activeCompletedSales.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
   const totalSoldMoney = activeCompletedSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
@@ -451,7 +465,7 @@ class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static as
     const r = Math.round(n * 10) / 10;
     return Number.isInteger(r) ? String(r) : String(r);
   };
-const[p,f]=w.useState(!1),[O,D]=w.useState(!1),U=w.useMemo(()=>me.getSessions(),[]),Y=me.isPremium(),A=U.length,v=10,_=!Y&&A>=8,z=()=>{D(!0),setTimeout(()=>{D(!1),f(!1),alert("Cảm ơn bạn! Yêu cầu nâng cấp Premium đã được gửi đi. Đội ngũ Tôm Càng Xanh sẽ liên hệ bạn trong giây lát để hoàn tất thanh toán.")},1500)},L=[{title:"Lưu trữ không giới hạn",desc:"Xóa bỏ giới hạn 10 phiếu cân.",icon:c.jsx(Zd,{size:18})},{title:"Xuất báo cáo Excel/PDF",desc:"Gửi phiếu chuyên nghiệp qua Zalo.",icon:c.jsx(xm,{size:18})},{title:"Phân tích tài chính",desc:"Báo cáo lợi nhuận vận chuyển & kho.",icon:c.jsx(I1,{size:18})},{title:"Đồng bộ Nông dân",desc:"Tự động đẩy dữ liệu cho đối tác.",icon:c.jsx(Os,{size:18})},{title:"Hỗ trợ ưu tiên 24/7",desc:"Đường dây nóng xử lý sự cố tức thì.",icon:c.jsx(Pd,{size:18})}];return c.jsxs("div",{className:"p-4 space-y-6 bg-gray-50 dark:bg-[#121212] h-full overflow-y-auto pb-20 transition-colors relative",children:[/* Premium banner removed */c.jsxs("div",{className:"bg-[#1e4ea1] rounded-[40px] p-6 text-white shadow-2xl relative overflow-hidden",children:[c.jsxs("h2",{className:"text-3xl font-black italic uppercase tracking-tighter mb-6",children:["Dữ liệu ",b==="OWNER"?"Vựa":"Cá nhân"]}),c.jsxs("div",{className:"grid grid-cols-2 gap-3 relative z-10",children:[c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Phiếu đã lưu"}),c.jsxs("span",{className:"text-2xl font-black tabular-nums",children:[A," ",null]})]}),c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Trạng thái"}),c.jsx("span",{className:"text-sm font-black uppercase flex items-center gap-1",children:"Không giới hạn"})]})]}),c.jsx(Sm,{size:140,className:"absolute -right-8 -bottom-8 opacity-10"})]}),_&&c.jsxs("div",{className:"bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 animate-bounce",children:[c.jsx(Nm,{size:20}),c.jsx("p",{className:"text-[11px] font-black uppercase leading-tight",children:"Sắp đạt giới hạn lưu trữ! Hãy nâng cấp để không gián đoạn công việc."})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("button",{onClick:()=>S(re.WEIGHING),className:"col-span-2 bg-[#2e7d32] p-6 rounded-[35px] shadow-xl flex items-center justify-between text-white active:scale-95 border-b-8 border-green-900",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center",children:c.jsx($u,{size:32})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none",children:"Bắt đầu cân"}),c.jsx("span",{className:"text-[9px] font-bold opacity-70 uppercase tracking-widest",children:"Ghi chép sản lượng tức thì"})]})]}),c.jsx(em,{})]}),c.jsxs("button",{onClick:()=>S(re.SALES),className:"col-span-2 relative overflow-hidden bg-gradient-to-r from-[#1e4ea1] via-[#1d4ed8] to-[#0284c7] hover:brightness-105 text-white p-5 sm:p-6 rounded-[32px] shadow-xl shadow-blue-900/30 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group",children:[c.jsxs("div",{className:"flex items-center gap-4 relative z-10",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 group-hover:bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-xs border border-white/30 shadow-inner transition-colors",children:c.jsx(F1,{size:32,className:"text-white drop-shadow"})}),c.jsxs("div",{className:"text-left space-y-1",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none tracking-tight",children:"Bán Ra & Xuất Tôm"}),c.jsx("span",{className:"px-2 py-0.5 bg-emerald-400 text-gray-950 font-black text-[9px] rounded-full uppercase tracking-wider shadow-xs animate-pulse",children:"Không trừ bì"})]}),c.jsx("span",{className:"text-[10px] font-bold opacity-90 uppercase tracking-wider block text-blue-100",children:"🏢 Xí nghiệp • 🛒 Bán lẻ • 🏪 Chợ thủy hải sản"})]})]}),c.jsxs("div",{className:"flex items-center gap-2 relative z-10",children:[c.jsx("span",{className:"hidden md:inline text-xs font-black uppercase bg-white/20 px-3 py-1.5 rounded-xl backdrop-blur-xs",children:"Vào Bán"}),c.jsx(em,{})]}),c.jsx("div",{className:"absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"})]}),c.jsxs("button",{onClick:()=>S(re.HISTORY),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center",children:c.jsx(Fd,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Lịch sử"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Xem lại phiếu cân"})]})]}),c.jsxs("button",{onClick:()=>S(re.FARMERS),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center",children:c.jsx(Os,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Chủ Ao"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Danh sách ao tôm"})]})]})]}),
+const[p,f]=w.useState(!1),[O,D]=w.useState(!1),U=dashSessions,Y=me.isPremium(),A=U.length,v=10,_=!Y&&A>=8,z=()=>{D(!0),setTimeout(()=>{D(!1),f(!1),alert("Cảm ơn bạn! Yêu cầu nâng cấp Premium đã được gửi đi. Đội ngũ Tôm Càng Xanh sẽ liên hệ bạn trong giây lát để hoàn tất thanh toán.")},1500)},L=[{title:"Lưu trữ không giới hạn",desc:"Xóa bỏ giới hạn 10 phiếu cân.",icon:c.jsx(Zd,{size:18})},{title:"Xuất báo cáo Excel/PDF",desc:"Gửi phiếu chuyên nghiệp qua Zalo.",icon:c.jsx(xm,{size:18})},{title:"Phân tích tài chính",desc:"Báo cáo lợi nhuận vận chuyển & kho.",icon:c.jsx(I1,{size:18})},{title:"Đồng bộ Nông dân",desc:"Tự động đẩy dữ liệu cho đối tác.",icon:c.jsx(Os,{size:18})},{title:"Hỗ trợ ưu tiên 24/7",desc:"Đường dây nóng xử lý sự cố tức thì.",icon:c.jsx(Pd,{size:18})}];return c.jsxs("div",{className:"p-4 space-y-6 bg-gray-50 dark:bg-[#121212] h-full overflow-y-auto pb-20 transition-colors relative",children:[/* Premium banner removed */c.jsxs("div",{className:"bg-[#1e4ea1] rounded-[40px] p-6 text-white shadow-2xl relative overflow-hidden",children:[c.jsxs("h2",{className:"text-3xl font-black italic uppercase tracking-tighter mb-6",children:["Dữ liệu ",b==="OWNER"?"Vựa":"Cá nhân"]}),c.jsxs("div",{className:"grid grid-cols-2 gap-3 relative z-10",children:[c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Phiếu đã lưu"}),c.jsxs("span",{className:"text-2xl font-black tabular-nums",children:[A," ",null]})]}),c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Trạng thái"}),c.jsx("span",{className:"text-sm font-black uppercase flex items-center gap-1",children:"Không giới hạn"})]})]}),c.jsx(Sm,{size:140,className:"absolute -right-8 -bottom-8 opacity-10"})]}),_&&c.jsxs("div",{className:"bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 animate-bounce",children:[c.jsx(Nm,{size:20}),c.jsx("p",{className:"text-[11px] font-black uppercase leading-tight",children:"Sắp đạt giới hạn lưu trữ! Hãy nâng cấp để không gián đoạn công việc."})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("button",{onClick:()=>S(re.WEIGHING),className:"col-span-2 bg-[#2e7d32] p-6 rounded-[35px] shadow-xl flex items-center justify-between text-white active:scale-95 border-b-8 border-green-900",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center",children:c.jsx($u,{size:32})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none",children:"Bắt đầu cân"}),c.jsx("span",{className:"text-[9px] font-bold opacity-70 uppercase tracking-widest",children:"Ghi chép sản lượng tức thì"})]})]}),c.jsx(em,{})]}),c.jsxs("button",{onClick:()=>S(re.SALES),className:"col-span-2 relative overflow-hidden bg-gradient-to-r from-[#1e4ea1] via-[#1d4ed8] to-[#0284c7] hover:brightness-105 text-white p-5 sm:p-6 rounded-[32px] shadow-xl shadow-blue-900/30 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group",children:[c.jsxs("div",{className:"flex items-center gap-4 relative z-10",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 group-hover:bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-xs border border-white/30 shadow-inner transition-colors",children:c.jsx(F1,{size:32,className:"text-white drop-shadow"})}),c.jsxs("div",{className:"text-left space-y-1",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none tracking-tight",children:"Bán Ra & Xuất Tôm"}),c.jsx("span",{className:"px-2 py-0.5 bg-emerald-400 text-gray-950 font-black text-[9px] rounded-full uppercase tracking-wider shadow-xs animate-pulse",children:"Không trừ bì"})]}),c.jsx("span",{className:"text-[10px] font-bold opacity-90 uppercase tracking-wider block text-blue-100",children:"🏢 Xí nghiệp • 🛒 Bán lẻ • 🏪 Chợ thủy hải sản"})]})]}),c.jsxs("div",{className:"flex items-center gap-2 relative z-10",children:[c.jsx("span",{className:"hidden md:inline text-xs font-black uppercase bg-white/20 px-3 py-1.5 rounded-xl backdrop-blur-xs",children:"Vào Bán"}),c.jsx(em,{})]}),c.jsx("div",{className:"absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"})]}),c.jsxs("button",{onClick:()=>S(re.HISTORY),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center",children:c.jsx(Fd,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Lịch sử"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Xem lại phiếu cân"})]})]}),c.jsxs("button",{onClick:()=>S(re.FARMERS),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center",children:c.jsx(Os,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Chủ Ao"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Danh sách ao tôm"})]})]})]}),
       // BẢNG CÂN ĐỐI THU MUA & XUẤT TÔM
       c.jsxs("div", {
         className: "bg-white dark:bg-gray-900 rounded-[35px] p-5 border border-gray-200 dark:border-gray-800 shadow-lg space-y-4 mt-2",
@@ -562,8 +576,8 @@ const[p,f]=w.useState(!1),[O,D]=w.useState(!1),U=w.useMemo(()=>me.getSessions(),
                   c.jsx("div", { className: "w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm", children: "💰" }),
                   c.jsxs("div", {
                     children: [
-                      c.jsx("span", { className: "text-xs font-black uppercase text-indigo-950 dark:text-indigo-200 block", children: "Quyết Toán Tài Chính & Chia Lời Lỗ Hùn Vốn" }),
-                      c.jsx("span", { className: "text-[10px] text-gray-500 dark:text-gray-400 font-bold", children: "Góp vốn • Hạch toán chi phí • Chia lãi theo tỷ lệ %" })
+                      c.jsx("span", { className: "text-xs font-black uppercase text-indigo-950 dark:text-indigo-200 block", children: "Quản Lý Tài Chính (Tự Doanh 100%)" }),
+                      c.jsx("span", { className: "text-[10px] text-gray-600 dark:text-gray-300 font-bold", children: "Doanh thu: " + _fmt(dashFinanceSummary.totalRevenue) + " đ • Chi phí: " + _fmt(dashFinanceSummary.totalExpenses) + " đ • Lời ròng: " + (dashFinanceSummary.isProfit ? "+" : "") + _fmt(dashFinanceSummary.netProfit) + " đ" })
                     ]
                   })
                 ]
@@ -573,6 +587,222 @@ const[p,f]=w.useState(!1),[O,D]=w.useState(!1),U=w.useMemo(()=>me.getSessions(),
           })
         ]
       }),p&&c.jsxs("div",{className:"fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4 animate-in fade-in duration-300",children:[c.jsx("div",{className:"absolute inset-0 bg-black/60 backdrop-blur-md",onClick:()=>f(!1)}),c.jsxs("div",{className:"relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-[40px] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 duration-500",children:[c.jsxs("div",{className:"bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 p-8 text-white relative",children:[c.jsx("button",{onClick:()=>f(!1),className:"absolute top-6 right-6 p-2 bg-black/10 rounded-full hover:bg-black/20 transition-colors",children:c.jsx(_a,{size:20})}),c.jsxs("div",{className:"flex flex-col items-center text-center space-y-2",children:[c.jsx("div",{className:"bg-white/20 p-4 rounded-3xl backdrop-blur-sm mb-2 shadow-inner",children:c.jsx(Fu,{size:48,className:"text-yellow-200"})}),c.jsx("h3",{className:"text-3xl font-black uppercase italic tracking-tighter",children:"Tôm Càng Xanh Premium"}),c.jsx("p",{className:"text-xs font-bold opacity-80 uppercase tracking-widest",children:"Mở khóa toàn bộ tính năng chuyên nghiệp"})]}),c.jsx(bm,{className:"absolute top-10 left-10 opacity-20 animate-spin-slow",size:40})]}),c.jsxs("div",{className:"p-8 space-y-6",children:[c.jsx("div",{className:"space-y-4",children:L.map((te,Q)=>c.jsxs("div",{className:"flex items-start gap-4",children:[c.jsx("div",{className:"mt-1 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 p-2 rounded-xl",children:te.icon}),c.jsxs("div",{children:[c.jsx("h4",{className:"font-black text-gray-800 dark:text-gray-100 text-sm uppercase italic",children:te.title}),c.jsx("p",{className:"text-xs text-gray-500 dark:text-gray-400 font-bold leading-tight",children:te.desc})]}),c.jsx(lm,{size:18,className:"ml-auto text-green-500 mt-1 shrink-0"})]},Q))}),c.jsxs("div",{className:"pt-4 border-t dark:border-gray-800",children:[c.jsxs("div",{className:"flex justify-between items-center mb-6",children:[c.jsxs("div",{children:[c.jsx("span",{className:"text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase italic",children:"Gói trọn đời"}),c.jsx("p",{className:"text-2xl font-black text-gray-900 dark:text-white italic tracking-tighter",children:"999.000 VNĐ"})]}),c.jsx("div",{className:"bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-4 py-1 rounded-full text-[10px] font-black uppercase",children:"Ưu đãi -50%"})]}),c.jsx("button",{onClick:z,disabled:O,className:"w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white p-6 rounded-[30px] font-black uppercase text-lg shadow-xl shadow-orange-500/20 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50",children:O?c.jsx("div",{className:"w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"}):c.jsxs(c.Fragment,{children:[c.jsx(Zd,{size:24,fill:"currentColor"}),"Nâng cấp ngay"]})}),c.jsx("p",{className:"text-center text-[10px] text-gray-400 mt-4 font-bold uppercase",children:"Thanh toán an toàn • Hỗ trợ 24/7"})]})]})]})]})]})};class Am{static getRate(){switch(me.getSettings().voiceSpeed){case"rất nhanh":return 2;case"nhanh":return 1.5;case"vừa":return 1.2;case"chậm":return .8;case"rất chậm":return .5;default:return 1.2}}static speak(b){if(!("speechSynthesis"in window))return;try{window.speechSynthesis.cancel();setTimeout(()=>{try{const p=new SpeechSynthesisUtterance(String(b));p.lang="vi-VN";p.rate=this.getRate();window.speechSynthesis.speak(p);}catch(err){}},20);}catch(e){}}static speakWeight(b){if(b===null||b===undefined||b===""||b===0)return;const numStr=String(b).replace(".", " phẩy ").replace(",", " phẩy ");this.speak(`${numStr} ký`);}static playBeep(){const b=new(window.AudioContext||window.webkitAudioContext),p=b.createOscillator(),f=b.createGain();p.connect(f),f.connect(b.destination),p.type="sine",p.frequency.setValueAtTime(880,b.currentTime),f.gain.setValueAtTime(.1,b.currentTime),p.start(),p.stop(b.currentTime+.1)}}
+const copyToClipboardRobust = (text) => {
+  if (!text) return false;
+  const fallbackCopy = (t) => {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = t;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      ta.style.top = "-9999px";
+      ta.style.opacity = "0";
+      ta.setAttribute("readonly", "");
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      ta.setSelectionRange(0, 99999);
+      const res = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return res;
+    } catch (err) {
+      return false;
+    }
+  };
+
+  if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+    try {
+      navigator.clipboard.writeText(text).catch(() => {
+        fallbackCopy(text);
+      });
+      return true;
+    } catch (e) {
+      return fallbackCopy(text);
+    }
+  }
+  return fallbackCopy(text);
+};
+
+const Xm_UniversalZaloModal = ({ title, content, onClose }) => {
+  const [copied, setCopied] = w.useState(true);
+  const [phoneInput, setPhoneInput] = w.useState("");
+
+  w.useEffect(() => {
+    copyToClipboardRobust(content);
+  }, [content]);
+
+  const handleCopyAgain = () => {
+    copyToClipboardRobust(content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  const handleOpenZaloApp = () => {
+    copyToClipboardRobust(content);
+    const clean = phoneInput.replace(/[^0-9]/g, "");
+    if (clean) {
+      window.location.href = `https://zalo.me/${clean}`;
+    } else {
+      window.location.href = "zalo://";
+      setTimeout(() => {
+        window.open("https://chat.zalo.me", "_blank");
+      }, 1000);
+    }
+  };
+
+  const handleOpenZaloWeb = () => {
+    copyToClipboardRobust(content);
+    const clean = phoneInput.replace(/[^0-9]/g, "");
+    const targetUrl = clean ? `https://zalo.me/${clean}` : "https://chat.zalo.me";
+    window.open(targetUrl, "_blank");
+  };
+
+  const handleNativeShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: title || "Tôm Càng Xanh",
+        text: content
+      }).catch(() => {});
+    } else {
+      handleCopyAgain();
+    }
+  };
+
+  return c.jsx("div", {
+    className: "fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200",
+    children: c.jsxs("div", {
+      className: "bg-white dark:bg-[#1a1a1a] rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-gray-100 dark:border-gray-800 space-y-4 max-h-[92vh] flex flex-col font-sans",
+      children: [
+        c.jsxs("div", {
+          className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+          children: [
+            c.jsxs("div", {
+              className: "flex items-center gap-2.5",
+              children: [
+                c.jsx("div", {
+                  className: "w-9 h-9 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-lg",
+                  children: "Z"
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("h3", {
+                      className: "text-sm sm:text-base font-black text-gray-900 dark:text-gray-100 uppercase tracking-tight",
+                      children: title || "Chia Sẻ & Sao Kê Zalo"
+                    }),
+                    c.jsx("span", {
+                      className: "text-[10px] text-gray-400 font-bold block",
+                      children: "Tự động sao chép • Mở trực tiếp App hoặc Web"
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsx("button", {
+              type: "button",
+              onClick: onClose,
+              className: "p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full cursor-pointer",
+              children: c.jsx(_a, { size: 20 })
+            })
+          ]
+        }),
+        c.jsxs("div", {
+          className: "p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-2xl flex items-center gap-3 text-emerald-800 dark:text-emerald-300",
+          children: [
+            c.jsx("span", { className: "text-2xl", children: "✅" }),
+            c.jsxs("div", {
+              className: "text-xs",
+              children: [
+                c.jsx("p", { className: "font-black uppercase tracking-tight", children: "Đã sao chép nội dung bảng sao kê!" }),
+                c.jsx("p", { className: "text-[11px] opacity-90", children: "Bấm nút bên dưới để mở Zalo và dán (Paste) gửi cho đối tác hoặc cổ đông." })
+              ]
+            })
+          ]
+        }),
+        c.jsxs("div", {
+          className: "space-y-1.5",
+          children: [
+            c.jsx("label", {
+              className: "text-[11px] font-black uppercase text-gray-500 block",
+              children: "Số điện thoại Zalo người nhận (tùy chọn):"
+            }),
+            c.jsx("input", {
+              type: "tel",
+              placeholder: "Ví dụ: 0912345678 (để trống nếu muốn tự chọn trên Zalo)",
+              value: phoneInput,
+              onChange: e => setPhoneInput(e.target.value),
+              className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-xs outline-none focus:border-blue-500 text-gray-900 dark:text-gray-100"
+            })
+          ]
+        }),
+        c.jsxs("div", {
+          className: "grid grid-cols-2 gap-2.5 pt-1",
+          children: [
+            c.jsxs("button", {
+              type: "button",
+              onClick: handleOpenZaloApp,
+              className: "py-3 px-3 bg-[#0068FF] hover:bg-[#0052cc] text-white font-black rounded-xl text-xs uppercase flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer",
+              children: [
+                c.jsx("span", { className: "text-base", children: "📱" }),
+                "Mở App Zalo"
+              ]
+            }),
+            c.jsxs("button", {
+              type: "button",
+              onClick: handleOpenZaloWeb,
+              className: "py-3 px-3 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800 hover:bg-blue-100 font-black rounded-xl text-xs uppercase flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer",
+              children: [
+                c.jsx("span", { className: "text-base", children: "🌐" }),
+                "Mở Zalo Web"
+              ]
+            })
+          ]
+        }),
+        c.jsxs("div", {
+          className: "flex gap-2",
+          children: [
+            c.jsxs("button", {
+              type: "button",
+              onClick: handleCopyAgain,
+              className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-xs uppercase flex items-center justify-center gap-1 cursor-pointer",
+              children: [
+                c.jsx("span", { children: "📋" }),
+                copied ? "Đã chép lại ✓" : "Sao chép lại"
+              ]
+            }),
+            c.jsxs("button", {
+              type: "button",
+              onClick: handleNativeShare,
+              className: "flex-1 py-2.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 font-bold rounded-xl text-xs uppercase flex items-center justify-center gap-1 cursor-pointer",
+              children: [
+                c.jsx("span", { children: "📤" }),
+                "Chia sẻ khác"
+              ]
+            })
+          ]
+        }),
+        c.jsxs("div", {
+          className: "flex-1 overflow-hidden flex flex-col space-y-1 pt-1",
+          children: [
+            c.jsxs("div", {
+              className: "flex justify-between items-center text-[10px] text-gray-400 font-bold uppercase",
+              children: [
+                c.jsx("span", { children: "Nội dung sao kê chi tiết:" }),
+                c.jsxs("span", { children: [content.length, " ký tự"] })
+              ]
+            }),
+            c.jsx("textarea", {
+              readOnly: true,
+              value: content,
+              onClick: e => e.target.select(),
+              className: "w-full p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl font-mono text-[11px] leading-relaxed text-gray-800 dark:text-gray-200 flex-1 outline-none resize-none select-all h-36"
+            })
+          ]
+        })
+      ]
+    })
+  });
+};
+
 const numberToWordsVN_v3 = (num) => {
   if (!num || isNaN(num) || num <= 0) return "Không đồng";
   const units = ["", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
@@ -604,6 +834,42 @@ const numberToWordsVN_v3 = (num) => {
   if (d > 0) s += readGroup(d) + " ";
   s = s.trim() + " đồng";
   return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+const getLocalYYYYMMDD_v4 = (dInput) => {
+  try {
+    const d = dInput instanceof Date ? dInput : (dInput ? new Date(dInput) : new Date());
+    if (isNaN(d.getTime())) {
+      const now = new Date();
+      return now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+    }
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  } catch (e) {
+    const now = new Date();
+    return now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+  }
+};
+
+const isSameLocalDate_v4 = (dateVal, targetYMD) => {
+  if (!dateVal || !targetYMD) return false;
+  if (typeof dateVal === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateVal.trim())) {
+    return dateVal.trim() === targetYMD;
+  }
+  return getLocalYYYYMMDD_v4(dateVal) === targetYMD;
+};
+
+const parseNumericSetting_v4 = (val, fallback) => {
+  if (val === undefined || val === null || val === "") return fallback;
+  const n = Number(val);
+  return Number.isFinite(n) ? n : fallback;
+};
+
+const emitAppDataUpdated_v4 = (source) => {
+  try {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("app-data-updated", { detail: { source: source || "app", at: Date.now() } }));
+    }
+  } catch (e) {}
 };
 
 const getDefaultTraderProfileV3 = () => ({
@@ -728,27 +994,29 @@ if (typeof window !== "undefined") {
     } catch(e) {}
   }, 100);
 };const Xm_OverviewTab = ({ setRoute, onViewDetail, role }) => {
-  const [selectedDate, setSelectedDate] = w.useState(() => {
-    const d = new Date();
-    return d.toISOString().split("T")[0];
-  });
+  const [selectedDate, setSelectedDate] = w.useState(() => getLocalYYYYMMDD_v4());
   const [filterMode, setFilterMode] = w.useState("DATE"); // "DATE" | "ALL"
   const [sessions, setSessions] = w.useState([]);
 
   w.useEffect(() => {
-    try {
-      const list = me.getSessions();
-      setSessions(Array.isArray(list) ? list : []);
-    } catch (e) {}
+    const refreshOverview = () => {
+      try {
+        const list = me.getSessions();
+        setSessions(Array.isArray(list) ? list : []);
+      } catch (e) {}
+    };
+    refreshOverview();
+    window.addEventListener("app-data-updated", refreshOverview);
+    window.addEventListener("cloud_data_synced", refreshOverview);
+    return () => {
+      window.removeEventListener("app-data-updated", refreshOverview);
+      window.removeEventListener("cloud_data_synced", refreshOverview);
+    };
   }, []);
 
   const filteredSessions = w.useMemo(() => {
     if (filterMode === "ALL") return sessions;
-    return sessions.filter(s => {
-      if (!s.date) return false;
-      const sDate = s.date.split("T")[0];
-      return sDate === selectedDate;
-    });
+    return sessions.filter(s => s.date && isSameLocalDate_v4(s.date, selectedDate));
   }, [sessions, selectedDate, filterMode]);
 
   const stats = w.useMemo(() => {
@@ -772,8 +1040,9 @@ if (typeof window !== "undefined") {
       if (Array.isArray(s.batches) && s.batches.length > 0) {
         s.batches.forEach(b => {
           const tName = (b.typeName || b.riceType || "Tôm loại khác").trim();
-          const bKg = Number(b.netWeight || 0);
-          const bMoney = Number(b.totalMoney || (bKg * (Number(b.price) || 0)));
+          const bKg = Number(b.net ?? b.netWeight ?? 0);
+          const bPrice = Number(b.unitPrice ?? b.price ?? 0);
+          const bMoney = Number(b.money ?? b.totalMoney ?? (bKg * bPrice));
           if (!typeMap[tName]) typeMap[tName] = { name: tName, kg: 0, money: 0, count: 0 };
           typeMap[tName].kg += bKg;
           typeMap[tName].money += bMoney;
@@ -803,7 +1072,7 @@ if (typeof window !== "undefined") {
     setFilterMode("DATE");
     const d = new Date();
     d.setDate(d.getDate() - offsetDays);
-    setSelectedDate(d.toISOString().split("T")[0]);
+    setSelectedDate(getLocalYYYYMMDD_v4(d));
   };
 
   const fmtVND = (v) => Number(v || 0).toLocaleString("vi-VN") + " đ";
@@ -861,12 +1130,12 @@ if (typeof window !== "undefined") {
                     children: [
                       c.jsx("button", {
                         onClick: () => setQuickDate(0),
-                        className: `px-2.5 py-1 rounded-lg text-xs font-black uppercase transition-all ${filterMode === "DATE" && selectedDate === new Date().toISOString().split("T")[0] ? "bg-green-600 text-white shadow-sm" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`,
+                        className: `px-2.5 py-1 rounded-lg text-xs font-black uppercase transition-all ${filterMode === "DATE" && selectedDate === getLocalYYYYMMDD_v4() ? "bg-green-600 text-white shadow-sm" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`,
                         children: "Hôm nay"
                       }),
                       c.jsx("button", {
                         onClick: () => setQuickDate(1),
-                        className: `px-2.5 py-1 rounded-lg text-xs font-black uppercase transition-all ${filterMode === "DATE" && selectedDate === new Date(Date.now() - 86400000).toISOString().split("T")[0] ? "bg-green-600 text-white shadow-sm" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`,
+                        className: `px-2.5 py-1 rounded-lg text-xs font-black uppercase transition-all ${filterMode === "DATE" && selectedDate === getLocalYYYYMMDD_v4(new Date(Date.now() - 86400000)) ? "bg-green-600 text-white shadow-sm" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`,
                         children: "Hôm qua"
                       }),
                       c.jsx("button", {
@@ -1316,9 +1585,10 @@ const Om = ({ setRoute: S, role: b }) => {
     const r = Math.round(n * 100) / 100;
     return Number.isInteger(r) ? String(r) : String(r);
   };
-  const p = w.useMemo(() => me.getSettings(), []);
+  const [p, setSettingsState] = w.useState(() => me.getSettings());
   const f = w.useRef(null);
-  const traderProfile = w.useMemo(() => getTraderProfileV3(), []);
+  const [traderProfile, setTraderProfileState] = w.useState(() => getTraderProfileV3());
+  const [finLiveSummary, setFinLiveSummary] = w.useState(() => (me.getFinanceSummary ? me.getFinanceSummary() : { shrimpPurchaseMoney: 0, totalRevenue: 0, netProfit: 0, isProfit: true }));
 
   // Is viewing / editing parameters (true) or active weighing (false)
   const [O, D] = w.useState(true);
@@ -1330,22 +1600,30 @@ const Om = ({ setRoute: S, role: b }) => {
 
   // Settlement modal state
   const [showSettlementModal, setShowSettlementModal] = w.useState(false);
+  const [zaloModalContent, setZaloModalContent] = w.useState(null);
   // Dropdown states for Pond Owner & Shrimp Type
   const [showFarmerDropdown, setShowFarmerDropdown] = w.useState(false);
   const [farmerSearch, setFarmerSearch] = w.useState("");
   const [showShrimpDropdown, setShowShrimpDropdown] = w.useState(false);
-  // Tare deduction setting: 100kg shrimp tare X kg (default 3.0 kg)
+  // Tare deduction setting: 100kg shrimp tare X kg (supports 0 kg cleanly)
   const [tarePer100Kg, setTarePer100Kg] = w.useState(() => {
     try {
       const stored = localStorage.getItem("temp_weighing_info");
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (parsed && parsed.tarePer100Kg) return Number(parsed.tarePer100Kg);
+        if (parsed && parsed.tarePer100Kg !== undefined && parsed.tarePer100Kg !== null && parsed.tarePer100Kg !== "") {
+          return parseNumericSetting_v4(parsed.tarePer100Kg, 1);
+        }
+        if (parsed && parsed.tareSpec && typeof parsed.tareSpec === "string") {
+          const mTare = parsed.tareSpec.match(/(\d+(\.\d+)?)\s*kg/i);
+          if (mTare && mTare[1] !== undefined) return parseNumericSetting_v4(mTare[1], 1);
+        }
       }
       const s = me.getSettings();
-      return Number(s.tarePer100Kg) || 3.0;
+      const prof = getTraderProfileV3();
+      return parseNumericSetting_v4(s.tarePer100Kg, parseNumericSetting_v4(prof.tarePer100Kg, 1));
     } catch(e) {
-      return 3.0;
+      return 1;
     }
   });
 
@@ -1379,28 +1657,54 @@ const Om = ({ setRoute: S, role: b }) => {
   const [L, te] = w.useState(0);  // impurityWeight / Tạp chất
   const [Q, se] = w.useState(false); // isPaidFull (Đã trả / Chưa trả)
 
-  // Load contracts and active vehicle
+  // Load contracts, vehicle, and live sync listeners
   w.useEffect(() => {
-    try {
-      const rawC = localStorage.getItem("tom_electronic_contracts");
-      if (rawC) {
-        const arr = JSON.parse(rawC);
-        if (Array.isArray(arr)) setContractsList(arr);
-      }
-    } catch(e) {}
+    const syncOmLists = () => {
+      try {
+        const rawC = localStorage.getItem("tom_electronic_contracts");
+        if (rawC) {
+          const arr = JSON.parse(rawC);
+          if (Array.isArray(arr)) setContractsList(arr);
+        }
+      } catch(e) {}
+      try {
+        setFarmersList(me.getFarmers() || []);
+        setSettingsState(me.getSettings());
+        const prof = getTraderProfileV3();
+        setTraderProfileState(prof);
+        if (prof && Array.isArray(prof.shrimpTypes) && prof.shrimpTypes.length > 0) {
+          setShrimpTypesList(prof.shrimpTypes);
+        }
+        if (me.getFinanceSummary) setFinLiveSummary(me.getFinanceSummary());
+      } catch(e) {}
+    };
+    syncOmLists();
 
     const vId = localStorage.getItem("active_vehicle_id");
     if (vId) {
       const foundV = me.getVehicles().find(et => et.id === vId);
       if (foundV) Y(foundV);
     }
+    window.addEventListener("app-data-updated", syncOmLists);
+    window.addEventListener("cloud_data_synced", syncOmLists);
+    window.addEventListener("trader-profile-updated", syncOmLists);
+    window.addEventListener("tom_contract_updated", syncOmLists);
+    return () => {
+      window.removeEventListener("app-data-updated", syncOmLists);
+      window.removeEventListener("cloud_data_synced", syncOmLists);
+      window.removeEventListener("trader-profile-updated", syncOmLists);
+      window.removeEventListener("tom_contract_updated", syncOmLists);
+    };
   }, []);
 
-  // Auto-fill when shrimp type changes from predefined types
-  const standardShrimpList = w.useMemo(() => {
-    if (traderProfile.shrimpTypes && traderProfile.shrimpTypes.length > 0) {
-      return traderProfile.shrimpTypes;
-    }
+  // Dynamic list of shrimp types
+  const [shrimpTypesList, setShrimpTypesList] = w.useState(() => {
+    try {
+      const prof = getTraderProfileV3();
+      if (prof && prof.shrimpTypes && prof.shrimpTypes.length > 0) {
+        return prof.shrimpTypes;
+      }
+    } catch(e) {}
     return [
       { name: "Tôm càng sen", price: 160000, desc: "Tôm càng xanh loại 1, thịt chắc" },
       { name: "Tôm càng xào", price: 120000, desc: "Tôm càng size trung, tươi ngon" },
@@ -1410,36 +1714,112 @@ const Om = ({ setRoute: S, role: b }) => {
       { name: "Tôm thẻ chân trắng", price: 105000, desc: "Tôm thẻ công nghiệp" },
       { name: "Tôm sú oxy", price: 210000, desc: "Tôm sú sống oxy chạy hàng" }
     ];
-  }, [traderProfile]);
+  });
+  const standardShrimpList = shrimpTypesList;
 
-  const allFarmersList = w.useMemo(() => {
+  // Dynamic list of farmers
+  const [farmersList, setFarmersList] = w.useState(() => {
     try {
       const list = me.getFarmers();
       return Array.isArray(list) ? list : [];
     } catch(e) {
       return [];
     }
-  }, []);
+  });
+  const allFarmersList = farmersList;
+
+  // Add Farmer Modal States
+  const [showAddFarmerModal, setShowAddFarmerModal] = w.useState(false);
+  const [newFarmerName, setNewFarmerName] = w.useState("");
+  const [newFarmerPhone, setNewFarmerPhone] = w.useState("");
+  const [newFarmerAddress, setNewFarmerAddress] = w.useState("");
+
+  // Add Shrimp Type Modal States
+  const [showAddShrimpTypeModal, setShowAddShrimpTypeModal] = w.useState(false);
+  const [newShrimpTypeName, setNewShrimpTypeName] = w.useState("");
+  const [newShrimpTypeDesc, setNewShrimpTypeDesc] = w.useState("");
+
+  const handleSaveNewFarmer = () => {
+    if (!newFarmerName.trim()) {
+      alert("Vui lòng nhập họ tên chủ ao / nông dân!");
+      return;
+    }
+    const newFarmer = {
+      id: "farmer_" + Date.now(),
+      name: newFarmerName.trim(),
+      phone: newFarmerPhone.trim(),
+      address: newFarmerAddress.trim() || "Tại bờ ao",
+      defaultPrice: Number(A.price) || 160000,
+      defaultDeposit: 0,
+      shrimpType: A.riceType || "Tôm càng sen",
+      status: "ACTIVE",
+      createdAt: new Date().toISOString()
+    };
+    try {
+      me.addFarmer(newFarmer);
+      setFarmersList(me.getFarmers() || []);
+    } catch(e) {}
+    v(prev => ({
+      ...prev,
+      farmerName: newFarmer.name,
+      farmerPhone: newFarmer.phone,
+      contractId: ""
+    }));
+    setNewFarmerName("");
+    setNewFarmerPhone("");
+    setNewFarmerAddress("");
+    setShowAddFarmerModal(false);
+    setShowFarmerDropdown(false);
+    alert("✅ Đã thêm chủ ao \"" + newFarmer.name + "\" thành công!");
+  };
+
+  const handleSaveNewShrimpType = () => {
+    if (!newShrimpTypeName.trim()) {
+      alert("Vui lòng nhập tên loại tôm mới!");
+      return;
+    }
+    const name = newShrimpTypeName.trim();
+    const desc = newShrimpTypeDesc.trim() || "Tôm tuyển chọn tiêu chuẩn";
+    const newTypeObj = { id: "st_" + Date.now(), name, desc, price: 0 };
+    try {
+      const prof = getTraderProfileV3();
+      const updated = [...(prof.shrimpTypes || []), newTypeObj];
+      prof.shrimpTypes = updated;
+      prof.shrimpSizes = updated;
+      saveTraderProfileV3(prof);
+    } catch(e) {}
+    try {
+      const saved = localStorage.getItem("annong_custom_shrimp_tags");
+      let tags = saved ? JSON.parse(saved) : [];
+      if (!tags.includes(name)) tags.push(name);
+      localStorage.setItem("annong_custom_shrimp_tags", JSON.stringify(tags));
+    } catch(e) {}
+    setShrimpTypesList(prev => [...prev, newTypeObj]);
+    v(prev => ({ ...prev, riceType: name }));
+    setNewShrimpTypeName("");
+    setNewShrimpTypeDesc("");
+    setShowAddShrimpTypeModal(false);
+    setShowShrimpDropdown(false);
+    alert("✅ Đã thêm loại tôm \"" + name + "\" thành công!");
+  };
 
   const handleUpdateTare = (val) => {
-    const num = Number(val) || 3.0;
+    const num = parseNumericSetting_v4(val, 1);
     setTarePer100Kg(num);
     v(prev => ({ ...prev, tareSpec: `100kg tôm trừ bì ${num} kg`, tarePer100Kg: num }));
     try {
       const s = me.getSettings();
       me.save(Ot.SETTINGS, { ...s, tarePer100Kg: num });
+      const prof = getTraderProfileV3();
+      if (prof && Number(prof.tarePer100Kg) !== num) {
+        saveTraderProfileV3({ ...prof, tarePer100Kg: num, tareRatioValue: num });
+      }
     } catch(e) {}
   };
 
   const handleSelectShrimpType = (typeName) => {
-    const found = traderProfile.shrimpTypes && traderProfile.shrimpTypes.find(t => t.name.toLowerCase() === typeName.toLowerCase());
-    if (found && found.price) {
-      v(prev => ({ ...prev, riceType: found.name, price: found.price }));
-    } else {
-      v(prev => ({ ...prev, riceType: typeName }));
-    }
+    v(prev => ({ ...prev, riceType: typeName }));
   };
-
   // Select farmer from contract
   const handleSelectContract = (contract) => {
     if (!contract) return;
@@ -1459,7 +1839,7 @@ const Om = ({ setRoute: S, role: b }) => {
   const Oe = w.useMemo(() => _.flat(2).filter($ => $ > 0), [_]);
   const De = w.useMemo(() => Math.round(Oe.reduce(($, Te) => $ + Te, 0) * 100) / 100, [Oe]);
   const J = w.useMemo(() => Oe.length, [Oe]);
-  const Z = w.useMemo(() => { const gross = De; const rate = Number(tarePer100Kg) || 3.0; return Math.round((gross * rate / 100) * 100) / 100; }, [De, tarePer100Kg]);
+  const Z = w.useMemo(() => { const gross = De; const rate = parseNumericSetting_v4(tarePer100Kg, 1); return Math.round((gross * rate / 100) * 100) / 100; }, [De, tarePer100Kg]);
   const currentNet = w.useMemo(() => Math.max(0, De - Z - L), [De, Z, L]);
   const currentGrossTotal = De;
   const currentMoney = w.useMemo(() => Math.round(currentNet * Number(A.price || 0)), [currentNet, A.price]);
@@ -1572,17 +1952,49 @@ const Om = ({ setRoute: S, role: b }) => {
 
     me.addSession(newSession);
 
-    // If connected to a contract, mark contract as "Ao đã cân"
+    // Mark matching contract AND pond in Chủ Ao as completed/weighed
     if (A.contractId) {
       try {
         const rawC = localStorage.getItem("tom_electronic_contracts");
         if (rawC) {
           const arr = JSON.parse(rawC);
-          const updated = arr.map(c => c.id === A.contractId ? { ...c, status: "COMPLETED", completedAt: new Date().toISOString(), sessionId } : c);
-          localStorage.setItem("tom_electronic_contracts", JSON.stringify(updated));
+          const updatedC = arr.map(ct => ct.id === A.contractId ? { ...ct, status: "COMPLETED", completedAt: new Date().toISOString(), sessionId } : ct);
+          localStorage.setItem("tom_electronic_contracts", JSON.stringify(updatedC));
+          const matchedContract = updatedC.find(ct => ct.id === A.contractId);
+          if (matchedContract && typeof saveContract === "function") saveContract(matchedContract);
         }
       } catch(e) {}
     }
+    try {
+      const fList = me.getFarmers();
+      if (Array.isArray(fList) && (A.pondId || A.contractId)) {
+        let changed = false;
+        const nextFarmers = fList.map(fm => {
+          if ((A.pondId && fm.id === A.pondId) || (A.contractId && fm.contractId === A.contractId)) {
+            changed = true;
+            return { ...fm, weighed: true, status: "WEIGHED", weighedAt: new Date().toISOString(), sessionId };
+          }
+          return fm;
+        });
+        if (changed) me.save(Ot.FARMERS, nextFarmers);
+      }
+    } catch(e) {}
+
+    // Auto sync with finance data
+    try {
+      const fin = me.getFinanceData();
+      if (fin && fin.activeTrip) {
+        fin.activeTrip.shrimpPurchaseAuto = true;
+        fin.activeTrip.selectedSessionIds = null;
+        me.saveFinanceData(fin);
+      }
+    } catch(e) {}
+
+    const finSum = me.getFinanceSummary ? me.getFinanceSummary() : { shrimpPurchaseMoney: totalMoneyFinal, netProfit: -totalMoneyFinal, isProfit: false };
+    alert("✅ ĐÃ LƯU PHIẾU CÂN & ĐỒNG BỘ TÀI CHÍNH!\n\n" +
+          "🦐 Phiếu này: " + fmtKg(totalNetAllTypes) + " kg • " + Number(totalMoneyFinal || 0).toLocaleString("vi-VN") + " VNĐ\n" +
+          "📉 Tổng chi mua tôm kỳ này: " + Number(finSum.shrimpPurchaseMoney || 0).toLocaleString("vi-VN") + " VNĐ\n" +
+          "📊 Lợi nhuận ròng hiện tại: " + (finSum.isProfit ? "+" : "") + Number(finSum.netProfit || 0).toLocaleString("vi-VN") + " VNĐ");
 
     localStorage.removeItem("active_vehicle_id");
     localStorage.removeItem("temp_weighing_info");
@@ -1591,7 +2003,7 @@ const Om = ({ setRoute: S, role: b }) => {
   };
 
   // Quick Zalo Share message
-  const handleShareZalo = () => {
+  const handleShareZalo = async () => {
     const allBatches = [...completedBatches];
     if (currentNet > 0 || J > 0) {
       allBatches.push({
@@ -1623,8 +2035,19 @@ const Om = ({ setRoute: S, role: b }) => {
     msg += `Trạng thái: ${Q ? "ĐÃ THANH TOÁN ĐỦ 100%" : "CHƯA THANH TOÁN"}\n`;
     msg += `Kính chúc Quý khách vụ mùa bội thu!`;
 
-    const zaloUrl = `https://zalo.me/share?text=${encodeURIComponent(msg)}`;
-    window.open(zaloUrl, "_blank");
+    await copyToClipboardRobust(msg);
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Phiếu cân tôm - ${A.farmerName}`,
+          text: msg
+        });
+      } catch (err) {
+        setZaloModalContent(msg);
+      }
+    } else {
+      setZaloModalContent(msg);
+    }
   };
 
   return c.jsxs("div", {
@@ -1650,6 +2073,10 @@ const Om = ({ setRoute: S, role: b }) => {
               c.jsx("span", {
                 className: "font-black text-white text-lg uppercase italic truncate w-full tracking-tighter",
                 children: A.farmerName
+              }),
+              c.jsxs("div", {
+                className: "text-[10px] font-black text-emerald-200 uppercase bg-black/25 px-2.5 py-0.5 rounded-full mt-0.5 flex items-center gap-1 shadow-xs border border-emerald-300/30",
+                children: ["📊 Lời ròng kỳ: ", (finLiveSummary.isProfit ? "+" : "") + Number(finLiveSummary.netProfit || 0).toLocaleString("vi-VN"), " đ"]
               }),
               U && c.jsxs("div", {
                 className: "text-[9px] font-black text-blue-200 uppercase italic bg-white/10 px-2 py-0.5 rounded-full mt-1",
@@ -1701,14 +2128,9 @@ const Om = ({ setRoute: S, role: b }) => {
                           }),
                           c.jsx("button", {
                             type: "button",
-                            onClick: () => {
-                              const newName = prompt("Nhập tên chủ ao mới hoặc khách lẻ:", A.farmerName || "");
-                              if (newName && newName.trim()) {
-                                v({ ...A, farmerName: newName.trim() });
-                              }
-                            },
-                            className: "text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase italic underline",
-                            children: "Đổi tên"
+                            onClick: () => setShowAddFarmerModal(true),
+                            className: "text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase italic font-bold",
+                            children: "+ Thêm Chủ Ao"
                           })
                         ]
                       }),
@@ -1748,6 +2170,24 @@ const Om = ({ setRoute: S, role: b }) => {
                       showFarmerDropdown && c.jsxs("div", {
                         className: "absolute left-0 right-0 top-full mt-1.5 z-[90] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto p-2 space-y-1.5",
                         children: [
+                          // Button + Thêm Chủ Ao Mới
+                          c.jsxs("button", {
+                            type: "button",
+                            onClick: () => {
+                              setShowAddFarmerModal(true);
+                              setShowFarmerDropdown(false);
+                            },
+                            className: "w-full p-2.5 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 rounded-xl text-left flex items-center gap-2 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 cursor-pointer",
+                            children: [
+                              c.jsx("span", { className: "text-base", children: "➕" }),
+                              c.jsxs("div", {
+                                children: [
+                                  c.jsx("div", { className: "font-black text-xs uppercase text-emerald-800 dark:text-emerald-300", children: "+ Thêm Chủ Ao Mới" }),
+                                  c.jsx("div", { className: "text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold", children: "Lưu vào danh sách & chọn cân ngay" })
+                                ]
+                              })
+                            ]
+                          }),
                           // Search Box in Dropdown
                           c.jsxs("div", {
                             className: "relative mb-1",
@@ -1767,13 +2207,15 @@ const Om = ({ setRoute: S, role: b }) => {
                           c.jsxs("button", {
                             type: "button",
                             onClick: () => {
-                              const customName = prompt("Nhập tên khách lẻ / chủ ao tự do:", "Khách Lẻ");
-                              if (customName) {
-                                v(prev => ({ ...prev, farmerName: customName, farmerPhone: "", contractId: "" }));
-                              }
+                              let customName = "Khách Lẻ";
+                              try {
+                                const input = prompt("Nhập tên khách lẻ / chủ ao tự do (hoặc để mặc định):", "Khách Lẻ");
+                                if (input && input.trim()) customName = input.trim();
+                              } catch(e) {}
+                              v(prev => ({ ...prev, farmerName: customName, farmerPhone: "", contractId: "" }));
                               setShowFarmerDropdown(false);
                             },
-                            className: "w-full p-2.5 bg-yellow-50 dark:bg-yellow-950/30 hover:bg-yellow-100 rounded-xl text-left flex items-center gap-2 border border-yellow-200 dark:border-yellow-800/40 text-yellow-900 dark:text-yellow-200",
+                            className: "w-full p-2.5 bg-yellow-50 dark:bg-yellow-950/30 hover:bg-yellow-100 rounded-xl text-left flex items-center gap-2 border border-yellow-200 dark:border-yellow-800/40 text-yellow-900 dark:text-yellow-200 cursor-pointer",
                             children: [
                               c.jsx(As, { size: 14, className: "text-yellow-700" }),
                               c.jsxs("div", {
@@ -1836,7 +2278,7 @@ const Om = ({ setRoute: S, role: b }) => {
                       })
                     ]
                   }),
-                  // Nút 2: Chọn Loại / Size Tôm (Có Dropdown thả xuống)
+                  // Nút 2: Chọn Loại / Size Tôm (Chỉ hiển thị tên loại tôm, không hiển thị giá)
                   c.jsxs("div", {
                     className: "space-y-1 relative",
                     children: [
@@ -1849,45 +2291,34 @@ const Om = ({ setRoute: S, role: b }) => {
                           }),
                           c.jsx("button", {
                             type: "button",
-                            onClick: () => {
-                              const customType = prompt("Nhập tên loại tôm mới:", A.riceType || "");
-                              if (customType && customType.trim()) {
-                                handleSelectShrimpType(customType.trim());
-                              }
-                            },
-                            className: "text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase italic underline",
-                            children: "Khác"
+                            onClick: () => setShowAddShrimpTypeModal(true),
+                            className: "text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase italic font-bold",
+                            children: "+ Thêm Loại Tôm"
                           })
                         ]
                       }),
-                      // Dropdown Trigger Button
+                      // Dropdown Trigger Button (Chỉ hiển thị tên loại tôm, không hiển thị giá)
                       c.jsxs("button", {
                         type: "button",
                         onClick: () => {
                           setShowShrimpDropdown(!showShrimpDropdown);
                           setShowFarmerDropdown(false);
                         },
-                        className: `w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-[0.98] ${
+                        className: `w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all active:scale-[0.98] ${
                           showShrimpDropdown
                             ? "bg-blue-50 border-blue-500 dark:bg-blue-950/40 dark:border-blue-400 shadow-md"
                             : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300"
                         }`,
                         children: [
-                          c.jsxs("div", {
+                          c.jsx("div", {
                             className: "truncate flex-1 pr-2",
-                            children: [
-                              c.jsxs("div", {
-                                className: "text-base font-black text-blue-950 dark:text-blue-200 uppercase truncate flex items-center gap-1.5",
-                                children: [
-                                  c.jsx("span", { children: "🦐" }),
-                                  c.jsx("span", { children: A.riceType || "Chọn Loại Tôm..." })
-                                ]
-                              }),
-                              c.jsxs("div", {
-                                className: "text-[10px] font-bold text-gray-400 font-mono",
-                                children: [Number(A.price || 0).toLocaleString(), " đ/kg"]
-                              })
-                            ]
+                            children: c.jsxs("div", {
+                              className: "text-base font-black text-blue-950 dark:text-blue-200 uppercase truncate flex items-center gap-2",
+                              children: [
+                                c.jsx("span", { className: "text-xl", children: "🦐" }),
+                                c.jsx("span", { children: A.riceType || "Chọn Loại / Size Tôm..." })
+                              ]
+                            })
                           }),
                           c.jsx("span", {
                             className: `text-xs font-black text-gray-500 transition-transform duration-200 ${showShrimpDropdown ? "rotate-180" : ""}`,
@@ -1895,64 +2326,105 @@ const Om = ({ setRoute: S, role: b }) => {
                           })
                         ]
                       }),
-                      // Dropdown Menu List
+                      // Dropdown Menu List (Chỉ hiển thị tên loại tôm, không hiển thị giá tôm)
                       showShrimpDropdown && c.jsxs("div", {
                         className: "absolute left-0 right-0 top-full mt-1.5 z-[90] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto p-2 space-y-1 animate-in fade-in",
                         children: [
-                          // Shrimp items
-                          standardShrimpList.map(item => c.jsxs("button", {
-                            key: item.name,
+                          // Button + Thêm Loại Tôm Mới
+                          c.jsxs("button", {
                             type: "button",
                             onClick: () => {
-                              v(prev => ({
-                                ...prev,
-                                riceType: item.name,
-                                price: item.price || prev.price
-                              }));
+                              setShowAddShrimpTypeModal(true);
                               setShowShrimpDropdown(false);
                             },
-                            className: `w-full p-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl text-left border transition-colors flex items-center justify-between ${
-                              (A.riceType || "").toLowerCase() === item.name.toLowerCase()
-                                ? "border-green-500 bg-green-50/50 dark:bg-green-950/30"
-                                : "border-transparent hover:border-gray-200 dark:hover:border-gray-700"
-                            }`,
+                            className: "w-full p-2.5 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 rounded-xl text-left flex items-center gap-2 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 cursor-pointer mb-1",
                             children: [
+                              c.jsx("span", { className: "text-base", children: "➕" }),
                               c.jsxs("div", {
                                 children: [
-                                  c.jsx("div", { className: "font-black text-xs uppercase text-gray-800 dark:text-gray-100", children: item.name }),
-                                  item.desc && c.jsx("div", { className: "text-[9px] text-gray-400 italic", children: item.desc })
-                                ]
-                              }),
-                              item.price && c.jsxs("div", {
-                                className: "text-right shrink-0",
-                                children: [
-                                  c.jsxs("span", { className: "font-mono font-bold text-xs text-green-700 dark:text-green-400", children: [Number(item.price).toLocaleString(), "đ"] }),
-                                  c.jsx("span", { className: "text-[9px] text-gray-400 block", children: "/kg" })
+                                  c.jsx("div", { className: "font-black text-xs uppercase text-emerald-800 dark:text-emerald-300", children: "+ Thêm Loại Tôm Mới" }),
+                                  c.jsx("div", { className: "text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold", children: "Lưu vào danh sách & chọn cân ngay" })
                                 ]
                               })
                             ]
-                          })),
+                          }),
+                          // Shrimp items (Chỉ hiển thị tên loại tôm)
+                          standardShrimpList.map(item => {
+                            const isSelected = (A.riceType || "").toLowerCase() === item.name.toLowerCase();
+                            return c.jsxs("button", {
+                              key: item.name,
+                              type: "button",
+                              onClick: () => {
+                                v(prev => ({
+                                  ...prev,
+                                  riceType: item.name
+                                }));
+                                setShowShrimpDropdown(false);
+                              },
+                              className: `w-full p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl text-left border transition-colors flex items-center justify-between ${
+                                isSelected
+                                  ? "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-black"
+                                  : "border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+                              }`,
+                              children: [
+                                c.jsxs("div", {
+                                  className: "flex items-center gap-2.5",
+                                  children: [
+                                    c.jsx("span", { className: "text-lg", children: "🦐" }),
+                                    c.jsxs("div", {
+                                      children: [
+                                        c.jsx("div", { className: "font-black text-sm uppercase text-gray-900 dark:text-gray-100", children: item.name }),
+                                        item.desc && c.jsx("div", { className: "text-[10px] text-gray-400 italic", children: item.desc })
+                                      ]
+                                    })
+                                  ]
+                                }),
+                                isSelected && c.jsx("span", { className: "text-emerald-600 dark:text-emerald-400 font-black text-sm", children: "✓" })
+                              ]
+                            });
+                          }),
                           // Custom type button
-                          c.jsxs("button", {
+                          c.jsx("button", {
                             type: "button",
                             onClick: () => {
                               const customName = prompt("Nhập tên loại tôm khác:", "");
                               if (customName && customName.trim()) {
-                                const customPrice = prompt("Nhập đơn giá (đ/kg):", "120000");
                                 v(prev => ({
                                   ...prev,
-                                  riceType: customName.trim(),
-                                  price: Number(customPrice) || prev.price
+                                  riceType: customName.trim()
                                 }));
                               }
                               setShowShrimpDropdown(false);
                             },
-                            className: "w-full p-2 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-center text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mt-1",
+                            className: "w-full p-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-center text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mt-1 transition-colors",
                             children: "+ Nhập Loại Tôm Khác"
                           })
                         ]
                       })
                     ]
+                  })
+                ]
+              }),
+              // Quick Tare Selector Strip (100kg trừ X kg)
+              c.jsxs("div", {
+                className: "bg-gray-50 dark:bg-gray-800/80 p-3 rounded-2xl border border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-2",
+                children: [
+                  c.jsxs("div", {
+                    className: "text-xs font-black uppercase text-gray-600 dark:text-gray-300 flex items-center gap-1.5",
+                    children: [
+                      c.jsx("span", { children: "⚖️" }),
+                      c.jsxs("span", { children: ["Trừ bì: ", Number(tarePer100Kg), " kg / 100 kg", Z > 0 ? ` (-${fmtKg(Z)} kg)` : " (Không trừ)"] })
+                    ]
+                  }),
+                  c.jsx("div", {
+                    className: "flex flex-wrap gap-1.5",
+                    children: [0, 1, 1.5, 2, 3].map(val => c.jsx("button", {
+                      key: val,
+                      type: "button",
+                      onClick: () => handleUpdateTare(val),
+                      className: `px-2.5 py-1 rounded-xl text-[11px] font-black transition-all cursor-pointer ${Number(tarePer100Kg) === val ? "bg-blue-600 text-white shadow-sm" : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700"}`,
+                      children: val === 0 ? "0%" : `${val}kg`
+                    }))
                   })
                 ]
               }),
@@ -2008,12 +2480,13 @@ const Om = ({ setRoute: S, role: b }) => {
                         children: [
                           c.jsx("label", {
                             className: "text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase italic mb-2 block",
-                            children: "Giá (kg)"
+                            children: "Đơn Giá Bán/Mua (đ/kg)"
                           }),
                           c.jsx("input", {
                             type: "number",
                             value: A.price,
                             onChange: $ => v({ ...A, price: $.target.value }),
+                            placeholder: "Tự nhập giá...",
                             className: "w-full text-right text-2xl font-black text-[#1a237e] dark:text-blue-300 outline-none bg-transparent"
                           })
                         ]
@@ -2093,7 +2566,7 @@ const Om = ({ setRoute: S, role: b }) => {
                       }),
                       c.jsxs("span", {
                         className: "text-xs font-black uppercase text-gray-700 dark:text-gray-300 italic",
-                        children: ["Đang cân: ", A.riceType, " (", Number(A.price).toLocaleString(), " đ/kg)"]
+                        children: ["Đang cân: ", A.riceType, Number(A.price) > 0 ? (" (" + Number(A.price).toLocaleString() + " đ/kg)") : " (Chưa nhập giá)"]
                       })
                     ]
                   }),
@@ -2326,6 +2799,34 @@ const Om = ({ setRoute: S, role: b }) => {
                   ]
                 }),
 
+                // Finance P&L Sync Box (Tự Doanh 100%)
+                c.jsxs("div", {
+                  className: "p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/30 rounded-2xl border-2 border-emerald-300 dark:border-emerald-700/60 space-y-1.5 shadow-xs text-xs",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center",
+                      children: [
+                        c.jsx("span", { className: "text-emerald-900 dark:text-emerald-200 font-bold", children: "📈 Doanh thu bán kỳ hiện tại:" }),
+                        c.jsxs("span", { className: "font-mono font-bold text-emerald-700 dark:text-emerald-300", children: ["+", Number(finLiveSummary.totalRevenue || 0).toLocaleString("vi-VN"), " đ"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center text-red-600 font-bold",
+                      children: [
+                        c.jsx("span", { children: "📉 Chi mua tôm phiếu này:" }),
+                        c.jsxs("span", { className: "font-mono font-black", children: ["-", Number(totalMoneyFinal || 0).toLocaleString("vi-VN"), " đ"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center pt-1.5 border-t border-emerald-300/60 dark:border-emerald-700/60 text-sm font-black text-emerald-950 dark:text-emerald-100",
+                      children: [
+                        c.jsx("span", { children: "📊 LỢI NHUẬN RÒNG DỰ KIẾN:" }),
+                        c.jsxs("span", { className: "font-mono font-black text-base " + (((finLiveSummary.netProfit || 0) - totalMoneyFinal) >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-red-600 dark:text-red-400"), children: [((finLiveSummary.netProfit || 0) - totalMoneyFinal >= 0 ? "+" : "") + Number((finLiveSummary.netProfit || 0) - totalMoneyFinal).toLocaleString("vi-VN"), " VNĐ"] })
+                      ]
+                    })
+                  ]
+                }),
+
                 // Payment Status Switch
                 c.jsxs("div", {
                   onClick: () => se(!Q),
@@ -2391,6 +2892,186 @@ const Om = ({ setRoute: S, role: b }) => {
             })
           ]
         })
+      }),
+
+      // MODAL 1: THÊM CHỦ AO MỚI
+      showAddFarmerModal && c.jsx("div", {
+        className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-800 space-y-4",
+          children: [
+            c.jsxs("div", {
+              className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+              children: [
+                c.jsxs("h3", {
+                  className: "text-base font-black text-gray-900 dark:text-gray-100 uppercase italic flex items-center gap-2",
+                  children: [
+                    c.jsx("span", { children: "🦐" }),
+                    "Thêm Chủ Ao Tôm Mới"
+                  ]
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowAddFarmerModal(false),
+                  className: "p-2 text-gray-400 hover:text-gray-600 rounded-full",
+                  children: c.jsx(_a, { size: 20 })
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "space-y-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Họ và tên chủ ao (*)"
+                    }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: newFarmerName,
+                      onChange: e => setNewFarmerName(e.target.value),
+                      placeholder: "Ví dụ: Chú Bảy Cà Mau, Anh Năm...",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Số điện thoại liên hệ"
+                    }),
+                    c.jsx("input", {
+                      type: "tel",
+                      value: newFarmerPhone,
+                      onChange: e => setNewFarmerPhone(e.target.value),
+                      placeholder: "Ví dụ: 0912345678",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Địa chỉ ao / Vị trí nuôi"
+                    }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: newFarmerAddress,
+                      onChange: e => setNewFarmerAddress(e.target.value),
+                      placeholder: "Ví dụ: Ấp 3, Thới Bình, Cà Mau",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "grid grid-cols-2 gap-3 pt-2",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowAddFarmerModal(false),
+                  className: "py-3 px-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 font-bold rounded-xl text-xs uppercase cursor-pointer",
+                  children: "Hủy bỏ"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: handleSaveNewFarmer,
+                  className: "py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase shadow-lg active:scale-95 transition-all cursor-pointer",
+                  children: "Lưu & Chọn Ngay"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+
+      // MODAL 2: THÊM LOẠI TÔM MỚI
+      showAddShrimpTypeModal && c.jsx("div", {
+        className: "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200",
+        children: c.jsxs("div", {
+          className: "bg-white dark:bg-[#1e1e1e] rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-800 space-y-4",
+          children: [
+            c.jsxs("div", {
+              className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+              children: [
+                c.jsxs("h3", {
+                  className: "text-base font-black text-gray-900 dark:text-gray-100 uppercase italic flex items-center gap-2",
+                  children: [
+                    c.jsx("span", { children: "⚖️" }),
+                    "Thêm Loại Tôm Mới"
+                  ]
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowAddShrimpTypeModal(false),
+                  className: "p-2 text-gray-400 hover:text-gray-600 rounded-full",
+                  children: c.jsx(_a, { size: 20 })
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "space-y-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Tên loại tôm (*)"
+                    }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: newShrimpTypeName,
+                      onChange: e => setNewShrimpTypeName(e.target.value),
+                      placeholder: "Ví dụ: Tôm lột, Tôm trứng, Tôm size 10...",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", {
+                      className: "block text-xs font-bold text-gray-600 dark:text-gray-400 mb-1",
+                      children: "Mô tả / Tiêu chuẩn phân loại"
+                    }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: newShrimpTypeDesc,
+                      onChange: e => setNewShrimpTypeDesc(e.target.value),
+                      placeholder: "Ví dụ: Tôm sống tươi ngon, phân loại tại bờ ao",
+                      className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "grid grid-cols-2 gap-3 pt-2",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setShowAddShrimpTypeModal(false),
+                  className: "py-3 px-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 font-bold rounded-xl text-xs uppercase cursor-pointer",
+                  children: "Hủy bỏ"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: handleSaveNewShrimpType,
+                  className: "py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase shadow-lg active:scale-95 transition-all cursor-pointer",
+                  children: "Lưu & Chọn Ngay"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+      zaloModalContent && c.jsx(Xm_UniversalZaloModal, {
+        content: zaloModalContent,
+        title: "Chia Sẻ Phiếu Cân Qua Zalo",
+        onClose: () => setZaloModalContent(null)
       })
     ]
   });
@@ -2406,12 +3087,21 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
   const [O, D] = w.useState("");
 
   w.useEffect(() => {
-    try {
-      const list = me.getSessions();
-      f(Array.isArray(list) ? list : []);
-    } catch(e) {
-      f([]);
-    }
+    const refreshSessions = () => {
+      try {
+        const list = me.getSessions();
+        f(Array.isArray(list) ? list : []);
+      } catch(e) {
+        f([]);
+      }
+    };
+    refreshSessions();
+    window.addEventListener("app-data-updated", refreshSessions);
+    window.addEventListener("cloud_data_synced", refreshSessions);
+    return () => {
+      window.removeEventListener("app-data-updated", refreshSessions);
+      window.removeEventListener("cloud_data_synced", refreshSessions);
+    };
   }, []);
 
   const U = (sessionId, e) => {
@@ -2696,13 +3386,9 @@ const Dm = ({ setRoute: S, sessionId: b, role: p }) => {
     }
     msg += `Trạng thái: ${O.isPaidFull ? "Đã thanh toán đủ" : "Chưa thanh toán đủ"}\n`;
 
-    try {
-      navigator.clipboard.writeText(msg);
-      alert("Đã sao chép nội dung phiếu cân! Đang mở ứng dụng Zalo...");
-      window.open("https://zalo.me", "_blank");
-    } catch(e) {
-      alert("Nội dung phiếu cân:\n\n" + msg);
-    }
+    copyToClipboardRobust(msg);
+    alert("Đã sao chép nội dung phiếu cân! Đang mở ứng dụng Zalo...");
+    window.open("https://zalo.me", "_blank");
   };
 
   if (!O) {
@@ -3186,6 +3872,7 @@ const deleteContract = (id) => {
   } catch (e) {}
   window.dispatchEvent(new CustomEvent("tom_contract_deleted", { detail: { id } }));
   window.dispatchEvent(new CustomEvent("tom_contract_updated"));
+  emitAppDataUpdated_v4("contracts");
 };
 
 const saveContract = (c) => {
@@ -3224,6 +3911,7 @@ const saveContract = (c) => {
   if (c.farmerSigned || c.status === "SIGNED_LEGAL") {
     window.dispatchEvent(new CustomEvent("tom_contract_signed", { detail: c }));
   }
+  emitAppDataUpdated_v4("contracts");
 
   // 3. Dự phòng Cloud Firestore
   try {
@@ -3331,42 +4019,48 @@ const numberToWordsVN = (num) => {
 
 // Tạo liên kết ngắn gọn, chuyên nghiệp gửi khách hàng
 // Standardized Contract Helpers & Storage
+const getAppShareBaseUrl = () => {
+  if (typeof window === "undefined") return "https://ais-pre-wpaur52x2av5n5d6i2ohzi-393055303971.asia-southeast1.run.app";
+  const origin = window.location.origin || "";
+  const pathname = window.location.pathname || "";
+  if (origin.includes("ai.google.dev") || origin.includes("googleusercontent.com") || origin.includes("localhost")) {
+    return "https://ais-pre-wpaur52x2av5n5d6i2ohzi-393055303971.asia-southeast1.run.app";
+  }
+  return `${origin}${pathname}`;
+};
+
 const encodeContractToB64 = (obj) => {
-  if (!obj) return "";
+  if (!obj || !obj.id) return "";
   try {
     const compact = {
-      id: obj.id || "",
-      pondId: obj.pondId || "",
+      id: String(obj.id || "").replace(/Đ/g, "D"),
+      pondId: obj.pondId || obj.farmerId || "",
+      farmerId: obj.farmerId || obj.pondId || "",
       createdAt: obj.createdAt || new Date().toISOString(),
       status: obj.status || "PENDING_FARMER",
-      trader: {
-        fullName: obj.trader?.fullName || "Cơ Sở Thu Mua Tôm Càng Xanh",
-        phone: obj.trader?.phone || "",
-        idCard: obj.trader?.idCard || "",
-        address: obj.trader?.address || "",
-        agreed: true,
-        signedAt: obj.trader?.signedAt || new Date().toLocaleString("vi-VN")
-      },
-      farmer: {
-        fullName: obj.farmer?.fullName || "Chủ ao",
-        phone: obj.farmer?.phone || "",
-        idCard: obj.farmer?.idCard || "",
-        address: obj.farmer?.address || "",
-        coordinates: obj.farmer?.coordinates || null,
-        agreed: !!obj.farmer?.agreed,
-        signedAt: obj.farmer?.signedAt || null
-      },
+      traderName: obj.traderName || obj.trader?.fullName || "Cơ Sở Thu Mua Tôm Càng Xanh",
+      traderPhone: obj.traderPhone || obj.trader?.phone || "",
+      traderAddress: obj.traderAddress || obj.trader?.address || "",
+      traderIdCard: obj.traderIdCard || obj.trader?.idCard || "",
+      farmerName: obj.farmerName || obj.farmer?.fullName || "Chủ ao",
+      farmerPhone: obj.farmerPhone || obj.farmer?.phone || "",
+      farmerAddress: obj.farmerAddress || obj.farmer?.address || "",
+      farmerIdCard: obj.farmerIdCard || obj.farmer?.idCard || "",
+      shrimpType: obj.shrimpType || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
       weighingDate: obj.weighingDate || "",
-      agreedPrice: Number(obj.agreedPrice || 0),
-      deposit: Number(obj.depositMoney ?? obj.deposit ?? 0),
+      weighingTime: obj.weighingTime || "06:00",
+      estimatedYield: obj.estimatedYield || 0,
+      agreedPrice: Number(obj.agreedPrice || obj.unitPrice || 0),
+      unitPrice: Number(obj.unitPrice || obj.agreedPrice || 0),
       depositMoney: Number(obj.depositMoney ?? obj.deposit ?? 0),
-      specs: obj.specs || [],
-      catchingSpecs: obj.catchingSpecs || (obj.specs || []).map(s => typeof s === "object" ? s : { text: s }),
-      shrimpSizes: obj.shrimpSizes || [],
-      farmerSigned: !!obj.farmerSigned,
+      deposit: Number(obj.depositMoney ?? obj.deposit ?? 0),
+      rejectionSpec: obj.rejectionSpec || "Tôm mềm, ốp, gãy càng dạt sang hàng xào",
+      tareSpec: obj.tareSpec || "Trừ hao ráo nước chuẩn 1kg/thùng cân",
+      qualityStandard: obj.qualityStandard || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước",
+      compensationTerms: obj.compensationTerms || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc",
+      farmerSigned: !!(obj.farmerSigned || obj.status === "SIGNED_LEGAL"),
       farmerSignedAt: obj.farmerSignedAt || "",
-      farmerSignatureImg: obj.farmerSignatureImg || "",
-      legalVerification: obj.legalVerification || null
+      traderSigned: !!obj.traderSigned
     };
     const json = JSON.stringify(compact);
     const utf8Bytes = encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, (m, p1) => String.fromCharCode(parseInt(p1, 16)));
@@ -3380,33 +4074,83 @@ const encodeContractToB64 = (obj) => {
 
 const decodeContractFromB64 = (raw) => {
   if (!raw) return null;
+  const tryParse = (str) => {
+    if (!str) return null;
+    try {
+      if (str.startsWith("{") && str.endsWith("}")) {
+        return JSON.parse(str);
+      }
+    } catch (e) {}
+    try {
+      let b64 = str.replace(/-/g, "+").replace(/_/g, "/").replace(/\s/g, "+").trim();
+      while (b64.length % 4) b64 += "=";
+      const binary = atob(b64);
+      try {
+        const uri = Array.from(binary).map(ch => "%" + ("00" + ch.charCodeAt(0).toString(16)).slice(-2)).join("");
+        return JSON.parse(decodeURIComponent(uri));
+      } catch (eUri) {
+        return JSON.parse(decodeURIComponent(escape(binary)));
+      }
+    } catch (eB64) {}
+    return null;
+  };
+
   try {
-    let str = decodeURIComponent(raw.trim());
-    str = str.replace(/-/g, "+").replace(/_/g, "/").replace(/\s/g, "+");
-    while (str.length % 4) str += "=";
-    const binary = atob(str);
-    const uri = Array.from(binary).map(ch => "%" + ("00" + ch.charCodeAt(0).toString(16)).slice(-2)).join("");
-    const parsed = JSON.parse(decodeURIComponent(uri));
-    if (parsed && (parsed.id || parsed.farmer)) {
-      parsed.depositMoney = Number(parsed.depositMoney ?? parsed.deposit ?? 0);
+    let rawStr = String(raw).trim();
+    let parsed = tryParse(rawStr);
+    if (!parsed) {
+      try { parsed = tryParse(decodeURIComponent(rawStr)); } catch (e) {}
+    }
+    if (!parsed) {
+      try { parsed = tryParse(decodeURIComponent(decodeURIComponent(rawStr))); } catch (e) {}
+    }
+
+    if (parsed && (parsed.id || parsed.farmer || parsed.farmerName || parsed.fn)) {
+      parsed.depositMoney = Number(parsed.depositMoney ?? parsed.deposit ?? parsed.dp ?? 0);
       parsed.deposit = parsed.depositMoney;
-      parsed.agreedPrice = Number(parsed.agreedPrice || 0);
+      parsed.agreedPrice = Number(parsed.agreedPrice || parsed.unitPrice || parsed.pr || 0);
+      parsed.unitPrice = parsed.agreedPrice;
+      parsed.farmerName = parsed.farmerName || parsed.farmer?.fullName || parsed.fn || "Chủ ao";
+      parsed.farmerPhone = parsed.farmerPhone || parsed.farmer?.phone || parsed.fp || "";
+      parsed.farmerAddress = parsed.farmerAddress || parsed.farmer?.address || parsed.fa || "";
+      parsed.farmerIdCard = parsed.farmerIdCard || parsed.farmer?.idCard || parsed.fc || "";
+      parsed.traderName = parsed.traderName || parsed.trader?.fullName || parsed.tn || "Cơ Sở Thu Mua Tôm Càng Xanh";
+      parsed.traderPhone = parsed.traderPhone || parsed.trader?.phone || parsed.tp || "";
+      parsed.traderAddress = parsed.traderAddress || parsed.trader?.address || parsed.ta || "";
+      parsed.traderIdCard = parsed.traderIdCard || parsed.trader?.idCard || parsed.tc || "";
+      parsed.shrimpType = parsed.shrimpType || parsed.st || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên";
+      parsed.weighingDate = parsed.weighingDate || parsed.wd || "";
+      parsed.weighingTime = parsed.weighingTime || parsed.wt || "06:00";
+      parsed.estimatedYield = parsed.estimatedYield || parsed.ey || 0;
+      parsed.rejectionSpec = parsed.rejectionSpec || parsed.rj || "Tôm mềm, ốp, gãy càng dạt sang hàng xào";
+      parsed.tareSpec = parsed.tareSpec || parsed.tr || "Trừ hao ráo nước chuẩn 1kg/thùng cân";
+      parsed.qualityStandard = parsed.qualityStandard || parsed.qs || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước";
+      parsed.compensationTerms = parsed.compensationTerms || parsed.ct || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc";
+      if (!parsed.farmer) {
+        parsed.farmer = {
+          fullName: parsed.farmerName,
+          phone: parsed.farmerPhone,
+          address: parsed.farmerAddress,
+          idCard: parsed.farmerIdCard,
+          agreed: !!(parsed.farmerSigned || parsed.status === "SIGNED_LEGAL")
+        };
+      }
+      if (!parsed.trader) {
+        parsed.trader = {
+          fullName: parsed.traderName,
+          phone: parsed.traderPhone,
+          address: parsed.traderAddress,
+          idCard: parsed.traderIdCard,
+          agreed: true
+        };
+      }
       if (!parsed.catchingSpecs && parsed.specs) {
         parsed.catchingSpecs = parsed.specs.map(s => typeof s === "object" ? s : { text: s });
       }
       return parsed;
     }
-  } catch (e1) {
-    try {
-      let str = raw.trim();
-      if (str.startsWith("{") && str.endsWith("}")) {
-        return JSON.parse(str);
-      }
-      const b2 = atob(raw.replace(/\s/g, "+"));
-      return JSON.parse(decodeURIComponent(escape(b2)));
-    } catch (e2) {
-      console.warn("Decode contract error:", e2);
-    }
+  } catch (err) {
+    console.warn("decodeContractFromB64 error", err);
   }
   return null;
 };
@@ -3414,15 +4158,25 @@ const decodeContractFromB64 = (raw) => {
 if (typeof window !== "undefined") {
   window.encodeContractToB64 = encodeContractToB64;
   window.decodeContractFromB64 = decodeContractFromB64;
+  window.getAppShareBaseUrl = getAppShareBaseUrl;
 }
 
 const encodeContractForShare = (contract) => {
   if (!contract || !contract.id) return window.location.href;
-  try { syncContractToCloud(contract); } catch (e) {}
-  const base = `${window.location.origin}${window.location.pathname}`;
+  try { if (typeof saveContract === "function") saveContract(contract); } catch (e) {}
+  try { if (typeof syncContractToCloud === "function") syncContractToCloud(contract); } catch (e) {}
+  const base = getAppShareBaseUrl();
   const cleanId = (contract.id || "").replace(/Đ/g, "D");
+  let b64 = "";
+  try {
+    b64 = encodeContractToB64(contract);
+  } catch (e) {}
+  if (b64) {
+    return `${base}?hd=${encodeURIComponent(cleanId)}&d=${encodeURIComponent(b64)}`;
+  }
   return `${base}?hd=${encodeURIComponent(cleanId)}`;
 };
+
 if (typeof window !== "undefined") {
   window.encodeContractForShare = encodeContractForShare;
 }
@@ -3439,14 +4193,18 @@ const checkUrlContract = () => {
     if (dataPart && typeof decodeContractFromB64 === "function") {
       const decoded = decodeContractFromB64(dataPart);
       if (decoded && decoded.id) {
-        saveContract(decoded);
+        if (typeof saveContract === "function") saveContract(decoded);
         return decoded;
       }
     }
     const contractId = params.get("hd") || params.get("contract") || params.get("id") || (hash.startsWith("#hd=") ? hash.replace("#hd=", "") : "");
     if (contractId) {
-      const all = getContracts();
-      const found = all.find(x => x && (x.id === contractId || x.id === contractId.replace(/Đ/g, "D") || x.id === contractId.replace(/D/g, "Đ")));
+      const all = (typeof getContracts === "function") ? getContracts() : [];
+      const cleanQ = contractId.replace(/Đ/g, "D").trim().toUpperCase();
+      const found = all.find(x => x && (
+        (x.id && x.id.replace(/Đ/g, "D").trim().toUpperCase() === cleanQ) ||
+        (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanQ.replace(/[^0-9A-Z]/g, ""))
+      ));
       if (found) return found;
     }
   } catch (e) {
@@ -3454,7 +4212,9 @@ const checkUrlContract = () => {
   }
   return null;
 };
-window.checkUrlContract = checkUrlContract;
+if (typeof window !== "undefined") {
+  window.checkUrlContract = checkUrlContract;
+}
 // Standardized UI Icons
 const PinIcon = ({ className = "w-4 h-4", size = 16, style = {} }) => c.jsx("svg", {
   width: size, height: size,
@@ -3850,11 +4610,9 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
     const traderPhone = contract.trader?.phone || "";
     const cleanPhone = traderPhone.replace(/[^0-9]/g, "");
     const msg = `Chào Cơ sở ${contract.trader?.fullName || "Thu Mua Tôm"}, tôi là ${farmerName} (Chủ ao). Tôi đã ký điện tử Hợp đồng số #${contract.id} thành công trên hệ thống. Hẹn cơ sở đúng ngày ${contract.weighingDate || "đã thỏa thuận"} đến kéo lưới cân tôm!`;
-    try {
-      navigator.clipboard.writeText(msg);
-      setCopyToast(true);
-      setTimeout(() => setCopyToast(false), 3500);
-    } catch (e) {}
+    copyToClipboardRobust(msg);
+    setCopyToast(true);
+    setTimeout(() => setCopyToast(false), 3500);
     if (cleanPhone) {
       window.open(`https://zalo.me/${cleanPhone}`, "_blank");
     } else {
@@ -4249,12 +5007,11 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
     const load = async () => {
       setLoading(true);
       let found = null;
-
       const params = new URLSearchParams(window.location.search);
       const hash = window.location.hash || "";
       const qId = params.get("hd") || params.get("contract") || params.get("id") || (hash.startsWith("#hd=") ? hash.replace("#hd=", "") : "") || (contractId && contractId !== "portal" && contractId !== "hash_portal" ? contractId : "");
 
-      // 1. Try URL parameters & Hash base64 (backward compatibility)
+      // 1. DIRECT INSTANT DECODE from URL ?d= or #c= (100% Reliable, 0ms, No server required!)
       try {
         let dataPart = params.get("d") || params.get("data") || params.get("c");
         if (!dataPart && hash) {
@@ -4262,10 +5019,16 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
           else if (hash.includes("d=")) dataPart = hash.split("d=")[1]?.split("&")[0];
           else if (hash.includes("data=")) dataPart = hash.split("data=")[1]?.split("&")[0];
         }
-        if (dataPart && window.decodeContractFromB64) {
-          found = window.decodeContractFromB64(dataPart);
+        if (dataPart && typeof decodeContractFromB64 === "function") {
+          found = decodeContractFromB64(dataPart);
           if (found && found.id) {
             saveContract(found);
+            if (isMounted) {
+              setContract(found);
+              setErrorMsg("");
+              setLoading(false);
+              return;
+            }
           }
         }
       } catch (e) {
@@ -4273,16 +5036,20 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
       }
 
       // 2. Try checkUrlContract / LocalStorage
-      if (!found && window.checkUrlContract) {
-        found = window.checkUrlContract();
+      if (!found && typeof checkUrlContract === "function") {
+        found = checkUrlContract();
       }
       if (!found && qId) {
-        const all = getContracts();
-        found = all.find(x => x && (x.id === qId || x.id === qId.replace(/Đ/g, "D") || x.id === qId.replace(/D/g, "Đ")));
+        const all = typeof getContracts === "function" ? getContracts() : [];
+        const cleanQ = qId.replace(/Đ/g, "D").trim().toUpperCase();
+        found = all.find(x => x && (
+          (x.id && x.id.replace(/Đ/g, "D").trim().toUpperCase() === cleanQ) ||
+          (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanQ.replace(/[^0-9A-Z]/g, ""))
+        ));
       }
 
-      // 3. Try Server API directly (Crucial for short link ?hd=ID opened on customer device!)
-      if (qId) {
+      // 3. Try Server API directly by ID (with retry)
+      if (!found && qId) {
         try {
           const res = await fetch(`/api/contracts/${encodeURIComponent(qId)}`);
           if (res.ok) {
@@ -4313,9 +5080,13 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
             const list = Array.isArray(listData) ? listData : (listData.contracts || []);
             if (Array.isArray(list) && list.length > 0) {
               if (qId) {
-                found = list.find(x => x && (x.id === qId || x.id === qId.replace(/Đ/g, "D") || x.id === qId.replace(/D/g, "Đ")));
+                const cleanQ = qId.replace(/Đ/g, "D").trim().toUpperCase();
+                found = list.find(x => x && (
+                  (x.id && x.id.replace(/Đ/g, "D").trim().toUpperCase() === cleanQ) ||
+                  (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanQ.replace(/[^0-9A-Z]/g, ""))
+                ));
               }
-              if (!found) found = list[list.length - 1];
+              if (!found && list.length === 1) found = list[0];
               if (found && found.id && typeof saveContract === "function") saveContract(found);
             }
           }
@@ -4332,7 +5103,6 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
         setLoading(false);
       }
     };
-
     load();
 
     // Lắng nghe cập nhật hợp đồng thời gian thực qua BroadcastChannel
@@ -4350,53 +5120,86 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
         };
       }
     } catch (e) {}
-
     return () => {
       isMounted = false;
       if (ch) ch.close();
     };
   }, [contractId]);
 
-  const handleManualDecode = () => {
+  const handleManualDecode = async () => {
     if (!pasteInput.trim()) return;
     try {
       let raw = pasteInput.trim();
       if (raw.includes("hd=")) raw = raw.split("hd=")[1]?.split("&")[0];
       else if (raw.includes("d=")) raw = raw.split("d=")[1]?.split("&")[0];
       else if (raw.includes("#c=")) raw = raw.split("#c=")[1]?.split("&")[0];
-      
-      const all = getContracts();
-      let found = all.find(x => x && (x.id === raw || x.id === raw.replace(/Đ/g, "D")));
+      raw = decodeURIComponent(raw).trim();
+
+      // 1. Try decode as B64
+      const b64Res = decodeContractFromB64(raw);
+      if (b64Res && b64Res.id) {
+        saveContract(b64Res);
+        setContract(b64Res);
+        setErrorMsg("");
+        return;
+      }
+
+      // 2. Try LocalStorage
+      const all = typeof getContracts === "function" ? getContracts() : [];
+      const cleanRaw = raw.replace(/Đ/g, "D").toUpperCase();
+      const rawDigits = raw.replace(/[^0-9]/g, "");
+      let found = all.find(x => x && (
+        (x.id && x.id.replace(/Đ/g, "D").toUpperCase() === cleanRaw) ||
+        (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanRaw.replace(/[^0-9A-Z]/g, "")) ||
+        (rawDigits.length >= 6 && x.id && String(x.id).includes(rawDigits)) ||
+        (x.farmerPhone && rawDigits.length >= 8 && x.farmerPhone.replace(/[^0-9]/g, "") === rawDigits)
+      ));
       if (found) {
         setContract(found);
         setErrorMsg("");
         return;
       }
-      
-      const res = decodeContractFromB64(raw);
-      if (res && res.id) {
-        saveContract(res);
-        setContract(res);
-        setErrorMsg("");
-      } else {
-        fetch(`/api/contracts/${encodeURIComponent(raw)}`)
-          .then(r => r.json())
-          .then(data => {
-            if (data && data.id) {
-              saveContract(data);
-              setContract(data);
-              setErrorMsg("");
-            } else {
-              alert("Không tìm thấy hợp đồng với mã này!");
-            }
-          })
-          .catch(() => alert("Không thể tìm thấy hợp đồng!"));
-      }
+
+      // 3. Try Server API direct
+      try {
+        const res = await fetch(`/api/contracts/${encodeURIComponent(cleanRaw)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.id) {
+            saveContract(data);
+            setContract(data);
+            setErrorMsg("");
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // 4. Try Server API list all
+      try {
+        const resList = await fetch("/api/contracts");
+        if (resList.ok) {
+          const listData = await resList.json();
+          const list = Array.isArray(listData) ? listData : (listData.contracts || []);
+          const match = list.find(x => x && (
+            (x.id && x.id.replace(/Đ/g, "D").toUpperCase() === cleanRaw) ||
+            (x.id && x.id.replace(/[^0-9A-Z]/g, "") === cleanRaw.replace(/[^0-9A-Z]/g, "")) ||
+            (rawDigits.length >= 6 && x.id && String(x.id).includes(rawDigits)) ||
+            (x.farmerPhone && rawDigits.length >= 8 && x.farmerPhone.replace(/[^0-9]/g, "") === rawDigits)
+          ));
+          if (match) {
+            saveContract(match);
+            setContract(match);
+            setErrorMsg("");
+            return;
+          }
+        }
+      } catch (e) {}
+
+      alert("Không tìm thấy hợp đồng với mã hoặc liên kết này. Quý khách vui lòng kiểm tra lại mã hoặc nhờ cơ sở gửi lại link Zalo!");
     } catch(e) {
-      alert("Không thể giải mã dữ liệu hợp đồng!");
+      alert("Không thể giải mã dữ liệu hợp đồng: " + (e?.message || "Lỗi xử lý"));
     }
   };
-
   // Vietnamese Voice Reader
   const handleSpeakContract = () => {
     if (!contract) return;
@@ -5302,48 +6105,42 @@ const Xm_ShareZaloModal = ({ contract, onClose }) => {
     }
   };
 
+  const [showUniversalZalo, setShowUniversalZalo] = w.useState(false);
+
   // Mở Zalo và tự động sao chép nội dung
   const handleOpenZalo = () => {
-    try {
-      navigator.clipboard.writeText(customMessage);
-      setCopied(true);
-      setCopyToast("✓ Đã tự động sao chép tin nhắn! Đang mở Zalo của " + farmerName + "...");
-      setTimeout(() => { setCopied(false); setCopyToast(""); }, 4000);
-    } catch(e) {}
+    copyToClipboardRobust(customMessage);
+    setCopied(true);
+    setCopyToast("✓ Đã tự động sao chép tin nhắn! Đang mở Zalo của " + farmerName + "...");
+    setTimeout(() => { setCopied(false); setCopyToast(""); }, 4000);
     if (cleanPhone) {
       window.open("https://zalo.me/" + cleanPhone, "_blank");
     } else {
-      alert("Đã sao chép nội dung tin nhắn đầy đủ! Quý khách hãy mở ứng dụng Zalo và dán (Paste) để gửi cho khách hàng.");
+      setShowUniversalZalo(true);
     }
   };
 
   // Gửi qua tin nhắn SMS điện thoại
   const handleSendSMS = () => {
-    try {
-      navigator.clipboard.writeText(customMessage);
-    } catch(e) {}
+    copyToClipboardRobust(customMessage);
     const smsBody = "HD Tom Cang Xanh #" + contract.id + " gui Anh/Chi " + farmerName + ". Ngay can: " + weighingDate + ". Gia: " + priceText + ". Coc: " + (depositAmt ? depositAmt.toLocaleString() + "d" : "0d") + ". Xem va ky tai: " + shareUrl;
     window.open("sms:" + cleanPhone + "?body=" + encodeURIComponent(smsBody), "_self");
   };
 
   // Sao chép chỉ riêng liên kết
   const handleCopyLinkOnly = () => {
-    try {
-      navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setCopyToast("✓ Đã sao chép liên kết hợp đồng!");
-      setTimeout(() => { setCopied(false); setCopyToast(""); }, 2500);
-    } catch(e) {}
+    copyToClipboardRobust(shareUrl);
+    setCopied(true);
+    setCopyToast("✓ Đã sao chép liên kết hợp đồng!");
+    setTimeout(() => { setCopied(false); setCopyToast(""); }, 2500);
   };
 
   // Sao chép toàn bộ tin nhắn
   const handleCopyFullMessage = () => {
-    try {
-      navigator.clipboard.writeText(customMessage);
-      setCopied(true);
-      setCopyToast("✓ Đã sao chép toàn bộ nội dung tin nhắn!");
-      setTimeout(() => { setCopied(false); setCopyToast(""); }, 2500);
-    } catch(e) {}
+    copyToClipboardRobust(customMessage);
+    setCopied(true);
+    setCopyToast("✓ Đã sao chép toàn bộ nội dung tin nhắn!");
+    setTimeout(() => { setCopied(false); setCopyToast(""); }, 2500);
   };
 
   // Chia sẻ hệ điều hành đa kênh
@@ -5616,6 +6413,11 @@ const Xm_ShareZaloModal = ({ contract, onClose }) => {
             ]
           })
         ]
+      }),
+      showUniversalZalo && c.jsx(Xm_UniversalZaloModal, {
+        title: "Gửi Hợp Đồng Cho " + farmerName,
+        content: customMessage,
+        onClose: () => setShowUniversalZalo(false)
       })
     ]
   });
@@ -5628,6 +6430,76 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
   const [showSigningModal, setShowSigningModal] = w.useState(false);
   const [viewingMap, setViewingMap] = w.useState(false);
   const [justSignedNotice, setJustSignedNotice] = w.useState(false);
+  const [isEditingTerms, setIsEditingTerms] = w.useState(false);
+  const [editForm, setEditForm] = w.useState({
+    agreedPrice: "",
+    depositMoney: "",
+    weighingDate: "",
+    weighingTime: "06:00",
+    shrimpType: "",
+    rejectionSpec: "",
+    tareSpec: "",
+    qualityStandard: "",
+    compensationTerms: "",
+    farmerName: "",
+    farmerPhone: "",
+    farmerAddress: "",
+    farmerIdCard: ""
+  });
+
+  const handleOpenEditTerms = () => {
+    setEditForm({
+      agreedPrice: cData.agreedPrice || "",
+      depositMoney: cData.depositMoney ?? cData.deposit ?? "",
+      weighingDate: cData.weighingDate || "",
+      weighingTime: cData.weighingTime || "06:00",
+      shrimpType: cData.shrimpType || "Tôm càng xanh",
+      rejectionSpec: cData.rejectionSpec || "Tôm mềm, ốp, gãy càng dạt sang hàng xào",
+      tareSpec: cData.tareSpec || "Trừ bì ráo nước chuẩn 1kg/thùng",
+      qualityStandard: cData.qualityStandard || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước",
+      compensationTerms: cData.compensationTerms || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc",
+      farmerName: cData.farmer?.fullName || "",
+      farmerPhone: cData.farmer?.phone || "",
+      farmerAddress: cData.farmer?.address || "",
+      farmerIdCard: cData.farmer?.idCard || ""
+    });
+    setIsEditingTerms(true);
+  };
+
+  const handleSaveEditTerms = () => {
+    const updated = {
+      ...cData,
+      agreedPrice: Number(editForm.agreedPrice) || 0,
+      depositMoney: Number(editForm.depositMoney) || 0,
+      weighingDate: editForm.weighingDate,
+      weighingTime: editForm.weighingTime,
+      shrimpType: editForm.shrimpType,
+      rejectionSpec: editForm.rejectionSpec,
+      tareSpec: editForm.tareSpec,
+      qualityStandard: editForm.qualityStandard,
+      compensationTerms: editForm.compensationTerms,
+      farmer: {
+        ...cData.farmer,
+        fullName: editForm.farmerName,
+        phone: editForm.farmerPhone,
+        address: editForm.farmerAddress,
+        idCard: editForm.farmerIdCard
+      }
+    };
+    saveContract(updated);
+    setCData(updated);
+    if (onUpdateContract) onUpdateContract(updated);
+    try {
+      window.dispatchEvent(new CustomEvent("tom_contract_updated", { detail: updated }));
+      if (typeof BroadcastChannel !== "undefined") {
+        const ch = new BroadcastChannel("tom_contracts_channel");
+        ch.postMessage({ type: "CONTRACT_UPDATED", contract: updated });
+        ch.close();
+      }
+    } catch (e) {}
+    setIsEditingTerms(false);
+    alert("✓ Đã lưu cập nhật điều khoản hợp đồng thành công!");
+  };
 
   // Đồng bộ khi prop contract thay đổi
   w.useEffect(() => {
@@ -5762,6 +6634,12 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                     onClick: () => setShowShareModal(true),
                     className: "px-4 py-2 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20 active:scale-95 transition-all cursor-pointer",
                     children: [c.jsx(ZaloIcon, { size: 16 }), "Gửi Khách Hàng (Zalo/SMS/QR)"]
+                  }),
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: handleOpenEditTerms,
+                    className: "px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer active:scale-95",
+                    children: [c.jsx("span", { children: "✏️" }), "Sửa Điều Khoản"]
                   }),
                   !isSigned && c.jsxs("button", {
                     type: "button",
@@ -6066,6 +6944,177 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
             address: cData.farmer.address,
             pondName: cData.farmer.fullName,
             onClose: () => setViewingMap(false)
+          }),
+          isEditingTerms && c.jsxs("div", {
+            className: "fixed inset-0 z-[150] flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200 overflow-y-auto",
+            children: [
+              c.jsx("div", { className: "fixed inset-0 bg-black/75 backdrop-blur-sm", onClick: () => setIsEditingTerms(false) }),
+              c.jsxs("div", {
+                className: "relative bg-white dark:bg-slate-900 rounded-[24px] max-w-xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 my-auto z-10 font-sans max-h-[90vh] overflow-y-auto",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("h3", { className: "font-black text-base uppercase text-slate-800 dark:text-white", children: "Chỉnh Sửa Điều Khoản Hợp Đồng" }),
+                          c.jsxs("p", { className: "text-xs text-slate-500", children: ["Mã HĐ: ", cData.id] })
+                        ]
+                      }),
+                      c.jsx("button", { type: "button", onClick: () => setIsEditingTerms(false), className: "p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500", children: c.jsx(_a, { size: 18 }) })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "space-y-3 text-xs",
+                    children: [
+                      c.jsxs("div", {
+                        className: "grid grid-cols-2 gap-3",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Giá chốt mua (đ/kg):" }),
+                              c.jsx("input", {
+                                type: "number",
+                                value: editForm.agreedPrice,
+                                onChange: (e) => setEditForm({ ...editForm, agreedPrice: e.target.value }),
+                                className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Tiền đặt cọc (VNĐ):" }),
+                              c.jsx("input", {
+                                type: "number",
+                                value: editForm.depositMoney,
+                                onChange: (e) => setEditForm({ ...editForm, depositMoney: e.target.value }),
+                                className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                              })
+                            ]
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "grid grid-cols-2 gap-3",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Ngày cân:" }),
+                              c.jsx("input", {
+                                type: "date",
+                                value: editForm.weighingDate,
+                                onChange: (e) => setEditForm({ ...editForm, weighingDate: e.target.value }),
+                                className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Giờ cân dự kiến:" }),
+                              c.jsx("input", {
+                                type: "time",
+                                value: editForm.weighingTime,
+                                onChange: (e) => setEditForm({ ...editForm, weighingTime: e.target.value }),
+                                className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                              })
+                            ]
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Chủng loại tôm thu mua:" }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: editForm.shrimpType,
+                            onChange: (e) => setEditForm({ ...editForm, shrimpType: e.target.value }),
+                            className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Quy cách dạt tôm:" }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: editForm.rejectionSpec,
+                            onChange: (e) => setEditForm({ ...editForm, rejectionSpec: e.target.value }),
+                            className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Quy cách trừ bì ráo nước:" }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: editForm.tareSpec,
+                            onChange: (e) => setEditForm({ ...editForm, tareSpec: e.target.value }),
+                            className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "p-3 bg-slate-50 dark:bg-slate-800 rounded-xl space-y-2 border border-slate-200 dark:border-slate-700",
+                        children: [
+                          c.jsx("span", { className: "font-black uppercase text-[10px] text-slate-500", children: "Thông tin chủ ao (Bên B):" }),
+                          c.jsxs("div", {
+                            className: "grid grid-cols-2 gap-2",
+                            children: [
+                              c.jsx("input", {
+                                type: "text",
+                                placeholder: "Họ tên chủ ao",
+                                value: editForm.farmerName,
+                                onChange: (e) => setEditForm({ ...editForm, farmerName: e.target.value }),
+                                className: "w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 font-bold"
+                              }),
+                              c.jsx("input", {
+                                type: "text",
+                                placeholder: "Số điện thoại",
+                                value: editForm.farmerPhone,
+                                onChange: (e) => setEditForm({ ...editForm, farmerPhone: e.target.value }),
+                                className: "w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900"
+                              })
+                            ]
+                          }),
+                          c.jsx("input", {
+                            type: "text",
+                            placeholder: "Địa chỉ ao nuôi (Ấp, Xã, Huyện...)",
+                            value: editForm.farmerAddress,
+                            onChange: (e) => setEditForm({ ...editForm, farmerAddress: e.target.value }),
+                            className: "w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900"
+                          }),
+                          c.jsx("input", {
+                            type: "text",
+                            placeholder: "Số CCCD / CMND chủ ao (nếu có)",
+                            value: editForm.farmerIdCard,
+                            onChange: (e) => setEditForm({ ...editForm, farmerIdCard: e.target.value }),
+                            className: "w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900"
+                          })
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800",
+                    children: [
+                      c.jsx("button", {
+                        type: "button",
+                        onClick: () => setIsEditingTerms(false),
+                        className: "px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs cursor-pointer",
+                        children: "Hủy"
+                      }),
+                      c.jsx("button", {
+                        type: "button",
+                        onClick: handleSaveEditTerms,
+                        className: "px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs shadow-md cursor-pointer active:scale-95",
+                        children: "💾 Lưu Điều Khoản"
+                      })
+                    ]
+                  })
+                ]
+              })
+            ]
           })
         ]
       })
@@ -6081,10 +7130,8 @@ const Xm_MapModal = ({ coordinates, address, pondName, onClose }) => {
   const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.012}%2C${lat-0.012}%2C${lng+0.012}%2C${lat+0.012}&layer=mapnik&marker=${lat}%2C${lng}`;
 
   const copyCoords = () => {
-    try {
-      navigator.clipboard.writeText(`${lat}, ${lng}`);
-      alert(`Đã sao chép toạ độ: ${lat}, ${lng}`);
-    } catch(e) {}
+    copyToClipboardRobust(`${lat}, ${lng}`);
+    alert(`Đã sao chép toạ độ: ${lat}, ${lng}`);
   };
 
   return c.jsxs("div", {
@@ -6204,7 +7251,17 @@ const Xm_TraderConfig = ({ setRoute }) => {
         }
       })
       .catch(() => {});
-    return () => { mounted = false; };
+    const onCloudOrUpdate = () => {
+      if (!mounted) return;
+      try {
+        setProfile(getTraderProfileV3());
+      } catch(e) {}
+    };
+    window.addEventListener("cloud_data_synced", onCloudOrUpdate);
+    return () => {
+      mounted = false;
+      window.removeEventListener("cloud_data_synced", onCloudOrUpdate);
+    };
   }, []);
 
   const updateField = (field, val) => {
@@ -6216,6 +7273,12 @@ const Xm_TraderConfig = ({ setRoute }) => {
     setIsSaving(true);
     try {
       saveTraderProfileV3(profile);
+      try {
+        const s = me.getSettings();
+        const nextTare = parseNumericSetting_v4(profile.tarePer100Kg, 1);
+        me.save(Ot.SETTINGS, { ...s, tarePer100Kg: nextTare });
+      } catch(e) {}
+      if (typeof me !== "undefined" && me.syncAllToCloud) me.syncAllToCloud();
       setHasUnsavedChanges(false);
       const now = new Date();
       const timeStr = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") + ":" + String(now.getSeconds()).padStart(2, "0") + " - " + now.toLocaleDateString("vi-VN");
@@ -6301,8 +7364,8 @@ const Xm_TraderConfig = ({ setRoute }) => {
   const handleExportBackup = () => {
     try {
       const fullBackup = {
-        app: "CAN_LUA_AN_NONG",
-        version: "3.5",
+        app: "VUA_TOM_CANG_XANH",
+        version: "4.0",
         exportDate: new Date().toISOString(),
         profile: profile,
         farmers: typeof me !== "undefined" && typeof me.getFarmers === "function" ? me.getFarmers() : [],
@@ -6310,14 +7373,16 @@ const Xm_TraderConfig = ({ setRoute }) => {
         sessions: typeof me !== "undefined" && typeof me.getSessions === "function" ? me.getSessions() : [],
         settings: typeof me !== "undefined" && typeof me.getSettings === "function" ? me.getSettings() : {},
         sales: typeof me !== "undefined" && typeof me.getSales === "function" ? me.getSales() : [],
-        buyers: typeof me !== "undefined" && typeof me.getBuyers === "function" ? me.getBuyers() : []
+        buyers: typeof me !== "undefined" && typeof me.getBuyers === "function" ? me.getBuyers() : [],
+        finance: typeof me !== "undefined" && typeof me.getFinanceData === "function" ? me.getFinanceData() : null,
+        vehicles: typeof me !== "undefined" && typeof me.getVehicles === "function" ? me.getVehicles() : []
       };
       const jsonStr = JSON.stringify(fullBackup, null, 2);
       const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "sao_luu_an_nong_" + new Date().toISOString().split("T")[0] + "_" + Date.now() + ".json";
+      a.download = "sao_luu_tom_cang_xanh_" + getLocalYYYYMMDD_v4() + "_" + Date.now() + ".json";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -6371,13 +7436,24 @@ const Xm_TraderConfig = ({ setRoute }) => {
           me.save(Ot.SETTINGS, parsed.settings);
         }
 
-        // 6. Restore Sales & Buyers
+        // 6. Restore Sales, Buyers, Vehicles & Finance
         if (Array.isArray(parsed.sales) && typeof me !== "undefined" && typeof me.save === "function") {
           me.save(Ot.SALES, parsed.sales);
         }
         if (Array.isArray(parsed.buyers) && typeof me !== "undefined" && typeof me.save === "function") {
           me.save(Ot.BUYERS, parsed.buyers);
         }
+        if (Array.isArray(parsed.vehicles) && typeof me !== "undefined" && typeof me.save === "function") {
+          me.save(Ot.VEHICLES, parsed.vehicles);
+        }
+        if (parsed.finance && typeof parsed.finance === "object" && typeof me !== "undefined" && typeof me.saveFinanceData === "function") {
+          me.saveFinanceData(parsed.finance);
+        }
+        if (parsed.settings && typeof document !== "undefined") {
+          parsed.settings.darkMode ? document.documentElement.classList.add("dark") : document.documentElement.classList.remove("dark");
+        }
+        emitAppDataUpdated_v4("backup_import");
+        if (typeof me !== "undefined" && me.syncAllToCloud) me.syncAllToCloud();
 
         setHasUnsavedChanges(false);
         setSavedToast(true);
@@ -6400,11 +7476,9 @@ const Xm_TraderConfig = ({ setRoute }) => {
   };
 
   const copyToClipboard = (text, label) => {
-    try {
-      navigator.clipboard.writeText(text);
-      setCopyToast("Đã sao chép " + label + " vào bộ nhớ tạm!");
-      setTimeout(() => setCopyToast(""), 2500);
-    } catch(e) {}
+    copyToClipboardRobust(text);
+    setCopyToast("Đã sao chép " + label + " vào bộ nhớ tạm!");
+    setTimeout(() => setCopyToast(""), 2500);
   };
 
   const tabs = [
@@ -6868,7 +7942,7 @@ const Xm_TraderConfig = ({ setRoute }) => {
                                 type: "number",
                                 step: "0.5",
                                 value: profile.tarePer100Kg !== undefined ? profile.tarePer100Kg : 1,
-                                onChange: (e) => updateField("tarePer100Kg", parseFloat(e.target.value) || 0),
+                                onChange: (e) => updateField("tarePer100Kg", e.target.value === "" ? 0 : (parseFloat(e.target.value) || 0)),
                                 className: "w-full p-3.5 bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-2xl font-black text-sm outline-none focus:ring-2 focus:ring-teal-500 transition-all text-gray-900 dark:text-gray-100 pr-20"
                               }),
                               c.jsx("span", { className: "absolute right-3.5 text-xs font-bold text-gray-400 pointer-events-none", children: "kg / 100 kg" })
@@ -7496,9 +8570,21 @@ const Cm = ({ setRoute: S }) => {
       } catch (e) {}
     };
 
+    const onFarmersSync = () => {
+      try {
+        p(me.getFarmers());
+        const prof = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : null;
+        if (prof && Array.isArray(prof.shrimpTypes) && prof.shrimpTypes.length > 0) {
+          setShrimpTags(prof.shrimpTypes.map(st => st.name));
+        }
+      } catch(e) {}
+    };
     window.addEventListener("tom_contract_signed", onSync);
     window.addEventListener("tom_contract_updated", onSync);
     window.addEventListener("tom_contract_deleted", onSync);
+    window.addEventListener("app-data-updated", onFarmersSync);
+    window.addEventListener("cloud_data_synced", onFarmersSync);
+    window.addEventListener("trader-profile-updated", onFarmersSync);
 
     let bc = null;
     try {
@@ -7531,6 +8617,9 @@ const Cm = ({ setRoute: S }) => {
       window.removeEventListener("tom_contract_signed", onSync);
       window.removeEventListener("tom_contract_updated", onSync);
       window.removeEventListener("tom_contract_deleted", onSync);
+      window.removeEventListener("app-data-updated", onFarmersSync);
+      window.removeEventListener("cloud_data_synced", onFarmersSync);
+      window.removeEventListener("trader-profile-updated", onFarmersSync);
       if (bc) bc.close();
       clearInterval(pollId);
     };
@@ -7599,7 +8688,7 @@ const Cm = ({ setRoute: S }) => {
     rejectionSpec: getStandardSpecsString(),
     estimatedYield: "",
     depositMoney: (typeof getTraderProfileV3 === "function" && getTraderProfileV3().defaultDeposit !== undefined ? String(getTraderProfileV3().defaultDeposit) : "5000000"),
-    weighingDate: new Date().toISOString().split("T")[0],
+    weighingDate: getLocalYYYYMMDD_v4(),
     weighingTime: "06:00",
     traderPrice: "",
     catchingMethod: "Kéo lưới vét rạng sáng",
@@ -7647,14 +8736,22 @@ const Cm = ({ setRoute: S }) => {
 
   // Action: Start Weighing This Pond Immediately
   const handleStartWeighingThisPond = (pond) => {
+    const profTare = typeof getTraderProfileV3 === "function" ? parseNumericSetting_v4(getTraderProfileV3().tarePer100Kg, 1) : 1;
+    let parsedTare = profTare;
+    if (pond.tareSpec && typeof pond.tareSpec === "string") {
+      const m = pond.tareSpec.match(/(\d+(\.\d+)?)\s*kg/i);
+      if (m && m[1] !== undefined) parsedTare = parseNumericSetting_v4(m[1], profTare);
+    }
     const weighingData = {
       farmerName: pond.name,
+      farmerPhone: pond.phone || "",
       riceType: pond.shrimpType || "Tôm càng sen",
       price: pond.traderPrice || pond.defaultPrice || 160000,
       deposit: pond.depositMoney || pond.defaultDeposit || 0,
       pondId: pond.id,
       contractId: pond.contractId || null,
-      tareSpec: pond.tareSpec || "100 con trừ 3 kg"
+      tareSpec: pond.tareSpec || `100kg tôm trừ bì ${parsedTare} kg`,
+      tarePer100Kg: parsedTare
     };
     localStorage.setItem("temp_weighing_info", JSON.stringify(weighingData));
     S(re.WEIGHING);
@@ -7670,7 +8767,7 @@ const Cm = ({ setRoute: S }) => {
       return x;
     });
     p(updated);
-    localStorage.setItem("annong_farmers", JSON.stringify(updated));
+    me.save(Ot.FARMERS, updated);
   };
 
   // Delete Pond
@@ -7765,9 +8862,12 @@ const Cm = ({ setRoute: S }) => {
       };
 
       try {
-        if (window.saveContract) window.saveContract(newContract);
-        if (window.syncContractToCloud) window.syncContractToCloud(newContract);
+        if (typeof saveContract === "function") saveContract(newContract);
+        else if (window.saveContract) window.saveContract(newContract);
+        if (typeof syncContractToCloud === "function") syncContractToCloud(newContract);
       } catch (e) {}
+
+      if (typeof getContracts === "function") setContractsList(getContracts());
 
       // Open share modal
       setSelectedContractForShare(newContract);
@@ -7787,7 +8887,7 @@ const Cm = ({ setRoute: S }) => {
       estimatedYield: "",
       depositMoney: (typeof getTraderProfileV3 === "function" && getTraderProfileV3().defaultDeposit !== undefined ? String(getTraderProfileV3().defaultDeposit) : ""),
       traderPrice: "",
-      weighingDate: "",
+      weighingDate: getLocalYYYYMMDD_v4(),
       weighingTime: "05:00",
       tareSpec: "Trừ hao ráo nước chuẩn 1kg/thùng cân",
       catchingMethod: "Kéo lưới hoặc dớn",
@@ -8403,7 +9503,7 @@ const Cm = ({ setRoute: S }) => {
                                   depositMoney: Number(pond.defaultDeposit) || 0,
                                   agreedPrice: Number(pond.defaultPrice) || 160000,
                                   unitPrice: Number(pond.defaultPrice) || 160000,
-                                  weighingDate: pond.weighingDate || new Date().toISOString().split("T")[0],
+                                  weighingDate: pond.weighingDate || getLocalYYYYMMDD_v4(),
                                   weighingTime: pond.weighingTime || "06:00",
                                   qualityStandard: "Tôm khỏe mạnh, sục oxy ≥ 95% lúc cân tại bờ ao, không bọng nước",
                                   compensationTerms: "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc",
@@ -8503,14 +9603,14 @@ const Cm = ({ setRoute: S }) => {
         onSaveLocation: (lat, lng) => {
           const updated = b.map(x => x.id === locationPickerPond.id ? { ...x, lat, lng } : x);
           p(updated);
-          localStorage.setItem("annong_farmers", JSON.stringify(updated));
+          me.save(Ot.FARMERS, updated);
           setLocationPickerPond(null);
         }
       })
     ]
   });
 };;
-const km=({setRoute:S})=>{const[b,p]=w.useState([]),[f,O]=w.useState([]),[D,U]=w.useState(!1),Y=me.isPremium(),A=w.useMemo(()=>{const v=me.getSessions();return b.map(_=>{const z=v.filter(se=>se.vehicleId===_.id),L=z.reduce((se,Oe)=>se+Oe.totalNet,0),te=z.reduce((se,Oe)=>se+Oe.totalMoney,0),Q=L/1e3*(_.costPerTrip||2e5);return{id:_.id,weight:L,revenue:te,cost:Q}})},[b]);return w.useEffect(()=>{p(me.getVehicles()),O(me.getFarmers())},[]),c.jsxs("div",{className:"flex flex-col h-full bg-[#f4f7f6] font-roboto",children:[c.jsxs("div",{className:"p-4 bg-[#1e4ea1] text-white flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-2 bg-white/10 rounded-xl",children:c.jsx(On,{})}),c.jsx("h2",{className:"text-xl font-black uppercase italic tracking-tighter",children:"Đội Ghe / Xe"})]}),c.jsx("button",{onClick:()=>U(!D),className:"bg-yellow-400 text-blue-900 w-10 h-10 rounded-full flex items-center justify-center",children:D?c.jsx(_a,{}):c.jsx(As,{})})]}),c.jsxs("div",{className:"p-4 space-y-4 overflow-auto pb-24",children:[Y&&c.jsxs("div",{className:"bg-white p-6 rounded-[35px] shadow-sm border border-blue-100",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-4",children:[c.jsx(Ds,{size:18,className:"text-blue-600"}),c.jsx("span",{className:"text-[11px] font-black uppercase italic text-gray-500",children:"Báo cáo lợi nhuận vận chuyển (Ước tính)"})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("div",{className:"bg-blue-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-blue-400 uppercase block",children:"Tổng Sản Lượng"}),c.jsxs("span",{className:"text-xl font-black text-blue-900",children:[A.reduce((v,_)=>v+_.weight,0).toLocaleString()," kg"]})]}),c.jsxs("div",{className:"bg-green-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-green-400 uppercase block",children:"Ước tính phí ghe"}),c.jsxs("span",{className:"text-xl font-black text-green-900",children:[A.reduce((v,_)=>v+_.cost,0).toLocaleString(),"đ"]})]})]})]}),b.map(v=>{const _=A.find(z=>z.id===v.id);return c.jsx("div",{className:"bg-white rounded-[35px] shadow-sm border border-gray-100 overflow-hidden",children:c.jsxs("div",{className:"p-6",children:[c.jsx("div",{className:"flex justify-between items-start mb-4",children:c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center",children:c.jsx(tc,{size:24})}),c.jsxs("div",{children:[c.jsx("h3",{className:"text-lg font-black uppercase text-gray-800 leading-none",children:v.name}),c.jsxs("p",{className:"text-[9px] font-bold text-gray-400 uppercase mt-1",children:["Tải trọng: ",v.capacity," Tấn"]})]})]})}),Y&&c.jsxs("div",{className:"mt-4 pt-4 border-t border-gray-50 flex justify-between items-center",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx(nm,{size:14,className:"text-green-600"}),c.jsxs("span",{className:"text-xs font-black text-gray-700",children:["Hiệu suất: ",_==null?void 0:_.weight.toLocaleString()," kg"]})]}),c.jsx("button",{className:"text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-3 py-1 rounded-full",children:"Xem chi phí"})]})]})},v.id)})]})]})},Um=({setRoute:S,role:b})=>{const[p,f]=w.useState(me.getSettings()),[O,D]=w.useState(!1),U=_=>{f(_),me.save(Ot.SETTINGS,_),_.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark"),D(!0),setTimeout(()=>D(!1),2e3)},Y=({icon:_,title:z})=>c.jsxs("div",{className:"bg-[#f8f9fa] dark:bg-gray-800 p-4 flex items-center gap-3 border-b border-gray-100 dark:border-gray-700",children:[c.jsx("div",{className:"text-green-600 dark:text-green-400",children:_}),c.jsx("span",{className:"font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter text-sm italic",children:z})]}),A=({label:_,desc:z,value:L,onChange:te})=>c.jsxs("div",{className:"p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 active:bg-gray-50 dark:active:bg-gray-800 transition-colors",children:[c.jsxs("div",{className:"flex-1",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),z&&c.jsx("div",{className:"text-[10px] font-bold text-gray-400 dark:text-gray-500 leading-tight mt-0.5 pr-4 uppercase italic",children:z})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:L,onChange:Q=>te(Q.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-green-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]}),v=({label:_,options:z,value:L,onSelect:te})=>c.jsxs("div",{className:"p-4 space-y-3 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),c.jsx("div",{className:"grid grid-cols-3 gap-2",children:z.map(Q=>c.jsx("button",{onClick:()=>te(Q.val),className:`py-2 px-1 rounded-xl border-2 transition-all font-black uppercase text-[9px] ${L===Q.val?"border-green-600 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 shadow-md":"border-gray-50 dark:border-gray-800 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500"}`,children:Q.label},Q.val))})]});return c.jsxs("div",{className:"flex flex-col h-full bg-[#f2f2f2] dark:bg-[#121212] font-roboto",children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-5 text-white flex items-center justify-between shadow-xl sticky top-0 z-50",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-1 hover:bg-white/10 rounded-lg",children:c.jsx(_a,{size:28})}),c.jsxs("span",{className:"text-2xl font-black uppercase italic tracking-tighter",children:["Cấu Hình ",b==="OWNER"?"Vựa Thu Mua":"Nông Dân"]})]}),O&&c.jsxs("div",{className:"bg-white/20 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1",children:[c.jsx(P1,{size:12})," Đã Lưu"]})]}),c.jsxs("div",{className:"flex-1 overflow-auto pb-32",children:[c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(om,{size:18}),title:"Giao diện hệ thống"}),c.jsx(A,{label:"Chế độ tối (Dark Mode)",desc:"Sử dụng giao diện màu tối để bảo vệ mắt và tiết kiệm pin",value:p.darkMode,onChange:_=>U({...p,darkMode:_})})]}),b==="FARMER"&&c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(am,{size:18}),title:"Dọn dẹp bộ nhớ"}),c.jsxs("div",{className:"p-4 space-y-4",children:[c.jsxs("div",{className:"flex justify-between items-center",children:[c.jsx("span",{className:"text-xs font-black uppercase text-gray-600 dark:text-gray-400 italic",children:"Tự xóa phiếu sau:"}),c.jsxs("span",{className:"text-lg font-black text-red-600 dark:text-red-400 italic",children:[p.autoDeleteDays," Ngày"]})]}),c.jsx("input",{type:"range",min:"7",max:"180",step:"1",value:p.autoDeleteDays,onChange:_=>U({...p,autoDeleteDays:parseInt(_.target.value)}),className:"w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-600 dark:accent-red-400"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase italic",children:"(*) Giúp app hoạt động mượt mà hơn. Dữ liệu trên Cloud vẫn được giữ nếu bạn không xóa thủ công."})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(An,{size:18}),title:"Thiết Thiết Bị Bluetooth"}),c.jsxs("button",{onClick:()=>S(re.BLUETOOTH),className:"w-full p-4 flex items-center justify-between bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border-b border-gray-100 dark:border-gray-800",children:[c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"font-black text-blue-900 dark:text-blue-300 uppercase text-sm italic",children:"Cài đặt Cân & Máy in"}),c.jsx("p",{className:"text-[10px] font-bold text-blue-400 dark:text-blue-500 uppercase leading-tight mt-1",children:"Kết nối cân điện tử BLE và Máy in nhiệt"})]}),c.jsx(An,{className:"text-blue-600 dark:text-blue-400"})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(vm,{size:18}),title:"An Toàn Dữ Liệu"}),c.jsx(A,{label:"Khóa thông số khi cân",desc:"Ngăn chạm nhầm thay đổi giá/cọc khi đang nhập số",value:p.lockParamsDuringWeighing,onChange:_=>U({...p,lockParamsDuringWeighing:_})}),c.jsx(A,{label:"Tự động lưu nháp",desc:"Bảo vệ dữ liệu khi tắt app đột ngột",value:p.autoSaveDraft,onChange:_=>U({...p,autoSaveDraft:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(Ds,{size:18}),title:"Quy Trình & Tính Toán"}),c.jsx(v,{label:"Quy cách trừ bì tôm mặc định",options:[{label:"100kg - 2kg (2%)",val:2},{label:"100kg - 2.5kg (2.5%)",val:2.5},{label:"100kg - 3kg (3% Chuẩn)",val:3},{label:"100kg - 3.5kg (3.5%)",val:3.5},{label:"100kg - 4kg (4%)",val:4}],value:Number(p.tarePer100Kg)||3,onSelect:_=>U({...p,tarePer100Kg:Number(_)})}),c.jsx(v,{label:"Làm tròn tiền thanh toán",options:[{label:"Không",val:"none"},{label:"Đến 500đ",val:"500"},{label:"Đến 1.000đ",val:"1000"}],value:p.currencyRounding,onSelect:_=>U({...p,currencyRounding:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(jm,{size:18}),title:"Giọng Nói & Âm Thanh"}),c.jsx(A,{label:"Đọc số khi nhập",value:p.useVoice,onChange:_=>U({...p,useVoice:_})}),c.jsx(v,{label:"Tốc độ đọc số",options:[{label:"Nhanh",val:"nhanh"},{label:"Vừa",val:"vừa"},{label:"Chậm",val:"chậm"}],value:p.voiceSpeed,onSelect:_=>U({...p,voiceSpeed:_})}),c.jsx(A,{label:"Báo đủ 5 mã cân",desc:"Rung và Chuông",value:p.soundOn5,onChange:_=>U({...p,soundOn5:_})})]})]}),c.jsx("div",{className:"fixed bottom-0 w-full p-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t dark:border-gray-800 flex gap-4 shadow-2xl z-50",children:c.jsxs("button",{onClick:()=>S(re.DASHBOARD),className:"flex-1 bg-green-700 dark:bg-green-800 text-white p-5 rounded-[25px] font-black uppercase shadow-xl border-b-8 border-green-900 dark:border-black flex items-center justify-center gap-3 active:translate-y-2 active:border-b-0 transition-all",children:[c.jsx(ec,{size:24})," Xác Nhận Cấu Hình"]})})]})},Hm=({onSelect:S})=>{const[b,p]=w.useState(!1),f=Pu.currentUser,O=async()=>{p(!0);try{await Mn.loginWithGoogle();S("OWNER");}catch{alert("Đăng nhập thất bại. Vui lòng thử lại!")}p(!1)};w.useEffect(()=>{if(f){S("OWNER");}},[f]);return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center p-6 text-white",children:[c.jsxs("div",{className:"mb-10 text-center",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Tôm Càng Xanh Logo",className:"w-24 h-24 mx-auto mb-4 object-contain rounded-3xl shadow-xl bg-white/10 p-1.5"}),c.jsx("h1",{className:"text-4xl font-black italic tracking-tighter uppercase",children:"Tôm Càng Xanh"}),c.jsx("p",{className:"text-xs font-bold opacity-60 uppercase mt-2",children:"Nền tảng quản lý thông minh Tôm Càng Xanh"})]}),f?c.jsxs("div",{className:"flex flex-col items-center gap-3 animate-in zoom-in-95",children:[c.jsx("div",{className:"w-10 h-10 border-4 border-yellow-300 border-t-transparent rounded-full animate-spin mb-2"}),c.jsxs("p",{className:"font-black uppercase tracking-wider text-yellow-300 text-sm",children:["Đang vào vai trò Chủ Vựa: ",f.displayName||""]})]}):c.jsxs("div",{className:"w-full max-w-sm space-y-4",children:[c.jsxs("button",{onClick:O,disabled:b,className:"w-full bg-white text-gray-800 p-6 rounded-[30px] font-black uppercase flex items-center justify-center gap-3 shadow-2xl active:scale-95 transition-all hover:bg-yellow-50 cursor-pointer",children:[c.jsx(fm,{size:24,className:"text-red-500"}),b?"Đang kết nối...":"Đăng nhập với Google"]}),c.jsx("p",{className:"text-center text-[10px] opacity-50 px-6 uppercase font-bold",children:"Mặc định tài khoản Chủ Vựa & Dữ liệu đồng bộ an toàn"})]}),c.jsxs("div",{className:"mt-12 flex items-center gap-2 opacity-40 font-bold text-[10px] uppercase",children:[c.jsx(Pd,{size:14})," Bảo mật bởi Firebase Google"]})]})},Rm=({setRoute:S})=>{const[b,p]=w.useState("scale"),[f,O]=w.useState(me.getSettings()),[D,U]=w.useState(!1),[Y,A]=w.useState(0);w.useEffect(()=>{let z;return D&&(A(0),z=setInterval(()=>{A(L=>L+1)},1e3)),()=>clearInterval(z)},[D]);const v=()=>{me.save(Ot.SETTINGS,f),alert("Đã lưu cấu hình!")},_=({label:z,desc:L,value:te,onToggle:Q})=>c.jsxs("div",{className:"flex items-start justify-between py-4 border-b border-gray-100 px-2",children:[c.jsxs("div",{className:"flex-1 pr-4",children:[c.jsx("h4",{className:"font-black text-gray-800 text-sm uppercase tracking-tight",children:z}),c.jsx("p",{className:"text-[10px] text-gray-500 font-bold leading-tight mt-0.5",children:L})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:te,onChange:se=>Q(se.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]});return c.jsxs("div",{className:"flex flex-col h-full bg-white font-roboto select-none",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"bg-white p-1 rounded-lg text-[#e91e63]",children:c.jsx(_a,{size:24,strokeWidth:3})}),c.jsx("span",{className:"text-xl font-black text-white uppercase italic tracking-tighter",children:"Bluetooth"})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:f.enableBluetooth,onChange:z=>O({...f,enableBluetooth:z.target.checked}),className:"sr-only peer"}),c.jsx("div",{className:"w-14 h-7 bg-white/20 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:after:translate-x-full shadow-lg border border-white/10"})]})]}),c.jsxs("div",{className:"flex bg-white border-b border-gray-200",children:[c.jsxs("button",{onClick:()=>p("scale"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="scale"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx($u,{size:24,className:b==="scale"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="scale"?"text-green-800":"text-gray-600"}`,children:"Cân điện tử"})]}),c.jsxs("button",{onClick:()=>p("printer"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="printer"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx(Ms,{size:24,className:b==="printer"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="printer"?"text-green-800":"text-gray-600"}`,children:"In nhiệt"})]})]}),c.jsx("div",{className:"flex-1 overflow-auto p-4 space-y-6",children:b==="scale"?c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với Cân điện tử Bluetooth loại BLE"}),c.jsx(_,{label:"Tắt/Mở Cân điện tử",desc:"Nếu không muốn sử dụng cân điện tử hãy tắt nó",value:f.enableScale,onToggle:z=>O({...f,enableScale:z})}),c.jsx(_,{label:"Nhập thủ công",desc:"Hiện một hộp thoại nhỏ để xem mã cân điện tử",value:f.manualScaleInput,onToggle:z=>O({...f,manualScaleInput:z})}),c.jsxs("div",{className:"mt-8",children:[c.jsx("h3",{className:"text-red-600 font-black uppercase text-lg italic mb-1",children:"Cân điện tử đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm kết nối Cân điện tử Bluetooth"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx($u,{size:32,className:"text-red-500"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Bấm vào tên Cân điện tử để đảo khối lượng hiển thị."})]}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsxs("div",{className:"text-center",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-base italic leading-none",children:"Số lần kiểm tra khớp số"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-500 mt-1 uppercase leading-tight",children:"Chức năng lọc nhiễu dữ liệu cân, chỉ sử dụng cho Cân điện tử BLE"})]}),c.jsxs("div",{className:"px-4",children:[c.jsx("input",{type:"range",min:"0",max:"10",step:"1",value:f.scaleMatchSteps,onChange:z=>O({...f,scaleMatchSteps:parseInt(z.target.value)}),className:"w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsx("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-400 px-1",children:[0,1,2,3,4,5,6,7,8,9,10].map(z=>c.jsx("span",{children:z},z))})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Tăng số lần khớp số sẽ làm giảm tốc độ hiện số của Cân điện tử."}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Nếu nhận thấy tốc độ mã cân chậm hãy giảm nó lại"})]})]})]}):c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với máy in nhiệt Bluetooth"}),c.jsx(_,{label:"Tắt/Mở Máy in nhiệt",desc:"Nếu không muốn sử dụng máy in nhiệt hãy tắt nó",value:f.enablePrinter,onToggle:z=>O({...f,enablePrinter:z})}),c.jsx(_,{label:"Bluetooth Classic",desc:"Nếu không in được bằng cách thông thường, hãy bật nó lên",value:f.printerClassicMode,onToggle:z=>O({...f,printerClassicMode:z})}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsx("h3",{className:"text-center font-black text-lg text-gray-800 italic uppercase",children:"Khổ giấy máy in"}),c.jsxs("div",{className:"px-6",children:[c.jsx("input",{type:"range",min:"58",max:"80",step:"22",value:f.paperSize,onChange:z=>O({...f,paperSize:parseInt(z.target.value)}),className:"w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsxs("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-500 px-1 uppercase italic",children:[c.jsx("span",{children:"58mm"}),c.jsx("span",{children:"80mm"})]})]})]}),c.jsxs("div",{className:"mt-10",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-lg italic mb-1",children:"Máy in đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm Máy in"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx(Ms,{size:32,className:"text-green-600"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Hãy bấm vào (+) để chọn máy in nhiệt muốn kết nối."})]})]})}),c.jsx("div",{className:"p-4 bg-gray-100/50 border-t border-gray-200",children:c.jsxs("div",{className:"bg-gray-200 p-4 rounded-[25px] shadow-inner space-y-3",children:[c.jsxs("div",{className:"flex justify-between items-center px-1",children:[c.jsx("span",{className:"font-black text-blue-900 uppercase italic text-base tracking-tighter",children:"Cài đặt khác"}),c.jsxs("button",{onClick:v,className:"bg-yellow-400 text-blue-900 px-5 py-1.5 rounded-full font-black text-sm uppercase flex items-center gap-2 shadow-md active:scale-95 transition-all",children:[c.jsx(ec,{size:16})," Lưu"]})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("label",{className:"text-[10px] font-black text-gray-600 uppercase italic ml-2",children:"Tên hoá đơn"}),c.jsx("input",{value:f.invoiceName,onChange:z=>O({...f,invoiceName:z.target.value}),className:"w-full p-4 bg-white rounded-2xl font-black text-lg outline-none border-none shadow-sm placeholder:text-gray-300",placeholder:"TÔM CÀNG XANH"})]})]})}),D&&c.jsxs("div",{className:"fixed inset-0 z-[100] flex flex-col bg-white animate-in slide-in-from-bottom duration-300",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-lg",children:[c.jsx("div",{className:"flex items-center gap-2",children:c.jsxs("button",{onClick:()=>U(!1),className:"bg-white px-4 py-2 rounded-full text-[#e91e63] font-black uppercase text-sm flex items-center gap-2 shadow-md active:scale-95 transition-all border border-[#e91e63]/20",children:[c.jsx(_a,{size:18,strokeWidth:3})," Thoát"]})}),c.jsxs("button",{className:"bg-yellow-400 text-blue-900 px-6 py-2 rounded-full font-black uppercase text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-all",children:[c.jsx(An,{size:18})," Tìm Blue"]})]}),c.jsx("div",{className:"bg-gray-100 py-3 text-center border-b border-gray-200",children:c.jsx("h3",{className:"font-black text-lg uppercase tracking-tight text-gray-800",children:"Thiết bị Bluetooth (L1)"})}),c.jsxs("div",{className:"flex-1 overflow-auto p-4",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-6",children:[c.jsxs("p",{className:"text-red-500 font-bold text-sm",children:["Thời gian tìm: ",Y," giây"]}),c.jsx(gm,{size:14,className:"text-red-500 animate-spin"})]}),c.jsx("div",{className:"space-y-4",children:[{name:"[TV] Samsung 7 Series (65)",addr:"8C:79:F5:B7:87:4B"}].map((z,L)=>c.jsxs("div",{className:"flex items-center justify-between p-4 bg-white border-b border-gray-100 last:border-0 group active:bg-blue-50 transition-colors",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"text-gray-400 group-active:text-blue-500",children:c.jsx(An,{size:24})}),c.jsxs("div",{children:[c.jsx("h4",{className:"font-black text-gray-800 text-base leading-tight",children:z.name}),c.jsx("p",{className:"text-[10px] font-bold text-gray-400 uppercase tracking-widest",children:z.addr})]})]}),c.jsxs("button",{className:"bg-gray-100 text-gray-800 px-6 py-2.5 rounded-full font-black uppercase text-xs flex items-center gap-2 shadow-sm border border-gray-200 active:bg-blue-600 active:text-white transition-all",children:[c.jsx(An,{size:14})," Kết nối"]})]},L))})]})]})]})};
+const km=({setRoute:S})=>{const[b,p]=w.useState([]),[f,O]=w.useState([]),[D,U]=w.useState(!1),Y=me.isPremium(),A=w.useMemo(()=>{const v=me.getSessions();return b.map(_=>{const z=v.filter(se=>se.vehicleId===_.id),L=z.reduce((se,Oe)=>se+Oe.totalNet,0),te=z.reduce((se,Oe)=>se+Oe.totalMoney,0),Q=L/1e3*(_.costPerTrip||2e5);return{id:_.id,weight:L,revenue:te,cost:Q}})},[b]);return w.useEffect(()=>{p(me.getVehicles()),O(me.getFarmers())},[]),c.jsxs("div",{className:"flex flex-col h-full bg-[#f4f7f6] font-roboto",children:[c.jsxs("div",{className:"p-4 bg-[#1e4ea1] text-white flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-2 bg-white/10 rounded-xl",children:c.jsx(On,{})}),c.jsx("h2",{className:"text-xl font-black uppercase italic tracking-tighter",children:"Đội Ghe / Xe"})]}),c.jsx("button",{onClick:()=>U(!D),className:"bg-yellow-400 text-blue-900 w-10 h-10 rounded-full flex items-center justify-center",children:D?c.jsx(_a,{}):c.jsx(As,{})})]}),c.jsxs("div",{className:"p-4 space-y-4 overflow-auto pb-24",children:[Y&&c.jsxs("div",{className:"bg-white p-6 rounded-[35px] shadow-sm border border-blue-100",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-4",children:[c.jsx(Ds,{size:18,className:"text-blue-600"}),c.jsx("span",{className:"text-[11px] font-black uppercase italic text-gray-500",children:"Báo cáo lợi nhuận vận chuyển (Ước tính)"})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("div",{className:"bg-blue-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-blue-400 uppercase block",children:"Tổng Sản Lượng"}),c.jsxs("span",{className:"text-xl font-black text-blue-900",children:[A.reduce((v,_)=>v+_.weight,0).toLocaleString()," kg"]})]}),c.jsxs("div",{className:"bg-green-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-green-400 uppercase block",children:"Ước tính phí ghe"}),c.jsxs("span",{className:"text-xl font-black text-green-900",children:[A.reduce((v,_)=>v+_.cost,0).toLocaleString(),"đ"]})]})]})]}),b.map(v=>{const _=A.find(z=>z.id===v.id);return c.jsx("div",{className:"bg-white rounded-[35px] shadow-sm border border-gray-100 overflow-hidden",children:c.jsxs("div",{className:"p-6",children:[c.jsx("div",{className:"flex justify-between items-start mb-4",children:c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center",children:c.jsx(tc,{size:24})}),c.jsxs("div",{children:[c.jsx("h3",{className:"text-lg font-black uppercase text-gray-800 leading-none",children:v.name}),c.jsxs("p",{className:"text-[9px] font-bold text-gray-400 uppercase mt-1",children:["Tải trọng: ",v.capacity," Tấn"]})]})]})}),Y&&c.jsxs("div",{className:"mt-4 pt-4 border-t border-gray-50 flex justify-between items-center",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx(nm,{size:14,className:"text-green-600"}),c.jsxs("span",{className:"text-xs font-black text-gray-700",children:["Hiệu suất: ",_==null?void 0:_.weight.toLocaleString()," kg"]})]}),c.jsx("button",{className:"text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-3 py-1 rounded-full",children:"Xem chi phí"})]})]})},v.id)})]})]})},Um=({setRoute:S,role:b})=>{const[p,f]=w.useState(me.getSettings()),[O,D]=w.useState(!1),U=_=>{f(_),me.save(Ot.SETTINGS,_);try{const prof=getTraderProfileV3();if(_&&_.tarePer100Kg!==undefined&&Number(prof.tarePer100Kg)!==Number(_.tarePer100Kg)){saveTraderProfileV3({...prof,tarePer100Kg:Number(_.tarePer100Kg),tareRatioValue:Number(_.tarePer100Kg)})}}catch(e){}_.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark"),D(!0),setTimeout(()=>D(!1),2e3)};w.useEffect(()=>{const s=()=>f(me.getSettings());window.addEventListener("app-data-updated",s);window.addEventListener("cloud_data_synced",s);return()=>{window.removeEventListener("app-data-updated",s);window.removeEventListener("cloud_data_synced",s)};},[]),Y=({icon:_,title:z})=>c.jsxs("div",{className:"bg-[#f8f9fa] dark:bg-gray-800 p-4 flex items-center gap-3 border-b border-gray-100 dark:border-gray-700",children:[c.jsx("div",{className:"text-green-600 dark:text-green-400",children:_}),c.jsx("span",{className:"font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter text-sm italic",children:z})]}),A=({label:_,desc:z,value:L,onChange:te})=>c.jsxs("div",{className:"p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 active:bg-gray-50 dark:active:bg-gray-800 transition-colors",children:[c.jsxs("div",{className:"flex-1",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),z&&c.jsx("div",{className:"text-[10px] font-bold text-gray-400 dark:text-gray-500 leading-tight mt-0.5 pr-4 uppercase italic",children:z})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:L,onChange:Q=>te(Q.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-green-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]}),v=({label:_,options:z,value:L,onSelect:te})=>c.jsxs("div",{className:"p-4 space-y-3 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),c.jsx("div",{className:"grid grid-cols-3 gap-2",children:z.map(Q=>c.jsx("button",{onClick:()=>te(Q.val),className:`py-2 px-1 rounded-xl border-2 transition-all font-black uppercase text-[9px] ${L===Q.val?"border-green-600 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 shadow-md":"border-gray-50 dark:border-gray-800 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500"}`,children:Q.label},Q.val))})]});return c.jsxs("div",{className:"flex flex-col h-full bg-[#f2f2f2] dark:bg-[#121212] font-roboto",children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-5 text-white flex items-center justify-between shadow-xl sticky top-0 z-50",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-1 hover:bg-white/10 rounded-lg",children:c.jsx(_a,{size:28})}),c.jsxs("span",{className:"text-2xl font-black uppercase italic tracking-tighter",children:["Cấu Hình ",b==="OWNER"?"Vựa Thu Mua":"Nông Dân"]})]}),O&&c.jsxs("div",{className:"bg-white/20 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1",children:[c.jsx(P1,{size:12})," Đã Lưu"]})]}),c.jsxs("div",{className:"flex-1 overflow-auto pb-32",children:[c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(om,{size:18}),title:"Giao diện hệ thống"}),c.jsx(A,{label:"Chế độ tối (Dark Mode)",desc:"Sử dụng giao diện màu tối để bảo vệ mắt và tiết kiệm pin",value:p.darkMode,onChange:_=>U({...p,darkMode:_})})]}),b==="FARMER"&&c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(am,{size:18}),title:"Dọn dẹp bộ nhớ"}),c.jsxs("div",{className:"p-4 space-y-4",children:[c.jsxs("div",{className:"flex justify-between items-center",children:[c.jsx("span",{className:"text-xs font-black uppercase text-gray-600 dark:text-gray-400 italic",children:"Tự xóa phiếu sau:"}),c.jsxs("span",{className:"text-lg font-black text-red-600 dark:text-red-400 italic",children:[p.autoDeleteDays," Ngày"]})]}),c.jsx("input",{type:"range",min:"7",max:"180",step:"1",value:p.autoDeleteDays,onChange:_=>U({...p,autoDeleteDays:parseInt(_.target.value)}),className:"w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-600 dark:accent-red-400"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase italic",children:"(*) Giúp app hoạt động mượt mà hơn. Dữ liệu trên Cloud vẫn được giữ nếu bạn không xóa thủ công."})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(An,{size:18}),title:"Thiết Bị Bluetooth"}),c.jsxs("button",{onClick:()=>S(re.BLUETOOTH),className:"w-full p-4 flex items-center justify-between bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border-b border-gray-100 dark:border-gray-800",children:[c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"font-black text-blue-900 dark:text-blue-300 uppercase text-sm italic",children:"Cài đặt Cân & Máy in"}),c.jsx("p",{className:"text-[10px] font-bold text-blue-400 dark:text-blue-500 uppercase leading-tight mt-1",children:"Kết nối cân điện tử BLE và Máy in nhiệt"})]}),c.jsx(An,{className:"text-blue-600 dark:text-blue-400"})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(vm,{size:18}),title:"An Toàn Dữ Liệu"}),c.jsx(A,{label:"Khóa thông số khi cân",desc:"Ngăn chạm nhầm thay đổi giá/cọc khi đang nhập số",value:p.lockParamsDuringWeighing,onChange:_=>U({...p,lockParamsDuringWeighing:_})}),c.jsx(A,{label:"Tự động lưu nháp",desc:"Bảo vệ dữ liệu khi tắt app đột ngột",value:p.autoSaveDraft,onChange:_=>U({...p,autoSaveDraft:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(Ds,{size:18}),title:"Quy Trình & Tính Toán"}),c.jsx(v,{label:"Quy cách trừ bì tôm mặc định",options:[{label:"Không trừ bì (0%)",val:0},{label:"100kg - 1kg (1% Chuẩn)",val:1},{label:"100kg - 1.5kg (1.5%)",val:1.5},{label:"100kg - 2kg (2%)",val:2},{label:"100kg - 3kg (3%)",val:3},{label:"100kg - 4kg (4%)",val:4}],value:parseNumericSetting_v4(p.tarePer100Kg,1),onSelect:_=>U({...p,tarePer100Kg:Number(_)})}),c.jsx(v,{label:"Làm tròn tiền thanh toán",options:[{label:"Không",val:"none"},{label:"Đến 500đ",val:"500"},{label:"Đến 1.000đ",val:"1000"}],value:p.currencyRounding,onSelect:_=>U({...p,currencyRounding:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(jm,{size:18}),title:"Giọng Nói & Âm Thanh"}),c.jsx(A,{label:"Đọc số khi nhập",value:p.useVoice,onChange:_=>U({...p,useVoice:_})}),c.jsx(v,{label:"Tốc độ đọc số",options:[{label:"Nhanh",val:"nhanh"},{label:"Vừa",val:"vừa"},{label:"Chậm",val:"chậm"}],value:p.voiceSpeed,onSelect:_=>U({...p,voiceSpeed:_})}),c.jsx(A,{label:"Báo đủ 5 mã cân",desc:"Rung và Chuông",value:p.soundOn5,onChange:_=>U({...p,soundOn5:_})})]})]}),c.jsx("div",{className:"fixed bottom-0 w-full p-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t dark:border-gray-800 flex gap-4 shadow-2xl z-50",children:c.jsxs("button",{onClick:()=>S(re.DASHBOARD),className:"flex-1 bg-green-700 dark:bg-green-800 text-white p-5 rounded-[25px] font-black uppercase shadow-xl border-b-8 border-green-900 dark:border-black flex items-center justify-center gap-3 active:translate-y-2 active:border-b-0 transition-all",children:[c.jsx(ec,{size:24})," Xác Nhận Cấu Hình"]})})]})},Hm=({onSelect:S})=>{const[b,p]=w.useState(!1),f=Pu.currentUser,O=async()=>{p(!0);try{await Mn.loginWithGoogle();S("OWNER");}catch{alert("Đăng nhập thất bại. Vui lòng thử lại!")}p(!1)};w.useEffect(()=>{if(f){S("OWNER");}},[f]);return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center p-6 text-white",children:[c.jsxs("div",{className:"mb-10 text-center",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Tôm Càng Xanh Logo",className:"w-24 h-24 mx-auto mb-4 object-contain rounded-3xl shadow-xl bg-white/10 p-1.5"}),c.jsx("h1",{className:"text-4xl font-black italic tracking-tighter uppercase",children:"Tôm Càng Xanh"}),c.jsx("p",{className:"text-xs font-bold opacity-60 uppercase mt-2",children:"Nền tảng quản lý thông minh Tôm Càng Xanh"})]}),f?c.jsxs("div",{className:"flex flex-col items-center gap-3 animate-in zoom-in-95",children:[c.jsx("div",{className:"w-10 h-10 border-4 border-yellow-300 border-t-transparent rounded-full animate-spin mb-2"}),c.jsxs("p",{className:"font-black uppercase tracking-wider text-yellow-300 text-sm",children:["Đang vào vai trò Chủ Vựa: ",f.displayName||""]})]}):c.jsxs("div",{className:"w-full max-w-sm space-y-4",children:[c.jsxs("button",{onClick:O,disabled:b,className:"w-full bg-white text-gray-800 p-6 rounded-[30px] font-black uppercase flex items-center justify-center gap-3 shadow-2xl active:scale-95 transition-all hover:bg-yellow-50 cursor-pointer",children:[c.jsx(fm,{size:24,className:"text-red-500"}),b?"Đang kết nối...":"Đăng nhập với Google"]}),c.jsx("p",{className:"text-center text-[10px] opacity-50 px-6 uppercase font-bold",children:"Mặc định tài khoản Chủ Vựa & Dữ liệu đồng bộ an toàn"})]}),c.jsxs("div",{className:"mt-12 flex items-center gap-2 opacity-40 font-bold text-[10px] uppercase",children:[c.jsx(Pd,{size:14})," Bảo mật bởi Firebase Google"]})]})},Rm=({setRoute:S})=>{const[b,p]=w.useState("scale"),[f,O]=w.useState(me.getSettings()),[D,U]=w.useState(!1),[Y,A]=w.useState(0);w.useEffect(()=>{let z;return D&&(A(0),z=setInterval(()=>{A(L=>L+1)},1e3)),()=>clearInterval(z)},[D]);const v=()=>{me.save(Ot.SETTINGS,f),alert("Đã lưu cấu hình!")},_=({label:z,desc:L,value:te,onToggle:Q})=>c.jsxs("div",{className:"flex items-start justify-between py-4 border-b border-gray-100 px-2",children:[c.jsxs("div",{className:"flex-1 pr-4",children:[c.jsx("h4",{className:"font-black text-gray-800 text-sm uppercase tracking-tight",children:z}),c.jsx("p",{className:"text-[10px] text-gray-500 font-bold leading-tight mt-0.5",children:L})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:te,onChange:se=>Q(se.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]});return c.jsxs("div",{className:"flex flex-col h-full bg-white font-roboto select-none",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"bg-white p-1 rounded-lg text-[#e91e63]",children:c.jsx(_a,{size:24,strokeWidth:3})}),c.jsx("span",{className:"text-xl font-black text-white uppercase italic tracking-tighter",children:"Bluetooth"})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:f.enableBluetooth,onChange:z=>O({...f,enableBluetooth:z.target.checked}),className:"sr-only peer"}),c.jsx("div",{className:"w-14 h-7 bg-white/20 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:after:translate-x-full shadow-lg border border-white/10"})]})]}),c.jsxs("div",{className:"flex bg-white border-b border-gray-200",children:[c.jsxs("button",{onClick:()=>p("scale"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="scale"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx($u,{size:24,className:b==="scale"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="scale"?"text-green-800":"text-gray-600"}`,children:"Cân điện tử"})]}),c.jsxs("button",{onClick:()=>p("printer"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="printer"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx(Ms,{size:24,className:b==="printer"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="printer"?"text-green-800":"text-gray-600"}`,children:"In nhiệt"})]})]}),c.jsx("div",{className:"flex-1 overflow-auto p-4 space-y-6",children:b==="scale"?c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với Cân điện tử Bluetooth loại BLE"}),c.jsx(_,{label:"Tắt/Mở Cân điện tử",desc:"Nếu không muốn sử dụng cân điện tử hãy tắt nó",value:f.enableScale,onToggle:z=>O({...f,enableScale:z})}),c.jsx(_,{label:"Nhập thủ công",desc:"Hiện một hộp thoại nhỏ để xem mã cân điện tử",value:f.manualScaleInput,onToggle:z=>O({...f,manualScaleInput:z})}),c.jsxs("div",{className:"mt-8",children:[c.jsx("h3",{className:"text-red-600 font-black uppercase text-lg italic mb-1",children:"Cân điện tử đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm kết nối Cân điện tử Bluetooth"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx($u,{size:32,className:"text-red-500"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Bấm vào tên Cân điện tử để đảo khối lượng hiển thị."})]}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsxs("div",{className:"text-center",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-base italic leading-none",children:"Số lần kiểm tra khớp số"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-500 mt-1 uppercase leading-tight",children:"Chức năng lọc nhiễu dữ liệu cân, chỉ sử dụng cho Cân điện tử BLE"})]}),c.jsxs("div",{className:"px-4",children:[c.jsx("input",{type:"range",min:"0",max:"10",step:"1",value:f.scaleMatchSteps,onChange:z=>O({...f,scaleMatchSteps:parseInt(z.target.value)}),className:"w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsx("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-400 px-1",children:[0,1,2,3,4,5,6,7,8,9,10].map(z=>c.jsx("span",{children:z},z))})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Tăng số lần khớp số sẽ làm giảm tốc độ hiện số của Cân điện tử."}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Nếu nhận thấy tốc độ mã cân chậm hãy giảm nó lại"})]})]})]}):c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với máy in nhiệt Bluetooth"}),c.jsx(_,{label:"Tắt/Mở Máy in nhiệt",desc:"Nếu không muốn sử dụng máy in nhiệt hãy tắt nó",value:f.enablePrinter,onToggle:z=>O({...f,enablePrinter:z})}),c.jsx(_,{label:"Bluetooth Classic",desc:"Nếu không in được bằng cách thông thường, hãy bật nó lên",value:f.printerClassicMode,onToggle:z=>O({...f,printerClassicMode:z})}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsx("h3",{className:"text-center font-black text-lg text-gray-800 italic uppercase",children:"Khổ giấy máy in"}),c.jsxs("div",{className:"px-6",children:[c.jsx("input",{type:"range",min:"58",max:"80",step:"22",value:f.paperSize,onChange:z=>O({...f,paperSize:parseInt(z.target.value)}),className:"w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsxs("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-500 px-1 uppercase italic",children:[c.jsx("span",{children:"58mm"}),c.jsx("span",{children:"80mm"})]})]})]}),c.jsxs("div",{className:"mt-10",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-lg italic mb-1",children:"Máy in đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm Máy in"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx(Ms,{size:32,className:"text-green-600"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Hãy bấm vào (+) để chọn máy in nhiệt muốn kết nối."})]})]})}),c.jsx("div",{className:"p-4 bg-gray-100/50 border-t border-gray-200",children:c.jsxs("div",{className:"bg-gray-200 p-4 rounded-[25px] shadow-inner space-y-3",children:[c.jsxs("div",{className:"flex justify-between items-center px-1",children:[c.jsx("span",{className:"font-black text-blue-900 uppercase italic text-base tracking-tighter",children:"Cài đặt khác"}),c.jsxs("button",{onClick:v,className:"bg-yellow-400 text-blue-900 px-5 py-1.5 rounded-full font-black text-sm uppercase flex items-center gap-2 shadow-md active:scale-95 transition-all",children:[c.jsx(ec,{size:16})," Lưu"]})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("label",{className:"text-[10px] font-black text-gray-600 uppercase italic ml-2",children:"Tên hoá đơn"}),c.jsx("input",{value:f.invoiceName,onChange:z=>O({...f,invoiceName:z.target.value}),className:"w-full p-4 bg-white rounded-2xl font-black text-lg outline-none border-none shadow-sm placeholder:text-gray-300",placeholder:"TÔM CÀNG XANH"})]})]})}),D&&c.jsxs("div",{className:"fixed inset-0 z-[100] flex flex-col bg-white animate-in slide-in-from-bottom duration-300",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-lg",children:[c.jsx("div",{className:"flex items-center gap-2",children:c.jsxs("button",{onClick:()=>U(!1),className:"bg-white px-4 py-2 rounded-full text-[#e91e63] font-black uppercase text-sm flex items-center gap-2 shadow-md active:scale-95 transition-all border border-[#e91e63]/20",children:[c.jsx(_a,{size:18,strokeWidth:3})," Thoát"]})}),c.jsxs("button",{className:"bg-yellow-400 text-blue-900 px-6 py-2 rounded-full font-black uppercase text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-all",children:[c.jsx(An,{size:18})," Tìm Blue"]})]}),c.jsx("div",{className:"bg-gray-100 py-3 text-center border-b border-gray-200",children:c.jsx("h3",{className:"font-black text-lg uppercase tracking-tight text-gray-800",children:"Thiết bị Bluetooth (L1)"})}),c.jsxs("div",{className:"flex-1 overflow-auto p-4",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-6",children:[c.jsxs("p",{className:"text-red-500 font-bold text-sm",children:["Thời gian tìm: ",Y," giây"]}),c.jsx(gm,{size:14,className:"text-red-500 animate-spin"})]}),c.jsx("div",{className:"space-y-4",children:[{name:"[TV] Samsung 7 Series (65)",addr:"8C:79:F5:B7:87:4B"}].map((z,L)=>c.jsxs("div",{className:"flex items-center justify-between p-4 bg-white border-b border-gray-100 last:border-0 group active:bg-blue-50 transition-colors",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"text-gray-400 group-active:text-blue-500",children:c.jsx(An,{size:24})}),c.jsxs("div",{children:[c.jsx("h4",{className:"font-black text-gray-800 text-base leading-tight",children:z.name}),c.jsx("p",{className:"text-[10px] font-bold text-gray-400 uppercase tracking-widest",children:z.addr})]})]}),c.jsxs("button",{className:"bg-gray-100 text-gray-800 px-6 py-2.5 rounded-full font-black uppercase text-xs flex items-center gap-2 shadow-sm border border-gray-200 active:bg-blue-600 active:text-white transition-all",children:[c.jsx(An,{size:14})," Kết nối"]})]},L))})]})]})]})};
 
 
 
@@ -8530,6 +9630,8 @@ me.getSales = function() {
 me.saveSales = function(list) {
   try {
     localStorage.setItem(Ot.SALES, JSON.stringify(list));
+    emitAppDataUpdated_v4(Ot.SALES);
+    if (typeof me !== "undefined" && me.syncAllToCloud) me.syncAllToCloud();
   } catch(e) {
     console.warn("Save sales error", e);
   }
@@ -8563,39 +9665,141 @@ me.getFinanceData = function() {
     const raw = localStorage.getItem(Ot.FINANCE);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === "object" && parsed.activeTrip) return parsed;
+      if (parsed && typeof parsed === "object" && parsed.activeTrip) {
+        // Ensure migration to solo capital if older trip had investors
+        const at = parsed.activeTrip;
+        if (at.capitalAmount === undefined) {
+          if (Array.isArray(at.investors) && at.investors.length > 0) {
+            at.capitalAmount = at.investors.reduce((acc, inv) => acc + Number(inv.amount || 0), 0);
+          } else {
+            at.capitalAmount = 150000000;
+          }
+        }
+        if (!at.ownerName) {
+          const tp = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {};
+          at.ownerName = tp.representative || tp.fullName || "Tôi (Chủ vựa)";
+        }
+        return parsed;
+      }
     }
   } catch(e) {}
+
+  const tp = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {};
+  const ownerName = tp.representative || tp.fullName || "Tôi (Chủ vựa)";
+
   return {
     activeTrip: {
       id: "trip_" + Date.now(),
       name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
-      startDate: new Date().toISOString().split("T")[0],
-      investors: [
-        { id: "inv_1", name: "Tôi (Chủ vựa)", amount: 100000000 },
-        { id: "inv_2", name: "Anh B (Hùn vốn)", amount: 100000000 }
-      ],
+      startDate: getLocalYYYYMMDD_v4(),
+      ownerName: ownerName,
+      capitalAmount: 150000000, // 1 người tự bỏ vốn
       shrimpPurchaseAuto: true,
       shrimpPurchaseManualAmount: 0,
+      selectedSessionIds: null,
       expenses: [
         { id: "exp_1", category: "Tiền thuê xe / vận chuyển", amount: 1500000, note: "Xe giao tôm", date: new Date().toISOString() },
         { id: "exp_2", category: "Tiền nước đá, oxy", amount: 600000, note: "20 cây đá + nạp oxy", date: new Date().toISOString() },
         { id: "exp_3", category: "Tiền nhân công kéo / lựa tôm", amount: 1200000, note: "4 nhân công", date: new Date().toISOString() }
       ],
       revenueAuto: true,
-      revenueManualAmount: 0
+      revenueManualAmount: 0,
+      selectedSaleIds: null
     },
     savedTrips: []
   };
 };
+
 me.saveFinanceData = function(data) {
   try {
     localStorage.setItem(Ot.FINANCE, JSON.stringify(data));
+    emitAppDataUpdated_v4(Ot.FINANCE);
+    if (typeof me !== "undefined" && me.syncAllToCloud) me.syncAllToCloud();
   } catch(e) {
     console.warn("Save finance data error", e);
   }
 };
 
+me.getFinanceSummary = function() {
+  try {
+    const fin = me.getFinanceData();
+    const trip = (fin && fin.activeTrip) || {};
+    const tripDate = trip.startDate || getLocalYYYYMMDD_v4();
+    const filterMode = trip.filterMode || "DATE";
+    const sessions = (me.getSessions && me.getSessions()) || [];
+    const filteredSessions = sessions.filter(s => filterMode === "ALL" ? true : (s.date && isSameLocalDate_v4(s.date, tripDate)));
+    const effectiveSessions = Array.isArray(trip.selectedSessionIds)
+      ? filteredSessions.filter(s => trip.selectedSessionIds.includes(s.id))
+      : filteredSessions;
+    const autoBuyMoney = effectiveSessions.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+    const totalBuyKg = effectiveSessions.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
+    const shrimpPurchaseMoney = trip.shrimpPurchaseAuto !== false ? autoBuyMoney : Number(trip.shrimpPurchaseManualAmount || 0);
+
+    const allTx = trip.expenses || [];
+    const totalOperationExpenses = allTx.filter(t => t.type !== "INCOME").reduce((acc, e) => acc + Number(e.amount || 0), 0);
+    const totalExtraIncome = allTx.filter(t => t.type === "INCOME").reduce((acc, e) => acc + Number(e.amount || 0), 0);
+    const totalExpenses = shrimpPurchaseMoney + totalOperationExpenses;
+
+    const sales = (me.getSales && me.getSales()) || [];
+    const completedSales = sales.filter(s => s.status === "COMPLETED" || s.status === "SETTLED" || s.isPaidFull);
+    const filteredSales = completedSales.filter(s => filterMode === "ALL" ? true : (s.date && isSameLocalDate_v4(s.date, tripDate)));
+    const effectiveSales = Array.isArray(trip.selectedSaleIds)
+      ? filteredSales.filter(s => trip.selectedSaleIds.includes(s.id))
+      : filteredSales;
+    const autoRevenueMoney = effectiveSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+    const revenueKg = effectiveSales.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
+    const baseRevenue = trip.revenueAuto !== false ? autoRevenueMoney : Number(trip.revenueManualAmount || 0);
+    const totalRevenue = baseRevenue + totalExtraIncome;
+    const netProfit = totalRevenue - totalExpenses;
+    return {
+      tripDate,
+      filterMode,
+      shrimpPurchaseMoney,
+      totalBuyKg,
+      totalOperationExpenses,
+      totalExtraIncome,
+      totalExpenses,
+      baseRevenue,
+      totalRevenue,
+      revenueKg,
+      netProfit,
+      isProfit: netProfit >= 0,
+      sessionCount: effectiveSessions.length,
+      saleCount: effectiveSales.length,
+      txCount: allTx.length
+    };
+  } catch (e) {
+    return {
+      tripDate: getLocalYYYYMMDD_v4(),
+      filterMode: "DATE",
+      shrimpPurchaseMoney: 0,
+      totalBuyKg: 0,
+      totalOperationExpenses: 0,
+      totalExtraIncome: 0,
+      totalExpenses: 0,
+      baseRevenue: 0,
+      totalRevenue: 0,
+      revenueKg: 0,
+      netProfit: 0,
+      isProfit: true,
+      sessionCount: 0,
+      saleCount: 0,
+      txCount: 0
+    };
+  }
+};
+
+me.getRemainingCapital = function() {
+  try {
+    const fin = me.getFinanceData();
+    const trip = (fin && fin.activeTrip) || {};
+    const totalCapital = Number(trip.capitalAmount !== undefined ? trip.capitalAmount : 150000000) || 150000000;
+    const sum = me.getFinanceSummary();
+    return totalCapital - sum.totalExpenses + sum.totalRevenue;
+  } catch(e) {
+    return 150000000;
+  }
+};
 me.getBuyers = function() {
   try {
     const raw = localStorage.getItem(Ot.BUYERS);
@@ -8710,6 +9914,8 @@ me.getBuyers = function() {
 me.saveBuyers = function(list) {
   try {
     localStorage.setItem(Ot.BUYERS, JSON.stringify(list));
+    emitAppDataUpdated_v4(Ot.BUYERS);
+    if (typeof me !== "undefined" && me.syncAllToCloud) me.syncAllToCloud();
   } catch(e) {
     console.warn("Save buyers error", e);
   }
@@ -8854,6 +10060,12 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
 
   w.useEffect(() => {
     refreshList();
+    window.addEventListener("app-data-updated", refreshList);
+    window.addEventListener("cloud_data_synced", refreshList);
+    return () => {
+      window.removeEventListener("app-data-updated", refreshList);
+      window.removeEventListener("cloud_data_synced", refreshList);
+    };
   }, []);
 
   const filteredList = w.useMemo(() => {
@@ -9716,14 +10928,59 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
 
   const [salesList, setSalesList] = w.useState([]);
   const [buyersList, setBuyersList] = w.useState([]);
+  const [profileTypes, setProfileTypes] = w.useState(() => {
+    try {
+      const tp = getTraderProfileV3();
+      return Array.isArray(tp.shrimpTypes) ? tp.shrimpTypes.map(st => st.name).filter(Boolean) : [];
+    } catch(e) { return []; }
+  });
+  const [selectedBuyerMeta, setSelectedBuyerMeta] = w.useState(null);
   const refreshData = () => {
     try {
       setSalesList(me.getSales());
       setBuyersList(me.getBuyers());
+      const tp = getTraderProfileV3();
+      if (tp && Array.isArray(tp.shrimpTypes)) {
+        setProfileTypes(tp.shrimpTypes.map(st => st.name).filter(Boolean));
+      }
     } catch(e) {}
   };
   w.useEffect(() => {
     refreshData();
+    try {
+      const preRaw = localStorage.getItem("preselected_buyer_for_sale");
+      if (preRaw) {
+        localStorage.removeItem("preselected_buyer_for_sale");
+        const buyer = JSON.parse(preRaw);
+        if (buyer && buyer.name) {
+          const grp = buyer.targetGroup || "FACTORY";
+          setTargetGroup(grp);
+          try { localStorage.setItem("last_sale_target_group", grp); } catch(e) {}
+          setSelectedBuyerMeta(buyer);
+          if (grp === "RETAIL") {
+            setRetailBuyerName(buyer.name);
+          } else if (grp === "MARKET") {
+            setMarketBuyerName(buyer.name);
+            if (buyer.defaultVehiclePlate) setMarketVehiclePlate(buyer.defaultVehiclePlate);
+            if (buyer.defaultDriverName) setMarketDriver(buyer.defaultDriverName);
+            if (buyer.marketDeliveryTime) setMarketTime(buyer.marketDeliveryTime);
+          } else {
+            setFactoryBuyerName(buyer.name);
+            if (Array.isArray(buyer.shrimpPrices) && buyer.shrimpPrices.length > 0 && buyer.shrimpPrices[0].typeName) {
+              setFactoryShrimpType(buyer.shrimpPrices[0].typeName);
+            }
+          }
+        }
+      }
+    } catch(e) {}
+    window.addEventListener("app-data-updated", refreshData);
+    window.addEventListener("cloud_data_synced", refreshData);
+    window.addEventListener("trader-profile-updated", refreshData);
+    return () => {
+      window.removeEventListener("app-data-updated", refreshData);
+      window.removeEventListener("cloud_data_synced", refreshData);
+      window.removeEventListener("trader-profile-updated", refreshData);
+    };
   }, []);
 
   // Modal states
@@ -9735,15 +10992,25 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
   const [showWeighGridModal, setShowWeighGridModal] = w.useState(false);
 
   // Common Form States
-  // 1. RETAIL STATES
-  const retailTypes = [
-    "Tôm càng sen Loại 1 (10-15 con)",
-    "Tôm càng sen Loại 2 (16-25 con)",
-    "Tôm càng xô tươi",
-    "Tôm trứng / tôm ôm trứng",
-    "Tôm oxy tươi sống",
-    "Tôm lột cấp đông"
-  ];
+  // 1. RETAIL STATES (merged with Trader Profile shrimpTypes)
+  const retailTypes = w.useMemo(() => {
+    const base = [
+      "Tôm càng sen Loại 1 (10-15 con)",
+      "Tôm càng sen Loại 2 (16-25 con)",
+      "Tôm càng xô tươi",
+      "Tôm trứng / tôm ôm trứng",
+      "Tôm oxy tươi sống",
+      "Tôm lột cấp đông"
+    ];
+    const merged = [...base];
+    (profileTypes || []).forEach(n => {
+      if (n && !merged.some(x => x.toLowerCase() === n.toLowerCase())) merged.push(n);
+    });
+    return merged;
+  }, [profileTypes]);
+  const retailDirectoryBuyers = w.useMemo(() => buyersList.filter(b => b.targetGroup === "RETAIL"), [buyersList]);
+  const marketDirectoryBuyers = w.useMemo(() => buyersList.filter(b => b.targetGroup === "MARKET"), [buyersList]);
+  const factoryDirectoryBuyers = w.useMemo(() => buyersList.filter(b => b.targetGroup === "FACTORY"), [buyersList]);
   const [retailBuyerName, setRetailBuyerName] = w.useState("Khách Lẻ Mua Tại Vựa");
   const [retailType, setRetailType] = w.useState(retailTypes[0]);
   const [retailPrice, setRetailPrice] = w.useState(""); // Direct input, not fixed!
@@ -9769,9 +11036,12 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
       targetGroup: "RETAIL",
       status: "COMPLETED",
       isPaidFull: true,
+      buyerId: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim()) ? selectedBuyerMeta.id : "",
       buyerName: retailBuyerName.trim() || "Khách Lẻ Tại Vựa",
-      buyerPhone: "",
-      buyerAddress: "Tại vựa Tôm Càng Xanh",
+      buyerPhone: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim() && selectedBuyerMeta.phone) ? selectedBuyerMeta.phone : "",
+      buyerAddress: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim() && selectedBuyerMeta.address) ? selectedBuyerMeta.address : "Tại vựa Tôm Càng Xanh",
+      buyerLatitude: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim()) ? (selectedBuyerMeta.latitude || null) : null,
+      buyerLongitude: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim()) ? (selectedBuyerMeta.longitude || null) : null,
       riceType: retailType,
       unitPrice: price,
       totalNet: kg,
@@ -9792,7 +11062,11 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     me.addSale(newSale);
     refreshData();
     setRetailKg("");
-    alert("✅ Đã lưu thành công đơn bán lẻ: " + _e(newSale.totalMoney) + " đ (" + fmtKg(newSale.totalNet) + " kg)");
+    const finRetail = me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: newSale.totalMoney, netProfit: newSale.totalMoney, isProfit: true };
+    alert("✅ ĐÃ LƯU ĐƠN BÁN LẺ & ĐỒNG BỘ TÀI CHÍNH!\n\n" +
+          "💵 Đơn này: +" + _e(newSale.totalMoney) + " đ (" + fmtKg(newSale.totalNet) + " kg)\n" +
+          "📈 Tổng doanh thu kỳ này: " + _e(finRetail.totalRevenue) + " VNĐ\n" +
+          "📊 Lợi nhuận ròng hiện tại: " + (finRetail.isProfit ? "+" : "") + _e(finRetail.netProfit) + " VNĐ");
   };
 
   // 2. MARKET (CHỢ ĐẦU MỐI) STATES
@@ -9818,7 +11092,12 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
       targetGroup: "MARKET",
       status: "SELLING", // ĐANG BÁN
       isPaidFull: false,
+      buyerId: (selectedBuyerMeta && selectedBuyerMeta.name === marketBuyerName.trim()) ? selectedBuyerMeta.id : "",
       buyerName: marketBuyerName.trim() || "Chợ Đầu Mối",
+      buyerPhone: (selectedBuyerMeta && selectedBuyerMeta.name === marketBuyerName.trim() && selectedBuyerMeta.phone) ? selectedBuyerMeta.phone : "",
+      buyerAddress: (selectedBuyerMeta && selectedBuyerMeta.name === marketBuyerName.trim() && selectedBuyerMeta.address) ? selectedBuyerMeta.address : "",
+      buyerLatitude: (selectedBuyerMeta && selectedBuyerMeta.name === marketBuyerName.trim()) ? (selectedBuyerMeta.latitude || null) : null,
+      buyerLongitude: (selectedBuyerMeta && selectedBuyerMeta.name === marketBuyerName.trim()) ? (selectedBuyerMeta.longitude || null) : null,
       phiCount: phi,
       vehiclePlate: marketVehiclePlate.trim(),
       driverName: marketDriver.trim(),
@@ -9837,13 +11116,25 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
   };
 
   // 3. FACTORY (CÔNG TY / NHÀ MÁY) STATES
-  const factoryBuyers = [
-    "Công ty CP Thủy sản Camimex",
-    "Tập đoàn Thủy hải sản Minh Phú",
-    "Công ty CP Chế biến Thủy sản Quốc Việt",
-    "Công ty Thủy sản Cases Cà Mau"
-  ];
-  const [factoryBuyerName, setFactoryBuyerName] = w.useState(factoryBuyers[0]);
+  const factoryBuyers = w.useMemo(() => {
+    const dirNames = factoryDirectoryBuyers.map(b => b.name).filter(Boolean);
+    const defaults = [
+      "Công ty CP Thủy sản Camimex",
+      "Nhà máy Chế biến Thủy sản Minh Phú",
+      "Công ty CP Chế biến Thủy sản Quốc Việt",
+      "Công ty Thủy sản Cases Cà Mau"
+    ];
+    const list = dirNames.length > 0 ? [...dirNames] : [...defaults];
+    if (factoryBuyerName && !list.includes(factoryBuyerName)) list.unshift(factoryBuyerName);
+    return list;
+  }, [factoryDirectoryBuyers]);
+  const [factoryBuyerName, setFactoryBuyerName] = w.useState(() => {
+    try {
+      const f = (me.getBuyers && me.getBuyers() || []).find(b => b.targetGroup === "FACTORY");
+      if (f && f.name) return f.name;
+    } catch(e) {}
+    return "Công ty CP Thủy sản Camimex";
+  });
   const [factoryShrimpType, setFactoryShrimpType] = w.useState("Tôm càng sen size lớn (10-15 c/kg)");
   const [factoryDeliveredKg, setFactoryDeliveredKg] = w.useState("");
 
@@ -9851,6 +11142,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     const kg = Number(factoryDeliveredKg) || 0;
     const now = new Date();
     const timeFullStr = now.toLocaleDateString("vi-VN") + " " + now.getHours() + ":" + String(now.getMinutes()).padStart(2, "0");
+    const matchedFactory = factoryDirectoryBuyers.find(b => b.name === factoryBuyerName.trim()) || selectedBuyerMeta || {};
 
     const newSale = {
       id: "sale_" + Date.now(),
@@ -9859,7 +11151,13 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
       targetGroup: "FACTORY",
       status: "AWAITING_RESULT", // CHỜ KẾT QUẢ
       isPaidFull: false,
+      buyerId: matchedFactory.id || "",
       buyerName: factoryBuyerName.trim(),
+      buyerPhone: matchedFactory.phone || "",
+      buyerAddress: matchedFactory.address || "",
+      buyerRepresentative: matchedFactory.representative || "",
+      buyerLatitude: matchedFactory.latitude || null,
+      buyerLongitude: matchedFactory.longitude || null,
       riceType: factoryShrimpType,
       factoryDeliveredKg: kg,
       totalNet: kg,
@@ -9890,6 +11188,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
       isPaidFull: true,
       totalNet: kg,
       totalGross: kg,
+      unitPrice: kg > 0 ? Math.round(money / kg) : 0,
       totalMoney: money,
       settledAt: new Date().toISOString(),
       notes: settlingSaleObj.targetGroup === "MARKET"
@@ -9902,7 +11201,11 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     setSettlingSaleObj(null);
     setSettleKg("");
     setSettleMoney("");
-    alert("✅ Đã chốt đơn thành công! Doanh thu đã được cộng dồn vào hệ thống.");
+    const finSettle = me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: money, netProfit: money, isProfit: true };
+    alert("✅ ĐÃ CHỐT ĐƠN & ĐỒNG BỘ TÀI CHÍNH!\n\n" +
+          "💵 Thực nhận đơn này: +" + _e(money) + " đ (" + fmtKg(kg) + " kg)\n" +
+          "📈 Tổng doanh thu kỳ này: " + _e(finSettle.totalRevenue) + " VNĐ\n" +
+          "📊 Lợi nhuận ròng hiện tại: " + (finSettle.isProfit ? "+" : "") + _e(finSettle.netProfit) + " VNĐ");
   };
 
   // Filtered lists for in-progress items
@@ -10049,10 +11352,27 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                   ]
                 }),
 
-                // Khách hàng
+                // Khách hàng (Chọn nhanh từ Danh bạ hoặc nhập tên)
                 c.jsxs("div", {
+                  className: "space-y-1.5",
                   children: [
-                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Tên Khách Mua Lẻ" }),
+                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block", children: "Tên Khách Mua Lẻ" }),
+                    retailDirectoryBuyers.length > 0 && c.jsx("div", {
+                      className: "flex flex-wrap gap-1.5",
+                      children: [
+                        { id: "_walkin", name: "Khách Lẻ Mua Tại Vựa" },
+                        ...retailDirectoryBuyers
+                      ].map(b => c.jsx("button", {
+                        key: b.id,
+                        type: "button",
+                        onClick: () => {
+                          setRetailBuyerName(b.name);
+                          setSelectedBuyerMeta(b.id === "_walkin" ? null : b);
+                        },
+                        className: `px-2.5 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer ${retailBuyerName === b.name ? "bg-emerald-600 text-white border-emerald-600 shadow-xs" : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
+                        children: b.name
+                      }))
+                    }),
                     c.jsx("input", {
                       type: "text",
                       value: retailBuyerName,
@@ -10177,10 +11497,27 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                       ]
                     }),
 
-                    // Tên chợ
+                    // Tên chợ (Chọn từ Danh bạ Chợ Đầu Mối để tự điền Xe/Giờ hoặc nhập tên)
                     c.jsxs("div", {
+                      className: "space-y-1.5",
                       children: [
-                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Tên Chợ / Vựa Tiếp Nhận" }),
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block", children: "Tên Chợ / Vựa Tiếp Nhận" }),
+                        marketDirectoryBuyers.length > 0 && c.jsx("div", {
+                          className: "flex flex-wrap gap-1.5",
+                          children: marketDirectoryBuyers.map(mb => c.jsx("button", {
+                            key: mb.id,
+                            type: "button",
+                            onClick: () => {
+                              setSelectedBuyerMeta(mb);
+                              setMarketBuyerName(mb.name || "");
+                              if (mb.defaultVehiclePlate) setMarketVehiclePlate(mb.defaultVehiclePlate);
+                              if (mb.defaultDriverName) setMarketDriver(mb.defaultDriverName);
+                              if (mb.marketDeliveryTime) setMarketTime(mb.marketDeliveryTime);
+                            },
+                            className: `px-2.5 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer ${marketBuyerName === mb.name ? "bg-amber-500 text-blue-950 border-amber-500 shadow-xs" : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
+                            children: mb.name
+                          }))
+                        }),
                         c.jsx("input", {
                           type: "text",
                           value: marketBuyerName,
@@ -10342,23 +11679,49 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                       ]
                     }),
 
-                    // Chọn công ty từ danh mục
+                    // Chọn công ty từ danh mục khách hàng
                     c.jsxs("div", {
                       children: [
                         c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Tên Công Ty / Nhà Máy Thu Mua" }),
                         c.jsx("select", {
                           value: factoryBuyerName,
-                          onChange: e => setFactoryBuyerName(e.target.value),
+                          onChange: e => {
+                            const nextName = e.target.value;
+                            setFactoryBuyerName(nextName);
+                            const matched = factoryDirectoryBuyers.find(b => b.name === nextName);
+                            if (matched) {
+                              setSelectedBuyerMeta(matched);
+                              if (Array.isArray(matched.shrimpPrices) && matched.shrimpPrices.length > 0 && matched.shrimpPrices[0].typeName) {
+                                setFactoryShrimpType(matched.shrimpPrices[0].typeName);
+                              }
+                            }
+                          },
                           className: "w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-sm outline-none text-gray-900 dark:text-white",
                           children: factoryBuyers.map(fb => c.jsx("option", { value: fb, children: fb }, fb))
                         })
                       ]
                     }),
 
-                    // Loại tôm
+                    // Loại tôm (hiện gợi ý từ bảng giá công ty & profile)
                     c.jsxs("div", {
+                      className: "space-y-1.5",
                       children: [
-                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Loại Tôm Hợp Đồng Xuất Giao" }),
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block", children: "Loại Tôm Hợp Đồng Xuất Giao" }),
+                        (() => {
+                          const matchedF = factoryDirectoryBuyers.find(b => b.name === factoryBuyerName);
+                          const fTypes = (matchedF && Array.isArray(matchedF.shrimpPrices) ? matchedF.shrimpPrices.map(sp => sp.typeName) : []).concat(profileTypes || []);
+                          const uniqueTypes = Array.from(new Set(fTypes.filter(Boolean))).slice(0, 6);
+                          return uniqueTypes.length > 0 && c.jsx("div", {
+                            className: "flex flex-wrap gap-1.5",
+                            children: uniqueTypes.map(tn => c.jsx("button", {
+                              key: tn,
+                              type: "button",
+                              onClick: () => setFactoryShrimpType(tn),
+                              className: `px-2 py-1 rounded-lg text-[10px] font-bold border cursor-pointer ${factoryShrimpType === tn ? "bg-blue-600 text-white border-blue-600" : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
+                              children: tn
+                            }))
+                          });
+                        })(),
                         c.jsx("input", {
                           type: "text",
                           value: factoryShrimpType,
@@ -10695,9 +12058,35 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
 const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
   const [sale, setSale] = w.useState(initialSale);
   const [showSettlement, setShowSettlement] = w.useState(false);
-  const [settleData, setSettleData] = w.useState({ tare: 0, saleMoney: 0, commission: 0 });
+  const [settleData, setSettleData] = w.useState({ actualKg: (initialSale && (initialSale.totalNet || initialSale.totalGross || initialSale.factoryDeliveredKg)) || 0, tare: 0, saleMoney: 0, commission: 0 });
   const [showPayDebtModal, setShowPayDebtModal] = w.useState(false);
   const [selectedBatchIdx, setSelectedBatchIdx] = w.useState(0);
+
+  w.useEffect(() => {
+    setSale(initialSale);
+    if (initialSale) {
+      setSettleData({
+        actualKg: initialSale.totalNet || initialSale.totalGross || initialSale.factoryDeliveredKg || 0,
+        tare: initialSale.totalTare || 0,
+        saleMoney: initialSale.marketSaleMoney || initialSale.totalMoney || 0,
+        commission: initialSale.marketCommission || 0
+      });
+    }
+  }, [initialSale]);
+
+  w.useEffect(() => {
+    const syncSale = () => {
+      if (!sale || !sale.id || !me.getSales) return;
+      const latest = me.getSales().find(s => s.id === sale.id);
+      if (latest) setSale(latest);
+    };
+    window.addEventListener("app-data-updated", syncSale);
+    window.addEventListener("cloud_data_synced", syncSale);
+    return () => {
+      window.removeEventListener("app-data-updated", syncSale);
+      window.removeEventListener("cloud_data_synced", syncSale);
+    };
+  }, [sale && sale.id]);
 
   if (!sale) {
     return c.jsxs("div", {
@@ -10829,13 +12218,9 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
       msg += "(Bằng chữ: " + numberToWordsVN_v3(sale.totalMoney) + ")\n";
     }
     msg += "Trạng thái: " + (sale.status === "PENDING_SETTLEMENT" ? "Chờ quyết toán chợ" : (sale.isPaidFull ? "Đã thu đủ 100%" : ("Ghi nợ: " + _e(sale.remainingDebt) + " đ"))) + "\n";
-    try {
-      navigator.clipboard.writeText(msg);
-      alert("Đã sao chép nội dung phiếu xuất bán! Đang mở Zalo...");
-      window.open("https://zalo.me", "_blank");
-    } catch(e) {
-      alert("Nội dung phiếu xuất bán:\n\n" + msg);
-    }
+    copyToClipboardRobust(msg);
+    alert("Đã sao chép nội dung phiếu xuất bán! Đang mở Zalo...");
+    window.open("https://zalo.me", "_blank");
   };
 
   const batchesList = (sale.batches && sale.batches.length > 0) ? sale.batches : [{
@@ -11122,10 +12507,18 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
                     })
                   ]
                 }),
-                sale.status === "PENDING_SETTLEMENT" && c.jsx("button", {
-                  onClick: () => setShowSettlement(true),
+                (sale.status === "PENDING_SETTLEMENT" || sale.status === "SELLING" || sale.status === "AWAITING_RESULT") && c.jsx("button", {
+                  onClick: () => {
+                    setSettleData({
+                      actualKg: sale.totalNet || sale.totalGross || sale.factoryDeliveredKg || 0,
+                      tare: sale.totalTare || 0,
+                      saleMoney: sale.marketSaleMoney || sale.totalMoney || 0,
+                      commission: sale.marketCommission || 0
+                    });
+                    setShowSettlement(true);
+                  },
                   className: "w-full py-3 mt-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-sm uppercase italic active:scale-95 transition-all shadow-md cursor-pointer",
-                  children: "📝 Quyết Toán Phiếu Chợ"
+                  children: sale.targetGroup === "FACTORY" ? "📝 Nhập Kết Quả Nghiệm Thu Công Ty" : "📝 Quyết Toán Chốt Tiền Đơn Chợ"
                 })
               ]
             }),
@@ -11222,14 +12615,25 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
           children: [
             c.jsx("h3", {
               className: "font-black text-lg mb-4 text-gray-900 dark:text-white uppercase tracking-tight",
-              children: "Quyết Toán Chợ"
+              children: sale.targetGroup === "FACTORY" ? "Nghiệm Thu Công Ty" : "Quyết Toán Đơn Chợ"
             }),
             c.jsxs("div", {
               className: "space-y-4 mb-6",
               children: [
                 c.jsxs("div", {
                   children: [
-                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Tổng trừ bì / Hao hụt (kg)" }),
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Tổng số kg thực cân / nghiệm thu (kg) *" }),
+                    c.jsx("input", {
+                      type: "number", step: "any",
+                      value: settleData.actualKg || "",
+                      onChange: e => setSettleData({ ...settleData, actualKg: Number(e.target.value) || 0 }),
+                      className: "w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-lg outline-none focus:border-blue-500"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Tổng trừ bì / Hao hụt thêm (kg)" }),
                     c.jsx("input", {
                       type: "number", step: "any",
                       value: settleData.tare || "",
@@ -11240,7 +12644,7 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
                 }),
                 c.jsxs("div", {
                   children: [
-                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Tiền chợ thu được thực tế (VNĐ)" }),
+                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Tổng tiền thu được thực tế (VNĐ) *" }),
                     c.jsx("input", {
                       type: "number",
                       value: settleData.saleMoney || "",
@@ -11272,18 +12676,26 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
                 }),
                 c.jsx("button", {
                   onClick: () => {
-                    const finalNet = sale.totalGross - (settleData.tare || 0);
-                    const finalMoney = (settleData.saleMoney || 0) - (settleData.commission || 0);
+                    const grossKg = Number(settleData.actualKg || sale.totalGross || sale.totalNet || 0);
+                    const finalNet = Math.max(0, grossKg - Number(settleData.tare || 0));
+                    const finalMoney = Math.max(0, Number(settleData.saleMoney || 0) - Number(settleData.commission || 0));
+                    if (finalNet <= 0 || finalMoney <= 0) {
+                      alert("Vui lòng nhập đầy đủ số kg thực tế và số tiền thu được!");
+                      return;
+                    }
                     const updates = {
-                      totalTare: settleData.tare || 0,
+                      totalTare: Number(settleData.tare || 0),
+                      totalGross: grossKg,
                       totalNet: finalNet,
-                      marketSaleMoney: settleData.saleMoney || 0,
-                      marketCommission: settleData.commission || 0,
+                      unitPrice: finalNet > 0 ? Math.round(finalMoney / finalNet) : 0,
+                      marketSaleMoney: Number(settleData.saleMoney || 0),
+                      marketCommission: Number(settleData.commission || 0),
                       totalMoney: finalMoney,
-                      status: "SETTLED",
+                      status: "COMPLETED",
                       isPaidFull: true,
                       remainingDebt: 0,
-                      paidAmount: finalMoney
+                      paidAmount: finalMoney,
+                      settledAt: new Date().toISOString()
                     };
                     const saved = me.updateSale(sale.id, updates);
                     if (saved) {
@@ -11305,6 +12717,7 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
 
 
 const Xm_FinanceScreen = ({ setRoute, role }) => {
+  // Formatters
   const _fmt = (n) => Number(n || 0).toLocaleString("vi-VN");
   const _fmtKg = (n) => {
     if (!n || n <= 0) return "0";
@@ -11312,6 +12725,26 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     return Number.isInteger(r) ? String(r) : String(r);
   };
 
+  // Convert numbers to Vietnamese words for amount clarity
+  const _readVietnameseMoney = (num) => {
+    const n = Number(num);
+    if (!n || isNaN(n) || n <= 0) return "";
+    if (n >= 1000000000) {
+      const ty = (n / 1000000000).toFixed(2).replace(/\.00$/, "").replace(/\.(\d)0$/, ".$1");
+      return ty + " Tỷ đồng";
+    }
+    if (n >= 1000000) {
+      const tr = (n / 1000000).toFixed(2).replace(/\.00$/, "").replace(/\.(\d)0$/, ".$1");
+      return tr + " Triệu đồng";
+    }
+    if (n >= 1000) {
+      const k = (n / 1000).toFixed(0);
+      return k + " Nghìn đồng";
+    }
+    return _fmt(n) + " đồng";
+  };
+
+  // Data sources
   const [financeData, setFinanceData] = w.useState(() => me.getFinanceData());
   const [sessions, setSessions] = w.useState(() => {
     try { return (me.getSessions && me.getSessions()) || []; } catch(e) { return []; }
@@ -11320,38 +12753,86 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     try { return (me.getSales && me.getSales()) || []; } catch(e) { return []; }
   });
 
+  w.useEffect(() => {
+    const syncFinanceListeners = (ev) => {
+      try {
+        setSessions((me.getSessions && me.getSessions()) || []);
+        setSales((me.getSales && me.getSales()) || []);
+        if (!ev || ev.type === "cloud_data_synced" || (ev.detail && ev.detail.source === "backup_import")) {
+          const freshFin = me.getFinanceData();
+          setFinanceData(freshFin);
+          if (freshFin && freshFin.activeTrip) {
+            setTripName(freshFin.activeTrip.name || "Chuyến thu mua tôm");
+            setTripDate(freshFin.activeTrip.startDate || getLocalYYYYMMDD_v4());
+            setTripNote(freshFin.activeTrip.note || "");
+            setFilterMode(freshFin.activeTrip.filterMode || "DATE");
+          }
+        }
+      } catch(e) {}
+    };
+    window.addEventListener("app-data-updated", syncFinanceListeners);
+    window.addEventListener("cloud_data_synced", syncFinanceListeners);
+    return () => {
+      window.removeEventListener("app-data-updated", syncFinanceListeners);
+      window.removeEventListener("cloud_data_synced", syncFinanceListeners);
+    };
+  }, []);
+
+  // Master Command Tab: "PL" (Dòng tiền & Lời lỗ) | "LEDGER" (Sổ Thu-Chi) | "BUY" (Mua tôm) | "SELL" (Xuất bán) | "AUDIT" (Hao hụt)
+  const [mainTab, setMainTab] = w.useState("PL");
+
+  // Floating Action Button (FAB) Speed Dial Open State
+  const [fabOpen, setFabOpen] = w.useState(false);
+
+  // Synchronize latest sessions and sales
+  const handleSyncFinance = () => {
+    try {
+      const freshSessions = (me.getSessions && me.getSessions()) || [];
+      const freshSales = (me.getSales && me.getSales()) || [];
+      setSessions(freshSessions);
+      setSales(freshSales);
+      updateActiveTrip(t => ({
+        ...t,
+        shrimpPurchaseAuto: true,
+        revenueAuto: true,
+        selectedSessionIds: null,
+        selectedSaleIds: null
+      }));
+      alert("✅ Đã đồng bộ số liệu mới nhất từ Cân tôm và Xuất bán!");
+    } catch(e) {
+      alert("Lỗi đồng bộ: " + e.message);
+    }
+  };
+
+  // Active Trip state
   const trip = financeData.activeTrip || {};
   const [tripName, setTripName] = w.useState(trip.name || "Chuyến thu mua tôm");
-  const [tripDate, setTripDate] = w.useState(trip.startDate || new Date().toISOString().split("T")[0]);
+  const [tripDate, setTripDate] = w.useState(trip.startDate || getLocalYYYYMMDD_v4());
   const [tripNote, setTripNote] = w.useState(trip.note || "");
   const [filterMode, setFilterMode] = w.useState(trip.filterMode || "DATE"); // "DATE" | "ALL"
 
-  // Modal states
-  // 1. Investor Modals (Add & Edit)
-  const [showInvestorModal, setShowInvestorModal] = w.useState(false);
-  const [editingInvestorId, setEditingInvestorId] = w.useState(null);
-  const [investorFormName, setInvestorFormName] = w.useState("");
-  const [investorFormAmount, setInvestorFormAmount] = w.useState("");
+  // 1. Thu - Chi Modal
+  const [showThuChiModal, setShowThuChiModal] = w.useState(false);
+  const [thuChiType, setThuChiType] = w.useState("EXPENSE"); // "EXPENSE" (Chi) | "INCOME" (Thu)
+  const [editingThuChiId, setEditingThuChiId] = w.useState(null);
+  const [thuChiCategory, setThuChiCategory] = w.useState("Tiền thuê xe / vận chuyển");
+  const [thuChiAmount, setThuChiAmount] = w.useState("");
+  const [thuChiPerson, setThuChiPerson] = w.useState("");
+  const [thuChiNote, setThuChiNote] = w.useState("");
+  const [thuChiFilterTab, setThuChiFilterTab] = w.useState("ALL"); // "ALL" | "EXPENSE" | "INCOME"
+  const [thuChiSearchQuery, setThuChiSearchQuery] = w.useState("");
 
-  // 2. Expense Modals (Add & Edit)
-  const [showExpenseModal, setShowExpenseModal] = w.useState(false);
-  const [editingExpenseId, setEditingExpenseId] = w.useState(null);
-  const [expenseFormCat, setExpenseFormCat] = w.useState("Tiền thuê xe / vận chuyển");
-  const [expenseFormAmount, setExpenseFormAmount] = w.useState("");
-  const [expenseFormNote, setExpenseFormNote] = w.useState("");
-
-  // 3. Selection Modals (Sessions & Sales list)
+  // 2. Modals for session/sales selection and management
   const [showSessionsModal, setShowSessionsModal] = w.useState(false);
   const [showSalesModal, setShowSalesModal] = w.useState(false);
-
-  // 4. Trip Settings & Saved Trips Modals
   const [showTripSettingsModal, setShowTripSettingsModal] = w.useState(false);
   const [showSavedTripsModal, setShowSavedTripsModal] = w.useState(false);
   const [viewingSavedTrip, setViewingSavedTrip] = w.useState(null);
   const [editingSavedTripId, setEditingSavedTripId] = w.useState(null);
   const [editingSavedTripName, setEditingSavedTripName] = w.useState("");
+  const [copiedSummary, setCopiedSummary] = w.useState(false);
 
-  // Helper to persist updates to localStorage
+  // Helper to persist updates to localStorage and cloud
   const updateActiveTrip = (updater) => {
     setFinanceData(prev => {
       const currentTrip = prev.activeTrip || {};
@@ -11362,91 +12843,31 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     });
   };
 
-  // =========================================================================
-  // 1. INVESTORS (VỐN GÓP)
-  // =========================================================================
-  const investors = trip.investors || [];
-  const totalCapital = investors.reduce((acc, inv) => acc + Number(inv.amount || 0), 0);
-
-  const handleOpenAddInvestor = () => {
-    setEditingInvestorId(null);
-    setInvestorFormName("");
-    setInvestorFormAmount("");
-    setShowInvestorModal(true);
-  };
-
-  const handleOpenEditInvestor = (inv) => {
-    setEditingInvestorId(inv.id);
-    setInvestorFormName(inv.name);
-    setInvestorFormAmount(String(inv.amount || ""));
-    setShowInvestorModal(true);
-  };
-
-  const handleSaveInvestorForm = () => {
-    if (!investorFormName.trim()) {
-      alert("Vui lòng nhập tên người góp vốn!");
-      return;
-    }
-    const amt = Number(investorFormAmount) || 0;
-    if (amt <= 0) {
-      alert("Vui lòng nhập số tiền vốn góp hợp lệ (lớn hơn 0)!");
-      return;
-    }
-
-    if (editingInvestorId) {
-      // Edit existing
-      updateActiveTrip(t => ({
-        ...t,
-        investors: (t.investors || []).map(i => i.id === editingInvestorId ? { ...i, name: investorFormName.trim(), amount: amt } : i)
-      }));
-    } else {
-      // Add new
-      const newInv = {
-        id: "inv_" + Date.now(),
-        name: investorFormName.trim(),
-        amount: amt
-      };
-      updateActiveTrip(t => ({
-        ...t,
-        investors: [...(t.investors || []), newInv]
-      }));
-    }
-    setShowInvestorModal(false);
-  };
-
-  const handleDeleteInvestor = (id) => {
-    if (investors.length <= 1) {
-      alert("Phải giữ lại ít nhất 1 người góp vốn để phân chia!");
-      return;
-    }
-    const target = investors.find(i => i.id === id);
-    if (confirm("Bạn có chắc chắn muốn xóa người góp vốn \"" + (target?.name || "") + "\"?")) {
-      updateActiveTrip(t => ({
-        ...t,
-        investors: (t.investors || []).filter(i => i.id !== id)
-      }));
-    }
-  };
-
-  // =========================================================================
-  // 2. EXPENSES (CHI PHÍ)
-  // =========================================================================
+  // Categories
   const expenseCategories = [
     { label: "Tiền thuê xe / vận chuyển", icon: "🚛" },
     { label: "Tiền nhân công kéo / lựa tôm", icon: "👷" },
-    { label: "Tiền ăn uống, bồi dưỡng", icon: "🍲" },
     { label: "Tiền nước đá, oxy", icon: "🧊" },
-    { label: "Tiền bến bãi, cầu phà, lộ phí", icon: "🌉" },
+    { label: "Tiền ăn uống, bồi dưỡng", icon: "🍲" },
+    { label: "Tiền xăng dầu, bến bãi, phà", icon: "⛽" },
+    { label: "Tiền cọc ao mua tôm", icon: "📑" },
     { label: "Chi phí phát sinh khác", icon: "📝" }
+  ];
+
+  const incomeCategories = [
+    { label: "Thu tiền bán tôm mặt tại ao", icon: "🦐" },
+    { label: "Thu hồi nợ khách hàng", icon: "💵" },
+    { label: "Thu tiền cọc ao hoàn trả", icon: "🔄" },
+    { label: "Thu tiền thưởng / chiết khấu", icon: "🎁" },
+    { label: "Khoản thu phát sinh khác", icon: "💰" }
   ];
 
   // Shrimp purchase calculations
   const isShrimpAuto = trip.shrimpPurchaseAuto !== false;
   const filteredSessions = sessions.filter(s => {
     if (filterMode === "ALL") return true;
-    return s.date && s.date.startsWith(tripDate);
+    return s.date && isSameLocalDate_v4(s.date, tripDate);
   });
-  // Active selected sessions (if user toggled specific tickets)
   const selectedSessionIds = trip.selectedSessionIds;
   const effectiveSessions = Array.isArray(selectedSessionIds)
     ? filteredSessions.filter(s => selectedSessionIds.includes(s.id))
@@ -11455,64 +12876,81 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const autoShrimpPurchaseMoney = effectiveSessions.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
   const autoShrimpPurchaseKg = effectiveSessions.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
   const shrimpPurchaseMoney = isShrimpAuto ? autoShrimpPurchaseMoney : Number(trip.shrimpPurchaseManualAmount || 0);
+  const avgPurchasePrice = autoShrimpPurchaseKg > 0 ? (shrimpPurchaseMoney / autoShrimpPurchaseKg) : 0;
 
-  // Operating expenses calculations
-  const expenses = trip.expenses || [];
-  const totalOperationExpenses = expenses.reduce((acc, exp) => acc + Number(exp.amount || 0), 0);
+  // Thu - Chi records in trip (trip.expenses holds both EXPENSE and INCOME)
+  const allTransactions = trip.expenses || [];
+  const operatingExpenses = allTransactions.filter(t => t.type !== "INCOME");
+  const extraIncomes = allTransactions.filter(t => t.type === "INCOME");
+
+  const totalOperationExpenses = operatingExpenses.reduce((acc, exp) => acc + Number(exp.amount || 0), 0);
+  const totalExtraIncome = extraIncomes.reduce((acc, inc) => acc + Number(inc.amount || 0), 0);
   const totalExpenses = shrimpPurchaseMoney + totalOperationExpenses;
 
-  const handleOpenAddExpense = () => {
-    setEditingExpenseId(null);
-    setExpenseFormCat("Tiền thuê xe / vận chuyển");
-    setExpenseFormAmount("");
-    setExpenseFormNote("");
-    setShowExpenseModal(true);
+  // Open Thu - Chi Modal from FAB or elsewhere
+  const handleOpenAddThuChi = (type = "EXPENSE") => {
+    setFabOpen(false);
+    setEditingThuChiId(null);
+    setThuChiType(type);
+    setThuChiCategory(type === "EXPENSE" ? "Tiền thuê xe / vận chuyển" : "Thu tiền bán tôm mặt tại ao");
+    setThuChiAmount("");
+    setThuChiPerson("");
+    setThuChiNote("");
+    setShowThuChiModal(true);
   };
 
-  const handleOpenEditExpense = (exp) => {
-    setEditingExpenseId(exp.id);
-    setExpenseFormCat(exp.category || "Tiền thuê xe / vận chuyển");
-    setExpenseFormAmount(String(exp.amount || ""));
-    setExpenseFormNote(exp.note || "");
-    setShowExpenseModal(true);
+  const handleOpenEditThuChi = (tx) => {
+    setEditingThuChiId(tx.id);
+    const type = tx.type === "INCOME" ? "INCOME" : "EXPENSE";
+    setThuChiType(type);
+    setThuChiCategory(tx.category || (type === "EXPENSE" ? "Tiền thuê xe / vận chuyển" : "Thu tiền bán tôm mặt tại ao"));
+    setThuChiAmount(String(tx.amount || ""));
+    setThuChiPerson(tx.person || "");
+    setThuChiNote(tx.note || "");
+    setShowThuChiModal(true);
   };
 
-  const handleSaveExpenseForm = () => {
-    const amt = Number(expenseFormAmount) || 0;
+  const handleSaveThuChi = () => {
+    const amt = Number(thuChiAmount) || 0;
     if (amt <= 0) {
-      alert("Vui lòng nhập số tiền chi phí hợp lệ!");
+      alert("Vui lòng nhập số tiền hợp lệ lớn hơn 0!");
       return;
     }
 
-    if (editingExpenseId) {
+    if (editingThuChiId) {
       updateActiveTrip(t => ({
         ...t,
-        expenses: (t.expenses || []).map(e => e.id === editingExpenseId ? {
+        expenses: (t.expenses || []).map(e => e.id === editingThuChiId ? {
           ...e,
-          category: expenseFormCat,
+          type: thuChiType,
+          category: thuChiCategory,
           amount: amt,
-          note: expenseFormNote.trim()
+          person: thuChiPerson.trim(),
+          note: thuChiNote.trim()
         } : e)
       }));
     } else {
-      const newExp = {
-        id: "exp_" + Date.now(),
-        category: expenseFormCat,
+      const newTx = {
+        id: "tx_" + Date.now(),
+        type: thuChiType,
+        category: thuChiCategory,
         amount: amt,
-        note: expenseFormNote.trim(),
+        person: thuChiPerson.trim(),
+        note: thuChiNote.trim(),
         date: new Date().toISOString()
       };
       updateActiveTrip(t => ({
         ...t,
-        expenses: [...(t.expenses || []), newExp]
+        expenses: [...(t.expenses || []), newTx]
       }));
     }
-    setShowExpenseModal(false);
+    setShowThuChiModal(false);
   };
 
-  const handleDeleteExpense = (id) => {
-    const target = expenses.find(e => e.id === id);
-    if (confirm("Bạn có chắc chắn muốn xóa khoản chi \"" + (target?.category || "") + " (" + _fmt(target?.amount) + " đ)\"?")) {
+  const handleDeleteThuChi = (id) => {
+    const target = allTransactions.find(e => e.id === id);
+    const label = (target?.type === "INCOME" ? "khoản thu" : "khoản chi") + " \"" + (target?.category || "") + " (" + _fmt(target?.amount) + " đ)\"";
+    if (confirm("Bạn có chắc chắn muốn xóa " + label + "?")) {
       updateActiveTrip(t => ({
         ...t,
         expenses: (t.expenses || []).filter(e => e.id !== id)
@@ -11520,14 +12958,12 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     }
   };
 
-  // =========================================================================
-  // 3. REVENUE (DOANH THU)
-  // =========================================================================
+  // Sales and Revenue calculations
   const isRevenueAuto = trip.revenueAuto !== false;
   const completedSales = sales.filter(s => s.status === "COMPLETED" || s.status === "SETTLED" || s.isPaidFull);
   const filteredSales = completedSales.filter(s => {
     if (filterMode === "ALL") return true;
-    return s.date && s.date.startsWith(tripDate);
+    return s.date && isSameLocalDate_v4(s.date, tripDate);
   });
   const selectedSaleIds = trip.selectedSaleIds;
   const effectiveSales = Array.isArray(selectedSaleIds)
@@ -11536,87 +12972,32 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
 
   const autoRevenueMoney = effectiveSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
   const autoRevenueKg = effectiveSales.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
-  const totalRevenue = isRevenueAuto ? autoRevenueMoney : Number(trip.revenueManualAmount || 0);
+  const baseRevenue = isRevenueAuto ? autoRevenueMoney : Number(trip.revenueManualAmount || 0);
+  const totalRevenue = baseRevenue + totalExtraIncome;
+  const avgSalePrice = autoRevenueKg > 0 ? (baseRevenue / autoRevenueKg) : 0;
 
   // Breakdown by channel
-  const retailRevenue = effectiveSales.filter(s => s.targetGroup === "RETAIL").reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
-  const marketRevenue = effectiveSales.filter(s => s.targetGroup === "MARKET").reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
-  const factoryRevenue = effectiveSales.filter(s => s.targetGroup === "FACTORY").reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+  const retailSalesList = effectiveSales.filter(s => s.targetGroup === "RETAIL");
+  const marketSalesList = effectiveSales.filter(s => s.targetGroup === "MARKET");
+  const factorySalesList = effectiveSales.filter(s => s.targetGroup === "FACTORY");
 
-  // =========================================================================
-  // 4. NET PROFIT & DISTRIBUTION (QUYẾT TOÁN & PHÂN CHIA)
-  // =========================================================================
+  const retailRevenue = retailSalesList.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+  const marketRevenue = marketSalesList.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+  const factoryRevenue = factorySalesList.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+
+  // Net Profit & Margins
   const netProfit = totalRevenue - totalExpenses;
   const isProfit = netProfit >= 0;
   const profitMarginPercent = totalExpenses > 0 ? ((netProfit / totalExpenses) * 100) : 0;
 
-  // Individual investor distribution
-  const investorPayouts = investors.map(inv => {
-    const shareRatio = totalCapital > 0 ? (Number(inv.amount || 0) / totalCapital) : 0;
-    const sharePercent = shareRatio * 100;
-    const profitShare = Math.round(netProfit * shareRatio);
-    const totalPayout = Number(inv.amount || 0) + profitShare;
-    return {
-      ...inv,
-      shareRatio,
-      sharePercent,
-      profitShare,
-      totalPayout
-    };
-  });
-
-  // Share statement via Zalo / Messenger
-  const handleShareZaloStatement = () => {
-    let msg = "🦐 [BẢNG QUYẾT TOÁN HÙN VỐN & CHIA LỜI LỖ TÔM]\n";
-    msg += "Chuyến: " + tripName + "\n";
-    msg += "Ngày: " + tripDate + "\n";
-    if (tripNote) msg += "Ghi chú: " + tripNote + "\n";
-    msg += "================================\n";
-    msg += "1. NGUỒN VỐN GÓP: " + _fmt(totalCapital) + " đ\n";
-    investors.forEach((inv, i) => {
-      const pct = totalCapital > 0 ? ((inv.amount / totalCapital) * 100).toFixed(1) : "0.0";
-      msg += "  " + (i + 1) + ". " + inv.name + ": " + _fmt(inv.amount) + " đ (" + pct + "%)\n";
-    });
-    msg += "--------------------------------\n";
-    msg += "2. TỔNG CHI PHÍ: " + _fmt(totalExpenses) + " đ\n";
-    msg += "  • Tiền mua tôm: " + _fmt(shrimpPurchaseMoney) + " đ (" + effectiveSessions.length + " phiếu, " + _fmtKg(autoShrimpPurchaseKg) + " kg)\n";
-    msg += "  • Chi phí vận hành: " + _fmt(totalOperationExpenses) + " đ\n";
-    expenses.forEach((e, i) => {
-      msg += "    - " + e.category + (e.note ? " [" + e.note + "]" : "") + ": " + _fmt(e.amount) + " đ\n";
-    });
-    msg += "--------------------------------\n";
-    msg += "3. TỔNG DOANH THU: " + _fmt(totalRevenue) + " đ\n";
-    if (effectiveSales.length > 0) {
-      if (retailRevenue > 0) msg += "  • Bán lẻ: " + _fmt(retailRevenue) + " đ\n";
-      if (marketRevenue > 0) msg += "  • Chợ đầu mối: " + _fmt(marketRevenue) + " đ\n";
-      if (factoryRevenue > 0) msg += "  • Công ty: " + _fmt(factoryRevenue) + " đ\n";
-    }
-    msg += "================================\n";
-    msg += "4. LỢI NHUẬN RÒNG: " + (isProfit ? "+" : "") + _fmt(netProfit) + " đ\n";
-    msg += "   Kết quả: " + (isProfit ? "LỜI (LÃI)" : "BỊ LỖ") + " " + Math.abs(profitMarginPercent).toFixed(1) + "%\n";
-    msg += "================================\n";
-    msg += "5. BẢNG TIỀN THỰC NHẬN CỦA TỪNG NGƯỜI:\n";
-    investorPayouts.forEach((p, i) => {
-      msg += "  " + (i + 1) + ". " + p.name + " (" + p.sharePercent.toFixed(1) + "%):\n";
-      msg += "     • Vốn gốc: " + _fmt(p.amount) + " đ\n";
-      msg += "     • " + (p.profitShare >= 0 ? "Chia lời: +" : "Chịu lỗ: ") + _fmt(p.profitShare) + " đ\n";
-      msg += "     ==> THỰC NHẬN: " + _fmt(p.totalPayout) + " VNĐ\n";
-    });
-    msg += "--------------------------------\n";
-    msg += "Vựa Tôm Càng Xanh - Đối soát minh bạch 100%.";
-
-    try {
-      navigator.clipboard.writeText(msg);
-      alert("✅ Đã sao chép bảng quyết toán chi tiết! Đang mở Zalo để gửi...");
-      window.open("https://zalo.me", "_blank");
-    } catch(e) {
-      alert("Nội dung quyết toán:\n\n" + msg);
-    }
-  };
+  // Weight shrinkage calculations
+  const weightDiff = autoShrimpPurchaseKg - autoRevenueKg;
+  const weightDiffPercent = autoShrimpPurchaseKg > 0 ? ((weightDiff / autoShrimpPurchaseKg) * 100) : 0;
+  const grossProfitPerKg = (autoRevenueKg > 0 && autoShrimpPurchaseKg > 0) ? (avgSalePrice - avgPurchasePrice) : 0;
 
   // Archive and settle current trip
   const handleSettleAndArchiveTrip = () => {
-    if (!confirm("Bạn có chắc chắn muốn khóa và lưu chuyến hạch toán này vào lịch sử? Dữ liệu chuyến sẽ được lưu trữ an toàn và một chuyến mới sẽ được khởi tạo.")) {
+    if (!confirm("Bạn có chắc chắn muốn khóa và lưu chuyến tài chính này vào lịch sử? Dữ liệu chuyến sẽ được lưu trữ an toàn và một chuyến mới sẽ được khởi tạo.")) {
       return;
     }
 
@@ -11625,26 +13006,24 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       name: tripName,
       startDate: tripDate,
       note: tripNote,
-      totalCapital,
       shrimpPurchaseMoney,
       shrimpPurchaseKg: autoShrimpPurchaseKg,
       totalOperationExpenses,
+      totalExtraIncome,
       totalExpenses,
       totalRevenue,
       revenueKg: autoRevenueKg,
       netProfit,
       isProfit,
       profitMarginPercent,
-      investorPayouts,
       settledAt: new Date().toISOString()
     };
 
     const newActiveTrip = {
       id: "trip_" + Date.now(),
       name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
-      startDate: new Date().toISOString().split("T")[0],
+      startDate: getLocalYYYYMMDD_v4(),
       note: "",
-      investors: investors.map(i => ({ ...i })), // keep current investor directory
       shrimpPurchaseAuto: true,
       shrimpPurchaseManualAmount: 0,
       selectedSessionIds: null,
@@ -11669,7 +13048,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
 
   // Reset or create fresh trip
   const handleResetTrip = () => {
-    if (confirm("Bạn có chắc chắn muốn đặt lại chuyến này? Các chi phí vận hành sẽ được xóa về 0, giữ nguyên danh sách người góp vốn.")) {
+    if (confirm("Bạn có chắc chắn muốn đặt lại chi phí và thu chi của chuyến này về 0?")) {
       updateActiveTrip(t => ({
         ...t,
         expenses: [],
@@ -11685,7 +13064,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
 
   // Saved trip actions
   const handleDeleteSavedTrip = (id) => {
-    if (confirm("Bạn có chắc chắn muốn xóa chuyến hạch toán này khỏi lịch sử? Thao tác này không thể hoàn tác.")) {
+    if (confirm("Bạn có chắc chắn muốn xóa chuyến này khỏi lịch sử? Thao tác này không thể hoàn tác.")) {
       const nextSaved = (financeData.savedTrips || []).filter(t => t.id !== id);
       const nextData = { ...financeData, savedTrips: nextSaved };
       me.saveFinanceData(nextData);
@@ -11729,514 +13108,349 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     setEditingSavedTripName("");
   };
 
+  // Copy quick summary text
+  const handleCopySummary = () => {
+    const text = [
+      "📊 BÁO CÁO QUYẾT TOÁN TÀI CHÍNH CHUYẾN TÔM",
+      "Kỳ: " + tripName + " (" + tripDate + ")",
+      "----------------------------------",
+      "1. Doanh thu xuất bán: +" + _fmt(baseRevenue) + " đ (" + _fmtKg(autoRevenueKg) + " kg)",
+      totalExtraIncome > 0 ? ("2. Thu phát sinh ngoài: +" + _fmt(totalExtraIncome) + " đ") : "",
+      "3. Tiền mua tôm ao: -" + _fmt(shrimpPurchaseMoney) + " đ (" + _fmtKg(autoShrimpPurchaseKg) + " kg)",
+      "4. Chi phí vận hành: -" + _fmt(totalOperationExpenses) + " đ (" + operatingExpenses.length + " khoản)",
+      "----------------------------------",
+      "🏆 LỢI NHUẬN RÒNG: " + (isProfit ? "+" : "") + _fmt(netProfit) + " VNĐ (" + (isProfit ? "LỜI " : "LỖ ") + profitMarginPercent.toFixed(1) + "%)",
+      "Hao hụt: " + (weightDiff > 0 ? ("-" + _fmtKg(weightDiff) + " kg (-" + weightDiffPercent.toFixed(1) + "%)") : "Không hao hụt"),
+      "Tự doanh 100% • Tôm Càng Xanh"
+    ].filter(Boolean).join("\n");
+
+    try {
+      if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+        setCopiedSummary(true);
+        setTimeout(() => setCopiedSummary(false), 2500);
+      } else {
+        alert(text);
+      }
+    } catch(e) {
+      alert(text);
+    }
+  };
+
+  // Filtered transactions for the list
+  const displayedTransactions = allTransactions.filter(t => {
+    if (thuChiFilterTab === "EXPENSE" && t.type === "INCOME") return false;
+    if (thuChiFilterTab === "INCOME" && t.type !== "INCOME") return false;
+    if (thuChiSearchQuery.trim()) {
+      const q = thuChiSearchQuery.toLowerCase();
+      const cat = (t.category || "").toLowerCase();
+      const per = (t.person || "").toLowerCase();
+      const note = (t.note || "").toLowerCase();
+      return cat.includes(q) || per.includes(q) || note.includes(q);
+    }
+    return true;
+  });
+
   return c.jsxs("div", {
-    className: "flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden text-gray-900 dark:text-gray-100",
+    className: "flex flex-col h-screen bg-slate-100/90 text-slate-900 font-sans overflow-hidden select-none relative",
     children: [
-      // Header
+      // =========================================================================
+      // 1. TOP HEADER: GIAO DIỆN SÁNG, TINH TẾ, ĐẲNG CẤP
+      // =========================================================================
       c.jsxs("header", {
-        className: "bg-gradient-to-r from-[#141b63] via-[#1e4ea1] to-[#0284c7] text-white p-4 shadow-xl shrink-0 flex items-center justify-between",
+        className: "bg-white border-b border-slate-200/90 px-3.5 sm:px-5 py-2.5 shadow-xs shrink-0 flex items-center justify-between z-30",
         children: [
+          // Left: Nút back & Brand Title
           c.jsxs("div", {
-            className: "flex items-center gap-3",
+            className: "flex items-center gap-2.5 sm:gap-3 min-w-0",
             children: [
               c.jsx("button", {
                 type: "button",
                 onClick: () => setRoute(re.DASHBOARD),
-                className: "p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all cursor-pointer active:scale-90",
-                children: c.jsx(On, { size: 20 })
+                className: "p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all cursor-pointer active:scale-95 shrink-0 border border-slate-200",
+                title: "Về trang chính",
+                children: c.jsx(On, { size: 18 })
               }),
               c.jsxs("div", {
+                className: "min-w-0",
                 children: [
-                  c.jsxs("h1", {
-                    className: "text-lg font-black uppercase italic tracking-tight flex items-center gap-2 leading-none",
+                  c.jsxs("div", {
+                    className: "flex items-center gap-2",
                     children: [
-                      c.jsx("span", { children: "💰" }),
-                      "Tài Chính & Hùn Vốn"
+                      c.jsx("span", { className: "text-base sm:text-lg", children: "💰" }),
+                      c.jsx("h1", {
+                        className: "text-sm sm:text-base font-black tracking-tight text-slate-900 uppercase truncate",
+                        children: "Quản Lý Tài Chính"
+                      }),
+                      c.jsx("span", {
+                        className: "hidden md:inline-flex px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200",
+                        children: "Tự Doanh 100%"
+                      })
                     ]
                   }),
-                  c.jsx("span", {
-                    className: "text-[10px] font-bold opacity-80 uppercase tracking-widest block mt-0.5",
-                    children: "Hùn vốn • Hạch toán chi phí • Chia lời lỗ theo chuyến"
+                  c.jsxs("div", {
+                    className: "text-[10px] text-slate-500 font-medium truncate flex items-center gap-1.5",
+                    children: [
+                      c.jsx("span", { className: "text-emerald-600 font-bold", children: "● Trực tiếp" }),
+                      c.jsx("span", { children: "•" }),
+                      c.jsxs("span", { children: [effectiveSessions.length, " phiếu mua"] }),
+                      c.jsx("span", { children: "•" }),
+                      c.jsxs("span", { children: [effectiveSales.length, " đơn bán"] }),
+                      c.jsx("span", { children: "•" }),
+                      c.jsxs("span", { children: [allTransactions.length, " thu chi"] })
+                    ]
                   })
                 ]
               })
             ]
           }),
+
+          // Right: Action Buttons (Đồng bộ, Lịch sử, Cài đặt - Các nút Thu Chi đã gom vào nút + thả nổi)
           c.jsxs("div", {
-            className: "flex items-center gap-2",
+            className: "flex items-center gap-1.5 sm:gap-2 shrink-0",
             children: [
+              // Nút Đồng bộ dữ liệu
               c.jsxs("button", {
                 type: "button",
-                onClick: () => setShowTripSettingsModal(true),
-                className: "p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase transition-all cursor-pointer active:scale-95",
-                title: "Thiết lập chuyến",
-                children: c.jsx(ym, { size: 18 })
+                onClick: handleSyncFinance,
+                className: "p-2 sm:px-3 sm:py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold active:scale-95 transition-all cursor-pointer border border-slate-200 flex items-center gap-1.5",
+                title: "Đồng bộ số liệu từ phiếu cân và đơn bán",
+                children: [
+                  c.jsx("span", { className: "text-sm", children: "🔄" }),
+                  c.jsx("span", { className: "hidden md:inline text-[11px]", children: "Đồng bộ" })
+                ]
               }),
+
+              // Nút Lịch sử chuyến
               c.jsxs("button", {
                 type: "button",
                 onClick: () => setShowSavedTripsModal(true),
-                className: "px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase flex items-center gap-1 active:scale-95 transition-all cursor-pointer",
-                children: [c.jsx(Fd, { size: 14 }), "Lịch Sử (", (financeData.savedTrips || []).length, ")"]
+                className: "p-2 sm:px-3 sm:py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold active:scale-95 transition-all cursor-pointer border border-slate-200 flex items-center gap-1.5",
+                title: "Lịch sử các chuyến thu mua",
+                children: [
+                  c.jsx(Fd, { size: 16 }),
+                  c.jsxs("span", { className: "hidden sm:inline text-[11px]", children: ["Lịch Sử (", (financeData.savedTrips || []).length, ")"] })
+                ]
               }),
-              c.jsxs("button", {
+
+              // Nút Cài đặt
+              c.jsx("button", {
                 type: "button",
-                onClick: handleShareZaloStatement,
-                className: "px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-black uppercase flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
-                children: ["Zalo"]
+                onClick: () => setShowTripSettingsModal(true),
+                className: "p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 rounded-xl transition-all cursor-pointer active:scale-95 border border-slate-200",
+                title: "Cài đặt kỳ thu mua",
+                children: c.jsx(ym, { size: 17 })
               })
             ]
           })
         ]
       }),
 
-      // Main Scroll Container
+      // =========================================================================
+      // 2. MAIN SCROLL VIEWPORT
+      // =========================================================================
       c.jsx("div", {
-        className: "flex-1 overflow-y-auto p-4 space-y-5 max-w-4xl mx-auto w-full pb-28",
+        className: "flex-1 overflow-y-auto p-3 sm:p-5 max-w-5xl mx-auto w-full pb-32 space-y-4",
         children: c.jsxs("div", {
-          className: "space-y-5",
+          className: "space-y-4",
           children: [
-            // =========================================================================
-            // TOP BAR: THÔNG TIN VÀ THIẾT LẬP CHUYẾN
-            // =========================================================================
+            // =====================================================================
+            // A. DẢI THÔNG TIN KỲ THU MUA (GIAO DIỆN SÁNG)
+            // =====================================================================
             c.jsxs("div", {
-              className: "bg-white dark:bg-gray-900 p-4 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-3",
+              className: "bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5",
               children: [
+                // Tên chuyến (chạm chỉnh sửa)
                 c.jsxs("div", {
-                  className: "flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center",
+                  className: "flex items-center gap-2.5 flex-1 min-w-0 w-full sm:w-auto",
                   children: [
-                    c.jsxs("div", {
-                      className: "flex items-center gap-2.5 flex-1 w-full",
-                      children: [
-                        c.jsx("span", { className: "text-2xl", children: "🚢" }),
-                        c.jsxs("div", {
-                          className: "flex-1",
-                          children: [
-                            c.jsx("label", { className: "text-[10px] font-black text-gray-400 uppercase italic block", children: "Tên chuyến hàng / Kỳ thu mua" }),
-                            c.jsx("input", {
-                              type: "text",
-                              value: tripName,
-                              onChange: e => {
-                                setTripName(e.target.value);
-                                updateActiveTrip({ name: e.target.value });
-                              },
-                              className: "text-base font-black text-gray-900 dark:text-white bg-transparent outline-none w-full border-b border-dashed border-gray-300 dark:border-gray-700 pb-0.5 focus:border-indigo-500"
-                            })
-                          ]
-                        })
-                      ]
+                    c.jsx("div", {
+                      className: "w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200",
+                      children: "🚢"
                     }),
-                    // Date & Mode selector
                     c.jsxs("div", {
-                      className: "flex items-center gap-2 w-full sm:w-auto",
+                      className: "flex-1 min-w-0",
                       children: [
-                        c.jsx("label", { className: "text-xs font-bold text-gray-500", children: "Ngày:" }),
                         c.jsx("input", {
-                          type: "date",
-                          value: tripDate,
+                          type: "text",
+                          value: tripName,
                           onChange: e => {
-                            setTripDate(e.target.value);
-                            updateActiveTrip({ startDate: e.target.value });
+                            setTripName(e.target.value);
+                            updateActiveTrip({ name: e.target.value });
                           },
-                          className: "px-3 py-1.5 bg-gray-100 dark:bg-gray-800 font-bold rounded-xl text-xs outline-none border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
+                          placeholder: "Tên kỳ thu mua tôm...",
+                          className: "text-sm sm:text-base font-black text-slate-900 bg-transparent outline-none w-full border-b border-transparent focus:border-emerald-500 transition-colors placeholder-slate-400"
                         }),
-                        c.jsxs("button", {
-                          type: "button",
-                          onClick: () => {
-                            const newMode = filterMode === "DATE" ? "ALL" : "DATE";
-                            setFilterMode(newMode);
-                            updateActiveTrip({ filterMode: newMode });
+                        c.jsx("input", {
+                          type: "text",
+                          value: tripNote,
+                          onChange: e => {
+                            setTripNote(e.target.value);
+                            updateActiveTrip({ note: e.target.value });
                           },
-                          className: `px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${
-                            filterMode === "ALL" ? "bg-indigo-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                          }`,
-                          children: [filterMode === "ALL" ? "Tất cả phiếu" : "Theo ngày"]
+                          placeholder: "Thêm ghi chú chuyến (ví dụ: Xe 69C, ao Năm Lực, xuất chợ Bình Điền...)",
+                          className: "text-[11px] text-slate-500 bg-transparent outline-none w-full placeholder-slate-400 truncate mt-0.5"
                         })
                       ]
                     })
                   ]
                 }),
-                // Optional Note
+
+                // Bộ chọn ngày & chế độ lọc phiếu
                 c.jsxs("div", {
-                  className: "flex items-center gap-2 pt-1 border-t border-gray-100 dark:border-gray-800",
+                  className: "flex items-center gap-1.5 w-full sm:w-auto justify-between sm:justify-end shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100",
                   children: [
-                    c.jsx("span", { className: "text-xs text-gray-400", children: "📝" }),
                     c.jsx("input", {
-                      type: "text",
-                      placeholder: "Ghi chú chuyến hàng (ví dụ: Xe 69C giao Bình Điền, ao Chú Năm...)",
-                      value: tripNote,
+                      type: "date",
+                      value: tripDate,
                       onChange: e => {
-                        setTripNote(e.target.value);
-                        updateActiveTrip({ note: e.target.value });
+                        setTripDate(e.target.value);
+                        updateActiveTrip({ startDate: e.target.value });
                       },
-                      className: "w-full text-xs bg-transparent outline-none text-gray-600 dark:text-gray-300 placeholder-gray-400"
+                      className: "px-2.5 py-1.5 bg-slate-50 font-mono font-bold rounded-xl text-xs outline-none border border-slate-200 text-slate-800"
+                    }),
+                    c.jsx("button", {
+                      type: "button",
+                      onClick: () => {
+                        const newMode = filterMode === "DATE" ? "ALL" : "DATE";
+                        setFilterMode(newMode);
+                        updateActiveTrip({ filterMode: newMode });
+                      },
+                      className: "px-2.5 py-1.5 rounded-xl text-[11px] font-black uppercase transition-all cursor-pointer " + (filterMode === "ALL" ? "bg-teal-700 text-white shadow-xs" : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"),
+                      children: filterMode === "ALL" ? "Tất Cả Phiếu" : "Theo Ngày"
                     })
                   ]
                 })
               ]
             }),
 
-            // =========================================================================
-            // KHU VỰC 1: QUẢN LÝ NGUỒN VỐN GÓP (ĐẦY ĐỦ THÊM, SỬA, XÓA, THIẾT LẬP)
-            // =========================================================================
+            // =====================================================================
+            // B. THẺ TÀI CHÍNH EXECUTIVE (GIAO DIỆN SÁNG SANG TRỌNG)
+            // =====================================================================
             c.jsxs("div", {
-              className: "bg-white dark:bg-gray-900 p-5 rounded-[32px] border border-gray-200 dark:border-gray-800 shadow-sm space-y-4",
+              className: "relative rounded-3xl p-5 sm:p-6 overflow-hidden shadow-sm border " + (isProfit ? "bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 text-white border-emerald-500/40" : "bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 text-white border-rose-500/40"),
               children: [
+                // Header thẻ
                 c.jsxs("div", {
-                  className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+                  className: "flex justify-between items-start mb-4 relative z-10",
                   children: [
                     c.jsxs("div", {
-                      children: [
-                        c.jsxs("h2", {
-                          className: "text-sm font-black uppercase text-gray-900 dark:text-white flex items-center gap-1.5",
-                          children: [c.jsx("span", { children: "1️⃣" }), "Nguồn Vốn Góp Ban Đầu"]
-                        }),
-                        c.jsx("p", { className: "text-[11px] text-gray-500 font-semibold", children: "Tự động tính toán tỷ lệ % và quỹ vốn lưu động khả dụng" })
-                      ]
-                    }),
-                    c.jsxs("button", {
-                      type: "button",
-                      onClick: handleOpenAddInvestor,
-                      className: "px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black uppercase flex items-center gap-1 active:scale-95 transition-all shadow-sm cursor-pointer",
-                      children: [c.jsx("span", { children: "+" }), "Thêm Người Góp"]
-                    })
-                  ]
-                }),
-
-                // Total Capital Card
-                c.jsxs("div", {
-                  className: "p-4 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 rounded-2xl text-blue-950 flex justify-between items-center shadow-md",
-                  children: [
-                    c.jsxs("div", {
-                      children: [
-                        c.jsx("span", { className: "text-[11px] font-black uppercase tracking-wider block opacity-80", children: "Tổng Quỹ Vốn Lưu Động Khả Dụng" }),
-                        c.jsxs("div", {
-                          className: "text-3xl font-black font-mono tracking-tight",
-                          children: [_fmt(totalCapital), " ", c.jsx("span", { className: "text-base font-sans font-bold", children: "VNĐ" })]
-                        })
-                      ]
-                    }),
-                    c.jsx("div", { className: "text-4xl opacity-30", children: "🏦" })
-                  ]
-                }),
-
-                // Multi-colored progress bar
-                investors.length > 0 && c.jsx("div", {
-                  className: "h-3.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex",
-                  children: investors.map((inv, idx) => {
-                    const pct = totalCapital > 0 ? (inv.amount / totalCapital) * 100 : 0;
-                    const colors = ["bg-blue-600", "bg-emerald-500", "bg-purple-600", "bg-amber-500", "bg-pink-500", "bg-cyan-500"];
-                    const color = colors[idx % colors.length];
-                    return c.jsx("div", {
-                      key: inv.id,
-                      style: { width: pct + "%" },
-                      className: color + " h-full transition-all duration-500",
-                      title: inv.name + ": " + pct.toFixed(1) + "%"
-                    });
-                  })
-                }),
-
-                // Investors list with EDIT & DELETE
-                c.jsx("div", {
-                  className: "space-y-2",
-                  children: investors.map((inv, idx) => {
-                    const pct = totalCapital > 0 ? ((inv.amount / totalCapital) * 100).toFixed(1) : "0.0";
-                    return c.jsxs("div", {
-                      key: inv.id,
-                      className: "p-3 bg-gray-50 dark:bg-gray-800/70 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3",
-                      children: [
-                        c.jsxs("div", {
-                          className: "flex items-center gap-3",
-                          children: [
-                            c.jsx("div", {
-                              className: "w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-black text-xs flex items-center justify-center shrink-0",
-                              children: idx + 1
-                            }),
-                            c.jsxs("div", {
-                              children: [
-                                c.jsx("span", { className: "font-black text-sm text-gray-900 dark:text-white block", children: inv.name }),
-                                c.jsxs("span", { className: "text-[11px] font-bold text-gray-500 font-mono", children: [_fmt(inv.amount), " đ"] })
-                              ]
-                            })
-                          ]
-                        }),
-                        c.jsxs("div", {
-                          className: "flex items-center gap-2",
-                          children: [
-                            c.jsxs("span", {
-                              className: "px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-black font-mono shadow-xs",
-                              children: [pct, "%"]
-                            }),
-                            // Edit button
-                            c.jsx("button", {
-                              type: "button",
-                              onClick: () => handleOpenEditInvestor(inv),
-                              className: "p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg cursor-pointer",
-                              title: "Sửa người góp vốn",
-                              children: c.jsx("span", { className: "text-sm", children: "✎" })
-                            }),
-                            // Delete button
-                            c.jsx("button", {
-                              type: "button",
-                              onClick: () => handleDeleteInvestor(inv.id),
-                              className: "p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg cursor-pointer",
-                              title: "Xóa người góp vốn",
-                              children: c.jsx(xm, { size: 16 })
-                            })
-                          ]
-                        })
-                      ]
-                    });
-                  })
-                })
-              ]
-            }),
-
-            // =========================================================================
-            // KHU VỰC 2: HẠCH TOÁN CHI PHÍ (TIỀN CHI) - ĐẦY ĐỦ THÊM, SỬA, XÓA
-            // =========================================================================
-            c.jsxs("div", {
-              className: "bg-white dark:bg-gray-900 p-5 rounded-[32px] border border-gray-200 dark:border-gray-800 shadow-sm space-y-4",
-              children: [
-                c.jsxs("div", {
-                  className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
-                  children: [
-                    c.jsxs("div", {
-                      children: [
-                        c.jsxs("h2", {
-                          className: "text-sm font-black uppercase text-gray-900 dark:text-white flex items-center gap-1.5",
-                          children: [c.jsx("span", { children: "2️⃣" }), "Hạch Toán Chi Phí (Tiền Chi)"]
-                        }),
-                        c.jsx("p", { className: "text-[11px] text-gray-500 font-semibold", children: "Tiền mua tôm + Các chi phí vận hành (thuê xe, công, oxy, phà...)" })
-                      ]
-                    }),
-                    c.jsxs("button", {
-                      type: "button",
-                      onClick: handleOpenAddExpense,
-                      className: "px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-black uppercase flex items-center gap-1 active:scale-95 transition-all shadow-sm cursor-pointer",
-                      children: [c.jsx("span", { children: "+" }), "Thêm Chi Phí"]
-                    })
-                  ]
-                }),
-
-                // Tiền Mua Tôm
-                c.jsxs("div", {
-                  className: "p-4 bg-orange-50/70 dark:bg-orange-950/30 rounded-2xl border border-orange-200 dark:border-orange-900/60 space-y-2",
-                  children: [
-                    c.jsxs("div", {
-                      className: "flex justify-between items-center",
+                      className: "space-y-0.5",
                       children: [
                         c.jsxs("div", {
                           className: "flex items-center gap-2",
                           children: [
                             c.jsx("span", { className: "text-lg", children: "🦐" }),
-                            c.jsxs("div", {
-                              children: [
-                                c.jsx("span", { className: "font-black text-xs uppercase text-orange-900 dark:text-orange-200 block", children: "Tiền Mua Tôm Vào" }),
-                                c.jsxs("span", { className: "text-[10px] text-gray-500", children: [effectiveSessions.length, " phiếu cân • ", _fmtKg(autoShrimpPurchaseKg), " kg tôm"] })
-                              ]
-                            })
+                            c.jsx("span", { className: "text-xs font-black uppercase tracking-wider text-emerald-100", children: "Tôm Càng Xanh • Tự Doanh 100%" })
+                          ]
+                        }),
+                        c.jsx("p", { className: "text-[11px] text-white/80 font-medium", children: "Tự bỏ vốn • Quyết toán chi phí & doanh thu • Thu trọn 100% lợi nhuận" })
+                      ]
+                    }),
+                    // Badge lời / lỗ
+                    c.jsx("span", {
+                      className: "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-xs border bg-white/20 text-white border-white/30 backdrop-blur-xs",
+                      children: isProfit ? ("🏆 CÓ LÃI +" + profitMarginPercent.toFixed(1) + "%") : ("⚠️ THÂM HỤT " + profitMarginPercent.toFixed(1) + "%")
+                    })
+                  ]
+                }),
+
+                // Lợi Nhuận Ròng (Hero Amount)
+                c.jsxs("div", {
+                  className: "my-3 relative z-10",
+                  children: [
+                    c.jsx("span", {
+                      className: "text-[11px] font-black uppercase tracking-wider text-white/90 block mb-1",
+                      children: "LỢI NHUẬN RÒNG THỰC THU (TIỀN LỜI VỀ TÚI)"
+                    }),
+                    c.jsxs("div", {
+                      className: "text-3xl sm:text-5xl font-black font-mono tracking-tight flex items-baseline gap-2 text-white",
+                      children: [
+                        (isProfit ? "+" : "") + _fmt(netProfit),
+                        c.jsx("span", { className: "text-lg font-sans font-bold text-white/90", children: "VNĐ" })
+                      ]
+                    }),
+                    c.jsx("span", {
+                      className: "text-xs font-semibold text-white/90 block mt-1 italic",
+                      children: _readVietnameseMoney(Math.abs(netProfit)) ? ("(" + (isProfit ? "Lãi " : "Lỗ ") + _readVietnameseMoney(Math.abs(netProfit)) + ")") : ""
+                    })
+                  ]
+                }),
+
+                // 2 Cột Đối Ứng: Doanh Thu & Chi Phí
+                c.jsxs("div", {
+                  className: "grid grid-cols-2 gap-3 pt-4 mt-4 border-t border-white/20 relative z-10",
+                  children: [
+                    // Cột Doanh Thu
+                    c.jsxs("div", {
+                      className: "bg-black/15 rounded-2xl p-3 border border-white/20 space-y-1 backdrop-blur-xs",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex justify-between items-center text-[10px] font-bold text-emerald-100 uppercase",
+                          children: [
+                            c.jsx("span", { children: "📈 Tổng Doanh Thu" }),
+                            c.jsx("span", { className: "text-white font-mono", children: effectiveSales.length + " đơn" })
                           ]
                         }),
                         c.jsxs("div", {
-                          className: "flex items-center gap-1.5",
+                          className: "font-mono font-black text-lg sm:text-xl text-white",
+                          children: [_fmt(totalRevenue), " đ"]
+                        }),
+                        c.jsxs("div", {
+                          className: "text-[10px] text-emerald-100 flex justify-between",
                           children: [
-                            isShrimpAuto && c.jsx("button", {
-                              type: "button",
-                              onClick: () => setShowSessionsModal(true),
-                              className: "px-2 py-1 bg-white dark:bg-gray-800 border border-orange-300 rounded-lg text-[10px] font-bold text-orange-700 dark:text-orange-300 cursor-pointer",
-                              children: "📋 Chọn phiếu (" + effectiveSessions.length + ")"
-                            }),
-                            c.jsxs("button", {
-                              type: "button",
-                              onClick: () => updateActiveTrip(t => ({ ...t, shrimpPurchaseAuto: !isShrimpAuto })),
-                              className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all cursor-pointer ${
-                                isShrimpAuto
-                                  ? "bg-orange-600 text-white"
-                                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                              }`,
-                              children: [isShrimpAuto ? "✓ Tự động từ phiếu cân" : "✎ Nhập thủ công"]
-                            })
+                            c.jsxs("span", { children: ["Xuất bán: ", _fmtKg(autoRevenueKg), " kg"] }),
+                            totalExtraIncome > 0 ? c.jsxs("span", { className: "text-white font-mono", children: ["+", _fmt(totalExtraIncome)] }) : null
                           ]
                         })
                       ]
                     }),
-                    isShrimpAuto ? c.jsxs("div", {
-                      className: "font-mono font-black text-2xl text-orange-900 dark:text-orange-100",
-                      children: [_fmt(shrimpPurchaseMoney), " ", c.jsx("span", { className: "text-sm font-sans font-bold", children: "VNĐ" })]
-                    }) : c.jsxs("div", {
-                      className: "flex items-center gap-2 pt-1",
+
+                    // Cột Chi Phí
+                    c.jsxs("div", {
+                      className: "bg-black/15 rounded-2xl p-3 border border-white/20 space-y-1 backdrop-blur-xs",
                       children: [
-                        c.jsx("input", {
-                          type: "number",
-                          value: trip.shrimpPurchaseManualAmount || "",
-                          placeholder: "Nhập số tiền mua tôm thủ công...",
-                          onChange: e => updateActiveTrip(t => ({ ...t, shrimpPurchaseManualAmount: Number(e.target.value) || 0 })),
-                          className: "w-full p-2.5 bg-white dark:bg-gray-800 border-2 border-orange-400 rounded-xl font-mono font-black text-lg text-orange-900 dark:text-orange-100 outline-none"
+                        c.jsxs("div", {
+                          className: "flex justify-between items-center text-[10px] font-bold text-orange-100 uppercase",
+                          children: [
+                            c.jsx("span", { children: "📉 Tổng Chi Phí" }),
+                            c.jsx("span", { className: "text-white font-mono", children: (effectiveSessions.length + operatingExpenses.length) + " mục" })
+                          ]
                         }),
-                        c.jsx("span", { className: "font-bold text-xs text-gray-500", children: "VNĐ" })
+                        c.jsxs("div", {
+                          className: "font-mono font-black text-lg sm:text-xl text-white",
+                          children: [_fmt(totalExpenses), " đ"]
+                        }),
+                        c.jsxs("div", {
+                          className: "text-[10px] text-orange-100 flex justify-between",
+                          children: [
+                            c.jsxs("span", { children: ["Mua tôm: ", _fmt(shrimpPurchaseMoney)] }),
+                            totalOperationExpenses > 0 ? c.jsxs("span", { className: "text-white font-mono", children: ["Phí: ", _fmt(totalOperationExpenses)] }) : null
+                          ]
+                        })
                       ]
                     })
                   ]
                 }),
 
-                // Operating Expenses List with EDIT & DELETE
+                // Dòng đối soát sản lượng & hao hụt
                 c.jsxs("div", {
-                  className: "space-y-2",
+                  className: "flex justify-between items-center pt-3 mt-3 border-t border-white/20 text-xs text-white/90 font-bold relative z-10",
                   children: [
-                    c.jsx("span", { className: "text-[11px] font-black uppercase text-gray-500 tracking-wider block", children: "Các Chi Phí Vận Hành Khác:" }),
-                    expenses.length === 0 ? c.jsx("p", {
-                      className: "text-xs text-gray-400 italic py-2 text-center",
-                      children: "Chưa có khoản chi phí vận hành nào. Bấm '+ Thêm Chi Phí' để nhập."
-                    }) : expenses.map(exp => c.jsxs("div", {
-                      key: exp.id,
-                      className: "p-3 bg-gray-50 dark:bg-gray-800/70 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3",
+                    c.jsxs("span", {
                       children: [
-                        c.jsxs("div", {
-                          children: [
-                            c.jsx("span", { className: "font-bold text-xs text-gray-900 dark:text-white block", children: exp.category }),
-                            exp.note && c.jsx("span", { className: "text-[11px] text-gray-500 block", children: exp.note })
-                          ]
-                        }),
-                        c.jsxs("div", {
-                          className: "flex items-center gap-2",
-                          children: [
-                            c.jsxs("span", { className: "font-mono font-black text-sm text-red-600 dark:text-red-400", children: [_fmt(exp.amount), " đ"] }),
-                            // Edit expense button
-                            c.jsx("button", {
-                              type: "button",
-                              onClick: () => handleOpenEditExpense(exp),
-                              className: "p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg cursor-pointer",
-                              title: "Sửa khoản chi",
-                              children: c.jsx("span", { className: "text-sm", children: "✎" })
-                            }),
-                            // Delete expense button
-                            c.jsx("button", {
-                              type: "button",
-                              onClick: () => handleDeleteExpense(exp.id),
-                              className: "p-1.5 text-gray-400 hover:text-red-500 rounded-lg cursor-pointer",
-                              title: "Xóa khoản chi",
-                              children: c.jsx(xm, { size: 14 })
-                            })
-                          ]
-                        })
-                      ]
-                    }))
-                  ]
-                }),
-
-                // Total Expenses Summary
-                c.jsxs("div", {
-                  className: "p-4 bg-red-50 dark:bg-red-950/40 rounded-2xl border-2 border-red-200 dark:border-red-900/60 flex justify-between items-center",
-                  children: [
-                    c.jsxs("div", {
-                      children: [
-                        c.jsx("span", { className: "text-[11px] font-black uppercase text-red-800 dark:text-red-300 block", children: "TỔNG CHI PHÍ CHUYẾN NÀY" }),
-                        c.jsx("span", { className: "text-[10px] text-gray-500", children: "Tiền mua tôm + Các chi phí vận hành" })
+                        "Cân mua ao: ",
+                        c.jsx("b", { className: "text-white font-mono", children: _fmtKg(autoShrimpPurchaseKg) + " kg" }),
+                        " ➔ Xuất: ",
+                        c.jsx("b", { className: "text-white font-mono", children: _fmtKg(autoRevenueKg) + " kg" })
                       ]
                     }),
                     c.jsxs("span", {
-                      className: "font-mono font-black text-2xl text-red-700 dark:text-red-400",
-                      children: [_fmt(totalExpenses), " ", c.jsx("span", { className: "text-sm font-sans font-bold", children: "VNĐ" })]
-                    })
-                  ]
-                })
-              ]
-            }),
-
-            // =========================================================================
-            // KHU VỰC 3: TỔNG HỢP DOANH THU (TIỀN BÁN TÔM VỀ)
-            // =========================================================================
-            c.jsxs("div", {
-              className: "bg-white dark:bg-gray-900 p-5 rounded-[32px] border border-gray-200 dark:border-gray-800 shadow-sm space-y-4",
-              children: [
-                c.jsxs("div", {
-                  className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
-                  children: [
-                    c.jsxs("div", {
+                      className: "font-mono font-black",
                       children: [
-                        c.jsxs("h2", {
-                          className: "text-sm font-black uppercase text-gray-900 dark:text-white flex items-center gap-1.5",
-                          children: [c.jsx("span", { children: "3️⃣" }), "Tổng Hợp Doanh Thu (Tiền Bán Về)"]
-                        }),
-                        c.jsx("p", { className: "text-[11px] text-gray-500 font-semibold", children: "Bán lẻ + Bán chợ (sau trừ hoa hồng) + Bán công ty" })
-                      ]
-                    }),
-                    c.jsxs("div", {
-                      className: "flex items-center gap-1.5",
-                      children: [
-                        isRevenueAuto && c.jsx("button", {
-                          type: "button",
-                          onClick: () => setShowSalesModal(true),
-                          className: "px-2 py-1 bg-white dark:bg-gray-800 border border-emerald-300 rounded-lg text-[10px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer",
-                          children: "📋 Chọn đơn (" + effectiveSales.length + ")"
-                        }),
-                        c.jsxs("button", {
-                          type: "button",
-                          onClick: () => updateActiveTrip(t => ({ ...t, revenueAuto: !isRevenueAuto })),
-                          className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase transition-all cursor-pointer ${
-                            isRevenueAuto
-                              ? "bg-emerald-600 text-white"
-                              : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                          }`,
-                          children: [isRevenueAuto ? "✓ Tự động từ đơn bán" : "✎ Nhập thủ công"]
-                        })
-                      ]
-                    })
-                  ]
-                }),
-
-                // Total Revenue Card
-                c.jsxs("div", {
-                  className: "p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border-2 border-emerald-200 dark:border-emerald-900/60 flex justify-between items-center",
-                  children: [
-                    c.jsxs("div", {
-                      children: [
-                        c.jsx("span", { className: "text-[11px] font-black uppercase text-emerald-800 dark:text-emerald-300 block", children: "TỔNG DOANH THU THỰC NHẬN" }),
-                        c.jsxs("span", { className: "text-[10px] text-gray-500", children: [effectiveSales.length, " đơn bán hoàn tất • ", _fmtKg(autoRevenueKg), " kg tôm"] })
-                      ]
-                    }),
-                    isRevenueAuto ? c.jsxs("span", {
-                      className: "font-mono font-black text-2xl text-emerald-700 dark:text-emerald-400",
-                      children: [_fmt(totalRevenue), " ", c.jsx("span", { className: "text-sm font-sans font-bold", children: "VNĐ" })]
-                    }) : c.jsxs("div", {
-                      className: "flex items-center gap-2",
-                      children: [
-                        c.jsx("input", {
-                          type: "number",
-                          value: trip.revenueManualAmount || "",
-                          placeholder: "Nhập doanh thu...",
-                          onChange: e => updateActiveTrip(t => ({ ...t, revenueManualAmount: Number(e.target.value) || 0 })),
-                          className: "w-44 p-2 bg-white dark:bg-gray-800 border-2 border-emerald-400 rounded-xl font-mono font-black text-lg text-emerald-700 dark:text-emerald-400 outline-none text-right"
-                        }),
-                        c.jsx("span", { className: "font-bold text-xs text-gray-500", children: "VNĐ" })
-                      ]
-                    })
-                  ]
-                }),
-
-                // Breakdown Channels
-                effectiveSales.length > 0 && c.jsxs("div", {
-                  className: "grid grid-cols-3 gap-2 text-xs",
-                  children: [
-                    c.jsxs("div", {
-                      className: "p-2 bg-gray-50 dark:bg-gray-800/60 rounded-xl",
-                      children: [
-                        c.jsx("span", { className: "text-[10px] text-gray-400 block", children: "🛒 Bán lẻ" }),
-                        c.jsxs("span", { className: "font-mono font-bold text-gray-800 dark:text-gray-200", children: [_fmt(retailRevenue), " đ"] })
-                      ]
-                    }),
-                    c.jsxs("div", {
-                      className: "p-2 bg-gray-50 dark:bg-gray-800/60 rounded-xl",
-                      children: [
-                        c.jsx("span", { className: "text-[10px] text-gray-400 block", children: "🏪 Chợ đầu mối" }),
-                        c.jsxs("span", { className: "font-mono font-bold text-gray-800 dark:text-gray-200", children: [_fmt(marketRevenue), " đ"] })
-                      ]
-                    }),
-                    c.jsxs("div", {
-                      className: "p-2 bg-gray-50 dark:bg-gray-800/60 rounded-xl",
-                      children: [
-                        c.jsx("span", { className: "text-[10px] text-gray-400 block", children: "🏢 Công ty" }),
-                        c.jsxs("span", { className: "font-mono font-bold text-gray-800 dark:text-gray-200", children: [_fmt(factoryRevenue), " đ"] })
+                        weightDiff > 0 ? "Hao hụt: -" : "Dư tôm: +",
+                        _fmtKg(Math.abs(weightDiff)), " kg",
+                        weightDiff !== 0 ? (" (" + Math.abs(weightDiffPercent).toFixed(1) + "%)") : ""
                       ]
                     })
                   ]
@@ -12244,256 +13458,857 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
               ]
             }),
 
-            // =========================================================================
-            // KHU VỰC 4: QUYẾT TOÁN LỜI / LỖ & CHIA TIỀN THEO TỶ LỆ
-            // =========================================================================
-            c.jsxs("div", {
-              className: "bg-white dark:bg-gray-900 p-5 rounded-[32px] border-2 border-blue-500/30 dark:border-blue-500/20 shadow-xl space-y-5",
+            // =====================================================================
+            // C. THANH ĐIỀU HƯỚNG 5 TRUNG TÂM NGHIỆP VỤ (GIAO DIỆN SÁNG)
+            // =====================================================================
+            c.jsx("div", {
+              className: "overflow-x-auto pb-1",
+              children: c.jsxs("div", {
+                className: "flex items-center gap-1.5 p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300/80 min-w-max text-xs font-black",
+                children: [
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: () => setMainTab("PL"),
+                    className: "px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer " + (mainTab === "PL" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-white/60"),
+                    children: [
+                      c.jsx("span", { children: "📊" }),
+                      c.jsx("span", { children: "Dòng Tiền & Lời Lỗ" })
+                    ]
+                  }),
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: () => setMainTab("LEDGER"),
+                    className: "px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer " + (mainTab === "LEDGER" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-white/60"),
+                    children: [
+                      c.jsx("span", { children: "💸" }),
+                      c.jsxs("span", { children: ["Sổ Thu - Chi", allTransactions.length > 0 ? " (" + allTransactions.length + ")" : ""] })
+                    ]
+                  }),
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: () => setMainTab("BUY"),
+                    className: "px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer " + (mainTab === "BUY" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-white/60"),
+                    children: [
+                      c.jsx("span", { children: "🦐" }),
+                      c.jsxs("span", { children: ["Mua Tôm Ao", effectiveSessions.length > 0 ? " (" + effectiveSessions.length + ")" : ""] })
+                    ]
+                  }),
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: () => setMainTab("SELL"),
+                    className: "px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer " + (mainTab === "SELL" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-white/60"),
+                    children: [
+                      c.jsx("span", { children: "🛒" }),
+                      c.jsxs("span", { children: ["Xuất Bán Tôm", effectiveSales.length > 0 ? " (" + effectiveSales.length + ")" : ""] })
+                    ]
+                  }),
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: () => setMainTab("AUDIT"),
+                    className: "px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer " + (mainTab === "AUDIT" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-white/60"),
+                    children: [
+                      c.jsx("span", { children: "⚖️" }),
+                      c.jsx("span", { children: "Đối Soát Hao Hụt" })
+                    ]
+                  })
+                ]
+              })
+            }),
+
+            // =====================================================================
+            // TAB 1: DÒNG TIỀN & BẢNG KÊ QUYẾT TOÁN LỜI LỖ
+            // =====================================================================
+            mainTab === "PL" && c.jsxs("div", {
+              className: "space-y-4",
               children: [
+                // Quick Action Bar (Sao chép, Đồng bộ)
                 c.jsxs("div", {
-                  className: "border-b border-gray-100 dark:border-gray-800 pb-3",
+                  className: "grid grid-cols-2 gap-2.5",
                   children: [
-                    c.jsxs("h2", {
-                      className: "text-base font-black uppercase tracking-tight text-gray-900 dark:text-white flex items-center gap-2",
-                      children: [c.jsx("span", { children: "4️⃣" }), "Quyết Toán Lời / Lỗ & Chia Tiền Theo Tỷ Lệ"]
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: handleCopySummary,
+                      className: "p-3 bg-white border border-slate-200 hover:border-blue-400 text-blue-700 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-base", children: copiedSummary ? "✅" : "📋" }),
+                        c.jsx("span", { children: copiedSummary ? "Đã Sao Chép!" : "Sao Chép Báo Cáo" })
+                      ]
                     }),
-                    c.jsx("p", { className: "text-xs text-gray-500 font-semibold", children: "Lợi nhuận ròng = Tổng Doanh Thu - Tổng Chi Phí. Chia đều chuẩn 100% tỷ lệ vốn góp." })
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: handleSyncFinance,
+                      className: "p-3 bg-white border border-slate-200 hover:border-teal-400 text-teal-700 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-base", children: "🔄" }),
+                        c.jsx("span", { children: "Đồng Bộ Mới" })
+                      ]
+                    })
                   ]
                 }),
 
-                // Net Profit Card
+                // Bảng Kê Đối Soát Kế Toán Chuyên Nghiệp
                 c.jsxs("div", {
-                  className: `p-5 rounded-3xl border-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 ${
-                    isProfit
-                      ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 text-emerald-900 dark:text-emerald-100"
-                      : "bg-red-50 dark:bg-red-950/40 border-red-400 text-red-900 dark:text-red-100"
-                  }`,
+                  className: "bg-white rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3",
                   children: [
                     c.jsxs("div", {
+                      className: "flex justify-between items-center border-b border-slate-100 pb-3",
                       children: [
                         c.jsxs("div", {
-                          className: "flex items-center gap-2",
                           children: [
-                            c.jsx("span", { className: "text-2xl", children: isProfit ? "📈" : "📉" }),
-                            c.jsx("span", {
-                              className: "text-xs font-black uppercase tracking-wider",
-                              children: isProfit ? "KẾT QUẢ KINH DOANH: CÓ LỜI (LÃI)" : "KẾT QUẢ KINH DOANH: BỊ LỖ"
-                            })
+                            c.jsx("h2", {
+                              className: "text-xs sm:text-sm font-black uppercase text-slate-900 flex items-center gap-1.5",
+                              children: [c.jsx("span", { children: "📑" }), "Bảng Kê Quyết Toán Dòng Tiền Chuyến Đi"]
+                            }),
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Đối soát thu chi: Doanh thu bán tôm - Tiền mua ao - Chi phí vận hành" })
                           ]
                         }),
-                        c.jsxs("div", {
-                          className: "text-3xl font-black font-mono tracking-tight mt-1",
-                          children: [isProfit ? "+" : "", _fmt(netProfit), " ", c.jsx("span", { className: "text-base font-sans font-bold", children: "VNĐ" })]
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: handleCopySummary,
+                          className: "px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[10px] font-bold border border-slate-200 cursor-pointer",
+                          children: copiedSummary ? "Đã sao chép!" : "Sao chép"
                         })
                       ]
                     }),
-                    c.jsxs("div", {
-                      className: "text-right",
-                      children: [
-                        c.jsx("span", { className: "text-[10px] font-bold text-gray-500 block uppercase", children: "Tỷ suất sinh lời" }),
-                        c.jsxs("span", {
-                          className: `text-xl font-black font-mono ${isProfit ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`,
-                          children: [isProfit ? "+" : "", profitMarginPercent.toFixed(1), "%"]
-                        })
-                      ]
-                    })
-                  ]
-                }),
 
-                // Investor Distribution Table with Quick Edit & Integrity Total
-                c.jsxs("div", {
-                  className: "space-y-3",
-                  children: [
-                    c.jsx("span", { className: "text-xs font-black uppercase text-gray-700 dark:text-gray-300 block", children: "Bảng Chi Tiết Tiền Thực Nhận Của Từng Người:" }),
+                    // Bảng chi tiết
                     c.jsx("div", {
-                      className: "overflow-x-auto rounded-2xl border border-gray-200 dark:border-gray-800",
+                      className: "overflow-x-auto rounded-2xl border border-slate-200",
                       children: c.jsxs("table", {
-                        className: "w-full text-left text-xs border-collapse",
+                        className: "w-full text-left text-xs border-collapse font-sans",
                         children: [
                           c.jsx("thead", {
-                            className: "bg-gray-100 dark:bg-gray-800 text-[10px] font-black uppercase text-gray-500",
+                            className: "bg-slate-50 text-[10px] font-black uppercase text-slate-600 border-b border-slate-200",
                             children: c.jsxs("tr", {
                               children: [
-                                c.jsx("th", { className: "p-3", children: "Người Góp Vốn" }),
-                                c.jsx("th", { className: "p-3 text-right", children: "Vốn Gốc" }),
-                                c.jsx("th", { className: "p-3 text-right", children: isProfit ? "Chia Lãi (+)" : "Chịu Lỗ (-)" }),
-                                c.jsx("th", { className: "p-3 text-right font-black text-blue-700 dark:text-blue-300", children: "TỔNG THỰC NHẬN" }),
-                                c.jsx("th", { className: "p-3 text-center", children: "Sửa" })
+                                c.jsx("th", { className: "p-3", children: "Mục Kế Toán" }),
+                                c.jsx("th", { className: "p-3 text-right", children: "Số Tiền" }),
+                                c.jsx("th", { className: "p-3 hidden sm:table-cell", children: "Diễn Giải Chi Tiết" })
                               ]
                             })
                           }),
                           c.jsxs("tbody", {
-                            className: "divide-y divide-gray-100 dark:divide-gray-800 font-bold",
+                            className: "divide-y divide-slate-100 font-bold",
                             children: [
-                              investorPayouts.map(p => c.jsxs("tr", {
-                                key: p.id,
-                                className: "hover:bg-gray-50 dark:hover:bg-gray-800/40",
+                              // 1. Doanh thu xuất bán tôm
+                              c.jsxs("tr", {
+                                className: "hover:bg-slate-50/80 transition-colors",
                                 children: [
                                   c.jsxs("td", {
                                     className: "p-3",
                                     children: [
-                                      c.jsx("div", { className: "font-black text-gray-900 dark:text-white", children: p.name }),
-                                      c.jsxs("span", { className: "text-[10px] text-blue-600 dark:text-blue-400 font-mono", children: ["Tỷ lệ: ", p.sharePercent.toFixed(1), "%"] })
+                                      c.jsx("span", { className: "text-emerald-700 font-black", children: "1. Doanh thu xuất bán tôm (+)" }),
+                                      c.jsxs("span", { className: "block text-[10px] text-slate-500 font-normal", children: [effectiveSales.length, " đơn xuất bán • ", _fmtKg(autoRevenueKg), " kg"] })
                                     ]
                                   }),
-                                  c.jsx("td", { className: "p-3 text-right font-mono text-gray-600 dark:text-gray-400", children: _fmt(p.amount) }),
                                   c.jsxs("td", {
-                                    className: `p-3 text-right font-mono font-black ${p.profitShare >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`,
-                                    children: [(p.profitShare >= 0 ? "+" : "") + _fmt(p.profitShare)]
+                                    className: "p-3 text-right font-mono font-black text-emerald-700 text-sm",
+                                    children: ["+ ", _fmt(baseRevenue), " đ"]
                                   }),
                                   c.jsxs("td", {
-                                    className: "p-3 text-right font-mono font-black text-sm text-blue-700 dark:text-blue-300 bg-blue-50/50 dark:bg-blue-950/20",
-                                    children: [_fmt(p.totalPayout), " đ"]
-                                  }),
-                                  c.jsx("td", {
-                                    className: "p-3 text-center",
-                                    children: c.jsx("button", {
-                                      type: "button",
-                                      onClick: () => handleOpenEditInvestor(p),
-                                      className: "p-1 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-950 rounded cursor-pointer",
-                                      children: "✎"
-                                    })
+                                    className: "p-3 text-slate-500 text-[11px] hidden sm:table-cell",
+                                    children: ["Bán lẻ: ", _fmt(retailRevenue), " đ • Chợ: ", _fmt(marketRevenue), " đ • Cty: ", _fmt(factoryRevenue), " đ"]
                                   })
                                 ]
-                              }, p.id)),
-                              // Integrity Total Footer
-                              c.jsxs("tr", {
-                                className: "bg-gray-100/80 dark:bg-gray-800/80 font-black text-xs border-t-2 border-gray-300 dark:border-gray-700",
+                              }),
+
+                              // 2. Khoản thu ngoài
+                              totalExtraIncome > 0 && c.jsxs("tr", {
+                                className: "hover:bg-slate-50/80 transition-colors",
                                 children: [
-                                  c.jsx("td", { className: "p-3 uppercase text-gray-600 dark:text-gray-300", children: "TỔNG CỘNG ĐỐI SOÁT" }),
-                                  c.jsxs("td", { className: "p-3 text-right font-mono text-gray-900 dark:text-white", children: [_fmt(totalCapital), " đ"] }),
                                   c.jsxs("td", {
-                                    className: `p-3 text-right font-mono ${netProfit >= 0 ? "text-emerald-600" : "text-red-600"}`,
-                                    children: [(netProfit >= 0 ? "+" : "") + _fmt(netProfit), " đ"]
+                                    className: "p-3",
+                                    children: [
+                                      c.jsx("span", { className: "text-emerald-700 font-black", children: "2. Khoản thu phát sinh ngoài (+)" }),
+                                      c.jsxs("span", { className: "block text-[10px] text-slate-500 font-normal", children: [extraIncomes.length, " khoản thu"] })
+                                    ]
                                   }),
                                   c.jsxs("td", {
-                                    className: "p-3 text-right font-mono font-black text-sm text-blue-800 dark:text-blue-200 bg-blue-100/40 dark:bg-blue-900/30",
-                                    children: [_fmt(investorPayouts.reduce((a, b) => a + b.totalPayout, 0)), " đ"]
+                                    className: "p-3 text-right font-mono font-black text-emerald-700 text-sm",
+                                    children: ["+ ", _fmt(totalExtraIncome), " đ"]
                                   }),
-                                  c.jsx("td", { className: "p-3 text-center", children: "✓" })
+                                  c.jsx("td", {
+                                    className: "p-3 text-slate-500 text-[11px] hidden sm:table-cell",
+                                    children: "Thu nợ khách, thưởng, hoàn cọc ao..."
+                                  })
+                                ]
+                              }),
+
+                              // 3. Tiền mua tôm ao
+                              c.jsxs("tr", {
+                                className: "hover:bg-slate-50/80 transition-colors",
+                                children: [
+                                  c.jsxs("td", {
+                                    className: "p-3",
+                                    children: [
+                                      c.jsx("span", { className: "text-orange-600 font-black", children: "3. Tiền mua tôm tại bờ ao (-)" }),
+                                      c.jsxs("span", { className: "block text-[10px] text-slate-500 font-normal", children: [effectiveSessions.length, " phiếu cân • ", _fmtKg(autoShrimpPurchaseKg), " kg"] })
+                                    ]
+                                  }),
+                                  c.jsxs("td", {
+                                    className: "p-3 text-right font-mono font-black text-orange-600 text-sm",
+                                    children: ["- ", _fmt(shrimpPurchaseMoney), " đ"]
+                                  }),
+                                  c.jsx("td", {
+                                    className: "p-3 text-slate-500 text-[11px] hidden sm:table-cell",
+                                    children: "Chi trả trực tiếp cho các chủ ao tôm"
+                                  })
+                                ]
+                              }),
+
+                              // 4. Chi phí vận hành
+                              c.jsxs("tr", {
+                                className: "hover:bg-slate-50/80 transition-colors",
+                                children: [
+                                  c.jsxs("td", {
+                                    className: "p-3",
+                                    children: [
+                                      c.jsx("span", { className: "text-orange-600 font-black", children: "4. Chi phí vận hành chuyến (-)" }),
+                                      c.jsxs("span", { className: "block text-[10px] text-slate-500 font-normal", children: [operatingExpenses.length, " khoản chi (xe, công kéo, đá, phà...)"] })
+                                    ]
+                                  }),
+                                  c.jsxs("td", {
+                                    className: "p-3 text-right font-mono font-black text-orange-600 text-sm",
+                                    children: ["- ", _fmt(totalOperationExpenses), " đ"]
+                                  }),
+                                  c.jsx("td", {
+                                    className: "p-3 text-slate-500 text-[11px] hidden sm:table-cell",
+                                    children: "Toàn bộ chi phí đưa tôm từ ao về điểm bán"
+                                  })
+                                ]
+                              }),
+
+                              // 5. Kết quả Lợi Nhuận Ròng
+                              c.jsxs("tr", {
+                                className: "bg-slate-50 font-black text-xs border-t-2 border-slate-300",
+                                children: [
+                                  c.jsxs("td", {
+                                    className: "p-3.5",
+                                    children: [
+                                      c.jsx("span", { className: "text-slate-900 uppercase tracking-wider block", children: "🏆 LỢI NHUẬN RÒNG THỰC THU (100% LÃI VỀ TÚI)" }),
+                                      c.jsx("span", { className: "text-[10px] text-slate-500 font-normal", children: "Tổng Doanh Thu trừ Toàn Bộ Chi Phí" })
+                                    ]
+                                  }),
+                                  c.jsxs("td", {
+                                    className: "p-3.5 text-right font-mono text-base sm:text-lg " + (isProfit ? "text-emerald-700" : "text-rose-700"),
+                                    children: [(isProfit ? "+" : "") + _fmt(netProfit), " đ"]
+                                  }),
+                                  c.jsxs("td", {
+                                    className: "p-3.5 text-slate-600 text-[11px] hidden sm:table-cell",
+                                    children: [isProfit ? "Tiền lời ròng thu về trọn vẹn" : "Thâm hụt vốn chuyến này", " (ROI: ", profitMarginPercent.toFixed(1), "%)"]
+                                  })
                                 ]
                               })
                             ]
                           })
                         ]
                       })
-                    })
-                  ]
-                }),
-
-                // Action Buttons
-                c.jsxs("div", {
-                  className: "pt-2 flex flex-col sm:flex-row gap-3",
-                  children: [
-                    c.jsxs("button", {
-                      type: "button",
-                      onClick: handleShareZaloStatement,
-                      className: "flex-1 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black rounded-2xl text-sm uppercase italic flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer",
-                      children: [
-                        c.jsx("span", { children: "📋" }),
-                        "Sao Chép Sao Kê / Chia Sẻ Zalo"
-                      ]
                     }),
-                    c.jsxs("button", {
-                      type: "button",
-                      onClick: handleSettleAndArchiveTrip,
-                      className: "py-4 px-6 bg-gradient-to-r from-emerald-600 to-green-700 text-white font-black rounded-2xl text-sm uppercase italic flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer",
-                      children: [
-                        c.jsx("span", { children: "🔒" }),
-                        "Quyết Toán Chuyến Này"
-                      ]
+
+                    // Nút Khóa & Quyết Toán Chuyến Đi
+                    c.jsx("div", {
+                      className: "pt-2",
+                      children: c.jsxs("button", {
+                        type: "button",
+                        onClick: handleSettleAndArchiveTrip,
+                        className: "w-full py-3.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white font-black rounded-2xl text-xs sm:text-sm uppercase tracking-wide flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer",
+                        children: [
+                          c.jsx("span", { className: "text-lg", children: "🔒" }),
+                          "Khóa & Lưu Quyết Toán Chuyến Vào Lịch Sử"
+                        ]
+                      })
                     })
                   ]
                 })
               ]
-            })
-          ]
-        })
-      }),
-
-      // =========================================================================
-      // MODAL 1: THÊM / SỬA NGƯỜI GÓP VỐN
-      // =========================================================================
-      showInvestorModal && c.jsx("div", {
-        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
-        children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
-          children: [
-            c.jsx("h3", {
-              className: "font-black text-base uppercase text-gray-900 dark:text-white",
-              children: editingInvestorId ? "✎ Sửa Người Góp Vốn" : "+ Thêm Người Góp Vốn"
             }),
-            c.jsxs("div", {
-              className: "space-y-3",
+
+            // =====================================================================
+            // TAB 2: SỔ THU - CHI VẬN HÀNH (GIAO DIỆN SÁNG)
+            // =====================================================================
+            mainTab === "LEDGER" && c.jsxs("div", {
+              className: "space-y-4",
               children: [
+                // 3 Thẻ Tóm Tắt Dòng Tiền
                 c.jsxs("div", {
+                  className: "grid grid-cols-2 sm:grid-cols-3 gap-2.5",
                   children: [
-                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Tên người góp vốn *" }),
-                    c.jsx("input", {
-                      type: "text",
-                      placeholder: "VD: Tôi, Anh B, Chị Lan...",
-                      value: investorFormName,
-                      onChange: e => setInvestorFormName(e.target.value),
-                      className: "w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-sm outline-none focus:border-indigo-500"
-                    }),
-                    // Quick names
                     c.jsxs("div", {
-                      className: "flex flex-wrap gap-1 mt-1.5",
-                      children: ["Tôi (Chủ vựa)", "Anh B", "Anh C", "Chị Lan"].map(nm => c.jsx("button", {
-                        key: nm,
-                        type: "button",
-                        onClick: () => setInvestorFormName(nm),
-                        className: "px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded text-[10px] font-bold hover:bg-gray-200",
-                        children: nm
-                      }))
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-orange-600 uppercase block", children: "Tổng Chi Vận Hành" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-orange-600 my-0.5", children: ["- ", _fmt(totalOperationExpenses), " đ"] }),
+                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [operatingExpenses.length, " khoản chi ra"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-emerald-700 uppercase block", children: "Tổng Thu Ngoài" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-emerald-700 my-0.5", children: ["+ ", _fmt(totalExtraIncome), " đ"] }),
+                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [extraIncomes.length, " khoản thu vào"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "col-span-2 sm:col-span-1 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-600 uppercase block", children: "Chênh Lệch Dòng Tiền Phụ" }),
+                        c.jsxs("div", {
+                          className: "font-mono font-black text-xl my-0.5 " + (totalExtraIncome >= totalOperationExpenses ? "text-emerald-700" : "text-orange-600"),
+                          children: [(totalExtraIncome >= totalOperationExpenses ? "+ " : "- ") + _fmt(Math.abs(totalExtraIncome - totalOperationExpenses)), " đ"]
+                        }),
+                        c.jsx("span", { className: "text-[10px] text-slate-500", children: "Thu trừ chi phí" })
+                      ]
                     })
                   ]
                 }),
+
+                // Thanh Tìm Kiếm & Bộ Lọc
                 c.jsxs("div", {
+                  className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row gap-2 justify-between items-stretch sm:items-center",
                   children: [
-                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Số tiền góp vốn (VNĐ) *" }),
+                    // Tabs phân loại
+                    c.jsxs("div", {
+                      className: "flex items-center gap-1 p-1 bg-slate-100 rounded-xl text-xs font-bold shrink-0 border border-slate-200",
+                      children: [
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => setThuChiFilterTab("ALL"),
+                          className: "px-3 py-1 rounded-lg transition-all cursor-pointer " + (thuChiFilterTab === "ALL" ? "bg-white text-slate-900 shadow-xs font-black" : "text-slate-600 hover:text-slate-900"),
+                          children: ["Tất cả (", allTransactions.length, ")"]
+                        }),
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => setThuChiFilterTab("EXPENSE"),
+                          className: "px-3 py-1 rounded-lg transition-all cursor-pointer " + (thuChiFilterTab === "EXPENSE" ? "bg-orange-600 text-white font-black" : "text-orange-600 hover:text-orange-700"),
+                          children: ["Khoản chi (", operatingExpenses.length, ")"]
+                        }),
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => setThuChiFilterTab("INCOME"),
+                          className: "px-3 py-1 rounded-lg transition-all cursor-pointer " + (thuChiFilterTab === "INCOME" ? "bg-emerald-600 text-white font-black" : "text-emerald-700 hover:text-emerald-800"),
+                          children: ["Khoản thu (", extraIncomes.length, ")"]
+                        })
+                      ]
+                    }),
+
+                    // Ô tìm kiếm
+                    c.jsxs("div", {
+                      className: "flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 flex-1 max-w-sm",
+                      children: [
+                        c.jsx("span", { className: "text-slate-400 text-xs", children: "🔍" }),
+                        c.jsx("input", {
+                          type: "text",
+                          value: thuChiSearchQuery,
+                          onChange: e => setThuChiSearchQuery(e.target.value),
+                          placeholder: "Tìm khoản chi, người nhận...",
+                          className: "bg-transparent text-xs outline-none w-full text-slate-800 placeholder-slate-400"
+                        }),
+                        thuChiSearchQuery && c.jsx("button", {
+                          type: "button",
+                          onClick: () => setThuChiSearchQuery(""),
+                          className: "text-xs text-slate-400 hover:text-slate-600 cursor-pointer",
+                          children: "✕"
+                        })
+                      ]
+                    })
+                  ]
+                }),
+
+                // Danh Sách Giao Dịch Thu - Chi
+                displayedTransactions.length === 0 ? c.jsxs("div", {
+                  className: "p-10 bg-white rounded-3xl border-2 border-dashed border-slate-200 text-center space-y-3",
+                  children: [
+                    c.jsx("span", { className: "text-3xl block", children: "📝" }),
+                    c.jsx("p", { className: "font-bold text-xs text-slate-500", children: "Chưa có khoản thu hoặc chi nào trong mục này." }),
+                    c.jsx("p", { className: "text-[11px] text-slate-400 italic", children: "Bấm nút dấu '+' ở góc dưới bên phải màn hình để ghi chép nhanh." })
+                  ]
+                }) : c.jsx("div", {
+                  className: "space-y-2",
+                  children: displayedTransactions.map(tx => {
+                    const isIncome = tx.type === "INCOME";
+                    return c.jsxs("div", {
+                      key: tx.id,
+                      className: "p-3.5 bg-white rounded-2xl border border-slate-200/90 flex items-center justify-between gap-3 text-xs shadow-xs hover:border-slate-300 transition-all",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex items-center gap-3 min-w-0",
+                          children: [
+                            c.jsx("div", {
+                              className: "w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shrink-0 " + (isIncome ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-orange-50 text-orange-600 border border-orange-200"),
+                              children: isIncome ? "➕" : "➖"
+                            }),
+                            c.jsxs("div", {
+                              className: "min-w-0 space-y-0.5",
+                              children: [
+                                c.jsxs("div", {
+                                  className: "font-black text-slate-900 flex items-center gap-1.5 truncate",
+                                  children: [
+                                    c.jsx("span", {
+                                      className: "text-[9px] font-black uppercase px-1.5 py-0.2 rounded " + (isIncome ? "bg-emerald-600 text-white" : "bg-orange-600 text-white"),
+                                      children: isIncome ? "THU" : "CHI"
+                                    }),
+                                    c.jsx("span", { className: "truncate", children: tx.category })
+                                  ]
+                                }),
+                                (tx.person || tx.note) ? c.jsxs("div", {
+                                  className: "text-[10px] text-slate-500 truncate flex items-center gap-1.5",
+                                  children: [
+                                    tx.person ? c.jsxs("span", { children: ["👤 ", tx.person] }) : null,
+                                    (tx.person && tx.note) ? c.jsx("span", { children: "•" }) : null,
+                                    tx.note ? c.jsxs("span", { children: ["📝 ", tx.note] }) : null
+                                  ]
+                                }) : null
+                              ]
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "flex items-center gap-2 shrink-0",
+                          children: [
+                            c.jsxs("span", {
+                              className: "font-mono font-black text-sm " + (isIncome ? "text-emerald-700" : "text-orange-600"),
+                              children: [(isIncome ? "+ " : "- ") + _fmt(tx.amount), " đ"]
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleOpenEditThuChi(tx),
+                              className: "p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer",
+                              title: "Sửa",
+                              children: c.jsx("span", { children: "✎" })
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleDeleteThuChi(tx.id),
+                              className: "p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg cursor-pointer",
+                              title: "Xóa",
+                              children: c.jsx(xm, { size: 15 })
+                            })
+                          ]
+                        })
+                      ]
+                    });
+                  })
+                })
+              ]
+            }),
+
+            // =====================================================================
+            // TAB 3: CHI PHÍ MUA TÔM BỜ AO (GIAO DIỆN SÁNG)
+            // =====================================================================
+            mainTab === "BUY" && c.jsxs("div", {
+              className: "space-y-4",
+              children: [
+                // Thẻ Thống Kê Nguồn Mua
+                c.jsxs("div", {
+                  className: "grid grid-cols-2 sm:grid-cols-4 gap-2.5",
+                  children: [
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Tổng Khối Lượng" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-orange-600 my-0.5", children: [_fmtKg(autoShrimpPurchaseKg), " kg"] }),
+                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [effectiveSessions.length, " phiếu cân"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Tổng Tiền Mua Ao" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-orange-600 my-0.5", children: [_fmt(shrimpPurchaseMoney), " đ"] }),
+                        c.jsx("span", { className: "text-[10px] text-slate-500", children: isShrimpAuto ? "Tự động liên kết" : "Nhập tay" })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Giá Mua Bình Quân" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-slate-900 my-0.5", children: [_fmt(Math.round(avgPurchasePrice)), " đ"] }),
+                        c.jsx("span", { className: "text-[10px] text-slate-500", children: "trên 1 kg tôm" })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Thao Tác Nguồn" }),
+                        c.jsxs("div", {
+                          className: "flex gap-1.5 pt-1",
+                          children: [
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setShowSessionsModal(true),
+                              className: "flex-1 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-[10px] font-bold cursor-pointer",
+                              children: "Chọn phiếu"
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => updateActiveTrip({ shrimpPurchaseAuto: !isShrimpAuto }),
+                              className: "px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[10px] font-bold border border-slate-200 cursor-pointer",
+                              children: isShrimpAuto ? "Nhập tay" : "Tự động"
+                            })
+                          ]
+                        })
+                      ]
+                    })
+                  ]
+                }),
+
+                // Nhập tay nếu tắt tự động
+                !isShrimpAuto && c.jsxs("div", {
+                  className: "bg-white p-4 rounded-3xl border border-orange-200 shadow-xs space-y-2",
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-orange-600 uppercase block", children: "Nhập số tiền mua tôm thủ công cho chuyến này (VNĐ):" }),
                     c.jsx("input", {
                       type: "number",
-                      placeholder: "VD: 100000000",
-                      value: investorFormAmount,
-                      onChange: e => setInvestorFormAmount(e.target.value),
-                      className: "w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-lg font-mono outline-none focus:border-indigo-500"
-                    }),
-                    // Quick amount chips
+                      value: trip.shrimpPurchaseManualAmount || "",
+                      onChange: e => updateActiveTrip({ shrimpPurchaseManualAmount: Number(e.target.value) || 0 }),
+                      placeholder: "VD: 95000000",
+                      className: "w-full p-3 bg-slate-50 border border-orange-300 rounded-2xl font-mono font-black text-xl text-orange-600 outline-none"
+                    })
+                  ]
+                }),
+
+                // Danh sách chi tiết các phiếu cân đã liên kết
+                c.jsxs("div", {
+                  className: "bg-white rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3",
+                  children: [
                     c.jsxs("div", {
-                      className: "flex flex-wrap gap-1.5 mt-2",
+                      className: "flex justify-between items-center border-b border-slate-100 pb-3",
                       children: [
-                        [20000000, "20tr"],
-                        [50000000, "50tr"],
-                        [100000000, "100tr"],
-                        [200000000, "200tr"],
-                        [500000000, "500tr"]
-                      ].map(([val, label]) => c.jsx("button", {
-                        key: val,
-                        type: "button",
-                        onClick: () => setInvestorFormAmount(String(val)),
-                        className: "px-2.5 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs font-bold font-mono text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-950",
-                        children: label
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-slate-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "🦐" }), "Danh Sách Phiếu Cân Mua Tôm Đã Liên Kết"] }),
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Dữ liệu được đồng bộ 100% từ mô-đun Cân Tôm tại bờ ao" })
+                          ]
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => setShowSessionsModal(true),
+                          className: "px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-xl text-xs font-bold border border-orange-200 cursor-pointer",
+                          children: "Tùy chọn phiếu ➔"
+                        })
+                      ]
+                    }),
+
+                    effectiveSessions.length === 0 ? c.jsxs("div", {
+                      className: "p-8 text-center text-slate-400 text-xs space-y-2",
+                      children: [
+                        c.jsx("span", { className: "text-2xl block", children: "⚖️" }),
+                        c.jsx("p", { children: "Chưa có phiếu cân thu mua nào được liên kết cho ngày này." }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => {
+                            const newMode = filterMode === "DATE" ? "ALL" : "DATE";
+                            setFilterMode(newMode);
+                            updateActiveTrip({ filterMode: newMode });
+                          },
+                          className: "text-orange-600 hover:underline font-bold text-xs cursor-pointer",
+                          children: "Chuyển sang chế độ: Tất Cả Phiếu"
+                        })
+                      ]
+                    }) : c.jsx("div", {
+                      className: "space-y-2",
+                      children: effectiveSessions.map((s, idx) => c.jsxs("div", {
+                        key: s.id || idx,
+                        className: "p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 text-xs",
+                        children: [
+                          c.jsxs("div", {
+                            className: "flex items-center gap-3 min-w-0",
+                            children: [
+                              c.jsxs("div", {
+                                className: "w-8 h-8 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center font-black text-xs shrink-0 border border-orange-200",
+                                children: [idx + 1]
+                              }),
+                              c.jsxs("div", {
+                                className: "min-w-0",
+                                children: [
+                                  c.jsx("span", { className: "font-black text-slate-900 text-sm block truncate", children: s.farmerName || "Ao tôm" }),
+                                  c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [new Date(s.date || Date.now()).toLocaleDateString("vi-VN"), " • ", _fmtKg(s.totalNet || s.totalGross), " kg", s.truck ? (" • Xe: " + s.truck) : ""] })
+                                ]
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            className: "text-right shrink-0",
+                            children: [
+                              c.jsxs("span", { className: "font-mono font-black text-sm text-orange-600 block", children: [_fmt(s.totalMoney), " đ"] }),
+                              c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: ["TB: ", _fmt(Number(s.totalNet || s.totalGross || 0) > 0 ? Math.round(Number(s.totalMoney || 0) / Number(s.totalNet || s.totalGross)) : 0), " đ/kg"] })
+                            ]
+                          })
+                        ]
                       }))
                     })
                   ]
                 })
               ]
             }),
-            c.jsxs("div", {
-              className: "flex gap-2 justify-end pt-2",
+
+            // =====================================================================
+            // TAB 4: DOANH THU XUẤT BÁN TÔM (GIAO DIỆN SÁNG)
+            // =====================================================================
+            mainTab === "SELL" && c.jsxs("div", {
+              className: "space-y-4",
               children: [
-                c.jsx("button", {
-                  type: "button",
-                  onClick: () => setShowInvestorModal(false),
-                  className: "px-4 py-2.5 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold text-xs",
-                  children: "Hủy"
+                // Thẻ Thống Kê Đầu Ra
+                c.jsxs("div", {
+                  className: "grid grid-cols-2 sm:grid-cols-4 gap-2.5",
+                  children: [
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Tổng Khối Lượng Xuất" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-emerald-700 my-0.5", children: [_fmtKg(autoRevenueKg), " kg"] }),
+                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [effectiveSales.length, " đơn xuất bán"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Tổng Doanh Thu Bán" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-emerald-700 my-0.5", children: [_fmt(baseRevenue), " đ"] }),
+                        c.jsx("span", { className: "text-[10px] text-slate-500", children: isRevenueAuto ? "Tự động liên kết" : "Nhập tay" })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Giá Bán Bình Quân" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-slate-900 my-0.5", children: [_fmt(Math.round(avgSalePrice)), " đ"] }),
+                        c.jsx("span", { className: "text-[10px] text-slate-500", children: "trên 1 kg xuất" })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Thao Tác Đơn" }),
+                        c.jsxs("div", {
+                          className: "flex gap-1.5 pt-1",
+                          children: [
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setShowSalesModal(true),
+                              className: "flex-1 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-[10px] font-bold cursor-pointer",
+                              children: "Chọn đơn"
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => updateActiveTrip({ revenueAuto: !isRevenueAuto }),
+                              className: "px-2 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[10px] font-bold border border-slate-200 cursor-pointer",
+                              children: isRevenueAuto ? "Nhập tay" : "Tự động"
+                            })
+                          ]
+                        })
+                      ]
+                    })
+                  ]
                 }),
-                c.jsx("button", {
-                  type: "button",
-                  onClick: handleSaveInvestorForm,
-                  className: "px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-black text-xs uppercase shadow-md",
-                  children: editingInvestorId ? "Cập Nhật" : "Lưu Người Góp"
+
+                // Phân Bổ Kênh Bán Hàng
+                c.jsxs("div", {
+                  className: "grid grid-cols-3 gap-2.5",
+                  children: [
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 text-center space-y-1 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] text-slate-500 font-bold uppercase block", children: "🛒 Bán Lẻ Tại Vựa" }),
+                        c.jsxs("div", { className: "font-mono font-black text-base text-emerald-700", children: [_fmt(retailRevenue), " đ"] }),
+                        c.jsxs("span", { className: "text-[10px] text-slate-400", children: [retailSalesList.length, " đơn"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 text-center space-y-1 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] text-slate-500 font-bold uppercase block", children: "🏪 Chợ Đầu Mối" }),
+                        c.jsxs("div", { className: "font-mono font-black text-base text-blue-700", children: [_fmt(marketRevenue), " đ"] }),
+                        c.jsxs("span", { className: "text-[10px] text-slate-400", children: [marketSalesList.length, " đơn"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "bg-white p-3.5 rounded-2xl border border-slate-200 text-center space-y-1 shadow-xs",
+                      children: [
+                        c.jsx("span", { className: "text-[10px] text-slate-500 font-bold uppercase block", children: "🏢 Nhà Máy Công Ty" }),
+                        c.jsxs("div", { className: "font-mono font-black text-base text-purple-700", children: [_fmt(factoryRevenue), " đ"] }),
+                        c.jsxs("span", { className: "text-[10px] text-slate-400", children: [factorySalesList.length, " đơn"] })
+                      ]
+                    })
+                  ]
+                }),
+
+                // Danh sách chi tiết các đơn xuất bán đã liên kết
+                c.jsxs("div", {
+                  className: "bg-white rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center border-b border-slate-100 pb-3",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-slate-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "🛒" }), "Danh Sách Đơn Xuất Bán Tôm Đã Liên Kết"] }),
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Dữ liệu được đồng bộ 100% từ mô-đun Xuất Bán Tôm" })
+                          ]
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => setShowSalesModal(true),
+                          className: "px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold border border-emerald-200 cursor-pointer",
+                          children: "Tùy chọn đơn ➔"
+                        })
+                      ]
+                    }),
+
+                    effectiveSales.length === 0 ? c.jsxs("div", {
+                      className: "p-8 text-center text-slate-400 text-xs space-y-2",
+                      children: [
+                        c.jsx("span", { className: "text-2xl block", children: "📦" }),
+                        c.jsx("p", { children: "Chưa có đơn xuất bán nào được liên kết cho ngày này." }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => {
+                            const newMode = filterMode === "DATE" ? "ALL" : "DATE";
+                            setFilterMode(newMode);
+                            updateActiveTrip({ filterMode: newMode });
+                          },
+                          className: "text-emerald-700 hover:underline font-bold text-xs cursor-pointer",
+                          children: "Chuyển sang chế độ: Tất Cả Phiếu"
+                        })
+                      ]
+                    }) : c.jsx("div", {
+                      className: "space-y-2",
+                      children: effectiveSales.map((sl, idx) => c.jsxs("div", {
+                        key: sl.id || idx,
+                        className: "p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 text-xs",
+                        children: [
+                          c.jsxs("div", {
+                            className: "flex items-center gap-3 min-w-0",
+                            children: [
+                              c.jsxs("div", {
+                                className: "w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xs shrink-0 border border-emerald-200",
+                                children: [idx + 1]
+                              }),
+                              c.jsxs("div", {
+                                className: "min-w-0",
+                                children: [
+                                  c.jsxs("span", {
+                                    className: "font-black text-slate-900 text-sm flex items-center gap-1.5 truncate",
+                                    children: [
+                                      c.jsx("span", { children: sl.targetGroup === "FACTORY" ? "🏢" : (sl.targetGroup === "MARKET" ? "🏪" : "🛒") }),
+                                      sl.buyerName || "Khách mua tôm"
+                                    ]
+                                  }),
+                                  c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [new Date(sl.date || Date.now()).toLocaleDateString("vi-VN"), " • ", _fmtKg(sl.totalNet || sl.totalGross), " kg", sl.targetGroup === "FACTORY" ? " (Công ty)" : (sl.targetGroup === "MARKET" ? " (Chợ đầu mối)" : " (Bán lẻ)")] })
+                                ]
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            className: "text-right shrink-0",
+                            children: [
+                              c.jsxs("span", { className: "font-mono font-black text-sm text-emerald-700 block", children: [_fmt(sl.totalMoney), " đ"] }),
+                              c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: ["Giá: ", _fmt(Number(sl.totalNet || sl.totalGross || 0) > 0 ? Math.round(Number(sl.totalMoney || 0) / Number(sl.totalNet || sl.totalGross)) : 0), " đ/kg"] })
+                            ]
+                          })
+                        ]
+                      }))
+                    })
+                  ]
+                })
+              ]
+            }),
+
+            // =====================================================================
+            // TAB 5: ĐỐI SOÁT HAO HỤT & HIỆU QUẢ KINH DOANH (GIAO DIỆN SÁNG)
+            // =====================================================================
+            mainTab === "AUDIT" && c.jsxs("div", {
+              className: "space-y-4",
+              children: [
+                // Thẻ đánh giá hiệu quả
+                c.jsxs("div", {
+                  className: "bg-white rounded-3xl border border-slate-200 p-5 shadow-xs space-y-4",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center border-b border-slate-100 pb-3",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("h2", { className: "text-sm font-black uppercase text-slate-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "⚖️" }), "Đối Chiếu Cân Bằng Khối Lượng & Giá"] }),
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Kiểm soát độ hao hụt sống/chết khi vận chuyển và chênh lệch giá bán - mua" })
+                          ]
+                        }),
+                        c.jsx("span", {
+                          className: "px-3 py-1 rounded-full text-[10px] font-black uppercase " + (weightDiff <= 0 ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : (weightDiffPercent < 3 ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-red-50 text-red-700 border border-red-200")),
+                          children: weightDiff <= 0 ? "TỐT • KHÔNG HAO HỤT" : ("HAO HỤT " + weightDiffPercent.toFixed(1) + "%")
+                        })
+                      ]
+                    }),
+
+                    // 4 Chỉ Số Cốt Lõi
+                    c.jsxs("div", {
+                      className: "grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs",
+                      children: [
+                        c.jsxs("div", {
+                          className: "p-3.5 bg-slate-50 rounded-2xl border border-slate-200",
+                          children: [
+                            c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Tổng Mua Vào" }),
+                            c.jsxs("div", { className: "font-mono font-black text-xl text-orange-600 my-0.5", children: [_fmtKg(autoShrimpPurchaseKg), " kg"] }),
+                            c.jsxs("span", { className: "text-[10px] text-slate-500", children: ["TB: ", _fmt(Math.round(avgPurchasePrice)), " đ/kg"] })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "p-3.5 bg-slate-50 rounded-2xl border border-slate-200",
+                          children: [
+                            c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Tổng Xuất Bán" }),
+                            c.jsxs("div", { className: "font-mono font-black text-xl text-emerald-700 my-0.5", children: [_fmtKg(autoRevenueKg), " kg"] }),
+                            c.jsxs("span", { className: "text-[10px] text-slate-500", children: ["TB: ", _fmt(Math.round(avgSalePrice)), " đ/kg"] })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "p-3.5 bg-slate-50 rounded-2xl border border-slate-200",
+                          children: [
+                            c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Độ Lệch Khối Lượng" }),
+                            c.jsxs("div", {
+                              className: "font-mono font-black text-xl my-0.5 " + (weightDiff > 0 ? "text-amber-600" : "text-emerald-700"),
+                              children: [(weightDiff > 0 ? "-" : "+") + _fmtKg(Math.abs(weightDiff)), " kg"]
+                            }),
+                            c.jsxs("span", { className: "text-[10px] text-slate-500", children: ["Tỷ lệ: ", weightDiffPercent.toFixed(1), "%"] })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "p-3.5 bg-slate-50 rounded-2xl border border-slate-200",
+                          children: [
+                            c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Lãi Gộp Chênh Giá" }),
+                            c.jsxs("div", {
+                              className: "font-mono font-black text-xl my-0.5 " + (grossProfitPerKg >= 0 ? "text-emerald-700" : "text-rose-600"),
+                              children: [(grossProfitPerKg >= 0 ? "+" : "") + _fmt(Math.round(grossProfitPerKg)), " đ"]
+                            }),
+                            c.jsx("span", { className: "text-[10px] text-slate-500", children: "Lãi gộp trên mỗi kg" })
+                          ]
+                        })
+                      ]
+                    }),
+
+                    // Nhận xét hiệu quả
+                    c.jsxs("div", {
+                      className: "p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1.5",
+                      children: [
+                        c.jsx("span", { className: "font-black text-slate-900 uppercase text-[11px] block", children: "💡 Đánh Giá Chuyến Hàng:" }),
+                        c.jsxs("p", {
+                          className: "text-slate-600 text-[11px] leading-relaxed",
+                          children: [
+                            "Chuyến hàng đạt tổng doanh thu ",
+                            c.jsx("b", { className: "text-emerald-700 font-mono", children: _fmt(totalRevenue) + " đ" }),
+                            " trên tổng chi phí ",
+                            c.jsx("b", { className: "text-orange-600 font-mono", children: _fmt(totalExpenses) + " đ" }),
+                            ". Lợi nhuận ròng thu về đạt ",
+                            c.jsx("b", { className: (isProfit ? "text-emerald-700" : "text-rose-600") + " font-mono", children: (isProfit ? "+" : "") + _fmt(netProfit) + " VNĐ" }),
+                            " (tương đương tỷ suất sinh lời ",
+                            c.jsx("b", { className: "text-slate-900 font-mono", children: profitMarginPercent.toFixed(1) + "%" }),
+                            "). ",
+                            weightDiff > 0 ? ("Hao hụt khối lượng là " + _fmtKg(weightDiff) + " kg (" + weightDiffPercent.toFixed(1) + "%), " + (weightDiffPercent < 3 ? "nằm trong ngưỡng an toàn cho phép." : "cần chú ý nhiệt độ đá oxy khi vận chuyển đường dài.")) : "Không bị hao hụt khối lượng."
+                          ]
+                        })
+                      ]
+                    })
+                  ]
                 })
               ]
             })
@@ -12502,96 +14317,231 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 2: THÊM / SỬA CHI PHÍ VẬN HÀNH
+      // 3. NÚT DẤU '+' THẢ NỔI Ở GÓC DƯỚI BÊN PHẢI MÀN HÌNH (FLOATING ACTION BUTTON)
       // =========================================================================
-      showExpenseModal && c.jsx("div", {
-        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+      // Màn che nền mờ khi mở speed dial
+      fabOpen && c.jsx("div", {
+        className: "fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity animate-in fade-in duration-150",
+        onClick: () => setFabOpen(false)
+      }),
+
+      // Container chứa nút FAB và các nút con
+      c.jsxs("div", {
+        className: "fixed bottom-6 right-5 sm:bottom-8 sm:right-8 z-50 flex flex-col items-end gap-2.5",
+        children: [
+          // Nút con 1: Ghi Khoản Thu (Xanh ngọc)
+          fabOpen && c.jsxs("div", {
+            className: "flex items-center gap-2.5 animate-in slide-in-from-bottom-2 duration-150",
+            children: [
+              c.jsx("span", {
+                className: "px-3 py-1.5 bg-slate-900 text-white rounded-xl text-xs font-bold shadow-lg whitespace-nowrap",
+                children: "Ghi Khoản Thu (➕)"
+              }),
+              c.jsx("button", {
+                type: "button",
+                onClick: () => handleOpenAddThuChi("INCOME"),
+                className: "w-12 h-12 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl flex items-center justify-center text-lg active:scale-95 transition-all cursor-pointer border-2 border-white",
+                title: "Ghi khoản thu tiền mới",
+                children: "➕"
+              })
+            ]
+          }),
+
+          // Nút con 2: Ghi Khoản Chi (Cam hổ phách)
+          fabOpen && c.jsxs("div", {
+            className: "flex items-center gap-2.5 animate-in slide-in-from-bottom-2 duration-150",
+            children: [
+              c.jsx("span", {
+                className: "px-3 py-1.5 bg-slate-900 text-white rounded-xl text-xs font-bold shadow-lg whitespace-nowrap",
+                children: "Ghi Khoản Chi (➖)"
+              }),
+              c.jsx("button", {
+                type: "button",
+                onClick: () => handleOpenAddThuChi("EXPENSE"),
+                className: "w-12 h-12 rounded-full bg-orange-600 hover:bg-orange-500 text-white shadow-xl flex items-center justify-center text-lg active:scale-95 transition-all cursor-pointer border-2 border-white",
+                title: "Ghi khoản chi tiền mới",
+                children: "➖"
+              })
+            ]
+          }),
+
+          // NÚT CHÍNH: DẤU '+' THẢ NỔI
+          c.jsxs("button", {
+            type: "button",
+            onClick: () => setFabOpen(!fabOpen),
+            className: "w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-emerald-600 via-teal-600 to-emerald-500 hover:from-emerald-500 hover:to-teal-400 text-white shadow-2xl shadow-emerald-700/50 flex items-center justify-center text-2xl font-black active:scale-90 transition-all cursor-pointer border-2 border-white focus:outline-none",
+            title: fabOpen ? "Đóng menu" : "Thêm khoản Thu - Chi mới",
+            children: [
+              c.jsx("span", {
+                className: "transition-transform duration-200 select-none " + (fabOpen ? "rotate-45" : "rotate-0"),
+                children: "+"
+              })
+            ]
+          })
+        ]
+      }),
+
+      // =========================================================================
+      // MODAL 1: GHI NHẬN THU - CHI CHUYÊN NGHIỆP (GIAO DIỆN SÁNG)
+      // =========================================================================
+      showThuChiModal && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
         children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
+          className: "bg-white text-slate-900 rounded-3xl w-full max-w-sm p-5 sm:p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[95vh] overflow-y-auto border border-slate-200",
           children: [
-            c.jsx("h3", {
-              className: "font-black text-base uppercase text-gray-900 dark:text-white",
-              children: editingExpenseId ? "✎ Sửa Chi Phí Vận Hành" : "+ Thêm Chi Phí Vận Hành"
-            }),
+            // Modal Header with Type Selector
             c.jsxs("div", {
               className: "space-y-3",
               children: [
                 c.jsxs("div", {
+                  className: "flex justify-between items-center",
                   children: [
-                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Danh mục chi phí" }),
+                    c.jsx("h3", {
+                      className: "font-black text-base uppercase text-slate-900",
+                      children: editingThuChiId ? "✎ Chỉnh Sửa Thu - Chi" : "➕ Ghi Nhận Thu - Chi"
+                    }),
+                    c.jsx("button", {
+                      type: "button",
+                      onClick: () => setShowThuChiModal(false),
+                      className: "p-1.5 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer",
+                      children: c.jsx(_a, { size: 18 })
+                    })
+                  ]
+                }),
+                // Tab chọn Loại: CHI TIỀN hay THU TIỀN
+                c.jsxs("div", {
+                  className: "grid grid-cols-2 p-1 bg-slate-100 rounded-2xl gap-1 text-xs font-black border border-slate-200",
+                  children: [
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: () => {
+                        setThuChiType("EXPENSE");
+                        if (!editingThuChiId) setThuChiCategory("Tiền thuê xe / vận chuyển");
+                      },
+                      className: "py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer " + (thuChiType === "EXPENSE" ? "bg-orange-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"),
+                      children: [c.jsx("span", { children: "➖" }), "KHOẢN CHI"]
+                    }),
+                    c.jsxs("button", {
+                      type: "button",
+                      onClick: () => {
+                        setThuChiType("INCOME");
+                        if (!editingThuChiId) setThuChiCategory("Thu tiền bán tôm mặt tại ao");
+                      },
+                      className: "py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer " + (thuChiType === "INCOME" ? "bg-emerald-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"),
+                      children: [c.jsx("span", { children: "➕" }), "KHOẢN THU"]
+                    })
+                  ]
+                })
+              ]
+            }),
+
+            // Form Fields
+            c.jsxs("div", {
+              className: "space-y-3.5",
+              children: [
+                // Danh mục
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-[11px] font-bold text-slate-500 mb-1.5 block uppercase tracking-wider", children: "Danh mục *" }),
                     c.jsx("div", {
-                      className: "grid grid-cols-2 gap-1.5",
-                      children: expenseCategories.map(cat => c.jsxs("button", {
+                      className: "grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto pr-1",
+                      children: (thuChiType === "EXPENSE" ? expenseCategories : incomeCategories).map(cat => c.jsxs("button", {
                         key: cat.label,
                         type: "button",
-                        onClick: () => setExpenseFormCat(cat.label),
-                        className: `p-2 rounded-xl text-[11px] font-bold text-left transition-all border ${
-                          expenseFormCat === cat.label
-                            ? "bg-orange-50 dark:bg-orange-950/40 border-orange-500 text-orange-900 dark:text-orange-200"
-                            : "bg-gray-50 dark:bg-gray-700/60 border-transparent text-gray-700 dark:text-gray-300"
-                        }`,
+                        onClick: () => setThuChiCategory(cat.label),
+                        className: "p-2 rounded-xl text-[11px] font-bold text-left transition-all border " + (thuChiCategory === cat.label ? (thuChiType === "EXPENSE" ? "bg-orange-50 border-orange-500 text-orange-800" : "bg-emerald-50 border-emerald-500 text-emerald-800") : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"),
                         children: [cat.icon, " ", cat.label]
                       }))
                     })
                   ]
                 }),
+
+                // Số tiền & Chữ đọc số
                 c.jsxs("div", {
                   children: [
-                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Số tiền chi (VNĐ) *" }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center mb-1",
+                      children: [
+                        c.jsx("label", { className: "text-[11px] font-bold text-slate-500 uppercase tracking-wider", children: "Số tiền (VNĐ) *" }),
+                        thuChiAmount && c.jsx("span", { className: "text-[10px] font-bold text-emerald-700 italic", children: _readVietnameseMoney(thuChiAmount) })
+                      ]
+                    }),
                     c.jsx("input", {
                       type: "number",
                       placeholder: "VD: 1500000",
-                      value: expenseFormAmount,
-                      onChange: e => setExpenseFormAmount(e.target.value),
-                      className: "w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-lg font-mono outline-none focus:border-orange-500"
+                      value: thuChiAmount,
+                      onChange: e => setThuChiAmount(e.target.value),
+                      className: "w-full p-3 bg-slate-50 border-2 border-slate-200 focus:border-emerald-500 rounded-2xl font-bold text-xl font-mono outline-none " + (thuChiType === "EXPENSE" ? "text-orange-600" : "text-emerald-700")
                     }),
-                    // Quick expense chips
+                    // Quick chips
                     c.jsxs("div", {
                       className: "flex flex-wrap gap-1.5 mt-2",
                       children: [
+                        [100000, "100k"],
                         [200000, "200k"],
                         [500000, "500k"],
                         [1000000, "1tr"],
                         [2000000, "2tr"],
-                        [5000000, "5tr"]
+                        [3000000, "3tr"],
+                        [5000000, "5tr"],
+                        [10000000, "10tr"],
+                        [20000000, "20tr"]
                       ].map(([val, label]) => c.jsx("button", {
                         key: val,
                         type: "button",
-                        onClick: () => setExpenseFormAmount(String(val)),
-                        className: "px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-lg text-xs font-bold font-mono text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-950",
+                        onClick: () => setThuChiAmount(String(val)),
+                        className: "px-2.5 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold font-mono text-slate-700 border border-slate-200 cursor-pointer",
                         children: label
                       }))
                     })
                   ]
                 }),
+
+                // Người nhận / Người nộp
                 c.jsxs("div", {
                   children: [
-                    c.jsx("label", { className: "text-xs font-bold text-gray-500 mb-1 block uppercase", children: "Ghi chú chi tiết (nếu có)" }),
+                    c.jsx("label", { className: "text-[11px] font-bold text-slate-500 mb-1 block uppercase tracking-wider", children: thuChiType === "EXPENSE" ? "Người nhận tiền / Tài xế / Nhân công" : "Người nộp tiền / Khách hàng" }),
                     c.jsx("input", {
                       type: "text",
-                      placeholder: "VD: Xe tải giao Camimex 12 phi...",
-                      value: expenseFormNote,
-                      onChange: e => setExpenseFormNote(e.target.value),
-                      className: "w-full p-2.5 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent font-bold text-xs outline-none"
+                      placeholder: thuChiType === "EXPENSE" ? "VD: Anh Ba tài xế xe tải..." : "VD: Chú Bảy mua tôm...",
+                      value: thuChiPerson,
+                      onChange: e => setThuChiPerson(e.target.value),
+                      className: "w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs outline-none text-slate-900 focus:border-slate-400"
+                    })
+                  ]
+                }),
+
+                // Ghi chú chi tiết
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-[11px] font-bold text-slate-500 mb-1 block uppercase tracking-wider", children: "Ghi chú chi tiết (nếu có)" }),
+                    c.jsx("input", {
+                      type: "text",
+                      placeholder: "VD: Chuyến xe giao chợ Bình Điền...",
+                      value: thuChiNote,
+                      onChange: e => setThuChiNote(e.target.value),
+                      className: "w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-xs outline-none text-slate-900 focus:border-slate-400"
                     })
                   ]
                 })
               ]
             }),
+
+            // Action Buttons
             c.jsxs("div", {
-              className: "flex gap-2 justify-end pt-2",
+              className: "flex gap-2 justify-end pt-2 border-t border-slate-100",
               children: [
                 c.jsx("button", {
                   type: "button",
-                  onClick: () => setShowExpenseModal(false),
-                  className: "px-4 py-2.5 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold text-xs",
+                  onClick: () => setShowThuChiModal(false),
+                  className: "px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer",
                   children: "Hủy"
                 }),
                 c.jsx("button", {
                   type: "button",
-                  onClick: handleSaveExpenseForm,
-                  className: "px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase shadow-md",
-                  children: editingExpenseId ? "Cập Nhật" : "Lưu Khoản Chi"
+                  onClick: handleSaveThuChi,
+                  className: "px-5 py-2.5 rounded-xl font-black text-xs uppercase shadow-md text-white cursor-pointer " + (thuChiType === "EXPENSE" ? "bg-orange-600 hover:bg-orange-500" : "bg-emerald-600 hover:bg-emerald-500"),
+                  children: editingThuChiId ? "Cập Nhật" : (thuChiType === "EXPENSE" ? "Lưu Khoản Chi" : "Lưu Khoản Thu")
                 })
               ]
             })
@@ -12600,26 +14550,26 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 3: CHỌN PHIẾU CÂN MUA TÔM ĐÓNG GÓP VÀO CHUYẾN
+      // MODAL 2: CHỌN PHIẾU CÂN MUA TÔM (GIAO DIỆN SÁNG)
       // =========================================================================
       showSessionsModal && c.jsx("div", {
-        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
         children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[85vh] flex flex-col",
+          className: "bg-white text-slate-900 border border-slate-200 rounded-3xl w-full max-w-lg p-5 sm:p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[85vh] flex flex-col",
           children: [
             c.jsxs("div", {
-              className: "flex justify-between items-center border-b pb-3",
+              className: "flex justify-between items-center border-b border-slate-100 pb-3",
               children: [
                 c.jsxs("div", {
                   children: [
-                    c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "Chọn Phiếu Mua Tôm Cho Chuyến Này" }),
-                    c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: ["Đang chọn: ", effectiveSessions.length, " / ", filteredSessions.length, " phiếu"] })
+                    c.jsx("h3", { className: "font-black text-base uppercase text-slate-900", children: "Chọn Phiếu Mua Tôm Cho Chuyến Này" }),
+                    c.jsxs("p", { className: "text-xs text-slate-500 font-bold", children: ["Đang chọn: ", effectiveSessions.length, " / ", filteredSessions.length, " phiếu"] })
                   ]
                 }),
                 c.jsx("button", {
                   type: "button",
                   onClick: () => setShowSessionsModal(false),
-                  className: "p-1.5 text-gray-400 hover:text-gray-600 rounded-full",
+                  className: "p-1.5 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer",
                   children: c.jsx(_a, { size: 18 })
                 })
               ]
@@ -12630,13 +14580,13 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                 c.jsx("button", {
                   type: "button",
                   onClick: () => updateActiveTrip({ selectedSessionIds: null }),
-                  className: "text-blue-600 font-bold",
+                  className: "text-emerald-700 font-bold cursor-pointer hover:underline",
                   children: "Chọn tất cả"
                 }),
                 c.jsx("button", {
                   type: "button",
                   onClick: () => updateActiveTrip({ selectedSessionIds: [] }),
-                  className: "text-gray-500 font-bold",
+                  className: "text-slate-500 font-bold cursor-pointer hover:underline",
                   children: "Bỏ chọn tất cả"
                 })
               ]
@@ -12644,7 +14594,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             c.jsx("div", {
               className: "overflow-y-auto flex-1 space-y-2 pr-1",
               children: filteredSessions.length === 0 ? c.jsx("p", {
-                className: "text-center text-gray-400 py-12 italic text-xs font-bold",
+                className: "text-center text-slate-400 py-12 italic text-xs font-bold",
                 children: "Không có phiếu cân thu mua nào trong ngày này."
               }) : filteredSessions.map(sess => {
                 const isChecked = !Array.isArray(selectedSessionIds) || selectedSessionIds.includes(sess.id);
@@ -12661,11 +14611,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                     }
                     updateActiveTrip({ selectedSessionIds: nextIds });
                   },
-                  className: `p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
-                    isChecked
-                      ? "bg-orange-50/80 dark:bg-orange-950/40 border-orange-400"
-                      : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-60"
-                  }`,
+                  className: "p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all " + (isChecked ? "bg-orange-50 border-orange-300" : "bg-slate-50 border-slate-200 opacity-60"),
                   children: [
                     c.jsxs("div", {
                       className: "flex items-center gap-3",
@@ -12674,27 +14620,27 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                           type: "checkbox",
                           checked: isChecked,
                           readOnly: true,
-                          className: "w-4 h-4 text-orange-600 rounded"
+                          className: "w-4 h-4 text-orange-600 rounded bg-white border-slate-300"
                         }),
                         c.jsxs("div", {
                           children: [
-                            c.jsx("span", { className: "font-black text-xs text-gray-900 dark:text-white block", children: sess.farmerName || "Ao tôm" }),
-                            c.jsxs("span", { className: "text-[10px] text-gray-500 font-mono", children: [new Date(sess.date).toLocaleDateString("vi-VN"), " • ", _fmtKg(sess.totalNet || sess.totalGross), " kg"] })
+                            c.jsx("span", { className: "font-black text-xs text-slate-900 block", children: sess.farmerName || "Ao tôm" }),
+                            c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [new Date(sess.date).toLocaleDateString("vi-VN"), " • ", _fmtKg(sess.totalNet || sess.totalGross), " kg"] })
                           ]
                         })
                       ]
                     }),
-                    c.jsxs("span", { className: "font-mono font-black text-sm text-orange-900 dark:text-orange-200", children: [_fmt(sess.totalMoney), " đ"] })
+                    c.jsxs("span", { className: "font-mono font-black text-sm text-orange-600", children: [_fmt(sess.totalMoney), " đ"] })
                   ]
                 });
               })
             }),
             c.jsx("div", {
-              className: "pt-2 flex justify-end",
+              className: "pt-2 flex justify-end border-t border-slate-100",
               children: c.jsx("button", {
                 type: "button",
                 onClick: () => setShowSessionsModal(false),
-                className: "px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase shadow-md",
+                className: "px-5 py-2.5 bg-orange-600 hover:bg-orange-500 text-white rounded-xl font-black text-xs uppercase shadow-xs cursor-pointer",
                 children: "Xong"
               })
             })
@@ -12703,26 +14649,26 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 4: CHỌN ĐƠN XUẤT BÁN ĐÓNG GÓP VÀO CHUYẾN
+      // MODAL 3: CHỌN ĐƠN XUẤT BÁN (GIAO DIỆN SÁNG)
       // =========================================================================
       showSalesModal && c.jsx("div", {
-        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
         children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[85vh] flex flex-col",
+          className: "bg-white text-slate-900 border border-slate-200 rounded-3xl w-full max-w-lg p-5 sm:p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[85vh] flex flex-col",
           children: [
             c.jsxs("div", {
-              className: "flex justify-between items-center border-b pb-3",
+              className: "flex justify-between items-center border-b border-slate-100 pb-3",
               children: [
                 c.jsxs("div", {
                   children: [
-                    c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "Chọn Đơn Xuất Bán Cho Chuyến Này" }),
-                    c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: ["Đang chọn: ", effectiveSales.length, " / ", filteredSales.length, " đơn"] })
+                    c.jsx("h3", { className: "font-black text-base uppercase text-slate-900", children: "Chọn Đơn Xuất Bán Cho Chuyến Này" }),
+                    c.jsxs("p", { className: "text-xs text-slate-500 font-bold", children: ["Đang chọn: ", effectiveSales.length, " / ", filteredSales.length, " đơn"] })
                   ]
                 }),
                 c.jsx("button", {
                   type: "button",
                   onClick: () => setShowSalesModal(false),
-                  className: "p-1.5 text-gray-400 hover:text-gray-600 rounded-full",
+                  className: "p-1.5 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer",
                   children: c.jsx(_a, { size: 18 })
                 })
               ]
@@ -12733,13 +14679,13 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                 c.jsx("button", {
                   type: "button",
                   onClick: () => updateActiveTrip({ selectedSaleIds: null }),
-                  className: "text-emerald-600 font-bold",
+                  className: "text-emerald-700 font-bold cursor-pointer hover:underline",
                   children: "Chọn tất cả"
                 }),
                 c.jsx("button", {
                   type: "button",
                   onClick: () => updateActiveTrip({ selectedSaleIds: [] }),
-                  className: "text-gray-500 font-bold",
+                  className: "text-slate-500 font-bold cursor-pointer hover:underline",
                   children: "Bỏ chọn tất cả"
                 })
               ]
@@ -12747,7 +14693,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             c.jsx("div", {
               className: "overflow-y-auto flex-1 space-y-2 pr-1",
               children: filteredSales.length === 0 ? c.jsx("p", {
-                className: "text-center text-gray-400 py-12 italic text-xs font-bold",
+                className: "text-center text-slate-400 py-12 italic text-xs font-bold",
                 children: "Không có đơn bán nào hoàn tất trong ngày này."
               }) : filteredSales.map(sl => {
                 const isChecked = !Array.isArray(selectedSaleIds) || selectedSaleIds.includes(sl.id);
@@ -12764,11 +14710,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                     }
                     updateActiveTrip({ selectedSaleIds: nextIds });
                   },
-                  className: `p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
-                    isChecked
-                      ? "bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-400"
-                      : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-60"
-                  }`,
+                  className: "p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all " + (isChecked ? "bg-emerald-50 border-emerald-300" : "bg-slate-50 border-slate-200 opacity-60"),
                   children: [
                     c.jsxs("div", {
                       className: "flex items-center gap-3",
@@ -12777,33 +14719,33 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                           type: "checkbox",
                           checked: isChecked,
                           readOnly: true,
-                          className: "w-4 h-4 text-emerald-600 rounded"
+                          className: "w-4 h-4 text-emerald-600 rounded bg-white border-slate-300"
                         }),
                         c.jsxs("div", {
                           children: [
                             c.jsxs("span", {
-                              className: "font-black text-xs text-gray-900 dark:text-white flex items-center gap-1.5",
+                              className: "font-black text-xs text-slate-900 flex items-center gap-1.5",
                               children: [
                                 c.jsx("span", { children: sl.targetGroup === "FACTORY" ? "🏢" : (sl.targetGroup === "MARKET" ? "🏪" : "🛒") }),
                                 sl.buyerName
                               ]
                             }),
-                            c.jsxs("span", { className: "text-[10px] text-gray-500 font-mono", children: [new Date(sl.date).toLocaleDateString("vi-VN"), " • ", _fmtKg(sl.totalNet || sl.totalGross), " kg"] })
+                            c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [new Date(sl.date).toLocaleDateString("vi-VN"), " • ", _fmtKg(sl.totalNet || sl.totalGross), " kg"] })
                           ]
                         })
                       ]
                     }),
-                    c.jsxs("span", { className: "font-mono font-black text-sm text-emerald-800 dark:text-emerald-300", children: [_fmt(sl.totalMoney), " đ"] })
+                    c.jsxs("span", { className: "font-mono font-black text-sm text-emerald-700", children: [_fmt(sl.totalMoney), " đ"] })
                   ]
                 });
               })
             }),
             c.jsx("div", {
-              className: "pt-2 flex justify-end",
+              className: "pt-2 flex justify-end border-t border-slate-100",
               children: c.jsx("button", {
                 type: "button",
                 onClick: () => setShowSalesModal(false),
-                className: "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase shadow-md",
+                className: "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs uppercase shadow-xs cursor-pointer",
                 children: "Xong"
               })
             })
@@ -12812,14 +14754,14 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 5: THIẾT LẬP CHUYẾN (SETTINGS)
+      // MODAL 4: THIẾT LẬP KỲ THU MUA (GIAO DIỆN SÁNG)
       // =========================================================================
       showTripSettingsModal && c.jsx("div", {
-        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
         children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
+          className: "bg-white text-slate-900 border border-slate-200 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
           children: [
-            c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "⚙️ Thiết Lập Chuyến Hùn Vốn" }),
+            c.jsx("h3", { className: "font-black text-base uppercase text-slate-900", children: "⚙️ Thiết Lập Kỳ Thu Mua" }),
             c.jsxs("div", {
               className: "space-y-3 text-xs font-bold",
               children: [
@@ -12831,18 +14773,18 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                     updateActiveTrip({ filterMode: newMode });
                     setShowTripSettingsModal(false);
                   },
-                  className: "w-full p-3 rounded-2xl bg-gray-100 dark:bg-gray-700 text-left flex justify-between items-center cursor-pointer",
+                  className: "w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-left flex justify-between items-center cursor-pointer hover:bg-slate-100",
                   children: [
-                    c.jsxs("span", { children: ["Chế độ lọc phiếu: ", c.jsx("b", { children: filterMode === "DATE" ? "Theo ngày" : "Tất cả" })] }),
+                    c.jsxs("span", { children: ["Chế độ lọc phiếu: ", c.jsx("b", { className: "text-emerald-700", children: filterMode === "DATE" ? "Theo ngày" : "Tất cả" })] }),
                     c.jsx("span", { className: "text-blue-600", children: "Đổi" })
                   ]
                 }),
                 c.jsxs("button", {
                   type: "button",
                   onClick: handleResetTrip,
-                  className: "w-full p-3 rounded-2xl bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border border-orange-200 text-left flex justify-between items-center cursor-pointer",
+                  className: "w-full p-3 rounded-2xl bg-orange-50 border border-orange-200 text-orange-700 text-left flex justify-between items-center cursor-pointer hover:bg-orange-100",
                   children: [
-                    c.jsx("span", { children: "🔄 Đặt lại chi phí chuyến này về 0" }),
+                    c.jsx("span", { children: "🔄 Đặt lại thu chi chuyến này về 0" }),
                     c.jsx("span", { children: "➔" })
                   ]
                 }),
@@ -12853,18 +14795,18 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       const newActiveTrip = {
                         id: "trip_" + Date.now(),
                         name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
-                        startDate: new Date().toISOString().split("T")[0],
+                        startDate: getLocalYYYYMMDD_v4(),
                         note: "",
-                        investors: [
-                          { id: "inv_1", name: "Tôi (Chủ vựa)", amount: 100000000 },
-                          { id: "inv_2", name: "Anh B (Hùn vốn)", amount: 100000000 }
-                        ],
+                        filterMode: "DATE",
                         shrimpPurchaseAuto: true,
                         shrimpPurchaseManualAmount: 0,
+                        selectedSessionIds: null,
                         expenses: [],
                         revenueAuto: true,
-                        revenueManualAmount: 0
+                        revenueManualAmount: 0,
+                        selectedSaleIds: null
                       };
+                      setFilterMode("DATE");
                       const nextData = { ...financeData, activeTrip: newActiveTrip };
                       me.saveFinanceData(nextData);
                       setFinanceData(nextData);
@@ -12875,7 +14817,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       alert("✅ Đã tạo chuyến mới tinh sạch!");
                     }
                   },
-                  className: "w-full p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 text-left flex justify-between items-center cursor-pointer",
+                  className: "w-full p-3 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 text-left flex justify-between items-center cursor-pointer hover:bg-teal-100",
                   children: [
                     c.jsx("span", { children: "✨ Tạo chuyến mới tinh sạch" }),
                     c.jsx("span", { children: "➔" })
@@ -12884,11 +14826,11 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
               ]
             }),
             c.jsx("div", {
-              className: "flex justify-end pt-2",
+              className: "flex justify-end pt-2 border-t border-slate-100",
               children: c.jsx("button", {
                 type: "button",
                 onClick: () => setShowTripSettingsModal(false),
-                className: "px-5 py-2.5 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold text-xs",
+                className: "px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer",
                 children: "Đóng"
               })
             })
@@ -12897,26 +14839,26 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 6: LỊCH SỬ CÁC CHUYẾN ĐÃ LƯU (ĐẦY ĐỦ XEM, SỬA, KHÔI PHỤC, XÓA)
+      // MODAL 5: LỊCH SỬ CÁC CHUYẾN ĐÃ LƯU (GIAO DIỆN SÁNG)
       // =========================================================================
       showSavedTripsModal && c.jsx("div", {
-        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
+        className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
         children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[85vh] flex flex-col",
+          className: "bg-white text-slate-900 border border-slate-200 rounded-3xl w-full max-w-lg p-5 sm:p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[85vh] flex flex-col",
           children: [
             c.jsxs("div", {
-              className: "flex justify-between items-center border-b pb-3",
+              className: "flex justify-between items-center border-b border-slate-100 pb-3",
               children: [
                 c.jsxs("div", {
                   children: [
-                    c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "Lịch Sử Các Chuyến Hùn Vốn Đã Quyết Toán" }),
-                    c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: ["Tổng số: ", (financeData.savedTrips || []).length, " chuyến đã lưu"] })
+                    c.jsx("h3", { className: "font-black text-base uppercase text-slate-900", children: "Lịch Sử Các Chuyến Đã Quyết Toán" }),
+                    c.jsxs("p", { className: "text-xs text-slate-500 font-bold", children: ["Tổng số: ", (financeData.savedTrips || []).length, " chuyến đã lưu"] })
                   ]
                 }),
                 c.jsx("button", {
                   type: "button",
                   onClick: () => setShowSavedTripsModal(false),
-                  className: "p-1.5 text-gray-400 hover:text-gray-600 rounded-full",
+                  className: "p-1.5 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer",
                   children: c.jsx(_a, { size: 18 })
                 })
               ]
@@ -12924,11 +14866,11 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             c.jsx("div", {
               className: "overflow-y-auto flex-1 space-y-3 pr-1",
               children: (financeData.savedTrips || []).length === 0 ? c.jsx("p", {
-                className: "text-center text-gray-400 py-12 italic text-xs font-bold",
-                children: "Chưa có chuyến hùn vốn nào được lưu trước đây."
+                className: "text-center text-slate-400 py-12 italic text-xs font-bold",
+                children: "Chưa có chuyến nào được lưu trước đây."
               }) : (financeData.savedTrips || []).map((st, sIdx) => c.jsxs("div", {
                 key: st.id || sIdx,
-                className: "p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 space-y-2.5",
+                className: "p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2.5",
                 children: [
                   c.jsxs("div", {
                     className: "flex justify-between items-start",
@@ -12943,83 +14885,79 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                                 type: "text",
                                 value: editingSavedTripName,
                                 onChange: e => setEditingSavedTripName(e.target.value),
-                                className: "p-1 border rounded text-xs font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-700"
+                                className: "p-1 border border-slate-300 rounded text-xs font-bold text-slate-900 bg-white outline-none"
                               }),
                               c.jsx("button", {
                                 type: "button",
                                 onClick: handleSaveEditSavedTripName,
-                                className: "px-2 py-1 bg-green-600 text-white rounded text-xs font-bold",
+                                className: "px-2 py-1 bg-emerald-600 text-white rounded text-xs font-bold cursor-pointer",
                                 children: "Lưu"
                               }),
                               c.jsx("button", {
                                 type: "button",
                                 onClick: () => setEditingSavedTripId(null),
-                                className: "px-2 py-1 bg-gray-300 text-gray-700 rounded text-xs font-bold",
+                                className: "px-2 py-1 bg-slate-200 text-slate-700 rounded text-xs font-bold cursor-pointer",
                                 children: "Hủy"
                               })
                             ]
                           }) : c.jsxs("div", {
                             className: "flex items-center gap-1.5",
                             children: [
-                              c.jsx("h4", { className: "font-black text-sm text-gray-900 dark:text-white", children: st.name }),
+                              c.jsx("h4", { className: "font-black text-sm text-slate-900", children: st.name }),
                               c.jsx("button", {
                                 type: "button",
                                 onClick: () => {
                                   setEditingSavedTripId(st.id);
                                   setEditingSavedTripName(st.name || "");
                                 },
-                                className: "text-gray-400 hover:text-blue-600 text-xs",
+                                className: "text-slate-400 hover:text-blue-600 text-xs cursor-pointer",
                                 title: "Sửa tên chuyến",
                                 children: "✎"
                               })
                             ]
                           }),
-                          c.jsxs("span", { className: "text-[10px] text-gray-400 block", children: ["Ngày: ", st.startDate, " • Quyết toán lúc: ", new Date(st.settledAt || Date.now()).toLocaleTimeString("vi-VN")] })
+                          c.jsxs("span", { className: "text-[10px] text-slate-500 block font-mono", children: ["Ngày: ", st.startDate, " • Quyết toán: ", new Date(st.settledAt || Date.now()).toLocaleTimeString("vi-VN")] })
                         ]
                       }),
                       c.jsx("span", {
-                        className: `px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${st.isProfit ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`,
-                        children: st.isProfit ? "LỜI" : "LỖ"
+                        className: "px-2 py-0.5 rounded-md text-[10px] font-black uppercase " + (st.isProfit ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"),
+                        children: st.isProfit ? "CÓ LÃI" : "BỊ LỖ"
                       })
                     ]
                   }),
                   c.jsxs("div", {
-                    className: "grid grid-cols-3 gap-2 text-[11px] text-gray-500 font-bold",
+                    className: "grid grid-cols-2 gap-2 text-[11px] text-slate-600 font-bold",
                     children: [
-                      c.jsxs("div", { children: ["Vốn: ", c.jsx("b", { className: "text-gray-800 dark:text-gray-200", children: _fmt(st.totalCapital) })] }),
-                      c.jsxs("div", { children: ["Chi: ", c.jsx("b", { className: "text-red-600", children: _fmt(st.totalExpenses) })] }),
-                      c.jsxs("div", { children: ["Thu: ", c.jsx("b", { className: "text-green-600", children: _fmt(st.totalRevenue) })] })
+                      c.jsxs("div", { children: ["Chi phí: ", c.jsx("b", { className: "text-orange-600 font-mono", children: _fmt(st.totalExpenses) })] }),
+                      c.jsxs("div", { children: ["Doanh thu: ", c.jsx("b", { className: "text-emerald-700 font-mono", children: _fmt(st.totalRevenue) })] })
                     ]
                   }),
                   c.jsxs("div", {
-                    className: "flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-700 text-xs font-black",
+                    className: "flex justify-between items-center pt-2 border-t border-slate-200 text-xs font-black",
                     children: [
                       c.jsxs("span", {
-                        children: ["Lợi nhuận: ", c.jsx("b", { className: st.isProfit ? "text-green-600" : "text-red-600", children: [(st.isProfit ? "+" : "") + _fmt(st.netProfit) + " đ"] })]
+                        children: ["Lợi nhuận ròng: ", c.jsx("b", { className: st.isProfit ? "text-emerald-700 font-mono" : "text-rose-600 font-mono", children: [(st.isProfit ? "+" : "") + _fmt(st.netProfit) + " đ"] })]
                       }),
                       c.jsxs("div", {
                         className: "flex items-center gap-1.5",
                         children: [
-                          // Xem chi tiết
                           c.jsx("button", {
                             type: "button",
                             onClick: () => setViewingSavedTrip(st),
-                            className: "px-2.5 py-1 bg-blue-600 text-white rounded-lg text-xs font-bold cursor-pointer",
+                            className: "px-2.5 py-1 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-xs font-bold cursor-pointer",
                             children: "Xem Chi Tiết"
                           }),
-                          // Khôi phục
                           c.jsx("button", {
                             type: "button",
                             onClick: () => handleRestoreSavedTrip(st),
-                            className: "px-2 py-1 bg-amber-500 text-white rounded-lg text-xs font-bold cursor-pointer",
+                            className: "px-2 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold cursor-pointer",
                             title: "Khôi phục làm chuyến hiện tại",
                             children: "Khôi Phục"
                           }),
-                          // Xóa
                           c.jsx("button", {
                             type: "button",
                             onClick: () => handleDeleteSavedTrip(st.id),
-                            className: "p-1 text-red-500 hover:bg-red-100 rounded-lg cursor-pointer",
+                            className: "p-1 text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer",
                             title: "Xóa chuyến",
                             children: c.jsx(xm, { size: 14 })
                           })
@@ -13035,26 +14973,26 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 7: XEM CHI TIẾT CHUYẾN ĐÃ LƯU
+      // MODAL 6: XEM CHI TIẾT CHUYẾN ĐÃ LƯU (GIAO DIỆN SÁNG)
       // =========================================================================
       viewingSavedTrip && c.jsx("div", {
-        className: "fixed inset-0 z-[220] bg-black/70 flex items-center justify-center p-4 backdrop-blur-sm",
+        className: "fixed inset-0 z-[220] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
         children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-900 rounded-3xl w-full max-w-lg p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[90vh] flex flex-col",
+          className: "bg-white text-slate-900 border border-slate-200 rounded-3xl w-full max-w-lg p-5 sm:p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[90vh] flex flex-col",
           children: [
             c.jsxs("div", {
-              className: "flex justify-between items-center border-b pb-3",
+              className: "flex justify-between items-center border-b border-slate-100 pb-3",
               children: [
                 c.jsxs("div", {
                   children: [
-                    c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: viewingSavedTrip.name }),
-                    c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: ["Ngày: ", viewingSavedTrip.startDate] })
+                    c.jsx("h3", { className: "font-black text-base uppercase text-slate-900", children: viewingSavedTrip.name }),
+                    c.jsxs("p", { className: "text-xs text-slate-500 font-bold", children: ["Ngày: ", viewingSavedTrip.startDate] })
                   ]
                 }),
                 c.jsx("button", {
                   type: "button",
                   onClick: () => setViewingSavedTrip(null),
-                  className: "p-1.5 text-gray-400 hover:text-gray-600 rounded-full",
+                  className: "p-1.5 text-slate-400 hover:text-slate-600 rounded-full cursor-pointer",
                   children: c.jsx(_a, { size: 18 })
                 })
               ]
@@ -13064,67 +15002,70 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
               children: [
                 // Summary block
                 c.jsxs("div", {
-                  className: "p-3 bg-gray-50 dark:bg-gray-800 rounded-2xl grid grid-cols-2 gap-2 font-bold",
+                  className: "p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-2 gap-3 font-bold",
                   children: [
-                    c.jsxs("div", { children: ["Vốn góp: ", c.jsx("b", { className: "text-blue-600 font-mono", children: _fmt(viewingSavedTrip.totalCapital) + " đ" })] }),
-                    c.jsxs("div", { children: ["Tổng chi phí: ", c.jsx("b", { className: "text-red-600 font-mono", children: _fmt(viewingSavedTrip.totalExpenses) + " đ" })] }),
-                    c.jsxs("div", { children: ["Tổng doanh thu: ", c.jsx("b", { className: "text-green-600 font-mono", children: _fmt(viewingSavedTrip.totalRevenue) + " đ" })] }),
-                    c.jsxs("div", { children: ["Lợi nhuận ròng: ", c.jsx("b", { className: (viewingSavedTrip.isProfit ? "text-green-600" : "text-red-600") + " font-mono", children: [(viewingSavedTrip.isProfit ? "+" : "") + _fmt(viewingSavedTrip.netProfit) + " đ"] })] })
+                    c.jsxs("div", { children: ["Tổng chi phí: ", c.jsx("b", { className: "text-orange-600 font-mono", children: _fmt(viewingSavedTrip.totalExpenses) + " đ" })] }),
+                    c.jsxs("div", { children: ["Tổng doanh thu: ", c.jsx("b", { className: "text-emerald-700 font-mono", children: _fmt(viewingSavedTrip.totalRevenue) + " đ" })] }),
+                    c.jsxs("div", { className: "col-span-2 pt-2 border-t border-slate-200", children: ["Lợi nhuận ròng: ", c.jsx("b", { className: (viewingSavedTrip.isProfit ? "text-emerald-700" : "text-rose-600") + " font-mono text-sm", children: [(viewingSavedTrip.isProfit ? "+" : "") + _fmt(viewingSavedTrip.netProfit) + " đ"] })] })
                   ]
                 }),
-                // Payout table
+                // Breakdown Details
                 c.jsxs("div", {
-                  className: "space-y-1.5",
+                  className: "p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200 space-y-2",
                   children: [
-                    c.jsx("span", { className: "font-black uppercase text-gray-500 block text-[10px]", children: "Bảng Chia Tiền Thực Nhận:" }),
-                    c.jsx("div", {
-                      className: "rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden",
-                      children: c.jsxs("table", {
-                        className: "w-full text-left text-xs",
-                        children: [
-                          c.jsx("thead", {
-                            className: "bg-gray-100 dark:bg-gray-800 text-[10px] font-black uppercase text-gray-500",
-                            children: c.jsxs("tr", {
-                              children: [
-                                c.jsx("th", { className: "p-2", children: "Người Góp" }),
-                                c.jsx("th", { className: "p-2 text-right", children: "Vốn" }),
-                                c.jsx("th", { className: "p-2 text-right", children: "Lời/Lỗ" }),
-                                c.jsx("th", { className: "p-2 text-right font-black text-blue-600", children: "Thực Nhận" })
-                              ]
-                            })
-                          }),
-                          c.jsx("tbody", {
-                            className: "divide-y font-bold",
-                            children: (viewingSavedTrip.investorPayouts || []).map((p, idx) => c.jsxs("tr", {
-                              key: idx,
-                              children: [
-                                c.jsxs("td", { className: "p-2", children: [p.name, " (", (p.sharePercent || 0).toFixed(1), "%)"] }),
-                                c.jsx("td", { className: "p-2 text-right font-mono", children: _fmt(p.amount) }),
-                                c.jsxs("td", { className: "p-2 text-right font-mono " + (p.profitShare >= 0 ? "text-green-600" : "text-red-600"), children: [(p.profitShare >= 0 ? "+" : "") + _fmt(p.profitShare)] }),
-                                c.jsxs("td", { className: "p-2 text-right font-mono font-black text-blue-700 bg-blue-50/50", children: [_fmt(p.totalPayout), " đ"] })
-                              ]
-                            }, idx))
-                          })
-                        ]
-                      })
+                    c.jsx("span", { className: "font-black uppercase text-emerald-800 block text-xs", children: "🏆 Bảng Quyết Toán Chuyến:" }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center text-xs font-bold",
+                      children: [
+                        c.jsx("span", { className: "text-slate-700", children: "Tiền mua tôm ao:" }),
+                        c.jsxs("span", { className: "font-mono text-orange-600", children: ["- ", _fmt(viewingSavedTrip.shrimpPurchaseMoney), " đ"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center text-xs font-bold",
+                      children: [
+                        c.jsx("span", { className: "text-slate-700", children: "Chi phí vận hành:" }),
+                        c.jsxs("span", { className: "font-mono text-orange-600", children: ["- ", _fmt(viewingSavedTrip.totalOperationExpenses), " đ"] })
+                      ]
+                    }),
+                    viewingSavedTrip.totalExtraIncome > 0 && c.jsxs("div", {
+                      className: "flex justify-between items-center text-xs font-bold",
+                      children: [
+                        c.jsx("span", { className: "text-slate-700", children: "Khoản thu ngoài:" }),
+                        c.jsxs("span", { className: "font-mono text-emerald-700", children: ["+ ", _fmt(viewingSavedTrip.totalExtraIncome), " đ"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center text-xs font-bold",
+                      children: [
+                        c.jsx("span", { className: "text-slate-700", children: "Doanh thu bán tôm:" }),
+                        c.jsxs("span", { className: "font-mono text-emerald-700", children: ["+ ", _fmt(viewingSavedTrip.totalRevenue - (viewingSavedTrip.totalExtraIncome || 0)), " đ"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center text-xs font-black pt-2 border-t border-emerald-200",
+                      children: [
+                        c.jsx("span", { className: "text-slate-900 uppercase", children: "Lợi nhuận ròng:" }),
+                        c.jsxs("span", { className: "font-mono text-sm " + (viewingSavedTrip.isProfit ? "text-emerald-700" : "text-rose-600"), children: [(viewingSavedTrip.isProfit ? "+" : "") + _fmt(viewingSavedTrip.netProfit), " VNĐ"] })
+                      ]
                     })
                   ]
                 })
               ]
             }),
             c.jsxs("div", {
-              className: "flex justify-between items-center pt-2 border-t",
+              className: "flex justify-between items-center pt-2 border-t border-slate-100",
               children: [
                 c.jsx("button", {
                   type: "button",
                   onClick: () => handleRestoreSavedTrip(viewingSavedTrip),
-                  className: "px-4 py-2 bg-amber-500 text-white rounded-xl font-bold text-xs cursor-pointer",
+                  className: "px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-bold text-xs cursor-pointer",
                   children: "Khôi Phục Làm Chuyến Hiện Tại"
                 }),
                 c.jsx("button", {
                   type: "button",
                   onClick: () => setViewingSavedTrip(null),
-                  className: "px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-xl font-bold text-xs",
+                  className: "px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer",
                   children: "Đóng"
                 })
               ]
@@ -13135,9 +15076,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     ]
   });
 };
-
-
-const BmMainApp=()=>{const[S,b]=w.useState(()=>{const u=me.getUser();if(u)u.role="OWNER";return u;}),[p,f]=w.useState(!0),[O,D]=w.useState(()=>me.getUser()?re.DASHBOARD:re.AUTH),[U,Y]=w.useState(null);w.useEffect(()=>{const _=D1(Pu,async z=>{var L,te;if(z){const Q=await Mn.loadFromCloud(z.uid),se=(Q==null?void 0:Q.user)||{uid:z.uid,phoneNumber:z.phoneNumber||"",displayName:z.displayName||"Người dùng",photoURL:z.photoURL||"",role:"OWNER",subscriptionStatus:((te=Q==null?void 0:Q.user)==null?void 0:te.subscriptionStatus)||"FREE",createdAt:new Date().toISOString()};se.role="OWNER";me.setUser(se),b(se),D(re.DASHBOARD)}else me.setUser(null),b(null),D(re.AUTH);f(!1)});return()=>_()},[]);const A=_=>{if(S){const z={...S,role:"OWNER"};me.setUser(z),b(z),D(re.DASHBOARD)}};if(p)return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center text-white",children:[c.jsx("div",{className:"w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"}),c.jsx("p",{className:"font-black uppercase italic text-sm",children:"Đang bảo mật kết nối..."})]});if(!S||O===re.AUTH)return c.jsx(Hm,{onSelect:A});const v=()=>{const _={setRoute:D,role:S.role};switch(O){case re.DASHBOARD:return c.jsx(Kd,{..._});case re.OVERVIEW:return c.jsx(Xm_OverviewTab,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.WEIGHING:return c.jsx(Om,{..._});case re.HISTORY:return c.jsx(_m,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.SESSION_DETAIL:return c.jsx(Dm,{..._,sessionId:U||""});case re.SALES:return c.jsx(Xm_SalesScreen,{..._,onViewDetail:z=>{Y(z);D(re.SALES_DETAIL);}});case re.FINANCE:return c.jsx(Xm_FinanceScreen,{..._});case re.CUSTOMERS:return c.jsx(Xm_CustomersScreen,{..._,onSelectForSale:z=>{D(re.SALES);}});case re.SALES_DETAIL:return c.jsx(Xm_SaleDetailScreen,{..._,sale:(typeof U==="object"?U:(me.getSales().find(s=>s.id===(typeof U==="string"?U:U?.id))||null)),onBack:()=>D(re.SALES)});case re.FARMERS:return c.jsx(Cm,{..._});case re.VEHICLES:return c.jsx(km,{..._});case re.INFO_CONFIG:return c.jsx(Xm_TraderConfig,{..._});case re.SETTINGS:return c.jsx(Um,{..._});case re.BLUETOOTH:return c.jsx(Rm,{..._});default:return c.jsx(Kd,{..._})}};return c.jsx(Tm,{activeRoute:O,setRoute:D,title:"Tôm Càng Xanh",role:S.role,onLogout:async()=>{await Mn.logout()},children:v()})},
+const BmMainApp=()=>{const[S,b]=w.useState(()=>{const u=me.getUser();if(u)u.role="OWNER";return u;}),[p,f]=w.useState(!0),[O,D]=w.useState(()=>me.getUser()?re.DASHBOARD:re.AUTH),[U,Y]=w.useState(null);w.useEffect(()=>{const applyTheme=()=>{try{const st=me.getSettings();st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}catch(e){}};applyTheme();window.addEventListener("app-data-updated",applyTheme);window.addEventListener("cloud_data_synced",applyTheme);const _=D1(Pu,async z=>{var L,te;if(z){const Q=await Mn.loadFromCloud(z.uid);if(Q){me.restoreFromCloud(Q);applyTheme();if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("login_cloud_restore");}}const se=(Q==null?void 0:Q.user)||{uid:z.uid,phoneNumber:z.phoneNumber||"",displayName:z.displayName||"Người dùng",photoURL:z.photoURL||"",role:"OWNER",subscriptionStatus:((te=Q==null?void 0:Q.user)==null?void 0:te.subscriptionStatus)||"FREE",createdAt:new Date().toISOString()};se.role="OWNER";me.setUser(se);me.syncAllToCloud(z.uid);b(se);D(re.DASHBOARD)}else me.setUser(null),b(null),D(re.AUTH);f(!1)});return()=>{_();window.removeEventListener("app-data-updated",applyTheme);window.removeEventListener("cloud_data_synced",applyTheme);}},[]);const A=_=>{if(S){const z={...S,role:"OWNER"};me.setUser(z),b(z),D(re.DASHBOARD)}};if(p)return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center text-white",children:[c.jsx("div",{className:"w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"}),c.jsx("p",{className:"font-black uppercase italic text-sm",children:"Đang bảo mật kết nối..."})]});if(!S||O===re.AUTH)return c.jsx(Hm,{onSelect:A});const v=()=>{const _={setRoute:D,role:S.role};switch(O){case re.DASHBOARD:return c.jsx(Kd,{..._});case re.OVERVIEW:return c.jsx(Xm_OverviewTab,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.WEIGHING:return c.jsx(Om,{..._});case re.HISTORY:return c.jsx(_m,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.SESSION_DETAIL:return c.jsx(Dm,{..._,sessionId:U||""});case re.SALES:return c.jsx(Xm_SalesScreen,{..._,onViewDetail:z=>{Y(z);D(re.SALES_DETAIL);}});case re.FINANCE:return c.jsx(Xm_FinanceScreen,{..._});case re.CUSTOMERS:return c.jsx(Xm_CustomersScreen,{..._,onSelectForSale:z=>{D(re.SALES);}});case re.SALES_DETAIL:return c.jsx(Xm_SaleDetailScreen,{..._,sale:(typeof U==="object"?U:(me.getSales().find(s=>s.id===(typeof U==="string"?U:U?.id))||null)),onBack:()=>D(re.SALES)});case re.FARMERS:return c.jsx(Cm,{..._});case re.VEHICLES:return c.jsx(km,{..._});case re.INFO_CONFIG:return c.jsx(Xm_TraderConfig,{..._});case re.SETTINGS:return c.jsx(Um,{..._});case re.BLUETOOTH:return c.jsx(Rm,{..._});default:return c.jsx(Kd,{..._})}};return c.jsx(Tm,{activeRoute:O,setRoute:D,title:"Tôm Càng Xanh",role:S.role,onLogout:async()=>{await Mn.logout()},children:v()})},
 Bm=()=>{
   const _urlParams=new URLSearchParams(window.location.search);
   let _portalContractId=_urlParams.get("contract")||_urlParams.get("hd")||_urlParams.get("d")||_urlParams.get("c")||_urlParams.get("data")||_urlParams.get("id");
