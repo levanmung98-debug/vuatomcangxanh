@@ -1287,6 +1287,13 @@ replaceExact(
       buyerName: factoryBuyerName.trim(),
       riceType: factoryShrimpType,`,
   `  // 3. FACTORY (CÔNG TY / NHÀ MÁY) STATES
+  const [factoryBuyerName, setFactoryBuyerName] = w.useState(() => {
+    try {
+      const f = (me.getBuyers && me.getBuyers() || []).find(b => b.targetGroup === "FACTORY");
+      if (f && f.name) return f.name;
+    } catch(e) {}
+    return "Công ty CP Thủy sản Camimex";
+  });
   const factoryBuyers = w.useMemo(() => {
     const dirNames = factoryDirectoryBuyers.map(b => b.name).filter(Boolean);
     const defaults = [
@@ -1298,14 +1305,7 @@ replaceExact(
     const list = dirNames.length > 0 ? [...dirNames] : [...defaults];
     if (factoryBuyerName && !list.includes(factoryBuyerName)) list.unshift(factoryBuyerName);
     return list;
-  }, [factoryDirectoryBuyers]);
-  const [factoryBuyerName, setFactoryBuyerName] = w.useState(() => {
-    try {
-      const f = (me.getBuyers && me.getBuyers() || []).find(b => b.targetGroup === "FACTORY");
-      if (f && f.name) return f.name;
-    } catch(e) {}
-    return "Công ty CP Thủy sản Camimex";
-  });
+  }, [factoryDirectoryBuyers, factoryBuyerName]);
   const [factoryShrimpType, setFactoryShrimpType] = w.useState("Tôm càng sen size lớn (10-15 c/kg)");
   const [factoryDeliveredKg, setFactoryDeliveredKg] = w.useState("");
 
