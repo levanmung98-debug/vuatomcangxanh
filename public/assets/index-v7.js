@@ -409,7 +409,7 @@ const deserializeFromFirestore = (val) => {
   return result;
 };
 
-class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0});if(p.billingHistory&&Array.isArray(p.billingHistory)){for(const O of p.billingHistory){O&&O.farmerPhone&&await this.pushToFarmerInbox(O);}}}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p));if(b===Ot.SETTINGS&&typeof document!=="undefined"){p&&p.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){console.warn("Storage save error",e)}emitAppDataUpdated_v4(b);const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(uidOverride){const f=this.getUser();const uid=uidOverride||(f&&f.uid);if(!uid||typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==uid)return;try{const p=this.getSessions(),dir=this.getFarmers(),veh=this.getVehicles();const sl=(this.getSales&&this.getSales())||JSON.parse(localStorage.getItem(Ot.SALES)||"[]");const fin=(this.getFinanceData&&this.getFinanceData())||JSON.parse(localStorage.getItem(Ot.FINANCE)||"null");const buy=(this.getBuyers&&this.getBuyers())||JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");const ctc=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");const prof=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");const D={user:f,lastUpdated:new Date().toISOString(),farmerDirectory:dir,transportation:{list:veh},billingHistory:p,config:this.getSettings(),sales:sl,finance:fin,buyers:buy,contracts:ctc,traderProfile:prof};Mn.syncToCloud(uid,D);}catch(err){console.warn("syncAllToCloud error:",err);}}static restoreFromCloud(Q){if(!Q||typeof Q!=="object")return;try{if(Array.isArray(Q.billingHistory)&&Q.billingHistory.length>0){const local=this.getSessions();const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.billingHistory.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SESSIONS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.farmerDirectory)&&Q.farmerDirectory.length>0){const local=this.getFarmers();const m=new Map();local.forEach(f=>f&&f.id&&m.set(f.id,f));Q.farmerDirectory.forEach(f=>f&&f.id&&m.set(f.id,f));localStorage.setItem(Ot.FARMERS,JSON.stringify(Array.from(m.values())));}if(Q.transportation&&Array.isArray(Q.transportation.list)&&Q.transportation.list.length>0){const local=this.getVehicles();const m=new Map();local.forEach(v=>v&&v.id&&m.set(v.id,v));Q.transportation.list.forEach(v=>v&&v.id&&m.set(v.id,v));localStorage.setItem(Ot.VEHICLES,JSON.stringify(Array.from(m.values())));}if(Q.config&&typeof Q.config==="object"){const cur=this.getSettings();localStorage.setItem(Ot.SETTINGS,JSON.stringify({...cur,...Q.config}));}if(Array.isArray(Q.sales)&&Q.sales.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.SALES)||"[]");}catch(e){}const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.sales.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SALES,JSON.stringify(Array.from(m.values())));}if(Q.finance&&typeof Q.finance==="object"){const localRaw=localStorage.getItem(Ot.FINANCE);if(!localRaw){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}else{try{const localFin=JSON.parse(localRaw);const sL=(localFin&&localFin.savedTrips)||[];const sC=(Q.finance&&Q.finance.savedTrips)||[];const tm=new Map();sL.forEach(t=>t&&t.id&&tm.set(t.id,t));sC.forEach(t=>t&&t.id&&tm.set(t.id,t));const mergedFin={...Q.finance,...localFin,savedTrips:Array.from(tm.values()),activeTrip:(localFin&&localFin.activeTrip)?localFin.activeTrip:Q.finance.activeTrip};localStorage.setItem(Ot.FINANCE,JSON.stringify(mergedFin));}catch(e){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}}}if(Array.isArray(Q.buyers)&&Q.buyers.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");}catch(e){}const m=new Map();local.forEach(b=>b&&b.id&&m.set(b.id,b));Q.buyers.forEach(b=>b&&b.id&&m.set(b.id,b));localStorage.setItem(Ot.BUYERS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.contracts)&&Q.contracts.length>0){let local=[];try{local=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");}catch(e){}const m=new Map();local.forEach(c=>c&&c.id&&m.set(c.id,c));Q.contracts.forEach(c=>c&&c.id&&m.set(c.id,c));localStorage.setItem("tom_electronic_contracts",JSON.stringify(Array.from(m.values())));}if(Q.traderProfile&&typeof Q.traderProfile==="object"){let cur={};try{cur=JSON.parse(localStorage.getItem("tom_trader_profile")||"{}");}catch(e){}const merged={...cur,...Q.traderProfile};localStorage.setItem("tom_trader_profile",JSON.stringify(merged));if(typeof window!=="undefined")window._cachedTraderProfile=merged;}}catch(err){console.warn("restoreFromCloud warning:",err);}}static async performCloudSync(){const u=this.getUser();if(!u||!u.uid)return{ok:false,message:"Chưa đăng nhập tài khoản Chủ Vựa"};try{const doc=await Mn.loadFromCloud(u.uid);if(doc){this.restoreFromCloud(doc);}this.syncAllToCloud(u.uid);try{const st=this.getSettings();if(typeof document!=="undefined"){st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){}if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("cloud_sync");}return{ok:true,message:"Đồng bộ đám mây thành công!"};}catch(err){return{ok:false,message:err&&err.message?err.message:"Lỗi đồng bộ"};}}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return alert(p.message),!1;const f=this.getSessions();return f.unshift(b),this.save(Ot.SESSIONS,f),!0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){let tpTare=1;try{const tp=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");if(tp&&tp.tarePer100Kg!==undefined&&tp.tarePer100Kg!=="")tpTare=Number(tp.tarePer100Kg);}catch(e){}const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,tarePer100Kg:tpTare,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
+class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0});if(p.billingHistory&&Array.isArray(p.billingHistory)){for(const O of p.billingHistory){O&&O.farmerPhone&&await this.pushToFarmerInbox(O);}}}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p));if(b===Ot.SETTINGS&&typeof document!=="undefined"){p&&p.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){console.warn("Storage save error",e)}emitAppDataUpdated_v4(b);const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(uidOverride){const f=this.getUser();const uid=uidOverride||(f&&f.uid);if(!uid||typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==uid)return;try{const p=this.getSessions(),dir=this.getFarmers(),veh=this.getVehicles();const sl=(this.getSales&&this.getSales())||JSON.parse(localStorage.getItem(Ot.SALES)||"[]");const fin=(this.getFinanceData&&this.getFinanceData())||JSON.parse(localStorage.getItem(Ot.FINANCE)||"null");const buy=(this.getBuyers&&this.getBuyers())||JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");const ctc=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");const prof=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");const D={user:f,lastUpdated:new Date().toISOString(),farmerDirectory:dir,transportation:{list:veh},billingHistory:p,config:this.getSettings(),sales:sl,finance:fin,buyers:buy,contracts:ctc,traderProfile:prof};Mn.syncToCloud(uid,D);}catch(err){console.warn("syncAllToCloud error:",err);}}static restoreFromCloud(Q){if(!Q||typeof Q!=="object")return;try{if(Array.isArray(Q.billingHistory)&&Q.billingHistory.length>0){const local=this.getSessions();const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.billingHistory.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SESSIONS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.farmerDirectory)&&Q.farmerDirectory.length>0){const local=this.getFarmers();const m=new Map();local.forEach(f=>f&&f.id&&m.set(f.id,f));Q.farmerDirectory.forEach(f=>f&&f.id&&m.set(f.id,f));localStorage.setItem(Ot.FARMERS,JSON.stringify(Array.from(m.values())));}if(Q.transportation&&Array.isArray(Q.transportation.list)&&Q.transportation.list.length>0){const local=this.getVehicles();const m=new Map();local.forEach(v=>v&&v.id&&m.set(v.id,v));Q.transportation.list.forEach(v=>v&&v.id&&m.set(v.id,v));localStorage.setItem(Ot.VEHICLES,JSON.stringify(Array.from(m.values())));}if(Q.config&&typeof Q.config==="object"){const cur=this.getSettings();localStorage.setItem(Ot.SETTINGS,JSON.stringify({...cur,...Q.config}));}if(Array.isArray(Q.sales)&&Q.sales.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.SALES)||"[]");}catch(e){}const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.sales.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SALES,JSON.stringify(Array.from(m.values())));}if(Q.finance&&typeof Q.finance==="object"){const localRaw=localStorage.getItem(Ot.FINANCE);if(!localRaw){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}else{try{const localFin=JSON.parse(localRaw);const sL=(localFin&&localFin.savedTrips)||[];const sC=(Q.finance&&Q.finance.savedTrips)||[];const tm=new Map();sL.forEach(t=>t&&t.id&&tm.set(t.id,t));sC.forEach(t=>t&&t.id&&tm.set(t.id,t));const mergedFin={...Q.finance,...localFin,savedTrips:Array.from(tm.values()),activeTrip:(localFin&&localFin.activeTrip)?localFin.activeTrip:Q.finance.activeTrip};localStorage.setItem(Ot.FINANCE,JSON.stringify(mergedFin));}catch(e){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}}}if(Array.isArray(Q.buyers)&&Q.buyers.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");}catch(e){}const m=new Map();local.forEach(b=>b&&b.id&&m.set(b.id,b));Q.buyers.forEach(b=>b&&b.id&&m.set(b.id,b));localStorage.setItem(Ot.BUYERS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.contracts)&&Q.contracts.length>0){let local=[];try{local=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");}catch(e){}const m=new Map();local.forEach(c=>c&&c.id&&m.set(c.id,c));Q.contracts.forEach(c=>c&&c.id&&m.set(c.id,c));localStorage.setItem("tom_electronic_contracts",JSON.stringify(Array.from(m.values())));}if(Q.traderProfile&&typeof Q.traderProfile==="object"){let cur={};try{cur=JSON.parse(localStorage.getItem("tom_trader_profile")||"{}");}catch(e){}const merged={...cur,...Q.traderProfile};localStorage.setItem("tom_trader_profile",JSON.stringify(merged));if(typeof window!=="undefined")window._cachedTraderProfile=merged;}}catch(err){console.warn("restoreFromCloud warning:",err);}}static async performCloudSync(){const u=this.getUser();if(!u||!u.uid)return{ok:false,message:"Chưa đăng nhập tài khoản Chủ Vựa"};try{const doc=await Mn.loadFromCloud(u.uid);if(doc){this.restoreFromCloud(doc);}this.syncAllToCloud(u.uid);try{const st=this.getSettings();if(typeof document!=="undefined"){st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){}if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("cloud_sync");}return{ok:true,message:"Đồng bộ đám mây thành công!"};}catch(err){return{ok:false,message:err&&err.message?err.message:"Lỗi đồng bộ"};}}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static syncActiveTripAfterSession(sessionId,isDelete){try{const raw=localStorage.getItem(Ot.FINANCE);if(!raw)return;const fin=JSON.parse(raw);if(!fin||!fin.activeTrip)return;const at=fin.activeTrip;if(isDelete){if(Array.isArray(at.selectedSessionIds)){at.selectedSessionIds=at.selectedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}}else{at.shrimpPurchaseAuto=true;if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.selectedSessionIds)&&sessionId&&!at.selectedSessionIds.includes(sessionId)){at.selectedSessionIds=[...at.selectedSessionIds,sessionId];}}localStorage.setItem(Ot.FINANCE,JSON.stringify(fin));}catch(e){}}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.syncActiveTripAfterSession(b,true);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return alert(p.message),!1;const f=this.getSessions();f.unshift(b);this.syncActiveTripAfterSession(b&&b.id,false);this.save(Ot.SESSIONS,f);return !0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){let tpTare=1;try{const tp=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");if(tp&&tp.tarePer100Kg!==undefined&&tp.tarePer100Kg!=="")tpTare=Number(tp.tarePer100Kg);}catch(e){}const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,tarePer100Kg:tpTare,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
   const [dashDate, setDashDate] = w.useState(() => getLocalYYYYMMDD_v4());
   const [dashSessions, setDashSessions] = w.useState(() => {
     try { return (me.getSessions && me.getSessions()) || []; } catch(e) { return []; }
@@ -1947,7 +1947,8 @@ const Om = ({ setRoute: S, role: b }) => {
       isCompleted: Q,
       batches: allBatches,
       tareSpec: `100kg tôm trừ bì ${tarePer100Kg} kg`, tareWeight: Z, tarePer100Kg: tarePer100Kg,
-      contractId: A.contractId
+      contractId: A.contractId || "",
+      pondId: A.pondId || ""
     };
 
     me.addSession(newSession);
@@ -1980,12 +1981,11 @@ const Om = ({ setRoute: S, role: b }) => {
       }
     } catch(e) {}
 
-    // Auto sync with finance data
+    // Auto sync with finance data (me.addSession already synced sessionId, ensure auto flag is active)
     try {
       const fin = me.getFinanceData();
       if (fin && fin.activeTrip) {
         fin.activeTrip.shrimpPurchaseAuto = true;
-        fin.activeTrip.selectedSessionIds = null;
         me.saveFinanceData(fin);
       }
     } catch(e) {}
@@ -9637,11 +9637,39 @@ me.saveSales = function(list) {
   }
 };
 
+me.syncActiveTripAfterSale = function(saleId, isDelete) {
+  try {
+    const raw = localStorage.getItem(Ot.FINANCE);
+    if (!raw) return;
+    const fin = JSON.parse(raw);
+    if (!fin || !fin.activeTrip) return;
+    const at = fin.activeTrip;
+    if (isDelete) {
+      if (Array.isArray(at.selectedSaleIds)) {
+        at.selectedSaleIds = at.selectedSaleIds.filter(id => id !== saleId);
+      }
+      if (Array.isArray(at.archivedSaleIds)) {
+        at.archivedSaleIds = at.archivedSaleIds.filter(id => id !== saleId);
+      }
+    } else {
+      at.revenueAuto = true;
+      if (Array.isArray(at.archivedSaleIds)) {
+        at.archivedSaleIds = at.archivedSaleIds.filter(id => id !== saleId);
+      }
+      if (Array.isArray(at.selectedSaleIds) && saleId && !at.selectedSaleIds.includes(saleId)) {
+        at.selectedSaleIds = [...at.selectedSaleIds, saleId];
+      }
+    }
+    localStorage.setItem(Ot.FINANCE, JSON.stringify(fin));
+  } catch(e) {}
+};
+
 me.updateSale = function(id, updates) {
   const list = me.getSales();
   const index = list.findIndex(s => s.id === id);
   if (index !== -1) {
     list[index] = { ...list[index], ...updates };
+    me.syncActiveTripAfterSale(id, false);
     me.saveSales(list);
     return list[index];
   }
@@ -9650,15 +9678,57 @@ me.updateSale = function(id, updates) {
 me.addSale = function(sale) {
   const list = me.getSales();
   list.unshift(sale);
+  me.syncActiveTripAfterSale(sale && sale.id, false);
   me.saveSales(list);
   return sale;
 };
 
 me.deleteSale = function(id) {
   const list = me.getSales().filter(s => s.id !== id);
+  me.syncActiveTripAfterSale(id, true);
   me.saveSales(list);
 };
 
+// Shared breakdown helpers for sales & unweighed pond deposits
+function getFinanceSaleBreakdown_v4(s) {
+  if (!s) return { realizedMoney: 0, debtMoney: 0, isCompleted: false, isPendingSettlement: false };
+  const totalMoney = Number(s.totalMoney || 0);
+  const paidAmount = Number(s.paidAmount || 0);
+  const remainingDebt = Number(s.remainingDebt || 0);
+  const isCompleted = s.status === "COMPLETED" || s.status === "SETTLED" || !!s.isPaidFull;
+  const isPendingSettlement = !isCompleted && (s.status === "SELLING" || s.status === "PENDING_SETTLEMENT" || s.status === "AWAITING_RESULT");
+  if (isCompleted) {
+    return { realizedMoney: totalMoney, debtMoney: 0, isCompleted: true, isPendingSettlement: false };
+  }
+  if (isPendingSettlement) {
+    const realized = paidAmount > 0 ? paidAmount : 0;
+    return { realizedMoney: realized, debtMoney: 0, isCompleted: false, isPendingSettlement: true };
+  }
+  let realized = 0;
+  if (paidAmount > 0) {
+    realized = totalMoney > 0 ? Math.min(totalMoney, paidAmount) : paidAmount;
+  } else if (totalMoney > 0 && remainingDebt > 0) {
+    realized = Math.max(0, totalMoney - remainingDebt);
+  }
+  const debt = Math.max(0, totalMoney - realized);
+  return { realizedMoney: realized, debtMoney: debt, isCompleted: false, isPendingSettlement: false };
+}
+
+function getUnweighedDepositFarmers_v4(farmersList, sessionsList) {
+  const farmers = Array.isArray(farmersList) ? farmersList : [];
+  const sessions = Array.isArray(sessionsList) ? sessionsList : [];
+  return farmers.filter(fm => {
+    if (!fm || fm.weighed || fm.status === "WEIGHED") return false;
+    const dep = Number(fm.defaultDeposit || 0);
+    if (dep <= 0) return false;
+    const alreadyWeighedSession = sessions.some(s =>
+      (fm.sessionId && s.id === fm.sessionId) ||
+      (fm.contractId && s.contractId === fm.contractId) ||
+      (fm.id && s.pondId === fm.id)
+    );
+    return !alreadyWeighedSession;
+  });
+}
 
 me.getFinanceData = function() {
   try {
@@ -9666,7 +9736,6 @@ me.getFinanceData = function() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === "object" && parsed.activeTrip) {
-        // Ensure migration to solo capital if older trip had investors
         const at = parsed.activeTrip;
         if (at.capitalAmount === undefined) {
           if (Array.isArray(at.investors) && at.investors.length > 0) {
@@ -9678,6 +9747,18 @@ me.getFinanceData = function() {
         if (!at.ownerName) {
           const tp = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {};
           at.ownerName = tp.representative || tp.fullName || "Tôi (Chủ vựa)";
+        }
+        if (!at.filterMode) {
+          at.filterMode = "ALL";
+        }
+        if (at.includePondDeposits === undefined) {
+          at.includePondDeposits = true;
+        }
+        if (!Array.isArray(at.archivedSessionIds)) {
+          at.archivedSessionIds = [];
+        }
+        if (!Array.isArray(at.archivedSaleIds)) {
+          at.archivedSaleIds = [];
         }
         return parsed;
       }
@@ -9693,15 +9774,15 @@ me.getFinanceData = function() {
       name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
       startDate: getLocalYYYYMMDD_v4(),
       ownerName: ownerName,
-      capitalAmount: 150000000, // 1 người tự bỏ vốn
+      capitalAmount: 150000000,
+      filterMode: "ALL",
+      includePondDeposits: true,
+      archivedSessionIds: [],
+      archivedSaleIds: [],
       shrimpPurchaseAuto: true,
       shrimpPurchaseManualAmount: 0,
       selectedSessionIds: null,
-      expenses: [
-        { id: "exp_1", category: "Tiền thuê xe / vận chuyển", amount: 1500000, note: "Xe giao tôm", date: new Date().toISOString() },
-        { id: "exp_2", category: "Tiền nước đá, oxy", amount: 600000, note: "20 cây đá + nạp oxy", date: new Date().toISOString() },
-        { id: "exp_3", category: "Tiền nhân công kéo / lựa tôm", amount: 1200000, note: "4 nhân công", date: new Date().toISOString() }
-      ],
+      expenses: [],
       revenueAuto: true,
       revenueManualAmount: 0,
       selectedSaleIds: null
@@ -9725,9 +9806,13 @@ me.getFinanceSummary = function() {
     const fin = me.getFinanceData();
     const trip = (fin && fin.activeTrip) || {};
     const tripDate = trip.startDate || getLocalYYYYMMDD_v4();
-    const filterMode = trip.filterMode || "DATE";
+    const filterMode = trip.filterMode || "ALL";
+    const archivedSessionSet = new Set(Array.isArray(trip.archivedSessionIds) ? trip.archivedSessionIds : []);
+    const archivedSaleSet = new Set(Array.isArray(trip.archivedSaleIds) ? trip.archivedSaleIds : []);
+
     const sessions = (me.getSessions && me.getSessions()) || [];
-    const filteredSessions = sessions.filter(s => filterMode === "ALL" ? true : (s.date && isSameLocalDate_v4(s.date, tripDate)));
+    const openSessions = sessions.filter(s => s && !archivedSessionSet.has(s.id));
+    const filteredSessions = openSessions.filter(s => filterMode === "ALL" ? true : (s.date && isSameLocalDate_v4(s.date, tripDate)));
     const effectiveSessions = Array.isArray(trip.selectedSessionIds)
       ? filteredSessions.filter(s => trip.selectedSessionIds.includes(s.id))
       : filteredSessions;
@@ -9735,27 +9820,46 @@ me.getFinanceSummary = function() {
     const totalBuyKg = effectiveSessions.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
     const shrimpPurchaseMoney = trip.shrimpPurchaseAuto !== false ? autoBuyMoney : Number(trip.shrimpPurchaseManualAmount || 0);
 
+    const farmers = (me.getFarmers && me.getFarmers()) || [];
+    const unweighedDepositFarmers = getUnweighedDepositFarmers_v4(farmers, sessions);
+    const unweighedDepositsTotal = unweighedDepositFarmers.reduce((acc, fm) => acc + Number(fm.defaultDeposit || 0), 0);
+    const includePondDeposits = trip.includePondDeposits !== false;
+    const countedPondDeposits = includePondDeposits ? unweighedDepositsTotal : 0;
+
     const allTx = trip.expenses || [];
     const totalOperationExpenses = allTx.filter(t => t.type !== "INCOME").reduce((acc, e) => acc + Number(e.amount || 0), 0);
     const totalExtraIncome = allTx.filter(t => t.type === "INCOME").reduce((acc, e) => acc + Number(e.amount || 0), 0);
-    const totalExpenses = shrimpPurchaseMoney + totalOperationExpenses;
+    const totalExpenses = shrimpPurchaseMoney + countedPondDeposits + totalOperationExpenses;
 
     const sales = (me.getSales && me.getSales()) || [];
-    const completedSales = sales.filter(s => s.status === "COMPLETED" || s.status === "SETTLED" || s.isPaidFull);
-    const filteredSales = completedSales.filter(s => filterMode === "ALL" ? true : (s.date && isSameLocalDate_v4(s.date, tripDate)));
+    const openSales = sales.filter(s => s && !archivedSaleSet.has(s.id));
+    const revenueCandidateSales = openSales.filter(s => {
+      const bd = getFinanceSaleBreakdown_v4(s);
+      return bd.isCompleted || bd.realizedMoney > 0;
+    });
+    const filteredSales = revenueCandidateSales.filter(s => filterMode === "ALL" ? true : (s.date && isSameLocalDate_v4(s.date, tripDate)));
     const effectiveSales = Array.isArray(trip.selectedSaleIds)
       ? filteredSales.filter(s => trip.selectedSaleIds.includes(s.id))
       : filteredSales;
-    const autoRevenueMoney = effectiveSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+
+    const autoRevenueMoney = effectiveSales.reduce((acc, s) => acc + getFinanceSaleBreakdown_v4(s).realizedMoney, 0);
     const revenueKg = effectiveSales.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
     const baseRevenue = trip.revenueAuto !== false ? autoRevenueMoney : Number(trip.revenueManualAmount || 0);
     const totalRevenue = baseRevenue + totalExtraIncome;
     const netProfit = totalRevenue - totalExpenses;
+
+    const pendingMarketSales = openSales.filter(s => s.targetGroup === "MARKET" && (s.status === "SELLING" || s.status === "PENDING_SETTLEMENT"));
+    const pendingFactorySales = openSales.filter(s => s.targetGroup === "FACTORY" && s.status === "AWAITING_RESULT");
+    const pendingReceivableDebt = openSales.reduce((acc, s) => acc + getFinanceSaleBreakdown_v4(s).debtMoney, 0);
+
     return {
       tripDate,
       filterMode,
       shrimpPurchaseMoney,
       totalBuyKg,
+      unweighedDepositsTotal,
+      countedPondDeposits,
+      unweighedDepositCount: unweighedDepositFarmers.length,
       totalOperationExpenses,
       totalExtraIncome,
       totalExpenses,
@@ -9766,14 +9870,20 @@ me.getFinanceSummary = function() {
       isProfit: netProfit >= 0,
       sessionCount: effectiveSessions.length,
       saleCount: effectiveSales.length,
-      txCount: allTx.length
+      txCount: allTx.length,
+      pendingMarketCount: pendingMarketSales.length,
+      pendingFactoryCount: pendingFactorySales.length,
+      pendingReceivableDebt
     };
   } catch (e) {
     return {
       tripDate: getLocalYYYYMMDD_v4(),
-      filterMode: "DATE",
+      filterMode: "ALL",
       shrimpPurchaseMoney: 0,
       totalBuyKg: 0,
+      unweighedDepositsTotal: 0,
+      countedPondDeposits: 0,
+      unweighedDepositCount: 0,
       totalOperationExpenses: 0,
       totalExtraIncome: 0,
       totalExpenses: 0,
@@ -9784,7 +9894,10 @@ me.getFinanceSummary = function() {
       isProfit: true,
       sessionCount: 0,
       saleCount: 0,
-      txCount: 0
+      txCount: 0,
+      pendingMarketCount: 0,
+      pendingFactoryCount: 0,
+      pendingReceivableDebt: 0
     };
   }
 };
@@ -12744,7 +12857,10 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     return _fmt(n) + " đồng";
   };
 
-  // Data sources
+  // Internal write guard so self-updates don't double-bounce
+  const selfUpdatingRef = w.useRef(false);
+
+  // Data sources (auto-synced with Cân tôm, Xuất bán, Chủ ao, Sổ Thu-Chi)
   const [financeData, setFinanceData] = w.useState(() => me.getFinanceData());
   const [sessions, setSessions] = w.useState(() => {
     try { return (me.getSessions && me.getSessions()) || []; } catch(e) { return []; }
@@ -12752,75 +12868,67 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const [sales, setSales] = w.useState(() => {
     try { return (me.getSales && me.getSales()) || []; } catch(e) { return []; }
   });
+  const [farmers, setFarmers] = w.useState(() => {
+    try { return (me.getFarmers && me.getFarmers()) || []; } catch(e) { return []; }
+  });
+
+  // Active Trip state (declared before listeners/memos)
+  const trip = financeData.activeTrip || {};
+  const [tripName, setTripName] = w.useState(trip.name || "Chuyến thu mua tôm");
+  const [tripDate, setTripDate] = w.useState(trip.startDate || getLocalYYYYMMDD_v4());
+  const [tripNote, setTripNote] = w.useState(trip.note || "");
+  const [filterMode, setFilterMode] = w.useState(trip.filterMode || "ALL"); // "ALL" (default auto-all) | "DATE"
 
   w.useEffect(() => {
     const syncFinanceListeners = (ev) => {
       try {
         setSessions((me.getSessions && me.getSessions()) || []);
         setSales((me.getSales && me.getSales()) || []);
-        if (!ev || ev.type === "cloud_data_synced" || (ev.detail && ev.detail.source === "backup_import")) {
+        setFarmers((me.getFarmers && me.getFarmers()) || []);
+        if (!selfUpdatingRef.current) {
           const freshFin = me.getFinanceData();
           setFinanceData(freshFin);
           if (freshFin && freshFin.activeTrip) {
             setTripName(freshFin.activeTrip.name || "Chuyến thu mua tôm");
             setTripDate(freshFin.activeTrip.startDate || getLocalYYYYMMDD_v4());
             setTripNote(freshFin.activeTrip.note || "");
-            setFilterMode(freshFin.activeTrip.filterMode || "DATE");
+            setFilterMode(freshFin.activeTrip.filterMode || "ALL");
           }
         }
       } catch(e) {}
     };
     window.addEventListener("app-data-updated", syncFinanceListeners);
     window.addEventListener("cloud_data_synced", syncFinanceListeners);
+    window.addEventListener("tom_contract_updated", syncFinanceListeners);
     return () => {
       window.removeEventListener("app-data-updated", syncFinanceListeners);
       window.removeEventListener("cloud_data_synced", syncFinanceListeners);
+      window.removeEventListener("tom_contract_updated", syncFinanceListeners);
     };
   }, []);
 
-  // Master Command Tab: "PL" (Dòng tiền & Lời lỗ) | "LEDGER" (Sổ Thu-Chi) | "BUY" (Mua tôm) | "SELL" (Xuất bán) | "AUDIT" (Hao hụt)
+  // Master Command Tab: "PL" | "LEDGER" | "BUY" | "SELL" | "AUDIT"
   const [mainTab, setMainTab] = w.useState("PL");
 
   // Floating Action Button (FAB) Speed Dial Open State
   const [fabOpen, setFabOpen] = w.useState(false);
 
-  // Synchronize latest sessions and sales
-  const handleSyncFinance = () => {
-    try {
-      const freshSessions = (me.getSessions && me.getSessions()) || [];
-      const freshSales = (me.getSales && me.getSales()) || [];
-      setSessions(freshSessions);
-      setSales(freshSales);
-      updateActiveTrip(t => ({
-        ...t,
-        shrimpPurchaseAuto: true,
-        revenueAuto: true,
-        selectedSessionIds: null,
-        selectedSaleIds: null
-      }));
-      alert("✅ Đã đồng bộ số liệu mới nhất từ Cân tôm và Xuất bán!");
-    } catch(e) {
-      alert("Lỗi đồng bộ: " + e.message);
-    }
-  };
-
-  // Active Trip state
-  const trip = financeData.activeTrip || {};
-  const [tripName, setTripName] = w.useState(trip.name || "Chuyến thu mua tôm");
-  const [tripDate, setTripDate] = w.useState(trip.startDate || getLocalYYYYMMDD_v4());
-  const [tripNote, setTripNote] = w.useState(trip.note || "");
-  const [filterMode, setFilterMode] = w.useState(trip.filterMode || "DATE"); // "DATE" | "ALL"
+  // Quick settle modal directly inside Finance (for pending Market / Factory / Debt orders)
+  const [quickSettleSale, setQuickSettleSale] = w.useState(null);
+  const [quickSettleKg, setQuickSettleKg] = w.useState("");
+  const [quickSettleMoney, setQuickSettleMoney] = w.useState("");
 
   // 1. Thu - Chi Modal
   const [showThuChiModal, setShowThuChiModal] = w.useState(false);
-  const [thuChiType, setThuChiType] = w.useState("EXPENSE"); // "EXPENSE" (Chi) | "INCOME" (Thu)
+  const [thuChiType, setThuChiType] = w.useState("EXPENSE"); // "EXPENSE" | "INCOME"
   const [editingThuChiId, setEditingThuChiId] = w.useState(null);
   const [thuChiCategory, setThuChiCategory] = w.useState("Tiền thuê xe / vận chuyển");
   const [thuChiAmount, setThuChiAmount] = w.useState("");
   const [thuChiPerson, setThuChiPerson] = w.useState("");
   const [thuChiNote, setThuChiNote] = w.useState("");
-  const [thuChiFilterTab, setThuChiFilterTab] = w.useState("ALL"); // "ALL" | "EXPENSE" | "INCOME"
+  const [thuChiFilterTab, setThuChiFilterTab] = w.useState("ALL"); // "ALL" | "EXPENSE" | "INCOME" | "BUY" | "SELL"
   const [thuChiSearchQuery, setThuChiSearchQuery] = w.useState("");
+  const [showAutoInLedger, setShowAutoInLedger] = w.useState(true);
 
   // 2. Modals for session/sales selection and management
   const [showSessionsModal, setShowSessionsModal] = w.useState(false);
@@ -12834,13 +12942,43 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
 
   // Helper to persist updates to localStorage and cloud
   const updateActiveTrip = (updater) => {
-    setFinanceData(prev => {
-      const currentTrip = prev.activeTrip || {};
-      const updatedTrip = typeof updater === "function" ? updater(currentTrip) : { ...currentTrip, ...updater };
-      const nextData = { ...prev, activeTrip: updatedTrip };
-      me.saveFinanceData(nextData);
-      return nextData;
-    });
+    selfUpdatingRef.current = true;
+    try {
+      setFinanceData(prev => {
+        const currentTrip = prev.activeTrip || {};
+        const updatedTrip = typeof updater === "function" ? updater(currentTrip) : { ...currentTrip, ...updater };
+        const nextData = { ...prev, activeTrip: updatedTrip };
+        me.saveFinanceData(nextData);
+        return nextData;
+      });
+    } finally {
+      setTimeout(() => { selfUpdatingRef.current = false; }, 0);
+    }
+  };
+
+  // Synchronize latest sessions, sales, farmers & reset selections to auto
+  const handleSyncFinance = () => {
+    try {
+      const freshSessions = (me.getSessions && me.getSessions()) || [];
+      const freshSales = (me.getSales && me.getSales()) || [];
+      const freshFarmers = (me.getFarmers && me.getFarmers()) || [];
+      setSessions(freshSessions);
+      setSales(freshSales);
+      setFarmers(freshFarmers);
+      setFilterMode("ALL");
+      updateActiveTrip(t => ({
+        ...t,
+        filterMode: "ALL",
+        includePondDeposits: true,
+        shrimpPurchaseAuto: true,
+        revenueAuto: true,
+        selectedSessionIds: null,
+        selectedSaleIds: null
+      }));
+      alert("✅ Đã đồng bộ tự động 100% số liệu Cân tôm, Cọc ao, Xuất bán và Thu-Chi!");
+    } catch(e) {
+      alert("Lỗi đồng bộ: " + e.message);
+    }
   };
 
   // Categories
@@ -12862,9 +13000,14 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     { label: "Khoản thu phát sinh khác", icon: "💰" }
   ];
 
-  // Shrimp purchase calculations
+  // Open vs archived IDs
+  const archivedSessionSet = new Set(Array.isArray(trip.archivedSessionIds) ? trip.archivedSessionIds : []);
+  const archivedSaleSet = new Set(Array.isArray(trip.archivedSaleIds) ? trip.archivedSaleIds : []);
+
+  // Shrimp purchase calculations (always synced from open sessions)
   const isShrimpAuto = trip.shrimpPurchaseAuto !== false;
-  const filteredSessions = sessions.filter(s => {
+  const openSessions = sessions.filter(s => s && !archivedSessionSet.has(s.id));
+  const filteredSessions = openSessions.filter(s => {
     if (filterMode === "ALL") return true;
     return s.date && isSameLocalDate_v4(s.date, tripDate);
   });
@@ -12878,6 +13021,21 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const shrimpPurchaseMoney = isShrimpAuto ? autoShrimpPurchaseMoney : Number(trip.shrimpPurchaseManualAmount || 0);
   const avgPurchasePrice = autoShrimpPurchaseKg > 0 ? (shrimpPurchaseMoney / autoShrimpPurchaseKg) : 0;
 
+  // Unweighed pond deposits (auto-tracked from Chủ Ao without double-counting)
+  const includePondDeposits = trip.includePondDeposits !== false;
+  const unweighedDepositFarmers = getUnweighedDepositFarmers_v4(farmers, sessions);
+  const unweighedDepositsTotal = unweighedDepositFarmers.reduce((acc, fm) => acc + Number(fm.defaultDeposit || 0), 0);
+  const countedPondDeposits = includePondDeposits ? unweighedDepositsTotal : 0;
+
+  // Farmer payable balance (sessions not marked isPaidFull)
+  const payableFarmerDebt = effectiveSessions.reduce((acc, s) => {
+    if (s.isPaidFull) return acc;
+    const total = Number(s.totalMoney || 0);
+    const dep = Number(s.deposit || 0);
+    const paid = Number(s.paidAmount || 0);
+    return acc + Math.max(0, total - dep - paid);
+  }, 0);
+
   // Thu - Chi records in trip (trip.expenses holds both EXPENSE and INCOME)
   const allTransactions = trip.expenses || [];
   const operatingExpenses = allTransactions.filter(t => t.type !== "INCOME");
@@ -12885,7 +13043,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
 
   const totalOperationExpenses = operatingExpenses.reduce((acc, exp) => acc + Number(exp.amount || 0), 0);
   const totalExtraIncome = extraIncomes.reduce((acc, inc) => acc + Number(inc.amount || 0), 0);
-  const totalExpenses = shrimpPurchaseMoney + totalOperationExpenses;
+  const totalExpenses = shrimpPurchaseMoney + countedPondDeposits + totalOperationExpenses;
 
   // Open Thu - Chi Modal from FAB or elsewhere
   const handleOpenAddThuChi = (type = "EXPENSE") => {
@@ -12958,9 +13116,13 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     }
   };
 
-  // Sales and Revenue calculations
+  // Sales and Revenue calculations (includes COMPLETED/SETTLED/isPaidFull + any partial paidAmount!)
   const isRevenueAuto = trip.revenueAuto !== false;
-  const completedSales = sales.filter(s => s.status === "COMPLETED" || s.status === "SETTLED" || s.isPaidFull);
+  const openSales = sales.filter(s => s && !archivedSaleSet.has(s.id));
+  const completedSales = openSales.filter(s => {
+    const bd = getFinanceSaleBreakdown_v4(s);
+    return bd.isCompleted || bd.realizedMoney > 0;
+  });
   const filteredSales = completedSales.filter(s => {
     if (filterMode === "ALL") return true;
     return s.date && isSameLocalDate_v4(s.date, tripDate);
@@ -12970,7 +13132,19 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     ? filteredSales.filter(s => selectedSaleIds.includes(s.id))
     : filteredSales;
 
-  const autoRevenueMoney = effectiveSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+  // Pending / in-progress / debt orders (tracked automatically so nothing is invisible)
+  const pendingMarketSales = openSales.filter(s => s.targetGroup === "MARKET" && (s.status === "SELLING" || s.status === "PENDING_SETTLEMENT"));
+  const pendingFactorySales = openSales.filter(s => s.targetGroup === "FACTORY" && s.status === "AWAITING_RESULT");
+  const debtSalesList = openSales.filter(s => getFinanceSaleBreakdown_v4(s).debtMoney > 0);
+  const totalPendingMarketPhi = pendingMarketSales.reduce((acc, s) => acc + Number(s.phiCount || s.totalBales || 0), 0);
+  const totalPendingFactoryKg = pendingFactorySales.reduce((acc, s) => acc + Number(s.factoryDeliveredKg || s.totalNet || 0), 0);
+  const pendingReceivableDebt = debtSalesList.reduce((acc, s) => acc + getFinanceSaleBreakdown_v4(s).debtMoney, 0);
+
+  // Other-date items count when user selects DATE filter
+  const hiddenSessionsCount = filterMode === "DATE" ? Math.max(0, openSessions.length - filteredSessions.length) : 0;
+  const hiddenSalesCount = filterMode === "DATE" ? Math.max(0, completedSales.length - filteredSales.length) : 0;
+
+  const autoRevenueMoney = effectiveSales.reduce((acc, s) => acc + getFinanceSaleBreakdown_v4(s).realizedMoney, 0);
   const autoRevenueKg = effectiveSales.reduce((acc, s) => acc + Number(s.totalNet || s.totalGross || 0), 0);
   const baseRevenue = isRevenueAuto ? autoRevenueMoney : Number(trip.revenueManualAmount || 0);
   const totalRevenue = baseRevenue + totalExtraIncome;
@@ -12981,9 +13155,9 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const marketSalesList = effectiveSales.filter(s => s.targetGroup === "MARKET");
   const factorySalesList = effectiveSales.filter(s => s.targetGroup === "FACTORY");
 
-  const retailRevenue = retailSalesList.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
-  const marketRevenue = marketSalesList.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
-  const factoryRevenue = factorySalesList.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+  const retailRevenue = retailSalesList.reduce((acc, s) => acc + getFinanceSaleBreakdown_v4(s).realizedMoney, 0);
+  const marketRevenue = marketSalesList.reduce((acc, s) => acc + getFinanceSaleBreakdown_v4(s).realizedMoney, 0);
+  const factoryRevenue = factorySalesList.reduce((acc, s) => acc + getFinanceSaleBreakdown_v4(s).realizedMoney, 0);
 
   // Net Profit & Margins
   const netProfit = totalRevenue - totalExpenses;
@@ -12995,11 +13169,44 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const weightDiffPercent = autoShrimpPurchaseKg > 0 ? ((weightDiff / autoShrimpPurchaseKg) * 100) : 0;
   const grossProfitPerKg = (autoRevenueKg > 0 && autoShrimpPurchaseKg > 0) ? (avgSalePrice - avgPurchasePrice) : 0;
 
-  // Archive and settle current trip
-  const handleSettleAndArchiveTrip = () => {
-    if (!confirm("Bạn có chắc chắn muốn khóa và lưu chuyến tài chính này vào lịch sử? Dữ liệu chuyến sẽ được lưu trữ an toàn và một chuyến mới sẽ được khởi tạo.")) {
+  // Quick settle pending sale directly from Finance
+  const handleSaveQuickSettleInFinance = () => {
+    if (!quickSettleSale) return;
+    const kg = Number(quickSettleKg) || 0;
+    const money = Number(quickSettleMoney) || 0;
+    if (kg <= 0 || money <= 0) {
+      alert("Vui lòng nhập đầy đủ số kg và tổng tiền thực nhận!");
       return;
     }
+    const updates = {
+      status: "COMPLETED",
+      isPaidFull: true,
+      remainingDebt: 0,
+      paidAmount: money,
+      totalNet: kg,
+      totalGross: kg,
+      unitPrice: kg > 0 ? Math.round(money / kg) : 0,
+      totalMoney: money,
+      settledAt: new Date().toISOString(),
+      notes: quickSettleSale.targetGroup === "MARKET"
+        ? "Đã chốt đơn chợ: " + _fmtKg(kg) + " kg - thực nhận " + _fmt(money) + " đ"
+        : "Đã nghiệm thu công ty: " + _fmtKg(kg) + " kg - thanh toán " + _fmt(money) + " đ"
+    };
+    me.updateSale(quickSettleSale.id, updates);
+    setQuickSettleSale(null);
+    setQuickSettleKg("");
+    setQuickSettleMoney("");
+    alert("✅ Đã chốt đơn thành công và tự động cộng +" + _fmt(money) + " đ vào doanh thu tài chính!");
+  };
+
+  // Archive and settle current trip (records settled IDs so next trip starts fresh without double-counting)
+  const handleSettleAndArchiveTrip = () => {
+    if (!confirm("Bạn có chắc chắn muốn khóa và lưu chuyến tài chính này vào lịch sử? Các phiếu mua/đơn bán của chuyến này sẽ được lưu trữ và chuyến mới sẽ khởi tạo sạch.")) {
+      return;
+    }
+
+    const justSettledSessionIds = effectiveSessions.map(s => s.id).filter(Boolean);
+    const justSettledSaleIds = effectiveSales.map(s => s.id).filter(Boolean);
 
     const archivedTrip = {
       ...trip,
@@ -13008,6 +13215,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       note: tripNote,
       shrimpPurchaseMoney,
       shrimpPurchaseKg: autoShrimpPurchaseKg,
+      countedPondDeposits,
       totalOperationExpenses,
       totalExtraIncome,
       totalExpenses,
@@ -13016,14 +13224,23 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       netProfit,
       isProfit,
       profitMarginPercent,
+      settledSessionIds: justSettledSessionIds,
+      settledSaleIds: justSettledSaleIds,
       settledAt: new Date().toISOString()
     };
+
+    const nextArchivedSessions = Array.from(new Set([...(trip.archivedSessionIds || []), ...justSettledSessionIds]));
+    const nextArchivedSales = Array.from(new Set([...(trip.archivedSaleIds || []), ...justSettledSaleIds]));
 
     const newActiveTrip = {
       id: "trip_" + Date.now(),
       name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
       startDate: getLocalYYYYMMDD_v4(),
       note: "",
+      filterMode: "ALL",
+      includePondDeposits: true,
+      archivedSessionIds: nextArchivedSessions,
+      archivedSaleIds: nextArchivedSales,
       shrimpPurchaseAuto: true,
       shrimpPurchaseManualAmount: 0,
       selectedSessionIds: null,
@@ -13038,27 +13255,35 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       savedTrips: [archivedTrip, ...(financeData.savedTrips || [])]
     };
 
+    selfUpdatingRef.current = true;
     me.saveFinanceData(nextData);
     setFinanceData(nextData);
     setTripName(newActiveTrip.name);
     setTripDate(newActiveTrip.startDate);
     setTripNote("");
+    setFilterMode("ALL");
+    setTimeout(() => { selfUpdatingRef.current = false; }, 0);
     alert("✅ Đã quyết toán thành công và lưu vào lịch sử chuyến!");
   };
 
-  // Reset or create fresh trip
+  // Reset manual Thu-Chi in current trip
   const handleResetTrip = () => {
-    if (confirm("Bạn có chắc chắn muốn đặt lại chi phí và thu chi của chuyến này về 0?")) {
+    if (confirm("Bạn có chắc chắn muốn đặt lại sổ Thu - Chi của chuyến này về 0 và khôi phục đồng bộ tự động?")) {
       updateActiveTrip(t => ({
         ...t,
         expenses: [],
+        filterMode: "ALL",
+        includePondDeposits: true,
+        shrimpPurchaseAuto: true,
+        revenueAuto: true,
         shrimpPurchaseManualAmount: 0,
         revenueManualAmount: 0,
         selectedSessionIds: null,
         selectedSaleIds: null
       }));
+      setFilterMode("ALL");
       setShowTripSettingsModal(false);
-      alert("✅ Đã đặt lại dữ liệu chuyến!");
+      alert("✅ Đã đặt lại thu chi và bật đồng bộ tự động!");
     }
   };
 
@@ -13067,25 +13292,41 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     if (confirm("Bạn có chắc chắn muốn xóa chuyến này khỏi lịch sử? Thao tác này không thể hoàn tác.")) {
       const nextSaved = (financeData.savedTrips || []).filter(t => t.id !== id);
       const nextData = { ...financeData, savedTrips: nextSaved };
+      selfUpdatingRef.current = true;
       me.saveFinanceData(nextData);
       setFinanceData(nextData);
       if (viewingSavedTrip && viewingSavedTrip.id === id) setViewingSavedTrip(null);
+      setTimeout(() => { selfUpdatingRef.current = false; }, 0);
     }
   };
 
   const handleRestoreSavedTrip = (savedTrip) => {
     if (confirm("Bạn có chắc chắn muốn khôi phục chuyến \"" + savedTrip.name + "\" làm chuyến đang hoạt động? Chuyến hiện tại chưa quyết toán sẽ được thay thế.")) {
+      const restoredSettledSessions = new Set(Array.isArray(savedTrip.settledSessionIds) ? savedTrip.settledSessionIds : []);
+      const restoredSettledSales = new Set(Array.isArray(savedTrip.settledSaleIds) ? savedTrip.settledSaleIds : []);
+      const curArchSess = Array.isArray(trip.archivedSessionIds) ? trip.archivedSessionIds : [];
+      const curArchSale = Array.isArray(trip.archivedSaleIds) ? trip.archivedSaleIds : [];
+
       const nextData = {
         ...financeData,
-        activeTrip: { ...savedTrip, id: "trip_" + Date.now() }
+        activeTrip: {
+          ...savedTrip,
+          id: "trip_" + Date.now(),
+          filterMode: savedTrip.filterMode || "ALL",
+          archivedSessionIds: curArchSess.filter(id => !restoredSettledSessions.has(id)),
+          archivedSaleIds: curArchSale.filter(id => !restoredSettledSales.has(id))
+        }
       };
+      selfUpdatingRef.current = true;
       me.saveFinanceData(nextData);
       setFinanceData(nextData);
       setTripName(savedTrip.name || "");
       setTripDate(savedTrip.startDate || "");
       setTripNote(savedTrip.note || "");
+      setFilterMode(savedTrip.filterMode || "ALL");
       setShowSavedTripsModal(false);
       setViewingSavedTrip(null);
+      setTimeout(() => { selfUpdatingRef.current = false; }, 0);
       alert("✅ Đã khôi phục chuyến thành công!");
     }
   };
@@ -13099,6 +13340,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       return t;
     });
     const nextData = { ...financeData, savedTrips: nextSaved };
+    selfUpdatingRef.current = true;
     me.saveFinanceData(nextData);
     setFinanceData(nextData);
     if (viewingSavedTrip && viewingSavedTrip.id === editingSavedTripId) {
@@ -13106,18 +13348,20 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     }
     setEditingSavedTripId(null);
     setEditingSavedTripName("");
+    setTimeout(() => { selfUpdatingRef.current = false; }, 0);
   };
 
   // Copy quick summary text
   const handleCopySummary = () => {
     const text = [
       "📊 BÁO CÁO QUYẾT TOÁN TÀI CHÍNH CHUYẾN TÔM",
-      "Kỳ: " + tripName + " (" + tripDate + ")",
+      "Kỳ: " + tripName + " (" + (filterMode === "ALL" ? "Tự động tất cả" : tripDate) + ")",
       "----------------------------------",
       "1. Doanh thu xuất bán: +" + _fmt(baseRevenue) + " đ (" + _fmtKg(autoRevenueKg) + " kg)",
       totalExtraIncome > 0 ? ("2. Thu phát sinh ngoài: +" + _fmt(totalExtraIncome) + " đ") : "",
       "3. Tiền mua tôm ao: -" + _fmt(shrimpPurchaseMoney) + " đ (" + _fmtKg(autoShrimpPurchaseKg) + " kg)",
-      "4. Chi phí vận hành: -" + _fmt(totalOperationExpenses) + " đ (" + operatingExpenses.length + " khoản)",
+      countedPondDeposits > 0 ? ("4. Tiền đặt cọc ao chưa cân: -" + _fmt(countedPondDeposits) + " đ") : "",
+      "5. Chi phí vận hành: -" + _fmt(totalOperationExpenses) + " đ (" + operatingExpenses.length + " khoản)",
       "----------------------------------",
       "🏆 LỢI NHUẬN RÒNG: " + (isProfit ? "+" : "") + _fmt(netProfit) + " VNĐ (" + (isProfit ? "LỜI " : "LỖ ") + profitMarginPercent.toFixed(1) + "%)",
       "Hao hụt: " + (weightDiff > 0 ? ("-" + _fmtKg(weightDiff) + " kg (-" + weightDiffPercent.toFixed(1) + "%)") : "Không hao hụt"),
@@ -13137,30 +13381,115 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     }
   };
 
-  // Filtered transactions for the list
-  const displayedTransactions = allTransactions.filter(t => {
-    if (thuChiFilterTab === "EXPENSE" && t.type === "INCOME") return false;
-    if (thuChiFilterTab === "INCOME" && t.type !== "INCOME") return false;
+  // Unified Cashflow Stream (Manual Thu-Chi + Auto-Synced Purchases + Auto-Synced Pond Deposits + Auto-Synced Sales)
+  const unifiedCashflowEntries = w.useMemo(() => {
+    const entries = [];
+    // 1. Manual Thu - Chi entries
+    allTransactions.forEach(tx => {
+      entries.push({
+        id: tx.id,
+        sourceType: "MANUAL",
+        flow: tx.type === "INCOME" ? "INCOME" : "EXPENSE",
+        category: tx.category || (tx.type === "INCOME" ? "Khoản thu" : "Khoản chi"),
+        amount: Number(tx.amount || 0),
+        person: tx.person || "",
+        note: tx.note || "",
+        date: tx.date || "",
+        raw: tx
+      });
+    });
+
+    if (showAutoInLedger) {
+      // 2. Auto shrimp purchase sessions
+      if (isShrimpAuto) {
+        effectiveSessions.forEach(sess => {
+          entries.push({
+            id: "auto_buy_" + sess.id,
+            sourceType: "AUTO_BUY",
+            flow: "EXPENSE",
+            category: "Mua tôm tại ao: " + (sess.farmerName || "Chủ ao"),
+            amount: Number(sess.totalMoney || 0),
+            person: sess.farmerName || "",
+            note: _fmtKg(sess.totalNet || sess.totalGross) + " kg • " + (sess.riceType || "Tôm càng xanh"),
+            date: sess.date || "",
+            raw: sess
+          });
+        });
+      }
+
+      // 3. Auto unweighed pond deposits
+      if (includePondDeposits) {
+        unweighedDepositFarmers.forEach(fm => {
+          entries.push({
+            id: "auto_dep_" + fm.id,
+            sourceType: "AUTO_DEPOSIT",
+            flow: "EXPENSE",
+            category: "Đặt cọc ao (chờ cân): " + (fm.name || "Chủ ao"),
+            amount: Number(fm.defaultDeposit || 0),
+            person: fm.name || "",
+            note: "Tự động tính từ Chủ Ao • Tự cấn trừ khi cân",
+            date: fm.weighingDate || "",
+            raw: fm
+          });
+        });
+      }
+
+      // 4. Auto completed / partial-paid sales
+      if (isRevenueAuto) {
+        effectiveSales.forEach(sl => {
+          const bd = getFinanceSaleBreakdown_v4(sl);
+          if (bd.realizedMoney > 0) {
+            entries.push({
+              id: "auto_sell_" + sl.id,
+              sourceType: "AUTO_SELL",
+              flow: "INCOME",
+              category: (sl.targetGroup === "FACTORY" ? "Bán Công ty: " : (sl.targetGroup === "MARKET" ? "Bán Chợ: " : "Bán lẻ: ")) + (sl.buyerName || "Khách hàng"),
+              amount: bd.realizedMoney,
+              person: sl.buyerName || "",
+              note: _fmtKg(sl.totalNet || sl.totalGross) + " kg" + (bd.debtMoney > 0 ? (" • Còn nợ " + _fmt(bd.debtMoney) + " đ") : ""),
+              date: sl.settledAt || sl.date || "",
+              raw: sl
+            });
+          }
+        });
+      }
+    }
+
+    return entries.sort((a, b) => {
+      const ta = a.date ? new Date(a.date).getTime() : 0;
+      const tb = b.date ? new Date(b.date).getTime() : 0;
+      return tb - ta;
+    });
+  }, [allTransactions, showAutoInLedger, isShrimpAuto, effectiveSessions, includePondDeposits, unweighedDepositFarmers, isRevenueAuto, effectiveSales]);
+
+  // Filtered ledger list
+  const displayedTransactions = unifiedCashflowEntries.filter(entry => {
+    if (thuChiFilterTab === "EXPENSE" && entry.flow !== "EXPENSE") return false;
+    if (thuChiFilterTab === "INCOME" && entry.flow !== "INCOME") return false;
+    if (thuChiFilterTab === "BUY" && entry.sourceType !== "AUTO_BUY" && entry.sourceType !== "AUTO_DEPOSIT") return false;
+    if (thuChiFilterTab === "SELL" && entry.sourceType !== "AUTO_SELL") return false;
     if (thuChiSearchQuery.trim()) {
       const q = thuChiSearchQuery.toLowerCase();
-      const cat = (t.category || "").toLowerCase();
-      const per = (t.person || "").toLowerCase();
-      const note = (t.note || "").toLowerCase();
+      const cat = (entry.category || "").toLowerCase();
+      const per = (entry.person || "").toLowerCase();
+      const note = (entry.note || "").toLowerCase();
       return cat.includes(q) || per.includes(q) || note.includes(q);
     }
     return true;
   });
 
+  const autoBuyEntryCount = effectiveSessions.length + (includePondDeposits ? unweighedDepositFarmers.length : 0);
+  const autoSellEntryCount = effectiveSales.length;
+
   return c.jsxs("div", {
     className: "flex flex-col h-screen bg-slate-100/90 text-slate-900 font-sans overflow-hidden select-none relative",
     children: [
       // =========================================================================
-      // 1. TOP HEADER: GIAO DIỆN SÁNG, TINH TẾ, ĐẲNG CẤP
+      // 1. TOP HEADER: GIAO DIỆN SÁNG, TINH TẾ, TỰ ĐỘNG ĐỒNG BỘ 100%
       // =========================================================================
       c.jsxs("header", {
         className: "bg-white border-b border-slate-200/90 px-3.5 sm:px-5 py-2.5 shadow-xs shrink-0 flex items-center justify-between z-30",
         children: [
-          // Left: Nút back & Brand Title
           c.jsxs("div", {
             className: "flex items-center gap-2.5 sm:gap-3 min-w-0",
             children: [
@@ -13184,18 +13513,24 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       }),
                       c.jsx("span", {
                         className: "hidden md:inline-flex px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200",
-                        children: "Tự Doanh 100%"
+                        children: "Tự Động 100%"
                       })
                     ]
                   }),
                   c.jsxs("div", {
                     className: "text-[10px] text-slate-500 font-medium truncate flex items-center gap-1.5",
                     children: [
-                      c.jsx("span", { className: "text-emerald-600 font-bold", children: "● Trực tiếp" }),
+                      c.jsx("span", { className: "text-emerald-600 font-bold", children: "● Tự động tính" }),
                       c.jsx("span", { children: "•" }),
-                      c.jsxs("span", { children: [effectiveSessions.length, " phiếu mua"] }),
+                      c.jsxs("span", { children: [effectiveSessions.length, " mua"] }),
+                      unweighedDepositFarmers.length > 0 && c.jsxs(c.Fragment, {
+                        children: [
+                          c.jsx("span", { children: "•" }),
+                          c.jsxs("span", { className: "text-amber-600 font-bold", children: [unweighedDepositFarmers.length, " cọc ao"] })
+                        ]
+                      }),
                       c.jsx("span", { children: "•" }),
-                      c.jsxs("span", { children: [effectiveSales.length, " đơn bán"] }),
+                      c.jsxs("span", { children: [effectiveSales.length, " bán"] }),
                       c.jsx("span", { children: "•" }),
                       c.jsxs("span", { children: [allTransactions.length, " thu chi"] })
                     ]
@@ -13205,23 +13540,19 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             ]
           }),
 
-          // Right: Action Buttons (Đồng bộ, Lịch sử, Cài đặt - Các nút Thu Chi đã gom vào nút + thả nổi)
           c.jsxs("div", {
             className: "flex items-center gap-1.5 sm:gap-2 shrink-0",
             children: [
-              // Nút Đồng bộ dữ liệu
               c.jsxs("button", {
                 type: "button",
                 onClick: handleSyncFinance,
-                className: "p-2 sm:px-3 sm:py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold active:scale-95 transition-all cursor-pointer border border-slate-200 flex items-center gap-1.5",
-                title: "Đồng bộ số liệu từ phiếu cân và đơn bán",
+                className: "p-2 sm:px-3 sm:py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold active:scale-95 transition-all cursor-pointer border border-emerald-200 flex items-center gap-1.5",
+                title: "Đồng bộ tự động tất cả mua, cọc ao, bán và thu chi",
                 children: [
                   c.jsx("span", { className: "text-sm", children: "🔄" }),
                   c.jsx("span", { className: "hidden md:inline text-[11px]", children: "Đồng bộ" })
                 ]
               }),
-
-              // Nút Lịch sử chuyến
               c.jsxs("button", {
                 type: "button",
                 onClick: () => setShowSavedTripsModal(true),
@@ -13232,8 +13563,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   c.jsxs("span", { className: "hidden sm:inline text-[11px]", children: ["Lịch Sử (", (financeData.savedTrips || []).length, ")"] })
                 ]
               }),
-
-              // Nút Cài đặt
               c.jsx("button", {
                 type: "button",
                 onClick: () => setShowTripSettingsModal(true),
@@ -13258,67 +13587,85 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             // A. DẢI THÔNG TIN KỲ THU MUA (GIAO DIỆN SÁNG)
             // =====================================================================
             c.jsxs("div", {
-              className: "bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5",
+              className: "bg-white rounded-2xl border border-slate-200 p-3.5 sm:p-4 shadow-xs space-y-2.5",
               children: [
-                // Tên chuyến (chạm chỉnh sửa)
                 c.jsxs("div", {
-                  className: "flex items-center gap-2.5 flex-1 min-w-0 w-full sm:w-auto",
+                  className: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5",
                   children: [
-                    c.jsx("div", {
-                      className: "w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200",
-                      children: "🚢"
-                    }),
                     c.jsxs("div", {
-                      className: "flex-1 min-w-0",
+                      className: "flex items-center gap-2.5 flex-1 min-w-0 w-full sm:w-auto",
                       children: [
-                        c.jsx("input", {
-                          type: "text",
-                          value: tripName,
-                          onChange: e => {
-                            setTripName(e.target.value);
-                            updateActiveTrip({ name: e.target.value });
-                          },
-                          placeholder: "Tên kỳ thu mua tôm...",
-                          className: "text-sm sm:text-base font-black text-slate-900 bg-transparent outline-none w-full border-b border-transparent focus:border-emerald-500 transition-colors placeholder-slate-400"
+                        c.jsx("div", {
+                          className: "w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200",
+                          children: "🚢"
                         }),
-                        c.jsx("input", {
-                          type: "text",
-                          value: tripNote,
+                        c.jsxs("div", {
+                          className: "flex-1 min-w-0",
+                          children: [
+                            c.jsx("input", {
+                              type: "text",
+                              value: tripName,
+                              onChange: e => {
+                                setTripName(e.target.value);
+                                updateActiveTrip({ name: e.target.value });
+                              },
+                              placeholder: "Tên kỳ thu mua tôm...",
+                              className: "text-sm sm:text-base font-black text-slate-900 bg-transparent outline-none w-full border-b border-transparent focus:border-emerald-500 transition-colors placeholder-slate-400"
+                            }),
+                            c.jsx("input", {
+                              type: "text",
+                              value: tripNote,
+                              onChange: e => {
+                                setTripNote(e.target.value);
+                                updateActiveTrip({ note: e.target.value });
+                              },
+                              placeholder: "Thêm ghi chú chuyến (ví dụ: Xe 69C, ao Năm Lực, xuất chợ Bình Điền...)",
+                              className: "text-[11px] text-slate-500 bg-transparent outline-none w-full placeholder-slate-400 truncate mt-0.5"
+                            })
+                          ]
+                        })
+                      ]
+                    }),
+
+                    c.jsxs("div", {
+                      className: "flex items-center gap-1.5 w-full sm:w-auto justify-between sm:justify-end shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100",
+                      children: [
+                        filterMode === "DATE" && c.jsx("input", {
+                          type: "date",
+                          value: tripDate,
                           onChange: e => {
-                            setTripNote(e.target.value);
-                            updateActiveTrip({ note: e.target.value });
+                            setTripDate(e.target.value);
+                            updateActiveTrip({ startDate: e.target.value });
                           },
-                          placeholder: "Thêm ghi chú chuyến (ví dụ: Xe 69C, ao Năm Lực, xuất chợ Bình Điền...)",
-                          className: "text-[11px] text-slate-500 bg-transparent outline-none w-full placeholder-slate-400 truncate mt-0.5"
+                          className: "px-2.5 py-1.5 bg-slate-50 font-mono font-bold rounded-xl text-xs outline-none border border-slate-200 text-slate-800"
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => {
+                            const newMode = filterMode === "DATE" ? "ALL" : "DATE";
+                            setFilterMode(newMode);
+                            updateActiveTrip({ filterMode: newMode });
+                          },
+                          className: "px-3 py-1.5 rounded-xl text-[11px] font-black uppercase transition-all cursor-pointer " + (filterMode === "ALL" ? "bg-emerald-700 text-white shadow-xs" : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"),
+                          children: filterMode === "ALL" ? "🔄 Tự Động Tất Cả" : "📅 Lọc Theo Ngày"
                         })
                       ]
                     })
                   ]
                 }),
 
-                // Bộ chọn ngày & chế độ lọc phiếu
-                c.jsxs("div", {
-                  className: "flex items-center gap-1.5 w-full sm:w-auto justify-between sm:justify-end shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100",
+                // Alert if DATE filter hides sessions/sales from other dates
+                filterMode === "DATE" && (hiddenSessionsCount > 0 || hiddenSalesCount > 0) && c.jsxs("div", {
+                  onClick: () => {
+                    setFilterMode("ALL");
+                    updateActiveTrip({ filterMode: "ALL" });
+                  },
+                  className: "p-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl flex items-center justify-between gap-2 text-[11px] text-amber-900 font-bold cursor-pointer transition-colors",
                   children: [
-                    c.jsx("input", {
-                      type: "date",
-                      value: tripDate,
-                      onChange: e => {
-                        setTripDate(e.target.value);
-                        updateActiveTrip({ startDate: e.target.value });
-                      },
-                      className: "px-2.5 py-1.5 bg-slate-50 font-mono font-bold rounded-xl text-xs outline-none border border-slate-200 text-slate-800"
+                    c.jsxs("span", {
+                      children: ["⚡ Đang lọc riêng ngày ", tripDate, " — còn ", hiddenSessionsCount, " phiếu mua & ", hiddenSalesCount, " đơn bán ngày khác chưa tính."]
                     }),
-                    c.jsx("button", {
-                      type: "button",
-                      onClick: () => {
-                        const newMode = filterMode === "DATE" ? "ALL" : "DATE";
-                        setFilterMode(newMode);
-                        updateActiveTrip({ filterMode: newMode });
-                      },
-                      className: "px-2.5 py-1.5 rounded-xl text-[11px] font-black uppercase transition-all cursor-pointer " + (filterMode === "ALL" ? "bg-teal-700 text-white shadow-xs" : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200"),
-                      children: filterMode === "ALL" ? "Tất Cả Phiếu" : "Theo Ngày"
-                    })
+                    c.jsx("span", { className: "text-amber-700 underline shrink-0 font-black", children: "Gộp tất cả ➔" })
                   ]
                 })
               ]
@@ -13330,7 +13677,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             c.jsxs("div", {
               className: "relative rounded-3xl p-5 sm:p-6 overflow-hidden shadow-sm border " + (isProfit ? "bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 text-white border-emerald-500/40" : "bg-gradient-to-br from-rose-600 via-red-600 to-rose-700 text-white border-rose-500/40"),
               children: [
-                // Header thẻ
                 c.jsxs("div", {
                   className: "flex justify-between items-start mb-4 relative z-10",
                   children: [
@@ -13344,10 +13690,9 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                             c.jsx("span", { className: "text-xs font-black uppercase tracking-wider text-emerald-100", children: "Tôm Càng Xanh • Tự Doanh 100%" })
                           ]
                         }),
-                        c.jsx("p", { className: "text-[11px] text-white/80 font-medium", children: "Tự bỏ vốn • Quyết toán chi phí & doanh thu • Thu trọn 100% lợi nhuận" })
+                        c.jsx("p", { className: "text-[11px] text-white/85 font-medium", children: "Mọi khoản chi tiêu, đặt cọc, thu mua & xuất bán tự động đồng bộ" })
                       ]
                     }),
-                    // Badge lời / lỗ
                     c.jsx("span", {
                       className: "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-xs border bg-white/20 text-white border-white/30 backdrop-blur-xs",
                       children: isProfit ? ("🏆 CÓ LÃI +" + profitMarginPercent.toFixed(1) + "%") : ("⚠️ THÂM HỤT " + profitMarginPercent.toFixed(1) + "%")
@@ -13355,7 +13700,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Lợi Nhuận Ròng (Hero Amount)
                 c.jsxs("div", {
                   className: "my-3 relative z-10",
                   children: [
@@ -13377,19 +13721,17 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // 2 Cột Đối Ứng: Doanh Thu & Chi Phí
                 c.jsxs("div", {
                   className: "grid grid-cols-2 gap-3 pt-4 mt-4 border-t border-white/20 relative z-10",
                   children: [
-                    // Cột Doanh Thu
                     c.jsxs("div", {
                       className: "bg-black/15 rounded-2xl p-3 border border-white/20 space-y-1 backdrop-blur-xs",
                       children: [
                         c.jsxs("div", {
                           className: "flex justify-between items-center text-[10px] font-bold text-emerald-100 uppercase",
                           children: [
-                            c.jsx("span", { children: "📈 Tổng Doanh Thu" }),
-                            c.jsx("span", { className: "text-white font-mono", children: effectiveSales.length + " đơn" })
+                            c.jsx("span", { children: "📈 Tổng Tiền Thu" }),
+                            c.jsx("span", { className: "text-white font-mono", children: (effectiveSales.length + extraIncomes.length) + " mục" })
                           ]
                         }),
                         c.jsxs("div", {
@@ -13399,22 +13741,21 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                         c.jsxs("div", {
                           className: "text-[10px] text-emerald-100 flex justify-between",
                           children: [
-                            c.jsxs("span", { children: ["Xuất bán: ", _fmtKg(autoRevenueKg), " kg"] }),
+                            c.jsxs("span", { children: ["Bán tôm: ", _fmt(baseRevenue)] }),
                             totalExtraIncome > 0 ? c.jsxs("span", { className: "text-white font-mono", children: ["+", _fmt(totalExtraIncome)] }) : null
                           ]
                         })
                       ]
                     }),
 
-                    // Cột Chi Phí
                     c.jsxs("div", {
                       className: "bg-black/15 rounded-2xl p-3 border border-white/20 space-y-1 backdrop-blur-xs",
                       children: [
                         c.jsxs("div", {
                           className: "flex justify-between items-center text-[10px] font-bold text-orange-100 uppercase",
                           children: [
-                            c.jsx("span", { children: "📉 Tổng Chi Phí" }),
-                            c.jsx("span", { className: "text-white font-mono", children: (effectiveSessions.length + operatingExpenses.length) + " mục" })
+                            c.jsx("span", { children: "📉 Tổng Tiền Chi" }),
+                            c.jsx("span", { className: "text-white font-mono", children: (effectiveSessions.length + operatingExpenses.length + (includePondDeposits ? unweighedDepositFarmers.length : 0)) + " mục" })
                           ]
                         }),
                         c.jsxs("div", {
@@ -13422,10 +13763,10 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                           children: [_fmt(totalExpenses), " đ"]
                         }),
                         c.jsxs("div", {
-                          className: "text-[10px] text-orange-100 flex justify-between",
+                          className: "text-[10px] text-orange-100 flex justify-between gap-1",
                           children: [
-                            c.jsxs("span", { children: ["Mua tôm: ", _fmt(shrimpPurchaseMoney)] }),
-                            totalOperationExpenses > 0 ? c.jsxs("span", { className: "text-white font-mono", children: ["Phí: ", _fmt(totalOperationExpenses)] }) : null
+                            c.jsxs("span", { className: "truncate", children: ["Mua: ", _fmt(shrimpPurchaseMoney)] }),
+                            (totalOperationExpenses + countedPondDeposits) > 0 ? c.jsxs("span", { className: "text-white font-mono shrink-0", children: ["+", _fmt(totalOperationExpenses + countedPondDeposits)] }) : null
                           ]
                         })
                       ]
@@ -13433,9 +13774,9 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Dòng đối soát sản lượng & hao hụt
+                // Production balance & pending alerts strip
                 c.jsxs("div", {
-                  className: "flex justify-between items-center pt-3 mt-3 border-t border-white/20 text-xs text-white/90 font-bold relative z-10",
+                  className: "flex flex-wrap justify-between items-center gap-2 pt-3 mt-3 border-t border-white/20 text-xs text-white/90 font-bold relative z-10",
                   children: [
                     c.jsxs("span", {
                       children: [
@@ -13452,6 +13793,36 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                         _fmtKg(Math.abs(weightDiff)), " kg",
                         weightDiff !== 0 ? (" (" + Math.abs(weightDiffPercent).toFixed(1) + "%)") : ""
                       ]
+                    })
+                  ]
+                }),
+
+                (pendingMarketSales.length > 0 || pendingFactorySales.length > 0 || pendingReceivableDebt > 0 || countedPondDeposits > 0) && c.jsxs("div", {
+                  className: "flex flex-wrap gap-1.5 pt-2.5 mt-2.5 border-t border-white/15 relative z-10 text-[10px] font-black",
+                  children: [
+                    pendingMarketSales.length > 0 && c.jsxs("button", {
+                      type: "button",
+                      onClick: () => setMainTab("SELL"),
+                      className: "px-2.5 py-1 rounded-full bg-amber-300 text-amber-950 cursor-pointer hover:bg-amber-200 transition-colors",
+                      children: ["🏪 ", pendingMarketSales.length, " đơn chợ đang bán (", totalPendingMarketPhi, " phi)"]
+                    }),
+                    pendingFactorySales.length > 0 && c.jsxs("button", {
+                      type: "button",
+                      onClick: () => setMainTab("SELL"),
+                      className: "px-2.5 py-1 rounded-full bg-sky-200 text-sky-950 cursor-pointer hover:bg-sky-100 transition-colors",
+                      children: ["🏢 ", pendingFactorySales.length, " đơn cty chờ kết quả (", _fmtKg(totalPendingFactoryKg), " kg)"]
+                    }),
+                    pendingReceivableDebt > 0 && c.jsxs("button", {
+                      type: "button",
+                      onClick: () => setMainTab("SELL"),
+                      className: "px-2.5 py-1 rounded-full bg-white/25 text-white border border-white/30 cursor-pointer",
+                      children: ["💵 Khách còn nợ: ", _fmt(pendingReceivableDebt), " đ"]
+                    }),
+                    countedPondDeposits > 0 && c.jsxs("button", {
+                      type: "button",
+                      onClick: () => setMainTab("BUY"),
+                      className: "px-2.5 py-1 rounded-full bg-white/25 text-white border border-white/30 cursor-pointer",
+                      children: ["📑 Cọc ao chưa cân: ", _fmt(countedPondDeposits), " đ"]
                     })
                   ]
                 })
@@ -13481,7 +13852,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                     className: "px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer " + (mainTab === "LEDGER" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-white/60"),
                     children: [
                       c.jsx("span", { children: "💸" }),
-                      c.jsxs("span", { children: ["Sổ Thu - Chi", allTransactions.length > 0 ? " (" + allTransactions.length + ")" : ""] })
+                      c.jsxs("span", { children: ["Sổ Thu - Chi", unifiedCashflowEntries.length > 0 ? " (" + unifiedCashflowEntries.length + ")" : ""] })
                     ]
                   }),
                   c.jsxs("button", {
@@ -13490,7 +13861,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                     className: "px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer " + (mainTab === "BUY" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-white/60"),
                     children: [
                       c.jsx("span", { children: "🦐" }),
-                      c.jsxs("span", { children: ["Mua Tôm Ao", effectiveSessions.length > 0 ? " (" + effectiveSessions.length + ")" : ""] })
+                      c.jsxs("span", { children: ["Mua Tôm Ao", (effectiveSessions.length + unweighedDepositFarmers.length) > 0 ? " (" + (effectiveSessions.length + unweighedDepositFarmers.length) + ")" : ""] })
                     ]
                   }),
                   c.jsxs("button", {
@@ -13499,7 +13870,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                     className: "px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer " + (mainTab === "SELL" ? "bg-white text-emerald-800 shadow-sm" : "text-slate-600 hover:text-slate-900 hover:bg-white/60"),
                     children: [
                       c.jsx("span", { children: "🛒" }),
-                      c.jsxs("span", { children: ["Xuất Bán Tôm", effectiveSales.length > 0 ? " (" + effectiveSales.length + ")" : ""] })
+                      c.jsxs("span", { children: ["Xuất Bán Tôm", (effectiveSales.length + pendingMarketSales.length + pendingFactorySales.length) > 0 ? " (" + (effectiveSales.length + pendingMarketSales.length + pendingFactorySales.length) + ")" : ""] })
                     ]
                   }),
                   c.jsxs("button", {
@@ -13521,7 +13892,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             mainTab === "PL" && c.jsxs("div", {
               className: "space-y-4",
               children: [
-                // Quick Action Bar (Sao chép, Đồng bộ)
                 c.jsxs("div", {
                   className: "grid grid-cols-2 gap-2.5",
                   children: [
@@ -13557,9 +13927,9 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                           children: [
                             c.jsx("h2", {
                               className: "text-xs sm:text-sm font-black uppercase text-slate-900 flex items-center gap-1.5",
-                              children: [c.jsx("span", { children: "📑" }), "Bảng Kê Quyết Toán Dòng Tiền Chuyến Đi"]
+                              children: [c.jsx("span", { children: "📑" }), "Bảng Kê Quyết Toán Dòng Tiền Tự Động"]
                             }),
-                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Đối soát thu chi: Doanh thu bán tôm - Tiền mua ao - Chi phí vận hành" })
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Tự động cộng mọi khoản bán, thu mua ao, đặt cọc & chi tiêu vận hành" })
                           ]
                         }),
                         c.jsx("button", {
@@ -13571,7 +13941,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       ]
                     }),
 
-                    // Bảng chi tiết
                     c.jsx("div", {
                       className: "overflow-x-auto rounded-2xl border border-slate-200",
                       children: c.jsxs("table", {
@@ -13583,16 +13952,16 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                               children: [
                                 c.jsx("th", { className: "p-3", children: "Mục Kế Toán" }),
                                 c.jsx("th", { className: "p-3 text-right", children: "Số Tiền" }),
-                                c.jsx("th", { className: "p-3 hidden sm:table-cell", children: "Diễn Giải Chi Tiết" })
+                                c.jsx("th", { className: "p-3 hidden sm:table-cell", children: "Diễn Giải Tự Động" })
                               ]
                             })
                           }),
                           c.jsxs("tbody", {
                             className: "divide-y divide-slate-100 font-bold",
                             children: [
-                              // 1. Doanh thu xuất bán tôm
                               c.jsxs("tr", {
-                                className: "hover:bg-slate-50/80 transition-colors",
+                                onClick: () => setMainTab("SELL"),
+                                className: "hover:bg-slate-50/80 transition-colors cursor-pointer",
                                 children: [
                                   c.jsxs("td", {
                                     className: "p-3",
@@ -13607,20 +13976,20 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                                   }),
                                   c.jsxs("td", {
                                     className: "p-3 text-slate-500 text-[11px] hidden sm:table-cell",
-                                    children: ["Bán lẻ: ", _fmt(retailRevenue), " đ • Chợ: ", _fmt(marketRevenue), " đ • Cty: ", _fmt(factoryRevenue), " đ"]
+                                    children: ["Lẻ: ", _fmt(retailRevenue), " đ • Chợ: ", _fmt(marketRevenue), " đ • Cty: ", _fmt(factoryRevenue), " đ"]
                                   })
                                 ]
                               }),
 
-                              // 2. Khoản thu ngoài
                               totalExtraIncome > 0 && c.jsxs("tr", {
-                                className: "hover:bg-slate-50/80 transition-colors",
+                                onClick: () => setMainTab("LEDGER"),
+                                className: "hover:bg-slate-50/80 transition-colors cursor-pointer",
                                 children: [
                                   c.jsxs("td", {
                                     className: "p-3",
                                     children: [
                                       c.jsx("span", { className: "text-emerald-700 font-black", children: "2. Khoản thu phát sinh ngoài (+)" }),
-                                      c.jsxs("span", { className: "block text-[10px] text-slate-500 font-normal", children: [extraIncomes.length, " khoản thu"] })
+                                      c.jsxs("span", { className: "block text-[10px] text-slate-500 font-normal", children: [extraIncomes.length, " khoản thu từ sổ Thu-Chi"] })
                                     ]
                                   }),
                                   c.jsxs("td", {
@@ -13634,9 +14003,9 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                                 ]
                               }),
 
-                              // 3. Tiền mua tôm ao
                               c.jsxs("tr", {
-                                className: "hover:bg-slate-50/80 transition-colors",
+                                onClick: () => setMainTab("BUY"),
+                                className: "hover:bg-slate-50/80 transition-colors cursor-pointer",
                                 children: [
                                   c.jsxs("td", {
                                     className: "p-3",
@@ -13651,19 +14020,41 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                                   }),
                                   c.jsx("td", {
                                     className: "p-3 text-slate-500 text-[11px] hidden sm:table-cell",
-                                    children: "Chi trả trực tiếp cho các chủ ao tôm"
+                                    children: "Tự động cộng từ phiếu cân Cân Tôm"
                                   })
                                 ]
                               }),
 
-                              // 4. Chi phí vận hành
-                              c.jsxs("tr", {
-                                className: "hover:bg-slate-50/80 transition-colors",
+                              countedPondDeposits > 0 && c.jsxs("tr", {
+                                onClick: () => setMainTab("BUY"),
+                                className: "hover:bg-slate-50/80 transition-colors cursor-pointer",
                                 children: [
                                   c.jsxs("td", {
                                     className: "p-3",
                                     children: [
-                                      c.jsx("span", { className: "text-orange-600 font-black", children: "4. Chi phí vận hành chuyến (-)" }),
+                                      c.jsx("span", { className: "text-amber-700 font-black", children: "4. Tiền đặt cọc ao chưa cân (-)" }),
+                                      c.jsxs("span", { className: "block text-[10px] text-slate-500 font-normal", children: [unweighedDepositFarmers.length, " ao đã đặt cọc chờ ngày cân"] })
+                                    ]
+                                  }),
+                                  c.jsxs("td", {
+                                    className: "p-3 text-right font-mono font-black text-amber-700 text-sm",
+                                    children: ["- ", _fmt(countedPondDeposits), " đ"]
+                                  }),
+                                  c.jsx("td", {
+                                    className: "p-3 text-slate-500 text-[11px] hidden sm:table-cell",
+                                    children: "Tự động từ Chủ Ao • Tự cấn trừ khi cân xong"
+                                  })
+                                ]
+                              }),
+
+                              c.jsxs("tr", {
+                                onClick: () => setMainTab("LEDGER"),
+                                className: "hover:bg-slate-50/80 transition-colors cursor-pointer",
+                                children: [
+                                  c.jsxs("td", {
+                                    className: "p-3",
+                                    children: [
+                                      c.jsx("span", { className: "text-orange-600 font-black", children: (countedPondDeposits > 0 ? "5. " : "4. ") + "Chi phí vận hành chuyến (-)" }),
                                       c.jsxs("span", { className: "block text-[10px] text-slate-500 font-normal", children: [operatingExpenses.length, " khoản chi (xe, công kéo, đá, phà...)"] })
                                     ]
                                   }),
@@ -13673,12 +14064,11 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                                   }),
                                   c.jsx("td", {
                                     className: "p-3 text-slate-500 text-[11px] hidden sm:table-cell",
-                                    children: "Toàn bộ chi phí đưa tôm từ ao về điểm bán"
+                                    children: "Chi phí vận hành ghi nhận từ Sổ Thu-Chi"
                                   })
                                 ]
                               }),
 
-                              // 5. Kết quả Lợi Nhuận Ròng
                               c.jsxs("tr", {
                                 className: "bg-slate-50 font-black text-xs border-t-2 border-slate-300",
                                 children: [
@@ -13686,7 +14076,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                                     className: "p-3.5",
                                     children: [
                                       c.jsx("span", { className: "text-slate-900 uppercase tracking-wider block", children: "🏆 LỢI NHUẬN RÒNG THỰC THU (100% LÃI VỀ TÚI)" }),
-                                      c.jsx("span", { className: "text-[10px] text-slate-500 font-normal", children: "Tổng Doanh Thu trừ Toàn Bộ Chi Phí" })
+                                      c.jsx("span", { className: "text-[10px] text-slate-500 font-normal", children: "Tổng Tiền Thu trừ Toàn Bộ Tiền Chi" })
                                     ]
                                   }),
                                   c.jsxs("td", {
@@ -13705,7 +14095,61 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       })
                     }),
 
-                    // Nút Khóa & Quyết Toán Chuyến Đi
+                    // Pending Orders & Receivables Monitor inside PL
+                    (pendingMarketSales.length > 0 || pendingFactorySales.length > 0 || pendingReceivableDebt > 0 || payableFarmerDebt > 0) && c.jsxs("div", {
+                      className: "p-3.5 bg-amber-50/70 rounded-2xl border border-amber-200 space-y-2 text-xs",
+                      children: [
+                        c.jsx("div", {
+                          className: "font-black uppercase text-amber-900 text-[11px] flex items-center gap-1.5",
+                          children: [c.jsx("span", { children: "⏳" }), "Đơn Đang Chờ Chốt Tiền & Công Nợ (Tự Động Theo Dõi)"]
+                        }),
+                        c.jsxs("div", {
+                          className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
+                          children: [
+                            (pendingMarketSales.length > 0 || pendingFactorySales.length > 0) && c.jsxs("div", {
+                              onClick: () => setMainTab("SELL"),
+                              className: "p-2.5 bg-white rounded-xl border border-amber-200 flex items-center justify-between cursor-pointer hover:border-amber-400",
+                              children: [
+                                c.jsxs("div", {
+                                  children: [
+                                    c.jsx("span", { className: "font-black text-slate-800 block", children: (pendingMarketSales.length + pendingFactorySales.length) + " đơn chưa chốt tiền" }),
+                                    c.jsx("span", { className: "text-[10px] text-slate-500", children: "Chợ đang bán: " + pendingMarketSales.length + " • Cty chờ kq: " + pendingFactorySales.length })
+                                  ]
+                                }),
+                                c.jsx("span", { className: "px-2 py-1 bg-amber-500 text-white rounded-lg text-[10px] font-black uppercase", children: "Chốt ngay ➔" })
+                              ]
+                            }),
+                            pendingReceivableDebt > 0 && c.jsxs("div", {
+                              onClick: () => setMainTab("SELL"),
+                              className: "p-2.5 bg-white rounded-xl border border-blue-200 flex items-center justify-between cursor-pointer",
+                              children: [
+                                c.jsxs("div", {
+                                  children: [
+                                    c.jsx("span", { className: "font-black text-slate-800 block", children: "Công nợ khách phải thu" }),
+                                    c.jsx("span", { className: "text-[10px] text-slate-500", children: debtSalesList.length + " đơn chưa thu đủ" })
+                                  ]
+                                }),
+                                c.jsxs("span", { className: "font-mono font-black text-blue-700", children: [_fmt(pendingReceivableDebt), " đ"] })
+                              ]
+                            }),
+                            payableFarmerDebt > 0 && c.jsxs("div", {
+                              onClick: () => setMainTab("BUY"),
+                              className: "p-2.5 bg-white rounded-xl border border-orange-200 flex items-center justify-between cursor-pointer",
+                              children: [
+                                c.jsxs("div", {
+                                  children: [
+                                    c.jsx("span", { className: "font-black text-slate-800 block", children: "Tiền ao tôm chưa trả hết" }),
+                                    c.jsx("span", { className: "text-[10px] text-slate-500", children: "Đã tính 100% vào chi phí mua tôm" })
+                                  ]
+                                }),
+                                c.jsxs("span", { className: "font-mono font-black text-orange-600", children: [_fmt(payableFarmerDebt), " đ"] })
+                              ]
+                            })
+                          ]
+                        })
+                      ]
+                    }),
+
                     c.jsx("div", {
                       className: "pt-2",
                       children: c.jsxs("button", {
@@ -13724,21 +14168,20 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             }),
 
             // =====================================================================
-            // TAB 2: SỔ THU - CHI VẬN HÀNH (GIAO DIỆN SÁNG)
+            // TAB 2: SỔ THU - CHI HỢP NHẤT (TỰ ĐỘNG + GHI CHÉP TAY)
             // =====================================================================
             mainTab === "LEDGER" && c.jsxs("div", {
               className: "space-y-4",
               children: [
-                // 3 Thẻ Tóm Tắt Dòng Tiền
                 c.jsxs("div", {
                   className: "grid grid-cols-2 sm:grid-cols-3 gap-2.5",
                   children: [
                     c.jsxs("div", {
                       className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
                       children: [
-                        c.jsx("span", { className: "text-[10px] font-bold text-orange-600 uppercase block", children: "Tổng Chi Vận Hành" }),
-                        c.jsxs("div", { className: "font-mono font-black text-xl text-orange-600 my-0.5", children: ["- ", _fmt(totalOperationExpenses), " đ"] }),
-                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [operatingExpenses.length, " khoản chi ra"] })
+                        c.jsx("span", { className: "text-[10px] font-bold text-orange-600 uppercase block", children: "Tổng Chi Vận Hành + Cọc" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-orange-600 my-0.5", children: ["- ", _fmt(totalOperationExpenses + countedPondDeposits), " đ"] }),
+                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [operatingExpenses.length, " chi vận hành", countedPondDeposits > 0 ? (" + " + unweighedDepositFarmers.length + " cọc ao") : ""] })
                       ]
                     }),
                     c.jsxs("div", {
@@ -13746,62 +14189,83 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       children: [
                         c.jsx("span", { className: "text-[10px] font-bold text-emerald-700 uppercase block", children: "Tổng Thu Ngoài" }),
                         c.jsxs("div", { className: "font-mono font-black text-xl text-emerald-700 my-0.5", children: ["+ ", _fmt(totalExtraIncome), " đ"] }),
-                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [extraIncomes.length, " khoản thu vào"] })
+                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [extraIncomes.length, " khoản thu ghi thêm"] })
                       ]
                     }),
                     c.jsxs("div", {
                       className: "col-span-2 sm:col-span-1 bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
                       children: [
-                        c.jsx("span", { className: "text-[10px] font-bold text-slate-600 uppercase block", children: "Chênh Lệch Dòng Tiền Phụ" }),
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-600 uppercase block", children: "Toàn Bộ Dòng Tiền (Gồm Mua/Bán)" }),
                         c.jsxs("div", {
-                          className: "font-mono font-black text-xl my-0.5 " + (totalExtraIncome >= totalOperationExpenses ? "text-emerald-700" : "text-orange-600"),
-                          children: [(totalExtraIncome >= totalOperationExpenses ? "+ " : "- ") + _fmt(Math.abs(totalExtraIncome - totalOperationExpenses)), " đ"]
+                          className: "font-mono font-black text-xl my-0.5 " + (isProfit ? "text-emerald-700" : "text-rose-600"),
+                          children: [(isProfit ? "+ " : "- ") + _fmt(Math.abs(netProfit)), " đ"]
                         }),
-                        c.jsx("span", { className: "text-[10px] text-slate-500", children: "Thu trừ chi phí" })
+                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [autoBuyEntryCount, " chi mua • ", autoSellEntryCount, " thu bán"] })
                       ]
                     })
                   ]
                 }),
 
-                // Thanh Tìm Kiếm & Bộ Lọc
+                // Filter & Search + Auto toggle
                 c.jsxs("div", {
-                  className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row gap-2 justify-between items-stretch sm:items-center",
+                  className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs space-y-2.5",
                   children: [
-                    // Tabs phân loại
                     c.jsxs("div", {
-                      className: "flex items-center gap-1 p-1 bg-slate-100 rounded-xl text-xs font-bold shrink-0 border border-slate-200",
+                      className: "flex flex-wrap items-center justify-between gap-2",
                       children: [
-                        c.jsxs("button", {
-                          type: "button",
-                          onClick: () => setThuChiFilterTab("ALL"),
-                          className: "px-3 py-1 rounded-lg transition-all cursor-pointer " + (thuChiFilterTab === "ALL" ? "bg-white text-slate-900 shadow-xs font-black" : "text-slate-600 hover:text-slate-900"),
-                          children: ["Tất cả (", allTransactions.length, ")"]
+                        c.jsxs("div", {
+                          className: "flex items-center gap-1 p-1 bg-slate-100 rounded-xl text-[11px] font-bold border border-slate-200 overflow-x-auto",
+                          children: [
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => setThuChiFilterTab("ALL"),
+                              className: "px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap " + (thuChiFilterTab === "ALL" ? "bg-white text-slate-900 shadow-xs font-black" : "text-slate-600 hover:text-slate-900"),
+                              children: ["Tất cả (", unifiedCashflowEntries.length, ")"]
+                            }),
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => setThuChiFilterTab("EXPENSE"),
+                              className: "px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap " + (thuChiFilterTab === "EXPENSE" ? "bg-orange-600 text-white font-black" : "text-orange-600 hover:text-orange-700"),
+                              children: ["Tiền Chi"]
+                            }),
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => setThuChiFilterTab("INCOME"),
+                              className: "px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap " + (thuChiFilterTab === "INCOME" ? "bg-emerald-600 text-white font-black" : "text-emerald-700 hover:text-emerald-800"),
+                              children: ["Tiền Thu"]
+                            }),
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => { setShowAutoInLedger(true); setThuChiFilterTab("BUY"); },
+                              className: "px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap " + (thuChiFilterTab === "BUY" ? "bg-amber-600 text-white font-black" : "text-amber-700 hover:text-amber-800"),
+                              children: ["Mua Tôm (", autoBuyEntryCount, ")"]
+                            }),
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => { setShowAutoInLedger(true); setThuChiFilterTab("SELL"); },
+                              className: "px-2.5 py-1 rounded-lg transition-all cursor-pointer whitespace-nowrap " + (thuChiFilterTab === "SELL" ? "bg-teal-600 text-white font-black" : "text-teal-700 hover:text-teal-800"),
+                              children: ["Bán Tôm (", autoSellEntryCount, ")"]
+                            })
+                          ]
                         }),
                         c.jsxs("button", {
                           type: "button",
-                          onClick: () => setThuChiFilterTab("EXPENSE"),
-                          className: "px-3 py-1 rounded-lg transition-all cursor-pointer " + (thuChiFilterTab === "EXPENSE" ? "bg-orange-600 text-white font-black" : "text-orange-600 hover:text-orange-700"),
-                          children: ["Khoản chi (", operatingExpenses.length, ")"]
-                        }),
-                        c.jsxs("button", {
-                          type: "button",
-                          onClick: () => setThuChiFilterTab("INCOME"),
-                          className: "px-3 py-1 rounded-lg transition-all cursor-pointer " + (thuChiFilterTab === "INCOME" ? "bg-emerald-600 text-white font-black" : "text-emerald-700 hover:text-emerald-800"),
-                          children: ["Khoản thu (", extraIncomes.length, ")"]
+                          onClick: () => setShowAutoInLedger(!showAutoInLedger),
+                          className: "px-2.5 py-1.5 rounded-xl text-[10px] font-black border cursor-pointer " + (showAutoInLedger ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"),
+                          children: showAutoInLedger ? "✓ Đang hiện Mua & Bán tự động" : "Chỉ hiện Thu-Chi ghi tay"
                         })
                       ]
                     }),
 
-                    // Ô tìm kiếm
                     c.jsxs("div", {
-                      className: "flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 flex-1 max-w-sm",
+                      className: "flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 w-full",
                       children: [
                         c.jsx("span", { className: "text-slate-400 text-xs", children: "🔍" }),
                         c.jsx("input", {
                           type: "text",
                           value: thuChiSearchQuery,
                           onChange: e => setThuChiSearchQuery(e.target.value),
-                          placeholder: "Tìm khoản chi, người nhận...",
+                          placeholder: "Tìm khoản chi, tên chủ ao, khách mua, người nhận...",
                           className: "bg-transparent text-xs outline-none w-full text-slate-800 placeholder-slate-400"
                         }),
                         thuChiSearchQuery && c.jsx("button", {
@@ -13815,20 +14279,21 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Danh Sách Giao Dịch Thu - Chi
                 displayedTransactions.length === 0 ? c.jsxs("div", {
                   className: "p-10 bg-white rounded-3xl border-2 border-dashed border-slate-200 text-center space-y-3",
                   children: [
                     c.jsx("span", { className: "text-3xl block", children: "📝" }),
-                    c.jsx("p", { className: "font-bold text-xs text-slate-500", children: "Chưa có khoản thu hoặc chi nào trong mục này." }),
-                    c.jsx("p", { className: "text-[11px] text-slate-400 italic", children: "Bấm nút dấu '+' ở góc dưới bên phải màn hình để ghi chép nhanh." })
+                    c.jsx("p", { className: "font-bold text-xs text-slate-500", children: "Chưa có giao dịch nào trong mục này." }),
+                    c.jsx("p", { className: "text-[11px] text-slate-400 italic", children: "Mọi phiếu cân, đơn bán và thu-chi bấm dấu '+' ở góc dưới bên phải sẽ tự động hiển thị tại đây." })
                   ]
                 }) : c.jsx("div", {
                   className: "space-y-2",
-                  children: displayedTransactions.map(tx => {
-                    const isIncome = tx.type === "INCOME";
+                  children: displayedTransactions.map(entry => {
+                    const isIncome = entry.flow === "INCOME";
+                    const isAuto = entry.sourceType !== "MANUAL";
+                    const badgeLabel = entry.sourceType === "AUTO_BUY" ? "MUA TÔM" : (entry.sourceType === "AUTO_DEPOSIT" ? "CỌC AO" : (entry.sourceType === "AUTO_SELL" ? "BÁN TÔM" : (isIncome ? "THU" : "CHI")));
                     return c.jsxs("div", {
-                      key: tx.id,
+                      key: entry.id,
                       className: "p-3.5 bg-white rounded-2xl border border-slate-200/90 flex items-center justify-between gap-3 text-xs shadow-xs hover:border-slate-300 transition-all",
                       children: [
                         c.jsxs("div", {
@@ -13836,27 +14301,32 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                           children: [
                             c.jsx("div", {
                               className: "w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm shrink-0 " + (isIncome ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-orange-50 text-orange-600 border border-orange-200"),
-                              children: isIncome ? "➕" : "➖"
+                              children: entry.sourceType === "AUTO_BUY" ? "🦐" : (entry.sourceType === "AUTO_DEPOSIT" ? "📑" : (entry.sourceType === "AUTO_SELL" ? "🛒" : (isIncome ? "➕" : "➖")))
                             }),
                             c.jsxs("div", {
                               className: "min-w-0 space-y-0.5",
                               children: [
                                 c.jsxs("div", {
-                                  className: "font-black text-slate-900 flex items-center gap-1.5 truncate",
+                                  className: "font-black text-slate-900 flex items-center gap-1.5 flex-wrap",
                                   children: [
                                     c.jsx("span", {
-                                      className: "text-[9px] font-black uppercase px-1.5 py-0.2 rounded " + (isIncome ? "bg-emerald-600 text-white" : "bg-orange-600 text-white"),
-                                      children: isIncome ? "THU" : "CHI"
+                                      className: "text-[9px] font-black uppercase px-1.5 py-0.5 rounded " + (isIncome ? "bg-emerald-600 text-white" : (entry.sourceType === "AUTO_DEPOSIT" ? "bg-amber-600 text-white" : "bg-orange-600 text-white")),
+                                      children: badgeLabel
                                     }),
-                                    c.jsx("span", { className: "truncate", children: tx.category })
+                                    isAuto && c.jsx("span", {
+                                      className: "text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200",
+                                      children: "Tự động"
+                                    }),
+                                    c.jsx("span", { className: "truncate", children: entry.category })
                                   ]
                                 }),
-                                (tx.person || tx.note) ? c.jsxs("div", {
+                                (entry.person || entry.note || entry.date) ? c.jsxs("div", {
                                   className: "text-[10px] text-slate-500 truncate flex items-center gap-1.5",
                                   children: [
-                                    tx.person ? c.jsxs("span", { children: ["👤 ", tx.person] }) : null,
-                                    (tx.person && tx.note) ? c.jsx("span", { children: "•" }) : null,
-                                    tx.note ? c.jsxs("span", { children: ["📝 ", tx.note] }) : null
+                                    entry.person ? c.jsxs("span", { children: ["👤 ", entry.person] }) : null,
+                                    (entry.person && entry.note) ? c.jsx("span", { children: "•" }) : null,
+                                    entry.note ? c.jsxs("span", { children: ["📝 ", entry.note] }) : null,
+                                    entry.date ? c.jsxs("span", { className: "font-mono opacity-80", children: ["• ", new Date(entry.date).toLocaleDateString("vi-VN")] }) : null
                                   ]
                                 }) : null
                               ]
@@ -13868,21 +14338,30 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                           children: [
                             c.jsxs("span", {
                               className: "font-mono font-black text-sm " + (isIncome ? "text-emerald-700" : "text-orange-600"),
-                              children: [(isIncome ? "+ " : "- ") + _fmt(tx.amount), " đ"]
+                              children: [(isIncome ? "+ " : "- ") + _fmt(entry.amount), " đ"]
                             }),
-                            c.jsx("button", {
+                            !isAuto ? c.jsxs(c.Fragment, {
+                              children: [
+                                c.jsx("button", {
+                                  type: "button",
+                                  onClick: () => handleOpenEditThuChi(entry.raw),
+                                  className: "p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer",
+                                  title: "Sửa",
+                                  children: c.jsx("span", { children: "✎" })
+                                }),
+                                c.jsx("button", {
+                                  type: "button",
+                                  onClick: () => handleDeleteThuChi(entry.id),
+                                  className: "p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg cursor-pointer",
+                                  title: "Xóa",
+                                  children: c.jsx(xm, { size: 15 })
+                                })
+                              ]
+                            }) : c.jsx("button", {
                               type: "button",
-                              onClick: () => handleOpenEditThuChi(tx),
-                              className: "p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer",
-                              title: "Sửa",
-                              children: c.jsx("span", { children: "✎" })
-                            }),
-                            c.jsx("button", {
-                              type: "button",
-                              onClick: () => handleDeleteThuChi(tx.id),
-                              className: "p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg cursor-pointer",
-                              title: "Xóa",
-                              children: c.jsx(xm, { size: 15 })
+                              onClick: () => setMainTab(entry.flow === "INCOME" ? "SELL" : "BUY"),
+                              className: "px-2 py-1 text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg cursor-pointer",
+                              children: "Xem"
                             })
                           ]
                         })
@@ -13894,12 +14373,11 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             }),
 
             // =====================================================================
-            // TAB 3: CHI PHÍ MUA TÔM BỜ AO (GIAO DIỆN SÁNG)
+            // TAB 3: CHI PHÍ MUA TÔM BỜ AO & CỌC AO (TỰ ĐỘNG)
             // =====================================================================
             mainTab === "BUY" && c.jsxs("div", {
               className: "space-y-4",
               children: [
-                // Thẻ Thống Kê Nguồn Mua
                 c.jsxs("div", {
                   className: "grid grid-cols-2 sm:grid-cols-4 gap-2.5",
                   children: [
@@ -13922,9 +14400,9 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                     c.jsxs("div", {
                       className: "bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs",
                       children: [
-                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Giá Mua Bình Quân" }),
-                        c.jsxs("div", { className: "font-mono font-black text-xl text-slate-900 my-0.5", children: [_fmt(Math.round(avgPurchasePrice)), " đ"] }),
-                        c.jsx("span", { className: "text-[10px] text-slate-500", children: "trên 1 kg tôm" })
+                        c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Đặt Cọc Ao Chờ Cân" }),
+                        c.jsxs("div", { className: "font-mono font-black text-xl text-amber-700 my-0.5", children: [_fmt(countedPondDeposits), " đ"] }),
+                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [unweighedDepositFarmers.length, " ao chưa cân"] })
                       ]
                     }),
                     c.jsxs("div", {
@@ -13953,7 +14431,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Nhập tay nếu tắt tự động
                 !isShrimpAuto && c.jsxs("div", {
                   className: "bg-white p-4 rounded-3xl border border-orange-200 shadow-xs space-y-2",
                   children: [
@@ -13968,7 +14445,47 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Danh sách chi tiết các phiếu cân đã liên kết
+                // Active unweighed pond deposits list
+                unweighedDepositFarmers.length > 0 && c.jsxs("div", {
+                  className: "bg-white rounded-3xl border border-amber-200 p-4 sm:p-5 shadow-xs space-y-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center border-b border-amber-100 pb-3 gap-2",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-amber-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "📑" }), "Tiền Đặt Cọc Ao Tôm Đang Chờ Cân"] }),
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Tự động lấy từ Chủ Ao • Khi cân xong sẽ tự cấn trừ vào phiếu cân, không bị tính trùng" })
+                          ]
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => updateActiveTrip({ includePondDeposits: !includePondDeposits }),
+                          className: "px-2.5 py-1.5 rounded-xl text-[10px] font-black border cursor-pointer shrink-0 " + (includePondDeposits ? "bg-amber-600 text-white border-amber-600" : "bg-slate-100 text-slate-600 border-slate-200"),
+                          children: includePondDeposits ? "✓ Đang tính vào Chi" : "Tạm ẩn"
+                        })
+                      ]
+                    }),
+                    c.jsx("div", {
+                      className: "space-y-2",
+                      children: unweighedDepositFarmers.map(fm => c.jsxs("div", {
+                        key: fm.id,
+                        className: "p-3 bg-amber-50/70 rounded-2xl border border-amber-200 flex items-center justify-between gap-3 text-xs",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("span", { className: "font-black text-slate-900 block", children: fm.name || "Chủ ao" }),
+                              c.jsxs("span", { className: "text-[10px] text-slate-500", children: [fm.shrimpType || "Tôm càng xanh", fm.weighingDate ? (" • Dự kiến cân: " + fm.weighingDate) : ""] })
+                            ]
+                          }),
+                          c.jsxs("span", { className: "font-mono font-black text-sm text-amber-700", children: [_fmt(fm.defaultDeposit), " đ"] })
+                        ]
+                      }))
+                    })
+                  ]
+                }),
+
+                // Linked Purchase Sessions
                 c.jsxs("div", {
                   className: "bg-white rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3",
                   children: [
@@ -13977,15 +14494,26 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       children: [
                         c.jsxs("div", {
                           children: [
-                            c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-slate-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "🦐" }), "Danh Sách Phiếu Cân Mua Tôm Đã Liên Kết"] }),
-                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Dữ liệu được đồng bộ 100% từ mô-đun Cân Tôm tại bờ ao" })
+                            c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-slate-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "🦐" }), "Danh Sách Phiếu Cân Mua Tôm Tự Động"] }),
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Mỗi phiếu cân mới sẽ tự động cộng vào tổng chi thu mua" })
                           ]
                         }),
-                        c.jsx("button", {
-                          type: "button",
-                          onClick: () => setShowSessionsModal(true),
-                          className: "px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-xl text-xs font-bold border border-orange-200 cursor-pointer",
-                          children: "Tùy chọn phiếu ➔"
+                        c.jsxs("div", {
+                          className: "flex items-center gap-1.5",
+                          children: [
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setRoute(re.WEIGHING),
+                              className: "px-2.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-xl text-[11px] font-black cursor-pointer",
+                              children: "+ Cân mới"
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setShowSessionsModal(true),
+                              className: "px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-xl text-xs font-bold border border-orange-200 cursor-pointer",
+                              children: "Tùy chọn ➔"
+                            })
+                          ]
                         })
                       ]
                     }),
@@ -13994,16 +14522,15 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       className: "p-8 text-center text-slate-400 text-xs space-y-2",
                       children: [
                         c.jsx("span", { className: "text-2xl block", children: "⚖️" }),
-                        c.jsx("p", { children: "Chưa có phiếu cân thu mua nào được liên kết cho ngày này." }),
-                        c.jsx("button", {
+                        c.jsx("p", { children: filterMode === "DATE" ? "Chưa có phiếu cân thu mua nào trong ngày đã chọn." : "Chưa có phiếu cân thu mua nào." }),
+                        filterMode === "DATE" && c.jsx("button", {
                           type: "button",
                           onClick: () => {
-                            const newMode = filterMode === "DATE" ? "ALL" : "DATE";
-                            setFilterMode(newMode);
-                            updateActiveTrip({ filterMode: newMode });
+                            setFilterMode("ALL");
+                            updateActiveTrip({ filterMode: "ALL" });
                           },
                           className: "text-orange-600 hover:underline font-bold text-xs cursor-pointer",
-                          children: "Chuyển sang chế độ: Tất Cả Phiếu"
+                          children: "Chuyển sang chế độ: Tự Động Tất Cả"
                         })
                       ]
                     }) : c.jsx("div", {
@@ -14022,8 +14549,17 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                               c.jsxs("div", {
                                 className: "min-w-0",
                                 children: [
-                                  c.jsx("span", { className: "font-black text-slate-900 text-sm block truncate", children: s.farmerName || "Ao tôm" }),
-                                  c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [new Date(s.date || Date.now()).toLocaleDateString("vi-VN"), " • ", _fmtKg(s.totalNet || s.totalGross), " kg", s.truck ? (" • Xe: " + s.truck) : ""] })
+                                  c.jsxs("div", {
+                                    className: "flex items-center gap-1.5",
+                                    children: [
+                                      c.jsx("span", { className: "font-black text-slate-900 text-sm truncate", children: s.farmerName || "Ao tôm" }),
+                                      c.jsx("span", {
+                                        className: "text-[9px] font-black px-1.5 py-0.5 rounded " + (s.isPaidFull ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"),
+                                        children: s.isPaidFull ? "Đã trả đủ" : "Chưa trả hết"
+                                      })
+                                    ]
+                                  }),
+                                  c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [new Date(s.date || Date.now()).toLocaleDateString("vi-VN"), " • ", _fmtKg(s.totalNet || s.totalGross), " kg", Number(s.deposit || 0) > 0 ? (" • Đã trừ cọc " + _fmt(s.deposit)) : ""] })
                                 ]
                               })
                             ]
@@ -14044,12 +14580,11 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             }),
 
             // =====================================================================
-            // TAB 4: DOANH THU XUẤT BÁN TÔM (GIAO DIỆN SÁNG)
+            // TAB 4: DOANH THU XUẤT BÁN TÔM & ĐƠN CHỜ CHỐT (TỰ ĐỘNG)
             // =====================================================================
             mainTab === "SELL" && c.jsxs("div", {
               className: "space-y-4",
               children: [
-                // Thẻ Thống Kê Đầu Ra
                 c.jsxs("div", {
                   className: "grid grid-cols-2 sm:grid-cols-4 gap-2.5",
                   children: [
@@ -14058,7 +14593,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       children: [
                         c.jsx("span", { className: "text-[10px] font-bold text-slate-500 uppercase block", children: "Tổng Khối Lượng Xuất" }),
                         c.jsxs("div", { className: "font-mono font-black text-xl text-emerald-700 my-0.5", children: [_fmtKg(autoRevenueKg), " kg"] }),
-                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [effectiveSales.length, " đơn xuất bán"] })
+                        c.jsxs("span", { className: "text-[10px] text-slate-500", children: [effectiveSales.length, " đơn đã tính tiền"] })
                       ]
                     }),
                     c.jsxs("div", {
@@ -14103,7 +14638,21 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Phân Bổ Kênh Bán Hàng
+                !isRevenueAuto && c.jsxs("div", {
+                  className: "bg-white p-4 rounded-3xl border border-emerald-200 shadow-xs space-y-2",
+                  children: [
+                    c.jsx("label", { className: "text-xs font-bold text-emerald-700 uppercase block", children: "Nhập doanh thu bán tôm thủ công (VNĐ):" }),
+                    c.jsx("input", {
+                      type: "number",
+                      value: trip.revenueManualAmount || "",
+                      onChange: e => updateActiveTrip({ revenueManualAmount: Number(e.target.value) || 0 }),
+                      placeholder: "VD: 120000000",
+                      className: "w-full p-3 bg-slate-50 border border-emerald-300 rounded-2xl font-mono font-black text-xl text-emerald-700 outline-none"
+                    })
+                  ]
+                }),
+
+                // Channel breakdown
                 c.jsxs("div", {
                   className: "grid grid-cols-3 gap-2.5",
                   children: [
@@ -14134,7 +14683,63 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Danh sách chi tiết các đơn xuất bán đã liên kết
+                // Pending Market/Factory Orders (1-tap Settle right in Finance!)
+                (pendingMarketSales.length > 0 || pendingFactorySales.length > 0) && c.jsxs("div", {
+                  className: "bg-white rounded-3xl border border-amber-200 p-4 sm:p-5 shadow-xs space-y-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center border-b border-amber-100 pb-3",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-amber-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "⏳" }), "Đơn Đang Giao Chợ & Chờ Nghiệm Thu Công Ty"] }),
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Bấm 'Chốt tiền' để cập nhật số kg và tiền thực nhận — tự động cộng ngay vào Tài Chính" })
+                          ]
+                        })
+                      ]
+                    }),
+                    c.jsx("div", {
+                      className: "space-y-2",
+                      children: [...pendingMarketSales, ...pendingFactorySales].map(ps => c.jsxs("div", {
+                        key: ps.id,
+                        className: "p-3 bg-amber-50/70 rounded-2xl border border-amber-200 flex items-center justify-between gap-3 text-xs",
+                        children: [
+                          c.jsxs("div", {
+                            className: "min-w-0",
+                            children: [
+                              c.jsxs("span", {
+                                className: "font-black text-slate-900 flex items-center gap-1.5 truncate",
+                                children: [
+                                  c.jsx("span", { children: ps.targetGroup === "FACTORY" ? "🏢" : "🏪" }),
+                                  ps.buyerName || "Đơn chờ chốt"
+                                ]
+                              }),
+                              c.jsxs("span", {
+                                className: "text-[10px] text-slate-600 font-mono",
+                                children: [
+                                  ps.targetGroup === "MARKET" ? ((ps.phiCount || ps.totalBales || 0) + " phi oxy đang bán") : (_fmtKg(ps.factoryDeliveredKg || ps.totalNet) + " kg chờ nghiệm thu"),
+                                  " • ", new Date(ps.date || Date.now()).toLocaleDateString("vi-VN")
+                                ]
+                              })
+                            ]
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => {
+                              setQuickSettleSale(ps);
+                              setQuickSettleKg(ps.totalNet ? String(ps.totalNet) : (ps.factoryDeliveredKg ? String(ps.factoryDeliveredKg) : ""));
+                              setQuickSettleMoney(ps.totalMoney ? String(ps.totalMoney) : "");
+                            },
+                            className: "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-[11px] uppercase shrink-0 cursor-pointer shadow-xs",
+                            children: ps.targetGroup === "FACTORY" ? "Nghiệm thu" : "Chốt tiền"
+                          })
+                        ]
+                      }))
+                    })
+                  ]
+                }),
+
+                // Linked Sales List
                 c.jsxs("div", {
                   className: "bg-white rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-3",
                   children: [
@@ -14143,15 +14748,26 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       children: [
                         c.jsxs("div", {
                           children: [
-                            c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-slate-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "🛒" }), "Danh Sách Đơn Xuất Bán Tôm Đã Liên Kết"] }),
-                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Dữ liệu được đồng bộ 100% từ mô-đun Xuất Bán Tôm" })
+                            c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-slate-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "🛒" }), "Danh Sách Đơn Xuất Bán Đã Tính Doanh Thu"] }),
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Tự động cộng mọi đơn bán lẻ, chốt chợ, nghiệm thu công ty & tiền đã thu" })
                           ]
                         }),
-                        c.jsx("button", {
-                          type: "button",
-                          onClick: () => setShowSalesModal(true),
-                          className: "px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold border border-emerald-200 cursor-pointer",
-                          children: "Tùy chọn đơn ➔"
+                        c.jsxs("div", {
+                          className: "flex items-center gap-1.5",
+                          children: [
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setRoute(re.SALES),
+                              className: "px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-[11px] font-black cursor-pointer",
+                              children: "+ Xuất bán"
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setShowSalesModal(true),
+                              className: "px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold border border-emerald-200 cursor-pointer",
+                              children: "Tùy chọn ➔"
+                            })
+                          ]
                         })
                       ]
                     }),
@@ -14160,55 +14776,57 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       className: "p-8 text-center text-slate-400 text-xs space-y-2",
                       children: [
                         c.jsx("span", { className: "text-2xl block", children: "📦" }),
-                        c.jsx("p", { children: "Chưa có đơn xuất bán nào được liên kết cho ngày này." }),
-                        c.jsx("button", {
+                        c.jsx("p", { children: filterMode === "DATE" ? "Chưa có đơn xuất bán nào trong ngày đã chọn." : "Chưa có đơn xuất bán nào hoàn tất." }),
+                        filterMode === "DATE" && c.jsx("button", {
                           type: "button",
                           onClick: () => {
-                            const newMode = filterMode === "DATE" ? "ALL" : "DATE";
-                            setFilterMode(newMode);
-                            updateActiveTrip({ filterMode: newMode });
+                            setFilterMode("ALL");
+                            updateActiveTrip({ filterMode: "ALL" });
                           },
                           className: "text-emerald-700 hover:underline font-bold text-xs cursor-pointer",
-                          children: "Chuyển sang chế độ: Tất Cả Phiếu"
+                          children: "Chuyển sang chế độ: Tự Động Tất Cả"
                         })
                       ]
                     }) : c.jsx("div", {
                       className: "space-y-2",
-                      children: effectiveSales.map((sl, idx) => c.jsxs("div", {
-                        key: sl.id || idx,
-                        className: "p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 text-xs",
-                        children: [
-                          c.jsxs("div", {
-                            className: "flex items-center gap-3 min-w-0",
-                            children: [
-                              c.jsxs("div", {
-                                className: "w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xs shrink-0 border border-emerald-200",
-                                children: [idx + 1]
-                              }),
-                              c.jsxs("div", {
-                                className: "min-w-0",
-                                children: [
-                                  c.jsxs("span", {
-                                    className: "font-black text-slate-900 text-sm flex items-center gap-1.5 truncate",
-                                    children: [
-                                      c.jsx("span", { children: sl.targetGroup === "FACTORY" ? "🏢" : (sl.targetGroup === "MARKET" ? "🏪" : "🛒") }),
-                                      sl.buyerName || "Khách mua tôm"
-                                    ]
-                                  }),
-                                  c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [new Date(sl.date || Date.now()).toLocaleDateString("vi-VN"), " • ", _fmtKg(sl.totalNet || sl.totalGross), " kg", sl.targetGroup === "FACTORY" ? " (Công ty)" : (sl.targetGroup === "MARKET" ? " (Chợ đầu mối)" : " (Bán lẻ)")] })
-                                ]
-                              })
-                            ]
-                          }),
-                          c.jsxs("div", {
-                            className: "text-right shrink-0",
-                            children: [
-                              c.jsxs("span", { className: "font-mono font-black text-sm text-emerald-700 block", children: [_fmt(sl.totalMoney), " đ"] }),
-                              c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: ["Giá: ", _fmt(Number(sl.totalNet || sl.totalGross || 0) > 0 ? Math.round(Number(sl.totalMoney || 0) / Number(sl.totalNet || sl.totalGross)) : 0), " đ/kg"] })
-                            ]
-                          })
-                        ]
-                      }))
+                      children: effectiveSales.map((sl, idx) => {
+                        const bd = getFinanceSaleBreakdown_v4(sl);
+                        return c.jsxs("div", {
+                          key: sl.id || idx,
+                          className: "p-3.5 bg-slate-50/80 rounded-2xl border border-slate-200 flex items-center justify-between gap-3 text-xs",
+                          children: [
+                            c.jsxs("div", {
+                              className: "flex items-center gap-3 min-w-0",
+                              children: [
+                                c.jsxs("div", {
+                                  className: "w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xs shrink-0 border border-emerald-200",
+                                  children: [idx + 1]
+                                }),
+                                c.jsxs("div", {
+                                  className: "min-w-0",
+                                  children: [
+                                    c.jsxs("span", {
+                                      className: "font-black text-slate-900 text-sm flex items-center gap-1.5 truncate",
+                                      children: [
+                                        c.jsx("span", { children: sl.targetGroup === "FACTORY" ? "🏢" : (sl.targetGroup === "MARKET" ? "🏪" : "🛒") }),
+                                        sl.buyerName || "Khách mua tôm"
+                                      ]
+                                    }),
+                                    c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: [new Date(sl.date || Date.now()).toLocaleDateString("vi-VN"), " • ", _fmtKg(sl.totalNet || sl.totalGross), " kg", sl.targetGroup === "FACTORY" ? " (Công ty)" : (sl.targetGroup === "MARKET" ? " (Chợ đầu mối)" : " (Bán lẻ)"), bd.debtMoney > 0 ? (" • Còn nợ " + _fmt(bd.debtMoney) + " đ") : ""] })
+                                  ]
+                                })
+                              ]
+                            }),
+                            c.jsxs("div", {
+                              className: "text-right shrink-0",
+                              children: [
+                                c.jsxs("span", { className: "font-mono font-black text-sm text-emerald-700 block", children: [_fmt(bd.realizedMoney), " đ"] }),
+                                c.jsxs("span", { className: "text-[10px] text-slate-500 font-mono", children: ["Giá: ", _fmt(Number(sl.totalNet || sl.totalGross || 0) > 0 ? Math.round(bd.realizedMoney / Number(sl.totalNet || sl.totalGross)) : 0), " đ/kg"] })
+                              ]
+                            })
+                          ]
+                        });
+                      })
                     })
                   ]
                 })
@@ -14216,12 +14834,11 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             }),
 
             // =====================================================================
-            // TAB 5: ĐỐI SOÁT HAO HỤT & HIỆU QUẢ KINH DOANH (GIAO DIỆN SÁNG)
+            // TAB 5: ĐỐI SOÁT HAO HỤT & HIỆU QUẢ KINH DOANH
             // =====================================================================
             mainTab === "AUDIT" && c.jsxs("div", {
               className: "space-y-4",
               children: [
-                // Thẻ đánh giá hiệu quả
                 c.jsxs("div", {
                   className: "bg-white rounded-3xl border border-slate-200 p-5 shadow-xs space-y-4",
                   children: [
@@ -14241,7 +14858,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       ]
                     }),
 
-                    // 4 Chỉ Số Cốt Lõi
                     c.jsxs("div", {
                       className: "grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs",
                       children: [
@@ -14286,7 +14902,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       ]
                     }),
 
-                    // Nhận xét hiệu quả
                     c.jsxs("div", {
                       className: "p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1.5",
                       children: [
@@ -14317,19 +14932,16 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // 3. NÚT DẤU '+' THẢ NỔI Ở GÓC DƯỚI BÊN PHẢI MÀN HÌNH (FLOATING ACTION BUTTON)
+      // 3. NÚT DẤU '+' THẢ NỔI Ở GÓC DƯỚI BÊN PHẢI MÀN HÌNH
       // =========================================================================
-      // Màn che nền mờ khi mở speed dial
       fabOpen && c.jsx("div", {
         className: "fixed inset-0 z-40 bg-black/40 backdrop-blur-xs transition-opacity animate-in fade-in duration-150",
         onClick: () => setFabOpen(false)
       }),
 
-      // Container chứa nút FAB và các nút con
       c.jsxs("div", {
         className: "fixed bottom-6 right-5 sm:bottom-8 sm:right-8 z-50 flex flex-col items-end gap-2.5",
         children: [
-          // Nút con 1: Ghi Khoản Thu (Xanh ngọc)
           fabOpen && c.jsxs("div", {
             className: "flex items-center gap-2.5 animate-in slide-in-from-bottom-2 duration-150",
             children: [
@@ -14347,7 +14959,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             ]
           }),
 
-          // Nút con 2: Ghi Khoản Chi (Cam hổ phách)
           fabOpen && c.jsxs("div", {
             className: "flex items-center gap-2.5 animate-in slide-in-from-bottom-2 duration-150",
             children: [
@@ -14365,7 +14976,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             ]
           }),
 
-          // NÚT CHÍNH: DẤU '+' THẢ NỔI
           c.jsxs("button", {
             type: "button",
             onClick: () => setFabOpen(!fabOpen),
@@ -14382,14 +14992,13 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 1: GHI NHẬN THU - CHI CHUYÊN NGHIỆP (GIAO DIỆN SÁNG)
+      // MODAL 1: GHI NHẬN THU - CHI CHUYÊN NGHIỆP
       // =========================================================================
       showThuChiModal && c.jsx("div", {
         className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
         children: c.jsxs("div", {
           className: "bg-white text-slate-900 rounded-3xl w-full max-w-sm p-5 sm:p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4 max-h-[95vh] overflow-y-auto border border-slate-200",
           children: [
-            // Modal Header with Type Selector
             c.jsxs("div", {
               className: "space-y-3",
               children: [
@@ -14408,7 +15017,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                     })
                   ]
                 }),
-                // Tab chọn Loại: CHI TIỀN hay THU TIỀN
                 c.jsxs("div", {
                   className: "grid grid-cols-2 p-1 bg-slate-100 rounded-2xl gap-1 text-xs font-black border border-slate-200",
                   children: [
@@ -14435,11 +15043,9 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
               ]
             }),
 
-            // Form Fields
             c.jsxs("div", {
               className: "space-y-3.5",
               children: [
-                // Danh mục
                 c.jsxs("div", {
                   children: [
                     c.jsx("label", { className: "text-[11px] font-bold text-slate-500 mb-1.5 block uppercase tracking-wider", children: "Danh mục *" }),
@@ -14456,7 +15062,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Số tiền & Chữ đọc số
                 c.jsxs("div", {
                   children: [
                     c.jsxs("div", {
@@ -14473,7 +15078,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       onChange: e => setThuChiAmount(e.target.value),
                       className: "w-full p-3 bg-slate-50 border-2 border-slate-200 focus:border-emerald-500 rounded-2xl font-bold text-xl font-mono outline-none " + (thuChiType === "EXPENSE" ? "text-orange-600" : "text-emerald-700")
                     }),
-                    // Quick chips
                     c.jsxs("div", {
                       className: "flex flex-wrap gap-1.5 mt-2",
                       children: [
@@ -14497,7 +15101,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Người nhận / Người nộp
                 c.jsxs("div", {
                   children: [
                     c.jsx("label", { className: "text-[11px] font-bold text-slate-500 mb-1 block uppercase tracking-wider", children: thuChiType === "EXPENSE" ? "Người nhận tiền / Tài xế / Nhân công" : "Người nộp tiền / Khách hàng" }),
@@ -14511,7 +15114,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   ]
                 }),
 
-                // Ghi chú chi tiết
                 c.jsxs("div", {
                   children: [
                     c.jsx("label", { className: "text-[11px] font-bold text-slate-500 mb-1 block uppercase tracking-wider", children: "Ghi chú chi tiết (nếu có)" }),
@@ -14527,7 +15129,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
               ]
             }),
 
-            // Action Buttons
             c.jsxs("div", {
               className: "flex gap-2 justify-end pt-2 border-t border-slate-100",
               children: [
@@ -14550,7 +15151,75 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 2: CHỌN PHIẾU CÂN MUA TÔM (GIAO DIỆN SÁNG)
+      // MODAL QUICK SETTLE TRONG TÀI CHÍNH
+      // =========================================================================
+      quickSettleSale && c.jsx("div", {
+        className: "fixed inset-0 z-[210] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
+        children: c.jsxs("div", {
+          className: "bg-white text-slate-900 border border-slate-200 rounded-3xl w-full max-w-sm p-5 sm:p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
+          children: [
+            c.jsxs("div", {
+              children: [
+                c.jsx("h3", {
+                  className: "font-black text-base uppercase text-slate-900",
+                  children: quickSettleSale.targetGroup === "FACTORY" ? "🏢 Nghiệm Thu Công Ty" : "🏪 Chốt Đơn Chợ Đầu Mối"
+                }),
+                c.jsxs("p", { className: "text-xs text-slate-500 font-bold", children: [quickSettleSale.buyerName, " • ", quickSettleSale.code] })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "space-y-3",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-[11px] font-bold text-slate-500 mb-1 block uppercase", children: "Tổng số kg thực nhận / nghiệm thu *" }),
+                    c.jsx("input", {
+                      type: "number",
+                      step: "any",
+                      placeholder: "VD: 320.5",
+                      value: quickSettleKg,
+                      onChange: e => setQuickSettleKg(e.target.value),
+                      className: "w-full p-3 bg-slate-50 border-2 border-slate-200 focus:border-emerald-500 rounded-2xl font-bold text-lg font-mono outline-none"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-[11px] font-bold text-slate-500 mb-1 block uppercase", children: "Tổng số tiền thực nhận (VNĐ) *" }),
+                    c.jsx("input", {
+                      type: "number",
+                      placeholder: "VD: 68500000",
+                      value: quickSettleMoney,
+                      onChange: e => setQuickSettleMoney(e.target.value),
+                      className: "w-full p-3 bg-slate-50 border-2 border-slate-200 focus:border-emerald-500 rounded-2xl font-bold text-lg font-mono text-emerald-700 outline-none"
+                    })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "flex gap-2 justify-end pt-2 border-t border-slate-100",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setQuickSettleSale(null),
+                  className: "px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer",
+                  children: "Hủy"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: handleSaveQuickSettleInFinance,
+                  className: "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-xs uppercase shadow-md cursor-pointer",
+                  children: "Chốt & Cộng Vào Tài Chính"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+
+      // =========================================================================
+      // MODAL 2: CHỌN PHIẾU CÂN MUA TÔM
       // =========================================================================
       showSessionsModal && c.jsx("div", {
         className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
@@ -14595,7 +15264,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
               className: "overflow-y-auto flex-1 space-y-2 pr-1",
               children: filteredSessions.length === 0 ? c.jsx("p", {
                 className: "text-center text-slate-400 py-12 italic text-xs font-bold",
-                children: "Không có phiếu cân thu mua nào trong ngày này."
+                children: "Không có phiếu cân thu mua nào trong bộ lọc hiện tại."
               }) : filteredSessions.map(sess => {
                 const isChecked = !Array.isArray(selectedSessionIds) || selectedSessionIds.includes(sess.id);
                 return c.jsxs("div", {
@@ -14649,7 +15318,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 3: CHỌN ĐƠN XUẤT BÁN (GIAO DIỆN SÁNG)
+      // MODAL 3: CHỌN ĐƠN XUẤT BÁN
       // =========================================================================
       showSalesModal && c.jsx("div", {
         className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
@@ -14694,9 +15363,10 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
               className: "overflow-y-auto flex-1 space-y-2 pr-1",
               children: filteredSales.length === 0 ? c.jsx("p", {
                 className: "text-center text-slate-400 py-12 italic text-xs font-bold",
-                children: "Không có đơn bán nào hoàn tất trong ngày này."
+                children: "Không có đơn bán nào trong bộ lọc hiện tại."
               }) : filteredSales.map(sl => {
                 const isChecked = !Array.isArray(selectedSaleIds) || selectedSaleIds.includes(sl.id);
+                const bd = getFinanceSaleBreakdown_v4(sl);
                 return c.jsxs("div", {
                   key: sl.id,
                   onClick: () => {
@@ -14735,7 +15405,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                         })
                       ]
                     }),
-                    c.jsxs("span", { className: "font-mono font-black text-sm text-emerald-700", children: [_fmt(sl.totalMoney), " đ"] })
+                    c.jsxs("span", { className: "font-mono font-black text-sm text-emerald-700", children: [_fmt(bd.realizedMoney), " đ"] })
                   ]
                 });
               })
@@ -14754,7 +15424,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 4: THIẾT LẬP KỲ THU MUA (GIAO DIỆN SÁNG)
+      // MODAL 4: THIẾT LẬP KỲ THU MUA
       // =========================================================================
       showTripSettingsModal && c.jsx("div", {
         className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
@@ -14775,8 +15445,19 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   },
                   className: "w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-left flex justify-between items-center cursor-pointer hover:bg-slate-100",
                   children: [
-                    c.jsxs("span", { children: ["Chế độ lọc phiếu: ", c.jsx("b", { className: "text-emerald-700", children: filterMode === "DATE" ? "Theo ngày" : "Tất cả" })] }),
+                    c.jsxs("span", { children: ["Chế độ lọc phiếu: ", c.jsx("b", { className: "text-emerald-700", children: filterMode === "DATE" ? "Theo ngày" : "Tự động tất cả" })] }),
                     c.jsx("span", { className: "text-blue-600", children: "Đổi" })
+                  ]
+                }),
+                c.jsxs("button", {
+                  type: "button",
+                  onClick: () => {
+                    updateActiveTrip({ includePondDeposits: !includePondDeposits });
+                  },
+                  className: "w-full p-3 rounded-2xl bg-amber-50 border border-amber-200 text-left flex justify-between items-center cursor-pointer hover:bg-amber-100",
+                  children: [
+                    c.jsxs("span", { children: ["Tự tính tiền cọc ao chưa cân: ", c.jsx("b", { className: "text-amber-800", children: includePondDeposits ? "BẬT" : "TẮT" })] }),
+                    c.jsx("span", { className: "text-amber-700", children: "Đổi" })
                   ]
                 }),
                 c.jsxs("button", {
@@ -14784,7 +15465,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   onClick: handleResetTrip,
                   className: "w-full p-3 rounded-2xl bg-orange-50 border border-orange-200 text-orange-700 text-left flex justify-between items-center cursor-pointer hover:bg-orange-100",
                   children: [
-                    c.jsx("span", { children: "🔄 Đặt lại thu chi chuyến này về 0" }),
+                    c.jsx("span", { children: "🔄 Đặt lại thu chi & bật đồng bộ tự động" }),
                     c.jsx("span", { children: "➔" })
                   ]
                 }),
@@ -14797,7 +15478,10 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                         name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
                         startDate: getLocalYYYYMMDD_v4(),
                         note: "",
-                        filterMode: "DATE",
+                        filterMode: "ALL",
+                        includePondDeposits: true,
+                        archivedSessionIds: trip.archivedSessionIds || [],
+                        archivedSaleIds: trip.archivedSaleIds || [],
                         shrimpPurchaseAuto: true,
                         shrimpPurchaseManualAmount: 0,
                         selectedSessionIds: null,
@@ -14806,14 +15490,16 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                         revenueManualAmount: 0,
                         selectedSaleIds: null
                       };
-                      setFilterMode("DATE");
+                      selfUpdatingRef.current = true;
                       const nextData = { ...financeData, activeTrip: newActiveTrip };
                       me.saveFinanceData(nextData);
                       setFinanceData(nextData);
+                      setFilterMode("ALL");
                       setTripName(newActiveTrip.name);
                       setTripDate(newActiveTrip.startDate);
                       setTripNote("");
                       setShowTripSettingsModal(false);
+                      setTimeout(() => { selfUpdatingRef.current = false; }, 0);
                       alert("✅ Đã tạo chuyến mới tinh sạch!");
                     }
                   },
@@ -14839,7 +15525,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 5: LỊCH SỬ CÁC CHUYẾN ĐÃ LƯU (GIAO DIỆN SÁNG)
+      // MODAL 5: LỊCH SỬ CÁC CHUYẾN ĐÃ LƯU
       // =========================================================================
       showSavedTripsModal && c.jsx("div", {
         className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
@@ -14973,7 +15659,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       }),
 
       // =========================================================================
-      // MODAL 6: XEM CHI TIẾT CHUYẾN ĐÃ LƯU (GIAO DIỆN SÁNG)
+      // MODAL 6: XEM CHI TIẾT CHUYẾN ĐÃ LƯU
       // =========================================================================
       viewingSavedTrip && c.jsx("div", {
         className: "fixed inset-0 z-[220] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
@@ -15000,7 +15686,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
             c.jsxs("div", {
               className: "overflow-y-auto flex-1 space-y-4 pr-1 text-xs",
               children: [
-                // Summary block
                 c.jsxs("div", {
                   className: "p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-2 gap-3 font-bold",
                   children: [
@@ -15009,7 +15694,6 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                     c.jsxs("div", { className: "col-span-2 pt-2 border-t border-slate-200", children: ["Lợi nhuận ròng: ", c.jsx("b", { className: (viewingSavedTrip.isProfit ? "text-emerald-700" : "text-rose-600") + " font-mono text-sm", children: [(viewingSavedTrip.isProfit ? "+" : "") + _fmt(viewingSavedTrip.netProfit) + " đ"] })] })
                   ]
                 }),
-                // Breakdown Details
                 c.jsxs("div", {
                   className: "p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200 space-y-2",
                   children: [
@@ -15019,6 +15703,13 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                       children: [
                         c.jsx("span", { className: "text-slate-700", children: "Tiền mua tôm ao:" }),
                         c.jsxs("span", { className: "font-mono text-orange-600", children: ["- ", _fmt(viewingSavedTrip.shrimpPurchaseMoney), " đ"] })
+                      ]
+                    }),
+                    Number(viewingSavedTrip.countedPondDeposits || 0) > 0 && c.jsxs("div", {
+                      className: "flex justify-between items-center text-xs font-bold",
+                      children: [
+                        c.jsx("span", { className: "text-slate-700", children: "Tiền đặt cọc ao:" }),
+                        c.jsxs("span", { className: "font-mono text-amber-700", children: ["- ", _fmt(viewingSavedTrip.countedPondDeposits), " đ"] })
                       ]
                     }),
                     c.jsxs("div", {

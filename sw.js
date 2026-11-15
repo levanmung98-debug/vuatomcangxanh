@@ -1,5 +1,5 @@
 // Service Worker for Vua Tôm Càng Xanh PWA - Version 7
-const CACHE_NAME = 'tom-cang-xanh-v22_fix_tdz';
+const CACHE_NAME = 'tom-cang-xanh-v23_auto_finance';
 const STATIC_ASSETS = [
   "/",
   "/index.html",
