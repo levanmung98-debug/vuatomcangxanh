@@ -132,14 +132,50 @@ const contractsApiPlugin = {
         return res.end();
       }
 
+      const getDeletedContractsPath = () => {
+        const dir = path.resolve(process.cwd(), 'tmp');
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        return path.join(dir, 'deleted_contracts.json');
+      };
+      const loadDeletedIds = (): Record<string, number> => {
+        try {
+          const f = getDeletedContractsPath();
+          if (fs.existsSync(f)) return JSON.parse(fs.readFileSync(f, 'utf-8')) || {};
+        } catch (e) {}
+        return {};
+      };
+      const saveDeletedIds = (map: Record<string, number>) => {
+        try {
+          fs.writeFileSync(getDeletedContractsPath(), JSON.stringify(map), 'utf-8');
+        } catch (e) {}
+      };
+
       const db = autoCleanContracts(loadContractsDb());
+      const deletedMap = loadDeletedIds();
+
+      // Helper to deduplicate contracts stored under both raw id and normalized cleanId
+      const uniqueContracts = (list: any[]) => {
+        const map = new Map<string, any>();
+        for (const item of list) {
+          if (item && item.id) {
+            const prev = map.get(item.id);
+            if (!prev || (item._updatedAt || 0) >= (prev._updatedAt || 0)) {
+              map.set(item.id, item);
+            }
+          }
+        }
+        return Array.from(map.values());
+      };
 
       // GET /api/contracts/poll?since=12345
       if (method === 'GET' && pathname === '/api/contracts/poll') {
         const since = Number(parsedUrl.searchParams.get('since') || 0);
-        const changed = Object.values(db).filter((c: any) => c && (c._updatedAt || 0) > since);
+        const changed = uniqueContracts(Object.values(db)).filter((c: any) => c && (c._updatedAt || 0) > since);
+        const deletedIds = Object.entries(deletedMap)
+          .filter(([, ts]) => Number(ts || 0) > since)
+          .map(([k]) => k);
         res.statusCode = 200;
-        return res.end(JSON.stringify({ contracts: changed, serverTime: Date.now() }));
+        return res.end(JSON.stringify({ contracts: changed, deletedIds, serverTime: Date.now() }));
       }
 
       // GET /api/contracts/:id
@@ -156,7 +192,7 @@ const contractsApiPlugin = {
                        db['HDTCX-' + cleanId];
 
         if (!contract) {
-          const list = Object.values(db);
+          const list = uniqueContracts(Object.values(db));
           contract = list.find((c: any) => {
             if (!c || !c.id) return false;
             const cId = String(c.id).replace(/Đ/g, 'D').trim().toUpperCase();
@@ -180,18 +216,39 @@ const contractsApiPlugin = {
       // GET /api/contracts (List all)
       if (method === 'GET' && (pathname === '/api/contracts' || pathname === '/api/contracts/')) {
         res.statusCode = 200;
-        return res.end(JSON.stringify({ contracts: Object.values(db), serverTime: Date.now() }));
+        return res.end(JSON.stringify({ contracts: uniqueContracts(Object.values(db)), serverTime: Date.now() }));
       }
 
-      // DELETE /api/contracts/:id
+      // DELETE /api/contracts/:id (Matches contract ID, cleanId, farmerId, or pondId)
       if (method === 'DELETE' && idMatch) {
         const contractId = decodeURIComponent(idMatch[1]).trim();
         const cleanId = contractId.replace(/Đ/g, 'D').toUpperCase();
-        if (db[contractId]) delete db[contractId];
-        if (db[cleanId]) delete db[cleanId];
+        const now = Date.now();
+        const removedIds = new Set<string>([contractId, cleanId]);
+
+        for (const [k, val] of Object.entries(db)) {
+          const vId = val && val.id ? String(val.id) : '';
+          const vCleanId = vId.replace(/Đ/g, 'D').toUpperCase();
+          if (
+            k === contractId ||
+            k === cleanId ||
+            vId === contractId ||
+            vCleanId === cleanId ||
+            (val && (val.farmerId === contractId || val.pondId === contractId))
+          ) {
+            if (vId) removedIds.add(vId);
+            if (vCleanId) removedIds.add(vCleanId);
+            removedIds.add(k);
+            delete db[k];
+          }
+        }
+        removedIds.forEach((rid) => {
+          deletedMap[rid] = now;
+        });
         saveContractsDb(db);
+        saveDeletedIds(deletedMap);
         res.statusCode = 200;
-        return res.end(JSON.stringify({ success: true, deletedId: contractId }));
+        return res.end(JSON.stringify({ success: true, deletedId: contractId, removedIds: Array.from(removedIds) }));
       }
 
       // POST or PUT /api/contracts
@@ -204,9 +261,12 @@ const contractsApiPlugin = {
             if (data && data.id) {
               const now = Date.now();
               data._updatedAt = now;
-              db[data.id] = data;
               const cleanId = String(data.id).replace(/Đ/g, 'D').toUpperCase();
+              db[data.id] = data;
               db[cleanId] = data;
+              if (deletedMap[data.id]) delete deletedMap[data.id];
+              if (deletedMap[cleanId]) delete deletedMap[cleanId];
+              saveDeletedIds(deletedMap);
               saveContractsDb(db);
               res.statusCode = 200;
               return res.end(JSON.stringify({ success: true, contract: data }));

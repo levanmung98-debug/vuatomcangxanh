@@ -1,73 +1,4 @@
-const handleSpeakContract = () => {
-    if (!contract) return;
-    if (isSpeaking) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-      return;
-    }
-    try {
-      window.speechSynthesis.cancel();
-      const depositAmt = Number(contract.depositMoney ?? contract.deposit ?? 0);
-      const priceVal = Number(contract.agreedPrice || 0);
-      const traderName = contract.traderName || contract.trader?.fullName || "Vựa thu mua Tôm Càng Xanh";
-      const traderAddress = contract.traderAddress || contract.trader?.address || "theo địa chỉ đăng ký cơ sở thu mua";
-      const farmerName = contract.farmerName || contract.farmer?.fullName || contract.farmer?.name || "Chủ ao";
-      const farmerAddress = contract.farmerAddress || contract.farmer?.address || "theo địa chỉ ao nuôi";
-      const shrimpType = contract.shrimpType || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên";
-      const dateStr = contract.weighingDate || "theo thỏa thuận hai bên";
-      const timeStr = contract.weighingTime || "05 giờ sáng";
-      const estimatedYield = contract.estimatedYield ? (contract.estimatedYield + " ký") : "theo sản lượng thực tế tại ao";
-      const priceStr = priceVal ? (priceVal.toLocaleString() + " đồng một ký") : "theo phân loại kích cỡ tôm chi tiết";
-      const depositStr = depositAmt ? (depositAmt.toLocaleString() + " đồng, bằng chữ: " + (typeof numberToWordsVN_v3 === "function" ? numberToWordsVN_v3(depositAmt) : "")) : "0 đồng";
-      const rejectionSpec = contract.rejectionSpec || (typeof getStandardSpecsString === "function" ? getStandardSpecsString() : "Dạt tôm mềm, ốp, gãy càng chuyển sang tính giá tôm xào");
-      const tareSpec = contract.tareSpec || "Trừ hao ráo nước chuẩn 1 ký trên một thùng cân";
-      const qualityStandard = contract.qualityStandard || "Tôm tươi sống nguyên vẹn bơi khỏe, tỷ lệ sống sục oxy từ 95% trở lên lúc cân tại bờ ao";
-      const compensationTerms = contract.compensationTerms || "Bên nào vi phạm bồi thường gấp 02 lần tiền cọc. Nếu bên bán tự ý bán tôm cho người khác sau khi đã nhận tiền đặt cọc thì bên bán phải bồi hoàn 100% số tiền cọc đã nhận và chịu phạt một khoản tiền tương đương 2 lần tiền cọc cho bên mua. Nếu bên mua không đến thu mua theo đúng thời gian cam kết mà không có lý do chính đáng thì bị mất toàn bộ số tiền đã đặt cọc.";
-
-      const textChunks = [
-        "Hợp đồng mua bán thu mua Tôm Càng Xanh.",
-        "Số hợp đồng: " + contract.id + ".",
-        "Bên mua là: " + traderName + ", địa chỉ: " + traderAddress + ".",
-        "Bên bán là: " + farmerName + ", địa chỉ: " + farmerAddress + ".",
-        "Loại tôm cần mua: " + shrimpType + ". Thời gian mua và thời gian cân tôm: ngày " + dateStr + ", lúc " + timeStr + ". Sản lượng dự kiến: " + estimatedYield + ".",
-        "Sau đây là toàn bộ Điều 2: Tiêu chuẩn phẩm chất, quy cách và đơn giá thu mua.",
-        "Mục 2.1: Đơn giá chốt thu mua là " + priceStr + ".",
-        "Tiêu chuẩn dạt tôm: " + rejectionSpec + ".",
-        "Quy định trừ hao ráo nước: " + tareSpec + ".",
-        "Tiêu chuẩn tôm sống oxy: " + qualityStandard + ".",
-        "Mục 2.2: Tiêu chuẩn phẩm chất: Tôm tươi sống nguyên vẹn bơi khỏe, màu sắc tự nhiên, vỏ sạch bùn, không lẫn tạp chất tăng trọng hay hóa chất cấm.",
-        "Về tiền đặt cọc và hình thức thanh toán:",
-        "Bên mua đã đặt cọc số tiền: " + depositStr + ".",
-        "Hình thức thanh toán: Bên mua thanh toán dứt điểm 100% bằng tiền mặt hoặc chuyển khoản ngân hàng ngay sau khi hoàn thành việc cân và ký biên bản giao nhận tại bờ ao. Tiền đặt cọc được cấn trừ toàn bộ vào đợt thanh toán dứt điểm khi kết thúc đợt cân tôm cuối cùng trong ngày.",
-        "Về cam kết cọc và trách nhiệm bồi thường vi phạm hợp đồng:",
-        compensationTerms,
-        "Kính mời quý khách kiểm tra kỹ các điều khoản và bấm nút Ký Hợp Đồng Ngay để xác nhận điện tử hợp pháp."
-      ];
-
-      let chunkIdx = 0;
-      const speakNext = () => {
-        if (chunkIdx >= textChunks.length) {
-          setIsSpeaking(false);
-          return;
-        }
-        const currentText = textChunks[chunkIdx];
-        chunkIdx++;
-        const utt = new SpeechSynthesisUtterance(currentText);
-        utt.lang = "vi-VN";
-        utt.rate = 0.95;
-        utt.onend = () => speakNext();
-        utt.onerror = () => setIsSpeaking(false);
-        window.speechSynthesis.speak(utt);
-      };
-
-      setIsSpeaking(true);
-      speakNext();
-      return;
-    } catch(e) {
-      console.warn("TTS error", e);
-      setIsSpeaking(false);
-    }
-  };import{initializeApp as E1}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getAuth as A1,GoogleAuthProvider as M1,signInWithPopup as O1,signOut as _1,onAuthStateChanged as D1}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";import{initializeFirestore as C1,persistentLocalCache as k1,persistentMultipleTabManager as U1,doc as Ju,setDoc as Hd,getDoc as ps}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";(function(){const b=document.createElement("link").relList;if(b&&b.supports&&b.supports("modulepreload"))return;for(const O of document.querySelectorAll('link[rel="modulepreload"]'))f(O);new MutationObserver(O=>{for(const D of O)if(D.type==="childList")for(const U of D.addedNodes)U.tagName==="LINK"&&U.rel==="modulepreload"&&f(U)}).observe(document,{childList:!0,subtree:!0});function p(O){const D={};return O.integrity&&(D.integrity=O.integrity),O.referrerPolicy&&(D.referrerPolicy=O.referrerPolicy),O.crossOrigin==="use-credentials"?D.credentials="include":O.crossOrigin==="anonymous"?D.credentials="omit":D.credentials="same-origin",D}function f(O){if(O.ep)return;O.ep=!0;const D=p(O);fetch(O.href,D)}})();function Jd(S){return S&&S.__esModule&&Object.prototype.hasOwnProperty.call(S,"default")?S.default:S}var Ss={exports:{}},Tn={};/**
+import{initializeApp as E1}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getAuth as A1,GoogleAuthProvider as M1,signInWithPopup as O1,signOut as _1,onAuthStateChanged as D1}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";import{initializeFirestore as C1,persistentLocalCache as k1,persistentMultipleTabManager as U1,doc as Ju,setDoc as Hd,getDoc as ps}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";(function(){const b=document.createElement("link").relList;if(b&&b.supports&&b.supports("modulepreload"))return;for(const O of document.querySelectorAll('link[rel="modulepreload"]'))f(O);new MutationObserver(O=>{for(const D of O)if(D.type==="childList")for(const U of D.addedNodes)U.tagName==="LINK"&&U.rel==="modulepreload"&&f(U)}).observe(document,{childList:!0,subtree:!0});function p(O){const D={};return O.integrity&&(D.integrity=O.integrity),O.referrerPolicy&&(D.referrerPolicy=O.referrerPolicy),O.crossOrigin==="use-credentials"?D.credentials="include":O.crossOrigin==="anonymous"?D.credentials="omit":D.credentials="same-origin",D}function f(O){if(O.ep)return;O.ep=!0;const D=p(O);fetch(O.href,D)}})();function Jd(S){return S&&S.__esModule&&Object.prototype.hasOwnProperty.call(S,"default")?S.default:S}var Ss={exports:{}},Tn={};/**
  * @license React
  * react-jsx-runtime.production.js
  *
@@ -409,7 +340,7 @@ const deserializeFromFirestore = (val) => {
   return result;
 };
 
-class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0});if(p.billingHistory&&Array.isArray(p.billingHistory)){for(const O of p.billingHistory){O&&O.farmerPhone&&await this.pushToFarmerInbox(O);}}}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p));if(b===Ot.SETTINGS&&typeof document!=="undefined"){p&&p.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){console.warn("Storage save error",e)}emitAppDataUpdated_v4(b);const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(uidOverride){const f=this.getUser();const uid=uidOverride||(f&&f.uid);if(!uid||typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==uid)return;try{const p=this.getSessions(),dir=this.getFarmers(),veh=this.getVehicles();const sl=(this.getSales&&this.getSales())||JSON.parse(localStorage.getItem(Ot.SALES)||"[]");const fin=(this.getFinanceData&&this.getFinanceData())||JSON.parse(localStorage.getItem(Ot.FINANCE)||"null");const buy=(this.getBuyers&&this.getBuyers())||JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");const ctc=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");const prof=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");const D={user:f,lastUpdated:new Date().toISOString(),farmerDirectory:dir,transportation:{list:veh},billingHistory:p,config:this.getSettings(),sales:sl,finance:fin,buyers:buy,contracts:ctc,traderProfile:prof};Mn.syncToCloud(uid,D);}catch(err){console.warn("syncAllToCloud error:",err);}}static restoreFromCloud(Q){if(!Q||typeof Q!=="object")return;try{if(Array.isArray(Q.billingHistory)&&Q.billingHistory.length>0){const local=this.getSessions();const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.billingHistory.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SESSIONS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.farmerDirectory)&&Q.farmerDirectory.length>0){const local=this.getFarmers();const m=new Map();local.forEach(f=>f&&f.id&&m.set(f.id,f));Q.farmerDirectory.forEach(f=>f&&f.id&&m.set(f.id,f));localStorage.setItem(Ot.FARMERS,JSON.stringify(Array.from(m.values())));}if(Q.transportation&&Array.isArray(Q.transportation.list)&&Q.transportation.list.length>0){const local=this.getVehicles();const m=new Map();local.forEach(v=>v&&v.id&&m.set(v.id,v));Q.transportation.list.forEach(v=>v&&v.id&&m.set(v.id,v));localStorage.setItem(Ot.VEHICLES,JSON.stringify(Array.from(m.values())));}if(Q.config&&typeof Q.config==="object"){const cur=this.getSettings();localStorage.setItem(Ot.SETTINGS,JSON.stringify({...cur,...Q.config}));}if(Array.isArray(Q.sales)&&Q.sales.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.SALES)||"[]");}catch(e){}const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.sales.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SALES,JSON.stringify(Array.from(m.values())));}if(Q.finance&&typeof Q.finance==="object"){const localRaw=localStorage.getItem(Ot.FINANCE);if(!localRaw){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}else{try{const localFin=JSON.parse(localRaw);const sL=(localFin&&localFin.savedTrips)||[];const sC=(Q.finance&&Q.finance.savedTrips)||[];const tm=new Map();sL.forEach(t=>t&&t.id&&tm.set(t.id,t));sC.forEach(t=>t&&t.id&&tm.set(t.id,t));const mergedFin={...Q.finance,...localFin,savedTrips:Array.from(tm.values()),activeTrip:(localFin&&localFin.activeTrip)?localFin.activeTrip:Q.finance.activeTrip};localStorage.setItem(Ot.FINANCE,JSON.stringify(mergedFin));}catch(e){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}}}if(Array.isArray(Q.buyers)&&Q.buyers.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");}catch(e){}const m=new Map();local.forEach(b=>b&&b.id&&m.set(b.id,b));Q.buyers.forEach(b=>b&&b.id&&m.set(b.id,b));localStorage.setItem(Ot.BUYERS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.contracts)&&Q.contracts.length>0){let local=[];try{local=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");}catch(e){}const m=new Map();local.forEach(c=>c&&c.id&&m.set(c.id,c));Q.contracts.forEach(c=>c&&c.id&&m.set(c.id,c));localStorage.setItem("tom_electronic_contracts",JSON.stringify(Array.from(m.values())));}if(Q.traderProfile&&typeof Q.traderProfile==="object"){let cur={};try{cur=JSON.parse(localStorage.getItem("tom_trader_profile")||"{}");}catch(e){}const merged={...cur,...Q.traderProfile};localStorage.setItem("tom_trader_profile",JSON.stringify(merged));if(typeof window!=="undefined")window._cachedTraderProfile=merged;}}catch(err){console.warn("restoreFromCloud warning:",err);}}static async performCloudSync(){const u=this.getUser();if(!u||!u.uid)return{ok:false,message:"Chưa đăng nhập tài khoản Chủ Vựa"};try{const doc=await Mn.loadFromCloud(u.uid);if(doc){this.restoreFromCloud(doc);}this.syncAllToCloud(u.uid);try{const st=this.getSettings();if(typeof document!=="undefined"){st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){}if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("cloud_sync");}return{ok:true,message:"Đồng bộ đám mây thành công!"};}catch(err){return{ok:false,message:err&&err.message?err.message:"Lỗi đồng bộ"};}}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static syncActiveTripAfterSession(sessionId,isDelete){try{const raw=localStorage.getItem(Ot.FINANCE);if(!raw)return;const fin=JSON.parse(raw);if(!fin||!fin.activeTrip)return;const at=fin.activeTrip;if(isDelete){if(Array.isArray(at.selectedSessionIds)){at.selectedSessionIds=at.selectedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}}else{at.shrimpPurchaseAuto=true;if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.selectedSessionIds)&&sessionId&&!at.selectedSessionIds.includes(sessionId)){at.selectedSessionIds=[...at.selectedSessionIds,sessionId];}}localStorage.setItem(Ot.FINANCE,JSON.stringify(fin));}catch(e){}}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.syncActiveTripAfterSession(b,true);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return alert(p.message),!1;const f=this.getSessions();f.unshift(b);this.syncActiveTripAfterSession(b&&b.id,false);this.save(Ot.SESSIONS,f);return !0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){let tpTare=1;try{const tp=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");if(tp&&tp.tarePer100Kg!==undefined&&tp.tarePer100Kg!=="")tpTare=Number(tp.tarePer100Kg);}catch(e){}const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,tarePer100Kg:tpTare,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
+class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0});if(p.billingHistory&&Array.isArray(p.billingHistory)){for(const O of p.billingHistory){O&&O.farmerPhone&&await this.pushToFarmerInbox(O);}}}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p));if(b===Ot.SETTINGS&&typeof document!=="undefined"){p&&p.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){console.warn("Storage save error",e)}emitAppDataUpdated_v4(b);const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(uidOverride){const f=this.getUser();const uid=uidOverride||(f&&f.uid);if(!uid||typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==uid)return;try{const p=this.getSessions(),dir=this.getFarmers(),veh=this.getVehicles();const sl=(this.getSales&&this.getSales())||JSON.parse(localStorage.getItem(Ot.SALES)||"[]");const fin=(this.getFinanceData&&this.getFinanceData())||JSON.parse(localStorage.getItem(Ot.FINANCE)||"null");const buy=(this.getBuyers&&this.getBuyers())||JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");const ctc=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");const prof=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");const D={user:f,lastUpdated:new Date().toISOString(),farmerDirectory:dir,transportation:{list:veh},billingHistory:p,config:this.getSettings(),sales:sl,finance:fin,buyers:buy,contracts:ctc,traderProfile:prof};Mn.syncToCloud(uid,D);}catch(err){console.warn("syncAllToCloud error:",err);}}static restoreFromCloud(Q){if(!Q||typeof Q!=="object")return;try{if(Array.isArray(Q.billingHistory)&&Q.billingHistory.length>0){const local=this.getSessions();const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.billingHistory.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SESSIONS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.farmerDirectory)&&Q.farmerDirectory.length>0){const local=this.getFarmers();const m=new Map();local.forEach(f=>f&&f.id&&m.set(f.id,f));Q.farmerDirectory.forEach(f=>f&&f.id&&m.set(f.id,f));localStorage.setItem(Ot.FARMERS,JSON.stringify(Array.from(m.values())));}if(Q.transportation&&Array.isArray(Q.transportation.list)&&Q.transportation.list.length>0){const local=this.getVehicles();const m=new Map();local.forEach(v=>v&&v.id&&m.set(v.id,v));Q.transportation.list.forEach(v=>v&&v.id&&m.set(v.id,v));localStorage.setItem(Ot.VEHICLES,JSON.stringify(Array.from(m.values())));}if(Q.config&&typeof Q.config==="object"){const cur=this.getSettings();localStorage.setItem(Ot.SETTINGS,JSON.stringify({...cur,...Q.config}));}if(Array.isArray(Q.sales)&&Q.sales.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.SALES)||"[]");}catch(e){}const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.sales.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SALES,JSON.stringify(Array.from(m.values())));}if(Q.finance&&typeof Q.finance==="object"){const localRaw=localStorage.getItem(Ot.FINANCE);if(!localRaw){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}else{try{const localFin=JSON.parse(localRaw);const sL=(localFin&&localFin.savedTrips)||[];const sC=(Q.finance&&Q.finance.savedTrips)||[];const tm=new Map();sL.forEach(t=>t&&t.id&&tm.set(t.id,t));sC.forEach(t=>t&&t.id&&tm.set(t.id,t));const mergedFin={...Q.finance,...localFin,savedTrips:Array.from(tm.values()),activeTrip:(localFin&&localFin.activeTrip)?localFin.activeTrip:Q.finance.activeTrip};localStorage.setItem(Ot.FINANCE,JSON.stringify(mergedFin));}catch(e){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}}}if(Array.isArray(Q.buyers)&&Q.buyers.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");}catch(e){}const m=new Map();local.forEach(b=>b&&b.id&&m.set(b.id,b));Q.buyers.forEach(b=>b&&b.id&&m.set(b.id,b));localStorage.setItem(Ot.BUYERS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.contracts)&&Q.contracts.length>0){let local=[];try{local=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");}catch(e){}const m=new Map();local.forEach(c=>c&&c.id&&m.set(c.id,c));Q.contracts.forEach(c=>c&&c.id&&m.set(c.id,c));localStorage.setItem("tom_electronic_contracts",JSON.stringify(Array.from(m.values())));}if(Q.traderProfile&&typeof Q.traderProfile==="object"){let cur={};try{cur=JSON.parse(localStorage.getItem("tom_trader_profile")||"{}");}catch(e){}const merged={...cur,...Q.traderProfile};localStorage.setItem("tom_trader_profile",JSON.stringify(merged));if(typeof window!=="undefined")window._cachedTraderProfile=merged;}}catch(err){console.warn("restoreFromCloud warning:",err);}}static async performCloudSync(){const u=this.getUser();if(!u||!u.uid)return{ok:false,message:"Chưa đăng nhập tài khoản Chủ Vựa"};try{const doc=await Mn.loadFromCloud(u.uid);if(doc){this.restoreFromCloud(doc);}this.syncAllToCloud(u.uid);try{const st=this.getSettings();if(typeof document!=="undefined"){st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){}if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("cloud_sync");}return{ok:true,message:"Đồng bộ đám mây thành công!"};}catch(err){return{ok:false,message:err&&err.message?err.message:"Lỗi đồng bộ"};}}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static syncActiveTripAfterSession(sessionId,isDelete){try{const raw=localStorage.getItem(Ot.FINANCE);if(!raw)return;const fin=JSON.parse(raw);if(!fin||!fin.activeTrip)return;const at=fin.activeTrip;if(isDelete){if(Array.isArray(at.selectedSessionIds)){at.selectedSessionIds=at.selectedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}}else{at.shrimpPurchaseAuto=true;if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.selectedSessionIds)&&sessionId&&!at.selectedSessionIds.includes(sessionId)){at.selectedSessionIds=[...at.selectedSessionIds,sessionId];}}localStorage.setItem(Ot.FINANCE,JSON.stringify(fin));}catch(e){}}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.syncActiveTripAfterSession(b,true);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return !1;const f=this.getSessions();f.unshift(b);this.syncActiveTripAfterSession(b&&b.id,false);this.save(Ot.SESSIONS,f);return !0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){let tpTare=1;try{const tp=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");if(tp&&tp.tarePer100Kg!==undefined&&tp.tarePer100Kg!=="")tpTare=Number(tp.tarePer100Kg);}catch(e){}const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,tarePer100Kg:tpTare,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
   const [dashDate, setDashDate] = w.useState(() => getLocalYYYYMMDD_v4());
   const [dashSessions, setDashSessions] = w.useState(() => {
     try { return (me.getSessions && me.getSessions()) || []; } catch(e) { return []; }
@@ -418,11 +349,15 @@ class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static as
     try { return (me.getSales && me.getSales()) || []; } catch(e) { return []; }
   });
   const [dashFinanceSummary, setDashFinanceSummary] = w.useState(() => (me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: 0, totalExpenses: 0, netProfit: 0, isProfit: true }));
+  const [dashFarmers, setDashFarmers] = w.useState(() => {
+    try { return (me.getFarmers && me.getFarmers()) || []; } catch(e) { return []; }
+  });
   w.useEffect(() => {
     const syncDash = () => {
       try {
         setDashSessions((me.getSessions && me.getSessions()) || []);
         setDashSales((me.getSales && me.getSales()) || []);
+        setDashFarmers((me.getFarmers && me.getFarmers()) || []);
         if (me.getFinanceSummary) setDashFinanceSummary(me.getFinanceSummary());
       } catch(e) {}
     };
@@ -465,7 +400,10 @@ class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static as
     const r = Math.round(n * 10) / 10;
     return Number.isInteger(r) ? String(r) : String(r);
   };
-const[p,f]=w.useState(!1),[O,D]=w.useState(!1),U=dashSessions,Y=me.isPremium(),A=U.length,v=10,_=!Y&&A>=8,z=()=>{D(!0),setTimeout(()=>{D(!1),f(!1),alert("Cảm ơn bạn! Yêu cầu nâng cấp Premium đã được gửi đi. Đội ngũ Tôm Càng Xanh sẽ liên hệ bạn trong giây lát để hoàn tất thanh toán.")},1500)},L=[{title:"Lưu trữ không giới hạn",desc:"Xóa bỏ giới hạn 10 phiếu cân.",icon:c.jsx(Zd,{size:18})},{title:"Xuất báo cáo Excel/PDF",desc:"Gửi phiếu chuyên nghiệp qua Zalo.",icon:c.jsx(xm,{size:18})},{title:"Phân tích tài chính",desc:"Báo cáo lợi nhuận vận chuyển & kho.",icon:c.jsx(I1,{size:18})},{title:"Đồng bộ Nông dân",desc:"Tự động đẩy dữ liệu cho đối tác.",icon:c.jsx(Os,{size:18})},{title:"Hỗ trợ ưu tiên 24/7",desc:"Đường dây nóng xử lý sự cố tức thì.",icon:c.jsx(Pd,{size:18})}];return c.jsxs("div",{className:"p-4 space-y-6 bg-gray-50 dark:bg-[#121212] h-full overflow-y-auto pb-20 transition-colors relative",children:[/* Premium banner removed */c.jsxs("div",{className:"bg-[#1e4ea1] rounded-[40px] p-6 text-white shadow-2xl relative overflow-hidden",children:[c.jsxs("h2",{className:"text-3xl font-black italic uppercase tracking-tighter mb-6",children:["Dữ liệu ",b==="OWNER"?"Vựa":"Cá nhân"]}),c.jsxs("div",{className:"grid grid-cols-2 gap-3 relative z-10",children:[c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Phiếu đã lưu"}),c.jsxs("span",{className:"text-2xl font-black tabular-nums",children:[A," ",null]})]}),c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Trạng thái"}),c.jsx("span",{className:"text-sm font-black uppercase flex items-center gap-1",children:"Không giới hạn"})]})]}),c.jsx(Sm,{size:140,className:"absolute -right-8 -bottom-8 opacity-10"})]}),_&&c.jsxs("div",{className:"bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 animate-bounce",children:[c.jsx(Nm,{size:20}),c.jsx("p",{className:"text-[11px] font-black uppercase leading-tight",children:"Sắp đạt giới hạn lưu trữ! Hãy nâng cấp để không gián đoạn công việc."})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("button",{onClick:()=>S(re.WEIGHING),className:"col-span-2 bg-[#2e7d32] p-6 rounded-[35px] shadow-xl flex items-center justify-between text-white active:scale-95 border-b-8 border-green-900",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center",children:c.jsx($u,{size:32})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none",children:"Bắt đầu cân"}),c.jsx("span",{className:"text-[9px] font-bold opacity-70 uppercase tracking-widest",children:"Ghi chép sản lượng tức thì"})]})]}),c.jsx(em,{})]}),c.jsxs("button",{onClick:()=>S(re.SALES),className:"col-span-2 relative overflow-hidden bg-gradient-to-r from-[#1e4ea1] via-[#1d4ed8] to-[#0284c7] hover:brightness-105 text-white p-5 sm:p-6 rounded-[32px] shadow-xl shadow-blue-900/30 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group",children:[c.jsxs("div",{className:"flex items-center gap-4 relative z-10",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 group-hover:bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-xs border border-white/30 shadow-inner transition-colors",children:c.jsx(F1,{size:32,className:"text-white drop-shadow"})}),c.jsxs("div",{className:"text-left space-y-1",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none tracking-tight",children:"Bán Ra & Xuất Tôm"}),c.jsx("span",{className:"px-2 py-0.5 bg-emerald-400 text-gray-950 font-black text-[9px] rounded-full uppercase tracking-wider shadow-xs animate-pulse",children:"Không trừ bì"})]}),c.jsx("span",{className:"text-[10px] font-bold opacity-90 uppercase tracking-wider block text-blue-100",children:"🏢 Xí nghiệp • 🛒 Bán lẻ • 🏪 Chợ thủy hải sản"})]})]}),c.jsxs("div",{className:"flex items-center gap-2 relative z-10",children:[c.jsx("span",{className:"hidden md:inline text-xs font-black uppercase bg-white/20 px-3 py-1.5 rounded-xl backdrop-blur-xs",children:"Vào Bán"}),c.jsx(em,{})]}),c.jsx("div",{className:"absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"})]}),c.jsxs("button",{onClick:()=>S(re.HISTORY),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center",children:c.jsx(Fd,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Lịch sử"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Xem lại phiếu cân"})]})]}),c.jsxs("button",{onClick:()=>S(re.FARMERS),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center",children:c.jsx(Os,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Chủ Ao"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Danh sách ao tôm"})]})]})]}),
+  const pendingDashPonds = Array.isArray(dashFarmers) ? dashFarmers.filter(f => f && !f.weighed && !f.isWeighed && f.status !== "WEIGHED") : [];
+  const pendingDashYieldKg = pendingDashPonds.reduce((sum, f) => sum + (Number(f.estimatedYield) || 0), 0);
+  const pendingDashGpsCount = pendingDashPonds.filter(f => f && ((f.coordinates && f.coordinates.lat != null) || (f.lat != null && f.lng != null))).length;
+const[p,f]=w.useState(!1),[O,D]=w.useState(!1),[dashToast,setDashToast]=w.useState(""),U=dashSessions,Y=me.isPremium(),A=U.length,v=10,_=!Y&&A>=8,z=()=>{D(!0),setTimeout(()=>{D(!1),f(!1),setDashToast("Cảm ơn bạn! Yêu cầu nâng cấp đã được ghi nhận.");setTimeout(()=>setDashToast(""),4000);},1200)},L=[{title:"Lưu trữ không giới hạn",desc:"Xóa bỏ giới hạn 10 phiếu cân.",icon:c.jsx(Zd,{size:18})},{title:"Xuất báo cáo Excel/PDF",desc:"Gửi phiếu chuyên nghiệp qua Zalo.",icon:c.jsx(xm,{size:18})},{title:"Phân tích tài chính",desc:"Báo cáo lợi nhuận vận chuyển & kho.",icon:c.jsx(I1,{size:18})},{title:"Đồng bộ Nông dân",desc:"Tự động đẩy dữ liệu cho đối tác.",icon:c.jsx(Os,{size:18})},{title:"Hỗ trợ ưu tiên 24/7",desc:"Đường dây nóng xử lý sự cố tức thì.",icon:c.jsx(Pd,{size:18})}];return c.jsxs("div",{className:"p-4 space-y-6 bg-gray-50 dark:bg-[#121212] h-full overflow-y-auto pb-20 transition-colors relative",children:[dashToast&&c.jsx("div",{className:"p-3 bg-emerald-600 text-white rounded-2xl text-xs font-black text-center shadow-lg",children:dashToast}),/* Premium banner removed */c.jsxs("div",{className:"bg-[#1e4ea1] rounded-[40px] p-6 text-white shadow-2xl relative overflow-hidden",children:[c.jsxs("h2",{className:"text-3xl font-black italic uppercase tracking-tighter mb-6",children:["Dữ liệu ",b==="OWNER"?"Vựa":"Cá nhân"]}),c.jsxs("div",{className:"grid grid-cols-2 gap-3 relative z-10",children:[c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Phiếu đã lưu"}),c.jsxs("span",{className:"text-2xl font-black tabular-nums",children:[A," ",null]})]}),c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Trạng thái"}),c.jsx("span",{className:"text-sm font-black uppercase flex items-center gap-1",children:"Không giới hạn"})]})]}),c.jsx(Sm,{size:140,className:"absolute -right-8 -bottom-8 opacity-10"})]}),_&&c.jsxs("div",{className:"bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 animate-bounce",children:[c.jsx(Nm,{size:20}),c.jsx("p",{className:"text-[11px] font-black uppercase leading-tight",children:"Sắp đạt giới hạn lưu trữ! Hãy nâng cấp để không gián đoạn công việc."})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("button",{onClick:()=>S(re.WEIGHING),className:"col-span-2 bg-[#2e7d32] p-6 rounded-[35px] shadow-xl flex items-center justify-between text-white active:scale-95 border-b-8 border-green-900",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center",children:c.jsx($u,{size:32})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none",children:"Bắt đầu cân"}),c.jsx("span",{className:"text-[9px] font-bold opacity-70 uppercase tracking-widest",children:"Ghi chép sản lượng tức thì"})]})]}),c.jsx(em,{})]}),c.jsxs("button",{onClick:()=>S(re.SALES),className:"col-span-2 relative overflow-hidden bg-gradient-to-r from-[#1e4ea1] via-[#1d4ed8] to-[#0284c7] hover:brightness-105 text-white p-5 sm:p-6 rounded-[32px] shadow-xl shadow-blue-900/30 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group",children:[c.jsxs("div",{className:"flex items-center gap-4 relative z-10",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 group-hover:bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-xs border border-white/30 shadow-inner transition-colors",children:c.jsx(F1,{size:32,className:"text-white drop-shadow"})}),c.jsxs("div",{className:"text-left space-y-1",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none tracking-tight",children:"Bán Ra & Xuất Tôm"}),c.jsx("span",{className:"px-2 py-0.5 bg-emerald-400 text-gray-950 font-black text-[9px] rounded-full uppercase tracking-wider shadow-xs animate-pulse",children:"Không trừ bì"})]}),c.jsx("span",{className:"text-[10px] font-bold opacity-90 uppercase tracking-wider block text-blue-100",children:"🏢 Xí nghiệp • 🛒 Bán lẻ • 🏪 Chợ thủy hải sản"})]})]}),c.jsxs("div",{className:"flex items-center gap-2 relative z-10",children:[c.jsx("span",{className:"hidden md:inline text-xs font-black uppercase bg-white/20 px-3 py-1.5 rounded-xl backdrop-blur-xs",children:"Vào Bán"}),c.jsx(em,{})]}),c.jsx("div",{className:"absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"})]}),c.jsxs("button",{onClick:()=>S(re.HISTORY),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center",children:c.jsx(Fd,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Lịch sử"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Xem lại phiếu cân"})]})]}),c.jsxs("button",{onClick:()=>S(re.FARMERS),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800 relative overflow-hidden",children:[c.jsxs("div",{className:"flex items-center justify-between w-full",children:[c.jsx("div",{className:"w-10 h-10 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center",children:c.jsx(Os,{size:20})}),pendingDashPonds.length>0&&c.jsxs("span",{className:"px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-lg text-[10px] font-black uppercase tabular-nums",children:[pendingDashPonds.length," ao"]})]}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Chủ Ao"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase block mt-1 leading-tight",children:pendingDashYieldKg>0?`${(pendingDashYieldKg/1000).toFixed(2)} tấn • ${pendingDashGpsCount} GPS`:"Ao tôm, GPS & HĐĐT"})]})]})]}),
       // BẢNG CÂN ĐỐI THU MUA & XUẤT TÔM
       c.jsxs("div", {
         className: "bg-white dark:bg-gray-900 rounded-[35px] p-5 border border-gray-200 dark:border-gray-800 shadow-lg space-y-4 mt-2",
@@ -594,14 +532,17 @@ const copyToClipboardRobust = (text) => {
       const ta = document.createElement("textarea");
       ta.value = t;
       ta.style.position = "fixed";
-      ta.style.left = "-9999px";
-      ta.style.top = "-9999px";
+      ta.style.left = "0";
+      ta.style.top = "0";
+      ta.style.width = "1px";
+      ta.style.height = "1px";
       ta.style.opacity = "0";
+      ta.style.pointerEvents = "none";
       ta.setAttribute("readonly", "");
       document.body.appendChild(ta);
-      ta.focus();
+      try { ta.focus({ preventScroll: true }); } catch (e) {}
       ta.select();
-      ta.setSelectionRange(0, 99999);
+      ta.setSelectionRange(0, t.length);
       const res = document.execCommand("copy");
       document.body.removeChild(ta);
       return res;
@@ -623,13 +564,40 @@ const copyToClipboardRobust = (text) => {
   return fallbackCopy(text);
 };
 
-const Xm_UniversalZaloModal = ({ title, content, onClose }) => {
-  const [copied, setCopied] = w.useState(true);
-  const [phoneInput, setPhoneInput] = w.useState("");
+const openExternalLinkSafe = (url) => {
+  if (!url) return;
+  try {
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (e) {}
+};
+
+const Xm_UniversalZaloModal = ({ title, content = "", initialPhone = "", shareUrl = "", onClose }) => {
+  const [copied, setCopied] = w.useState(false);
+  const [phoneInput, setPhoneInput] = w.useState(() => initialPhone ? String(initialPhone).replace(/[^0-9]/g, "") : "");
 
   w.useEffect(() => {
     copyToClipboardRobust(content);
+    setCopied(true);
+    const t = setTimeout(() => setCopied(false), 2500);
+    return () => clearTimeout(t);
   }, [content]);
+
+  w.useEffect(() => {
+    if (initialPhone) {
+      setPhoneInput(String(initialPhone).replace(/[^0-9]/g, ""));
+    }
+  }, [initialPhone]);
+
+  const cleanPhone = (phoneInput || "").replace(/[^0-9]/g, "");
+  const zaloWebUrl = cleanPhone ? `https://zalo.me/${cleanPhone}` : "https://chat.zalo.me";
+  const zaloAppUrl = cleanPhone ? `https://zalo.me/${cleanPhone}` : "zalo://";
 
   const handleCopyAgain = () => {
     copyToClipboardRobust(content);
@@ -637,31 +605,12 @@ const Xm_UniversalZaloModal = ({ title, content, onClose }) => {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const handleOpenZaloApp = () => {
-    copyToClipboardRobust(content);
-    const clean = phoneInput.replace(/[^0-9]/g, "");
-    if (clean) {
-      window.location.href = `https://zalo.me/${clean}`;
-    } else {
-      window.location.href = "zalo://";
-      setTimeout(() => {
-        window.open("https://chat.zalo.me", "_blank");
-      }, 1000);
-    }
-  };
-
-  const handleOpenZaloWeb = () => {
-    copyToClipboardRobust(content);
-    const clean = phoneInput.replace(/[^0-9]/g, "");
-    const targetUrl = clean ? `https://zalo.me/${clean}` : "https://chat.zalo.me";
-    window.open(targetUrl, "_blank");
-  };
-
   const handleNativeShare = () => {
     if (navigator.share) {
       navigator.share({
         title: title || "Tôm Càng Xanh",
-        text: content
+        text: content,
+        url: shareUrl || undefined
       }).catch(() => {});
     } else {
       handleCopyAgain();
@@ -669,8 +618,10 @@ const Xm_UniversalZaloModal = ({ title, content, onClose }) => {
   };
 
   return c.jsx("div", {
-    className: "fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200",
+    className: "fixed inset-0 z-[320] bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4",
+    onClick: onClose,
     children: c.jsxs("div", {
+      onClick: e => e.stopPropagation(),
       className: "bg-white dark:bg-[#1a1a1a] rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-gray-100 dark:border-gray-800 space-y-4 max-h-[92vh] flex flex-col font-sans",
       children: [
         c.jsxs("div", {
@@ -687,11 +638,11 @@ const Xm_UniversalZaloModal = ({ title, content, onClose }) => {
                   children: [
                     c.jsx("h3", {
                       className: "text-sm sm:text-base font-black text-gray-900 dark:text-gray-100 uppercase tracking-tight",
-                      children: title || "Chia Sẻ & Sao Kê Zalo"
+                      children: title || "Chia Sẻ Qua Zalo"
                     }),
                     c.jsx("span", {
                       className: "text-[10px] text-gray-400 font-bold block",
-                      children: "Tự động sao chép • Mở trực tiếp App hoặc Web"
+                      children: "Đã sao chép sẵn nội dung • Bấm mở Zalo rồi Dán (Paste) gửi"
                     })
                   ]
                 })
@@ -712,8 +663,8 @@ const Xm_UniversalZaloModal = ({ title, content, onClose }) => {
             c.jsxs("div", {
               className: "text-xs",
               children: [
-                c.jsx("p", { className: "font-black uppercase tracking-tight", children: "Đã sao chép nội dung bảng sao kê!" }),
-                c.jsx("p", { className: "text-[11px] opacity-90", children: "Bấm nút bên dưới để mở Zalo và dán (Paste) gửi cho đối tác hoặc cổ đông." })
+                c.jsx("p", { className: "font-black uppercase tracking-tight", children: "Đã sao chép nội dung vào bộ nhớ!" }),
+                c.jsx("p", { className: "text-[11px] opacity-90", children: "Mở Zalo và bấm Dán (Paste) vào khung chat để gửi ngay." })
               ]
             })
           ]
@@ -737,18 +688,22 @@ const Xm_UniversalZaloModal = ({ title, content, onClose }) => {
         c.jsxs("div", {
           className: "grid grid-cols-2 gap-2.5 pt-1",
           children: [
-            c.jsxs("button", {
-              type: "button",
-              onClick: handleOpenZaloApp,
+            c.jsxs("a", {
+              href: zaloAppUrl,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              onClick: () => copyToClipboardRobust(content),
               className: "py-3 px-3 bg-[#0068FF] hover:bg-[#0052cc] text-white font-black rounded-xl text-xs uppercase flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer",
               children: [
                 c.jsx("span", { className: "text-base", children: "📱" }),
-                "Mở App Zalo"
+                cleanPhone ? `Mở Zalo (${cleanPhone})` : "Mở App Zalo"
               ]
             }),
-            c.jsxs("button", {
-              type: "button",
-              onClick: handleOpenZaloWeb,
+            c.jsxs("a", {
+              href: zaloWebUrl,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              onClick: () => copyToClipboardRobust(content),
               className: "py-3 px-3 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800 hover:bg-blue-100 font-black rounded-xl text-xs uppercase flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer",
               children: [
                 c.jsx("span", { className: "text-base", children: "🌐" }),
@@ -758,21 +713,30 @@ const Xm_UniversalZaloModal = ({ title, content, onClose }) => {
           ]
         }),
         c.jsxs("div", {
-          className: "flex gap-2",
+          className: "flex gap-2 flex-wrap",
           children: [
             c.jsxs("button", {
               type: "button",
               onClick: handleCopyAgain,
-              className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-xs uppercase flex items-center justify-center gap-1 cursor-pointer",
+              className: "flex-1 py-2.5 px-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-200 font-bold rounded-xl text-xs uppercase flex items-center justify-center gap-1 cursor-pointer",
               children: [
                 c.jsx("span", { children: "📋" }),
                 copied ? "Đã chép lại ✓" : "Sao chép lại"
               ]
             }),
+            shareUrl && c.jsxs("button", {
+              type: "button",
+              onClick: () => { copyToClipboardRobust(shareUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); },
+              className: "flex-1 py-2.5 px-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 font-bold rounded-xl text-xs uppercase flex items-center justify-center gap-1 cursor-pointer",
+              children: [
+                c.jsx("span", { children: "🔗" }),
+                "Chép Link"
+              ]
+            }),
             c.jsxs("button", {
               type: "button",
               onClick: handleNativeShare,
-              className: "flex-1 py-2.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 font-bold rounded-xl text-xs uppercase flex items-center justify-center gap-1 cursor-pointer",
+              className: "flex-1 py-2.5 px-3 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 font-bold rounded-xl text-xs uppercase flex items-center justify-center gap-1 cursor-pointer",
               children: [
                 c.jsx("span", { children: "📤" }),
                 "Chia sẻ khác"
@@ -786,15 +750,15 @@ const Xm_UniversalZaloModal = ({ title, content, onClose }) => {
             c.jsxs("div", {
               className: "flex justify-between items-center text-[10px] text-gray-400 font-bold uppercase",
               children: [
-                c.jsx("span", { children: "Nội dung sao kê chi tiết:" }),
-                c.jsxs("span", { children: [content.length, " ký tự"] })
+                c.jsx("span", { children: "Nội dung tin nhắn (có thể tự bôi đen & sao chép):" }),
+                c.jsxs("span", { children: [(content || "").length, " ký tự"] })
               ]
             }),
             c.jsx("textarea", {
               readOnly: true,
               value: content,
               onClick: e => e.target.select(),
-              className: "w-full p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl font-mono text-[11px] leading-relaxed text-gray-800 dark:text-gray-200 flex-1 outline-none resize-none select-all h-36"
+              className: "w-full p-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl font-mono text-[11px] leading-relaxed text-gray-800 dark:text-gray-200 flex-1 outline-none resize-none select-all h-32"
             })
           ]
         })
@@ -1738,10 +1702,17 @@ const Om = ({ setRoute: S, role: b }) => {
   const [showAddShrimpTypeModal, setShowAddShrimpTypeModal] = w.useState(false);
   const [newShrimpTypeName, setNewShrimpTypeName] = w.useState("");
   const [newShrimpTypeDesc, setNewShrimpTypeDesc] = w.useState("");
+  const [showGuestModal, setShowGuestModal] = w.useState(false);
+  const [guestNameInput, setGuestNameInput] = w.useState("Khách Lẻ");
+  const [omToast, setOmToast] = w.useState(null);
+  const showOmToast = (msg, type = "success") => {
+    setOmToast({ msg, type });
+    setTimeout(() => setOmToast(null), 3500);
+  };
 
   const handleSaveNewFarmer = () => {
     if (!newFarmerName.trim()) {
-      alert("Vui lòng nhập họ tên chủ ao / nông dân!");
+      showOmToast("Vui lòng nhập họ tên chủ ao / nông dân!", "error");
       return;
     }
     const newFarmer = {
@@ -1770,12 +1741,12 @@ const Om = ({ setRoute: S, role: b }) => {
     setNewFarmerAddress("");
     setShowAddFarmerModal(false);
     setShowFarmerDropdown(false);
-    alert("✅ Đã thêm chủ ao \"" + newFarmer.name + "\" thành công!");
+    showOmToast("✅ Đã thêm chủ ao \"" + newFarmer.name + "\" thành công!");
   };
 
   const handleSaveNewShrimpType = () => {
     if (!newShrimpTypeName.trim()) {
-      alert("Vui lòng nhập tên loại tôm mới!");
+      showOmToast("Vui lòng nhập tên loại tôm mới!", "error");
       return;
     }
     const name = newShrimpTypeName.trim();
@@ -1800,7 +1771,7 @@ const Om = ({ setRoute: S, role: b }) => {
     setNewShrimpTypeDesc("");
     setShowAddShrimpTypeModal(false);
     setShowShrimpDropdown(false);
-    alert("✅ Đã thêm loại tôm \"" + name + "\" thành công!");
+    showOmToast("✅ Đã thêm loại tôm \"" + name + "\" thành công!");
   };
 
   const handleUpdateTare = (val) => {
@@ -1989,12 +1960,6 @@ const Om = ({ setRoute: S, role: b }) => {
         me.saveFinanceData(fin);
       }
     } catch(e) {}
-
-    const finSum = me.getFinanceSummary ? me.getFinanceSummary() : { shrimpPurchaseMoney: totalMoneyFinal, netProfit: -totalMoneyFinal, isProfit: false };
-    alert("✅ ĐÃ LƯU PHIẾU CÂN & ĐỒNG BỘ TÀI CHÍNH!\n\n" +
-          "🦐 Phiếu này: " + fmtKg(totalNetAllTypes) + " kg • " + Number(totalMoneyFinal || 0).toLocaleString("vi-VN") + " VNĐ\n" +
-          "📉 Tổng chi mua tôm kỳ này: " + Number(finSum.shrimpPurchaseMoney || 0).toLocaleString("vi-VN") + " VNĐ\n" +
-          "📊 Lợi nhuận ròng hiện tại: " + (finSum.isProfit ? "+" : "") + Number(finSum.netProfit || 0).toLocaleString("vi-VN") + " VNĐ");
 
     localStorage.removeItem("active_vehicle_id");
     localStorage.removeItem("temp_weighing_info");
@@ -2207,12 +2172,8 @@ const Om = ({ setRoute: S, role: b }) => {
                           c.jsxs("button", {
                             type: "button",
                             onClick: () => {
-                              let customName = "Khách Lẻ";
-                              try {
-                                const input = prompt("Nhập tên khách lẻ / chủ ao tự do (hoặc để mặc định):", "Khách Lẻ");
-                                if (input && input.trim()) customName = input.trim();
-                              } catch(e) {}
-                              v(prev => ({ ...prev, farmerName: customName, farmerPhone: "", contractId: "" }));
+                              setGuestNameInput("Khách Lẻ");
+                              setShowGuestModal(true);
                               setShowFarmerDropdown(false);
                             },
                             className: "w-full p-2.5 bg-yellow-50 dark:bg-yellow-950/30 hover:bg-yellow-100 rounded-xl text-left flex items-center gap-2 border border-yellow-200 dark:border-yellow-800/40 text-yellow-900 dark:text-yellow-200 cursor-pointer",
@@ -2387,13 +2348,7 @@ const Om = ({ setRoute: S, role: b }) => {
                           c.jsx("button", {
                             type: "button",
                             onClick: () => {
-                              const customName = prompt("Nhập tên loại tôm khác:", "");
-                              if (customName && customName.trim()) {
-                                v(prev => ({
-                                  ...prev,
-                                  riceType: customName.trim()
-                                }));
-                              }
+                              setShowAddShrimpTypeModal(true);
                               setShowShrimpDropdown(false);
                             },
                             className: "w-full p-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-center text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mt-1 transition-colors",
@@ -3071,7 +3026,47 @@ const Om = ({ setRoute: S, role: b }) => {
       zaloModalContent && c.jsx(Xm_UniversalZaloModal, {
         content: zaloModalContent,
         title: "Chia Sẻ Phiếu Cân Qua Zalo",
+        initialPhone: A?.farmerPhone || "",
         onClose: () => setZaloModalContent(null)
+      }),
+      showGuestModal && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4",
+        onClick: () => setShowGuestModal(false),
+        children: c.jsxs("div", {
+          onClick: e => e.stopPropagation(),
+          className: "bg-white dark:bg-gray-900 rounded-[28px] max-w-sm w-full p-5 shadow-2xl border border-gray-200 dark:border-gray-800 space-y-4",
+          children: [
+            c.jsx("h3", { className: "font-black text-base uppercase text-gray-800 dark:text-white", children: "Nhập Tên Khách Lẻ / Tự Do" }),
+            c.jsx("input", {
+              type: "text",
+              value: guestNameInput,
+              onChange: e => setGuestNameInput(e.target.value),
+              placeholder: "Ví dụ: Khách Lẻ",
+              className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm outline-none"
+            }),
+            c.jsxs("div", {
+              className: "flex gap-2",
+              children: [
+                c.jsx("button", { type: "button", onClick: () => setShowGuestModal(false), className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-xs uppercase cursor-pointer", children: "Hủy" }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => {
+                    const nm = (guestNameInput || "").trim() || "Khách Lẻ";
+                    v(prev => ({ ...prev, farmerName: nm, farmerPhone: "", contractId: "" }));
+                    setShowGuestModal(false);
+                    showOmToast("✓ Đã chọn: " + nm);
+                  },
+                  className: "flex-1 py-2.5 bg-green-600 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
+                  children: "Xác Nhận"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+      omToast && c.jsx("div", {
+        className: `fixed bottom-24 left-1/2 -translate-x-1/2 z-[250] px-4 py-2.5 rounded-2xl text-xs font-black shadow-2xl ${omToast.type === "error" ? "bg-red-600 text-white" : "bg-emerald-700 text-white"}`,
+        children: omToast.msg
       })
     ]
   });
@@ -3085,6 +3080,7 @@ const Om = ({ setRoute: S, role: b }) => {
 const _m = ({ setRoute: S, onViewDetail: b }) => {
   const [p, f] = w.useState([]);
   const [O, D] = w.useState("");
+  const [confirmDeleteSessionId, setConfirmDeleteSessionId] = w.useState(null);
 
   w.useEffect(() => {
     const refreshSessions = () => {
@@ -3106,10 +3102,7 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
 
   const U = (sessionId, e) => {
     e?.stopPropagation?.();
-    if (confirm("Bạn có chắc chắn muốn xóa phiếu cân này khỏi lịch sử?")) {
-      me.deleteSession(sessionId);
-      f(me.getSessions());
-    }
+    setConfirmDeleteSessionId(sessionId);
   };
 
   const Y = (p || []).filter(A => {
@@ -3270,6 +3263,34 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
             })
           })
         ]
+      }),
+      confirmDeleteSessionId && c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4",
+        onClick: () => setConfirmDeleteSessionId(null),
+        children: c.jsxs("div", {
+          onClick: e => e.stopPropagation(),
+          className: "bg-white dark:bg-gray-900 rounded-[28px] max-w-sm w-full p-5 shadow-2xl border border-red-200 dark:border-red-900 space-y-4 text-center",
+          children: [
+            c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "Xóa Phiếu Cân Khỏi Lịch Sử?" }),
+            c.jsx("p", { className: "text-xs text-gray-500 dark:text-gray-400", children: "Thao tác này sẽ xóa phiếu cân và tự cập nhật lại báo cáo tài chính." }),
+            c.jsxs("div", {
+              className: "flex gap-2",
+              children: [
+                c.jsx("button", { type: "button", onClick: () => setConfirmDeleteSessionId(null), className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => {
+                    me.deleteSession(confirmDeleteSessionId);
+                    f(me.getSessions());
+                    setConfirmDeleteSessionId(null);
+                  },
+                  className: "flex-1 py-2.5 bg-red-600 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
+                  children: "Xóa ngay"
+                })
+              ]
+            })
+          ]
+        })
       })
     ]
   });
@@ -3285,6 +3306,7 @@ const Dm = ({ setRoute: S, sessionId: b, role: p }) => {
     }
   }, [b]);
   const [selectedBatchIdx, setSelectedBatchIdx] = w.useState(0);
+  const [dmZaloContent, setDmZaloContent] = w.useState("");
 
   const getWeightsGridForBatch = (bt, fallback) => {
     if (bt && Array.isArray(bt.weights) && bt.weights.length > 0) {
@@ -3387,8 +3409,7 @@ const Dm = ({ setRoute: S, sessionId: b, role: p }) => {
     msg += `Trạng thái: ${O.isPaidFull ? "Đã thanh toán đủ" : "Chưa thanh toán đủ"}\n`;
 
     copyToClipboardRobust(msg);
-    alert("Đã sao chép nội dung phiếu cân! Đang mở ứng dụng Zalo...");
-    window.open("https://zalo.me", "_blank");
+    setDmZaloContent(msg);
   };
 
   if (!O) {
@@ -3781,6 +3802,12 @@ const Dm = ({ setRoute: S, sessionId: b, role: p }) => {
             });
           })()
         ]
+      }),
+      dmZaloContent && c.jsx(Xm_UniversalZaloModal, {
+        title: "Gửi Phiếu Cân Qua Zalo",
+        content: dmZaloContent,
+        initialPhone: O?.farmerPhone || "",
+        onClose: () => setDmZaloContent("")
       })
     ]
   });
@@ -3839,12 +3866,62 @@ const cleanupExpiredContracts = () => {
     return [];
   }
 };
+const getDeletedContractIds_v4 = () => {
+  try {
+    const raw = localStorage.getItem("tom_deleted_contract_ids");
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return {};
+    const now = Date.now();
+    const cleaned = {};
+    for (const [k, ts] of Object.entries(parsed)) {
+      if (now - Number(ts || 0) < 86400000) cleaned[k] = ts;
+    }
+    return cleaned;
+  } catch (e) {
+    return {};
+  }
+};
+const markContractDeletedLocal_v4 = (ids) => {
+  try {
+    const map = getDeletedContractIds_v4();
+    const now = Date.now();
+    (Array.isArray(ids) ? ids : [ids]).forEach(id => {
+      if (id) {
+        const s = String(id).trim();
+        map[s] = now;
+        map[s.replace(/Đ/g, "D").toUpperCase()] = now;
+      }
+    });
+    localStorage.setItem("tom_deleted_contract_ids", JSON.stringify(map));
+  } catch (e) {}
+};
+const unmarkContractDeletedLocal_v4 = (id) => {
+  if (!id) return;
+  try {
+    const map = getDeletedContractIds_v4();
+    const s = String(id).trim();
+    delete map[s];
+    delete map[s.replace(/Đ/g, "D").toUpperCase()];
+    localStorage.setItem("tom_deleted_contract_ids", JSON.stringify(map));
+  } catch (e) {}
+};
+
 const getContracts = () => {
   try {
+    const deletedMap = getDeletedContractIds_v4();
     const cleaned = cleanupExpiredContracts();
-    if (cleaned && cleaned.length > 0) return cleaned;
-    const raw = localStorage.getItem(TOM_KEYS.CONTRACTS);
-    if (raw) return JSON.parse(raw);
+    const list = (cleaned && cleaned.length > 0) ? cleaned : JSON.parse(localStorage.getItem(TOM_KEYS.CONTRACTS) || "[]");
+    if (!Array.isArray(list)) return [];
+    const seen = new Set();
+    return list.filter(x => {
+      if (!x || !x.id) return false;
+      const cleanId = String(x.id).replace(/Đ/g, "D").toUpperCase();
+      if (deletedMap[x.id] || deletedMap[cleanId]) return false;
+      if (seen.has(cleanId)) return false;
+      seen.add(cleanId);
+      return true;
+    });
   } catch (e) {}
   return [];
 };
@@ -3852,78 +3929,106 @@ const getContracts = () => {
 // Xoá trực tiếp hợp đồng khỏi hệ thống
 const deleteContract = (id) => {
   if (!id) return;
+  const matchedIds = [id];
   try {
-    const contracts = getContracts().filter(x => x && x.id !== id && x.farmerId !== id && x.pondId !== id);
-    localStorage.setItem(TOM_KEYS.CONTRACTS, JSON.stringify(contracts));
+    const rawList = JSON.parse(localStorage.getItem(TOM_KEYS.CONTRACTS) || "[]");
+    const kept = [];
+    for (const x of (Array.isArray(rawList) ? rawList : [])) {
+      if (!x) continue;
+      if (x.id === id || x.farmerId === id || x.pondId === id) {
+        if (x.id) matchedIds.push(x.id);
+      } else {
+        kept.push(x);
+      }
+    }
+    localStorage.setItem(TOM_KEYS.CONTRACTS, JSON.stringify(kept));
+    markContractDeletedLocal_v4(matchedIds);
   } catch (err) {
     console.warn("Delete contract local error:", err);
   }
-  // Gửi API xoá trên server ngay lập tức
   try {
-    fetch(`/api/contracts/${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => {});
+    const uniqueToDel = Array.from(new Set(matchedIds.filter(Boolean)));
+    uniqueToDel.forEach(cid => {
+      fetch(`/api/contracts/${encodeURIComponent(cid)}`, { method: "DELETE" }).catch(() => {});
+    });
   } catch (e) {}
-  // Phát thông điệp để UI cập nhật tức thì
   try {
     if (typeof BroadcastChannel !== "undefined") {
       const ch = new BroadcastChannel("tom_contracts_channel");
-      ch.postMessage({ type: "CONTRACT_DELETED", contractId: id });
+      ch.postMessage({ type: "CONTRACT_DELETED", contractId: id, removedIds: matchedIds });
       ch.close();
     }
   } catch (e) {}
-  window.dispatchEvent(new CustomEvent("tom_contract_deleted", { detail: { id } }));
+  window.dispatchEvent(new CustomEvent("tom_contract_deleted", { detail: { id, removedIds: matchedIds } }));
   window.dispatchEvent(new CustomEvent("tom_contract_updated"));
   emitAppDataUpdated_v4("contracts");
 };
 
-const saveContract = (c) => {
+const saveContract = (c, opts = {}) => {
   if (!c || !c.id) return c;
+  const cleanId = String(c.id).replace(/Đ/g, "D").toUpperCase();
+  if (opts && opts.fromPoll) {
+    const deletedMap = getDeletedContractIds_v4();
+    if (deletedMap[c.id] || deletedMap[cleanId]) return null;
+  } else {
+    unmarkContractDeletedLocal_v4(c.id);
+  }
+  const normalized = {
+    ...c,
+    pondId: c.pondId || c.farmerId || "",
+    farmerId: c.farmerId || c.pondId || ""
+  };
+  if (normalized.pondLocation && normalized.pondLocation.lat && normalized.pondLocation.lng) {
+    normalized.farmer = {
+      ...(normalized.farmer || {}),
+      coordinates: { lat: Number(normalized.pondLocation.lat), lng: Number(normalized.pondLocation.lng) }
+    };
+  } else if (normalized.farmer?.coordinates?.lat && normalized.farmer?.coordinates?.lng) {
+    normalized.pondLocation = { lat: Number(normalized.farmer.coordinates.lat), lng: Number(normalized.farmer.coordinates.lng) };
+  }
   try {
     const contracts = getContracts();
-    const idx = contracts.findIndex(x => x && x.id === c.id);
+    const idx = contracts.findIndex(x => x && (x.id === normalized.id || String(x.id).replace(/Đ/g, "D").toUpperCase() === cleanId));
     if (idx >= 0) {
-      contracts[idx] = c;
+      contracts[idx] = normalized;
     } else {
-      contracts.unshift(c);
+      contracts.unshift(normalized);
     }
     localStorage.setItem(TOM_KEYS.CONTRACTS, JSON.stringify(contracts));
   } catch (err) {
     console.warn("Save contract local error:", err);
   }
 
-  // 1. Đồng bộ tức thì lên Server API
-  try {
-    fetch("/api/contracts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(c)
-    }).catch(() => {});
-  } catch (err) {}
-
-  // 2. Phát thông điệp qua BroadcastChannel & Event để bên app cập nhật trạng thái ngay lập tức
-  try {
-    if (typeof BroadcastChannel !== "undefined") {
-      const ch = new BroadcastChannel("tom_contracts_channel");
-      ch.postMessage({ type: "CONTRACT_UPDATED", contract: c, contractId: c.id });
-      ch.close();
+  if (!opts || !opts.fromPoll) {
+    try {
+      fetch("/api/contracts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(normalized)
+      }).catch(() => {});
+    } catch (err) {}
+    try {
+      if (typeof BroadcastChannel !== "undefined") {
+        const ch = new BroadcastChannel("tom_contracts_channel");
+        ch.postMessage({ type: "CONTRACT_UPDATED", contract: normalized, contractId: normalized.id });
+        ch.close();
+      }
+    } catch (err) {}
+    window.dispatchEvent(new CustomEvent("tom_contract_updated", { detail: normalized }));
+    if (normalized.farmerSigned || normalized.status === "SIGNED_LEGAL") {
+      window.dispatchEvent(new CustomEvent("tom_contract_signed", { detail: normalized }));
     }
-  } catch (err) {}
-  window.dispatchEvent(new CustomEvent("tom_contract_updated", { detail: c }));
-  if (c.farmerSigned || c.status === "SIGNED_LEGAL") {
-    window.dispatchEvent(new CustomEvent("tom_contract_signed", { detail: c }));
+    emitAppDataUpdated_v4("contracts");
+    try {
+      syncContractToCloud(normalized);
+    } catch (err) {}
   }
-  emitAppDataUpdated_v4("contracts");
-
-  // 3. Dự phòng Cloud Firestore
-  try {
-    syncContractToCloud(c);
-  } catch (err) {}
-  return c;
+  return normalized;
 };
 
 // Đồng bộ hợp đồng lên Cloud Firestore để khách xem từ bất kỳ thiết bị nào
 const syncContractToCloud = async (c) => {
   try {
-    // Luôn gửi tới server API trước
     fetch("/api/contracts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -3943,26 +4048,24 @@ const syncContractToCloud = async (c) => {
 // Tải hợp đồng từ Server API hoặc Cloud Firestore
 const loadContractFromCloud = async (id) => {
   if (!id) return null;
-  // Thử tải nhanh từ API Server
   try {
     const res = await fetch(`/api/contracts/${encodeURIComponent(id)}`);
     if (res.ok) {
       const data = await res.json();
       if (data && data.id) {
-        saveContract(data);
+        saveContract(data, { fromPoll: true });
         return data;
       }
     }
   } catch (e) {}
 
-  // Dự phòng Firestore
   try {
     if (typeof Wu !== "undefined" && Wu) {
       const docRef = Ju(Wu, "tom_contracts", id);
       const snap = await ps(docRef);
       if (snap.exists()) {
         const data = deserializeFromFirestore(snap.data());
-        saveContract(data);
+        saveContract(data, { fromPoll: true });
         return data;
       }
     }
@@ -3972,6 +4075,40 @@ const loadContractFromCloud = async (id) => {
   return null;
 };
 
+// Phân tích tọa độ từ text hoặc link Google Maps (lat, lng)
+const parseGpsInput_v4 = (rawText) => {
+  if (!rawText || typeof rawText !== "string") return null;
+  const txt = decodeURIComponent(rawText).trim();
+  const patterns = [
+    /@(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/,
+    /[?&](?:q|ll|destination|query)=(-?\d{1,2}\.\d+)\s*[,+%20]+\s*(-?\d{1,3}\.\d+)/i,
+    /!3d(-?\d{1,2}\.\d+)!4d(-?\d{1,3}\.\d+)/,
+    /(-?\d{1,2}\.\d+)\s*[,\s;|/]+\s*(-?\d{1,3}\.\d+)/
+  ];
+  for (const re of patterns) {
+    const m = txt.match(re);
+    if (m) {
+      const lat = parseFloat(m[1]);
+      const lng = parseFloat(m[2]);
+      if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+        return { lat: Number(lat.toFixed(6)), lng: Number(lng.toFixed(6)) };
+      }
+    }
+  }
+  return null;
+};
+
+const calcDistanceKm_v4 = (lat1, lng1, lat2, lng2) => {
+  const R = 6371;
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
 if (typeof window !== "undefined") {
   window.getContracts = getContracts;
   window.saveContract = saveContract;
@@ -3979,6 +4116,10 @@ if (typeof window !== "undefined") {
   window.cleanupExpiredContracts = cleanupExpiredContracts;
   window.syncContractToCloud = syncContractToCloud;
   window.loadContractFromCloud = loadContractFromCloud;
+  window.getDeletedContractIds_v4 = getDeletedContractIds_v4;
+  window.markContractDeletedLocal_v4 = markContractDeletedLocal_v4;
+  window.parseGpsInput_v4 = parseGpsInput_v4;
+  window.calcDistanceKm_v4 = calcDistanceKm_v4;
 }
 
 // Hàm đọc số tiền thành chữ Tiếng Việt
@@ -4032,6 +4173,7 @@ const getAppShareBaseUrl = () => {
 const encodeContractToB64 = (obj) => {
   if (!obj || !obj.id) return "";
   try {
+    const coords = obj.farmer?.coordinates || obj.pondLocation || null;
     const compact = {
       id: String(obj.id || "").replace(/Đ/g, "D"),
       pondId: obj.pondId || obj.farmerId || "",
@@ -4049,7 +4191,11 @@ const encodeContractToB64 = (obj) => {
       shrimpType: obj.shrimpType || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
       weighingDate: obj.weighingDate || "",
       weighingTime: obj.weighingTime || "06:00",
-      estimatedYield: obj.estimatedYield || 0,
+      estimatedYield: Number(obj.estimatedYield || 0),
+      shrimpSizeCount: obj.shrimpSizeCount || "",
+      pondArea: obj.pondArea || "",
+      pondAccessNote: obj.pondAccessNote || "",
+      pondLocation: (coords && coords.lat && coords.lng) ? { lat: Number(coords.lat), lng: Number(coords.lng) } : null,
       agreedPrice: Number(obj.agreedPrice || obj.unitPrice || 0),
       unitPrice: Number(obj.unitPrice || obj.agreedPrice || 0),
       depositMoney: Number(obj.depositMoney ?? obj.deposit ?? 0),
@@ -4121,19 +4267,26 @@ const decodeContractFromB64 = (raw) => {
       parsed.shrimpType = parsed.shrimpType || parsed.st || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên";
       parsed.weighingDate = parsed.weighingDate || parsed.wd || "";
       parsed.weighingTime = parsed.weighingTime || parsed.wt || "06:00";
-      parsed.estimatedYield = parsed.estimatedYield || parsed.ey || 0;
+      parsed.estimatedYield = Number(parsed.estimatedYield || parsed.ey || 0);
+      parsed.shrimpSizeCount = parsed.shrimpSizeCount || "";
+      parsed.pondArea = parsed.pondArea || "";
+      parsed.pondAccessNote = parsed.pondAccessNote || "";
       parsed.rejectionSpec = parsed.rejectionSpec || parsed.rj || "Tôm mềm, ốp, gãy càng dạt sang hàng xào";
       parsed.tareSpec = parsed.tareSpec || parsed.tr || "Trừ hao ráo nước chuẩn 1kg/thùng cân";
       parsed.qualityStandard = parsed.qualityStandard || parsed.qs || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước";
       parsed.compensationTerms = parsed.compensationTerms || parsed.ct || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc";
+      const coords = parsed.pondLocation || parsed.farmer?.coordinates || null;
       if (!parsed.farmer) {
         parsed.farmer = {
           fullName: parsed.farmerName,
           phone: parsed.farmerPhone,
           address: parsed.farmerAddress,
           idCard: parsed.farmerIdCard,
+          coordinates: (coords && coords.lat && coords.lng) ? { lat: Number(coords.lat), lng: Number(coords.lng) } : null,
           agreed: !!(parsed.farmerSigned || parsed.status === "SIGNED_LEGAL")
         };
+      } else if (coords && coords.lat && coords.lng && !parsed.farmer.coordinates) {
+        parsed.farmer.coordinates = { lat: Number(coords.lat), lng: Number(coords.lng) };
       }
       if (!parsed.trader) {
         parsed.trader = {
@@ -4163,10 +4316,8 @@ if (typeof window !== "undefined") {
 
 const encodeContractForShare = (contract) => {
   if (!contract || !contract.id) return window.location.href;
-  try { if (typeof saveContract === "function") saveContract(contract); } catch (e) {}
-  try { if (typeof syncContractToCloud === "function") syncContractToCloud(contract); } catch (e) {}
   const base = getAppShareBaseUrl();
-  const cleanId = (contract.id || "").replace(/Đ/g, "D");
+  const cleanId = String(contract.id || "").replace(/Đ/g, "D");
   let b64 = "";
   try {
     b64 = encodeContractToB64(contract);
@@ -4431,11 +4582,10 @@ const SignaturePad = ({ onSave, onClear, initialSignature = null }) => {
 // ==================== QUY TRÌNH KÝ HỢP ĐỒNG ĐIỆN TỬ ====================
 // Tuân thủ: Luật Giao dịch điện tử số 20/2023/QH15 & Bộ luật Dân sự 2015
 const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
-  if (!contract) return null;
-  const [farmerName, setFarmerName] = w.useState(contract.farmer?.fullName || "");
-  const [farmerPhone, setFarmerPhone] = w.useState(contract.farmer?.phone || "");
-  const [farmerIdCard, setFarmerIdCard] = w.useState(contract.farmer?.idCard || "");
-  const [farmerAddress, setFarmerAddress] = w.useState(contract.farmer?.address || "");
+  const [farmerName, setFarmerName] = w.useState(contract?.farmer?.fullName || contract?.farmerName || "");
+  const [farmerPhone, setFarmerPhone] = w.useState(contract?.farmer?.phone || contract?.farmerPhone || "");
+  const [farmerIdCard, setFarmerIdCard] = w.useState(contract?.farmer?.idCard || "");
+  const [farmerAddress, setFarmerAddress] = w.useState(contract?.farmer?.address || contract?.farmerAddress || "");
   const [farmerEmail, setFarmerEmail] = w.useState(() => {
     try {
       const u = localStorage.getItem("tom_customer_gmail_auth");
@@ -4444,7 +4594,7 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
         if (parsed.email) return parsed.email;
       }
     } catch(e) {}
-    return contract.farmer?.verifiedGmail || "levanmung98@gmail.com";
+    return contract?.farmer?.verifiedGmail || "levanmung98@gmail.com";
   });
   const [agreedTerms, setAgreedTerms] = w.useState(true);
   const [signMethod, setSignMethod] = w.useState("QUICK_NAME");
@@ -4453,6 +4603,23 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
   const [showSuccess, setShowSuccess] = w.useState(false);
   const [signedResult, setSignedResult] = w.useState(null);
   const [copyToast, setCopyToast] = w.useState(false);
+  const [signError, setSignError] = w.useState("");
+  const [showUniversalZalo, setShowUniversalZalo] = w.useState(false);
+
+  w.useEffect(() => {
+    if (contract) {
+      setFarmerName(contract.farmer?.fullName || contract.farmerName || "");
+      setFarmerPhone(contract.farmer?.phone || contract.farmerPhone || "");
+      setFarmerIdCard(contract.farmer?.idCard || "");
+      setFarmerAddress(contract.farmer?.address || contract.farmerAddress || "");
+      setSignError("");
+      setShowSuccess(false);
+      setSignedResult(null);
+      setDrawnSignature(null);
+    }
+  }, [contract?.id]);
+
+  if (!contract) return null;
 
   const depositAmt = Number(contract.depositMoney ?? contract.deposit ?? 0);
   const priceVal = Number(contract.agreedPrice || 0);
@@ -4510,12 +4677,17 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
   };
 
   const handleConfirmSign = async () => {
+    setSignError("");
     if (!farmerName.trim()) {
-      alert("Vui lòng nhập họ và tên của Quý khách để ký hợp đồng!");
+      setSignError("Vui lòng nhập họ và tên của Quý khách để ký hợp đồng!");
       return;
     }
     if (!agreedTerms) {
-      alert("Quý khách vui lòng đánh dấu tích đồng ý với các điều khoản mua bán trước khi ký kết!");
+      setSignError("Quý khách vui lòng đánh dấu tích đồng ý với các điều khoản mua bán trước khi ký kết!");
+      return;
+    }
+    if (signMethod === "DRAW" && !drawnSignature) {
+      setSignError("Quý khách vui lòng ký tay vào khung chữ ký hoặc chuyển sang 'Ký Tự Động Theo Tên'!");
       return;
     }
     setIsSubmitting(true);
@@ -4531,7 +4703,6 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
       const legalTxId = `TCX-LEGAL-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}-${randomHex}`;
       const cleanEmail = farmerEmail.trim() || "levanmung98@gmail.com";
 
-      // Save user auth in local storage for subsequent visits
       try {
         localStorage.setItem("tom_customer_gmail_auth", JSON.stringify({
           email: cleanEmail,
@@ -4549,6 +4720,9 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
         farmerSigned: true,
         farmerSignedAt: signedAtFormatted,
         farmerSignatureImg: finalSignatureImg,
+        farmerName: farmerName.trim(),
+        farmerPhone: farmerPhone.trim(),
+        farmerAddress: farmerAddress.trim(),
         farmer: {
           ...contract.farmer,
           fullName: farmerName.trim(),
@@ -4570,10 +4744,8 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
         }
       };
 
-      // 1. Save local
       saveContract(updated);
 
-      // 2. Send Server API immediately
       try {
         await fetch("/api/contracts", {
           method: "POST",
@@ -4584,7 +4756,6 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
         console.warn("API sync error:", err);
       }
 
-      // 3. Broadcast channel
       try {
         if (typeof BroadcastChannel !== "undefined") {
           const ch = new BroadcastChannel("tom_contracts_channel");
@@ -4599,32 +4770,30 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
         onSigned(updated);
       }
     } catch (err) {
-      alert("Lỗi khi ký hợp đồng: " + (err.message || "Vui lòng thử lại"));
+      setSignError("Lỗi khi ký hợp đồng: " + (err.message || "Vui lòng thử lại"));
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const traderSignMsg = `Chào Cơ sở ${contract.trader?.fullName || "Thu Mua Tôm"}, tôi là ${farmerName} (Chủ ao). Tôi đã ký điện tử Hợp đồng số #${contract.id} thành công trên hệ thống. Hẹn cơ sở đúng ngày ${contract.weighingDate || "đã thỏa thuận"} đến kéo lưới cân tôm!`;
   const handleNotifyTraderZalo = () => {
     if (!contract) return;
-    const traderPhone = contract.trader?.phone || "";
-    const cleanPhone = traderPhone.replace(/[^0-9]/g, "");
-    const msg = `Chào Cơ sở ${contract.trader?.fullName || "Thu Mua Tôm"}, tôi là ${farmerName} (Chủ ao). Tôi đã ký điện tử Hợp đồng số #${contract.id} thành công trên hệ thống. Hẹn cơ sở đúng ngày ${contract.weighingDate || "đã thỏa thuận"} đến kéo lưới cân tôm!`;
-    copyToClipboardRobust(msg);
+    copyToClipboardRobust(traderSignMsg);
     setCopyToast(true);
     setTimeout(() => setCopyToast(false), 3500);
-    if (cleanPhone) {
-      window.open(`https://zalo.me/${cleanPhone}`, "_blank");
-    } else {
-      window.open("https://zalo.me", "_blank");
-    }
+    setShowUniversalZalo(true);
   };
 
-  return c.jsx("div", {
-    className: "fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto",
-    children: c.jsxs("div", {
-      className: "w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto",
-      children: [
+  return c.jsxs(c.Fragment, {
+    children: [
+      c.jsx("div", {
+        className: "fixed inset-0 z-[200] bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto",
+        onClick: onClose,
+        children: c.jsxs("div", {
+          onClick: e => e.stopPropagation(),
+          className: "w-full max-w-lg bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto",
+          children: [
         // Modal Header
         c.jsxs("div", {
           className: "bg-gradient-to-r from-emerald-800 to-emerald-700 text-white p-4 flex items-center justify-between",
@@ -4955,6 +5124,12 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
               ]
             }),
 
+            // Error Banner
+            signError && c.jsx("div", {
+              className: "p-3 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 rounded-2xl text-xs font-bold text-red-700 dark:text-red-300",
+              children: signError
+            }),
+
             // Submit Button
             c.jsxs("button", {
               type: "button",
@@ -4968,8 +5143,15 @@ const Xm_BankSigningModal = ({ contract, onClose, onSigned }) => {
             })
           ]
         })
-      ]
-    })
+        ]
+      })
+      }),
+      showUniversalZalo && c.jsx(Xm_UniversalZaloModal, {
+        title: "Thông Báo Ký Hợp Đồng #" + contract.id,
+        content: traderSignMsg,
+        onClose: () => setShowUniversalZalo(false)
+      })
+    ]
   });
 };
 
@@ -5195,9 +5377,9 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
         }
       } catch (e) {}
 
-      alert("Không tìm thấy hợp đồng với mã hoặc liên kết này. Quý khách vui lòng kiểm tra lại mã hoặc nhờ cơ sở gửi lại link Zalo!");
+      setErrorMsg("Không tìm thấy hợp đồng với mã hoặc liên kết này. Quý khách vui lòng kiểm tra lại mã hoặc nhờ cơ sở gửi lại link Zalo!");
     } catch(e) {
-      alert("Không thể giải mã dữ liệu hợp đồng: " + (e?.message || "Lỗi xử lý"));
+      setErrorMsg("Không thể giải mã dữ liệu hợp đồng: " + (e?.message || "Lỗi xử lý"));
     }
   };
   // Vietnamese Voice Reader
@@ -5999,96 +6181,127 @@ const Xm_StandaloneContractPortal = ({ contractId }) => {
 
 // ==================== POPUP CHUẨN HOÁ GỬI HỢP ĐỒNG CHO KHÁCH (SHARE ZALO MODAL) ====================
 const Xm_ShareZaloModal = ({ contract, onClose }) => {
-  if (!contract) return null;
   const [copied, setCopied] = w.useState(false);
   const [activeTab, setActiveTab] = w.useState("MESSAGE"); // MESSAGE, QR
   const [selectedTemplate, setSelectedTemplate] = w.useState("STANDARD"); // STANDARD, QUICK, REMINDER, CONFIRMATION
   const [copyToast, setCopyToast] = w.useState("");
+  const [showUniversalZalo, setShowUniversalZalo] = w.useState(false);
   const textareaRef = w.useRef(null);
 
-  const farmerName = contract.farmer?.fullName || "Chủ ao";
-  const farmerPhone = contract.farmer?.phone || "";
-  const cleanPhone = farmerPhone.replace(/[^0-9]/g, "");
-  const traderName = contract.trader?.fullName || "Cơ sở thu mua Tôm Càng Xanh";
-  const traderPhone = contract.trader?.phone || "";
-  const depositAmt = Number(contract.depositMoney ?? contract.deposit ?? 0);
-  const priceVal = Number(contract.agreedPrice || 0);
-  const weighingDate = contract.weighingDate || "Theo thỏa thuận";
-  const weighingTime = contract.weighingTime || "06:00";
-  const shrimpName = contract.shrimpType || "Tôm Càng Xanh";
-  const pondAddress = contract.farmer?.address || "Tại bờ ao";
-  const priceText = priceVal ? (priceVal.toLocaleString() + " đ/kg") : "Theo bảng phân loại size tôm";
-  const depositText = depositAmt ? (depositAmt.toLocaleString() + " VNĐ (" + (typeof numberToWordsVN === "function" ? numberToWordsVN(depositAmt) : "") + ")") : "Không có tiền cọc";
-  const rejectionSpec = contract.rejectionSpec || "Tôm mềm, ốp, gãy càng dạt sang hàng xào";
-  const tareSpec = contract.tareSpec || "Trừ bì ráo nước chuẩn 1kg/thùng";
+  const buildTemplatesForContract = (cObj, preUrl) => {
+    if (!cObj) return { STANDARD: "", QUICK: "", REMINDER: "", CONFIRMATION: "" };
+    const farmerName = cObj.farmer?.fullName || cObj.farmerName || "Chủ ao";
+    const traderName = cObj.trader?.fullName || cObj.traderName || "Cơ sở thu mua Tôm Càng Xanh";
+    const traderPhone = cObj.trader?.phone || cObj.traderPhone || "";
+    const depositAmt = Number(cObj.depositMoney ?? cObj.deposit ?? 0);
+    const priceVal = Number(cObj.agreedPrice || cObj.unitPrice || 0);
+    const weighingDate = cObj.weighingDate || "Theo thỏa thuận";
+    const weighingTime = cObj.weighingTime || "06:00";
+    const shrimpName = cObj.shrimpType || "Tôm Càng Xanh";
+    const pondAddress = cObj.farmer?.address || cObj.farmerAddress || "Tại bờ ao";
+    const priceText = priceVal ? (priceVal.toLocaleString() + " đ/kg") : "Theo bảng phân loại size tôm";
+    const depositText = depositAmt ? (depositAmt.toLocaleString() + " VNĐ (" + (typeof numberToWordsVN === "function" ? numberToWordsVN(depositAmt) : "") + ")") : "Không có tiền cọc";
+    const rejectionSpec = cObj.rejectionSpec || "Tôm mềm, ốp, gãy càng dạt sang hàng xào";
+    const tareSpec = cObj.tareSpec || "Trừ bì ráo nước chuẩn 1kg/thùng";
+    const estYield = Number(cObj.estimatedYield || 0);
+    const sizeCnt = cObj.shrimpSizeCount || "";
+    const coords = cObj.pondLocation || cObj.farmer?.coordinates || null;
+    const mapUrl = (coords && coords.lat && coords.lng) ? `https://www.google.com/maps/dir/?api=1&destination=${coords.lat},${coords.lng}` : "";
+    const accessNote = cObj.pondAccessNote || "";
+    const url = preUrl || encodeContractForShare(cObj);
 
-  const shareUrl = encodeContractForShare(contract);
+    const extraLines = [
+      estYield > 0 ? `• Sản lượng ước tính: ~${estYield.toLocaleString()} kg${sizeCnt ? " (Size " + sizeCnt + ")" : ""}` : "",
+      mapUrl ? `• Tọa độ GPS bờ ao: ${mapUrl}` : "",
+      accessNote ? `• Ghi chú đường vào ao: ${accessNote}` : ""
+    ].filter(Boolean).join("\n");
 
-  // 4 Mẫu nội dung gửi khách chuẩn chỉnh & tối ưu
-  const templates = {
-    STANDARD: "🦐 HỢP ĐỒNG THU MUA TÔM CÀNG XANH\n" +
-      "Số hiệu: #" + contract.id + "\n" +
-      "Kính gửi: Anh/Chị " + farmerName + " (Chủ ao)\n\n" +
-      "Cơ sở " + traderName + (traderPhone ? " (SĐT: " + traderPhone + ")" : "") + " gửi bản Hợp Đồng Mua Bán Tôm điện tử đã được thiết lập:\n" +
-      "📌 THÔNG TIN THỎA THUẬN:\n" +
-      "• Chủng loại: " + shrimpName + "\n" +
-      "• Đơn giá chốt: " + priceText + "\n" +
-      "• Tiền đặt cọc: " + depositText + "\n" +
-      "• Ngày kéo cân: " + weighingDate + " (Lúc " + weighingTime + ")\n" +
-      "• Địa điểm ao: " + pondAddress + "\n" +
-      "• Quy cách dạt: " + rejectionSpec + "\n" +
-      "• Trừ bì ráo nước: " + tareSpec + "\n\n" +
-      "👉 Quý khách vui lòng bấm vào liên kết dưới đây để xem toàn văn hợp đồng và ký xác nhận trực tuyến trên điện thoại:\n" +
-      "🔗 " + shareUrl + "\n\n" +
-      "🤝 Cam kết cân đúng giờ, cân đủ trọng lượng và thanh toán 100% ngay tại bờ ao. Kính chúc hai bên hợp tác vui vẻ, vụ tôm đại thắng!",
+    return {
+      STANDARD: "🦐 HỢP ĐỒNG THU MUA TÔM CÀNG XANH\n" +
+        "Số hiệu: #" + cObj.id + "\n" +
+        "Kính gửi: Anh/Chị " + farmerName + " (Chủ ao)\n\n" +
+        "Cơ sở " + traderName + (traderPhone ? " (SĐT: " + traderPhone + ")" : "") + " gửi bản Hợp Đồng Mua Bán Tôm điện tử đã được thiết lập:\n" +
+        "📌 THÔNG TIN THỎA THUẬN:\n" +
+        "• Chủng loại: " + shrimpName + "\n" +
+        "• Đơn giá chốt: " + priceText + "\n" +
+        "• Tiền đặt cọc: " + depositText + "\n" +
+        "• Ngày kéo cân: " + weighingDate + " (Lúc " + weighingTime + ")\n" +
+        "• Địa điểm ao: " + pondAddress + "\n" +
+        (extraLines ? extraLines + "\n" : "") +
+        "• Quy cách dạt: " + rejectionSpec + "\n" +
+        "• Trừ bì ráo nước: " + tareSpec + "\n\n" +
+        "👉 Quý khách vui lòng bấm vào liên kết dưới đây để xem toàn văn hợp đồng và ký xác nhận trực tuyến trên điện thoại:\n" +
+        "🔗 " + url + "\n\n" +
+        "🤝 Cam kết cân đúng giờ, cân đủ trọng lượng và thanh toán 100% ngay tại bờ ao. Kính chúc hai bên hợp tác vui vẻ, vụ tôm đại thắng!",
 
-    QUICK: "Cơ sở " + traderName + " gửi HĐ Mua Bán Tôm số #" + contract.id + " cho Anh/Chị " + farmerName + ":\n" +
-      "- Loại tôm: " + shrimpName + "\n" +
-      "- Giá chốt: " + priceText + "\n" +
-      "- Tiền cọc: " + (depositAmt ? depositAmt.toLocaleString() + "d" : "0d") + "\n" +
-      "- Ngày cân: " + weighingDate + " (" + weighingTime + ")\n" +
-      "Bấm vào đây để xem chi tiết và ký hợp đồng ngay:\n" +
-      shareUrl + "\n" +
-      "Liên hệ hỗ trợ: " + (traderPhone || "Cơ sở thu mua"),
+      QUICK: "Cơ sở " + traderName + " gửi HĐ Mua Bán Tôm số #" + cObj.id + " cho Anh/Chị " + farmerName + ":\n" +
+        "- Loại tôm: " + shrimpName + "\n" +
+        (estYield > 0 ? "- Ước lượng: ~" + estYield.toLocaleString() + " kg" + (sizeCnt ? " (" + sizeCnt + ")" : "") + "\n" : "") +
+        "- Giá chốt: " + priceText + "\n" +
+        "- Tiền cọc: " + (depositAmt ? depositAmt.toLocaleString() + "đ" : "0đ") + "\n" +
+        "- Ngày cân: " + weighingDate + " (" + weighingTime + ")\n" +
+        (mapUrl ? "- Định vị ao: " + mapUrl + "\n" : "") +
+        "Bấm vào đây để xem chi tiết và ký hợp đồng ngay:\n" +
+        url + "\n" +
+        "Liên hệ hỗ trợ: " + (traderPhone || "Cơ sở thu mua"),
 
-    REMINDER: "⏰ THÔNG BÁO LỊCH KÉO CÂN TÔM CÀNG XANH\n" +
-      "Kính gửi: Anh/Chị " + farmerName + " (Ao: " + pondAddress + ")\n\n" +
-      "Cơ sở " + traderName + " xin thông báo chuẩn bị kéo cân tôm theo Hợp đồng số #" + contract.id + ":\n" +
-      "📅 Thời gian: Ngày " + weighingDate + " (Dự kiến bắt đầu lúc " + weighingTime + " sáng)\n" +
-      "🚛 Đội ghe/xe thu mua và thiết bị sục khí oxy chuyên dụng sẽ có mặt đúng giờ.\n\n" +
-      "Kính nhờ Anh/Chị:\n" +
-      "1. Giữ mực nước ao ổn định, chuẩn bị đường ghe/xe vào bờ ao thuận lợi.\n" +
-      "2. Chuẩn bị nhân lực kéo lưới/thau rổ để tôm lên nhanh, khỏe và tươi đẹp nhất.\n" +
-      "Xem lại hợp đồng tại: " + shareUrl + "\n" +
-      "Hotline liên hệ: " + (traderPhone || "Thương lái"),
+      REMINDER: "⏰ THÔNG BÁO LỊCH KÉO CÂN TÔM CÀNG XANH\n" +
+        "Kính gửi: Anh/Chị " + farmerName + " (Ao: " + pondAddress + ")\n\n" +
+        "Cơ sở " + traderName + " xin thông báo chuẩn bị kéo cân tôm theo Hợp đồng số #" + cObj.id + ":\n" +
+        "📅 Thời gian: Ngày " + weighingDate + " (Dự kiến bắt đầu lúc " + weighingTime + " sáng)\n" +
+        (estYield > 0 ? "🦐 Sản lượng dự kiến: ~" + estYield.toLocaleString() + " kg\n" : "") +
+        (mapUrl ? "📍 Vị trí ao trên bản đồ: " + mapUrl + "\n" : "") +
+        "🚛 Đội ghe/xe thu mua và thiết bị sục khí oxy chuyên dụng sẽ có mặt đúng giờ.\n\n" +
+        "Kính nhờ Anh/Chị:\n" +
+        "1. Giữ mực nước ao ổn định, chuẩn bị đường ghe/xe vào bờ ao thuận lợi.\n" +
+        "2. Chuẩn bị nhân lực kéo lưới/thau rổ để tôm lên nhanh, khỏe và tươi đẹp nhất.\n" +
+        "Xem lại hợp đồng tại: " + url + "\n" +
+        "Hotline liên hệ: " + (traderPhone || "Thương lái"),
 
-    CONFIRMATION: "✅ BIÊN NHẬN ĐẶT CỌC & XÁC NHẬN HỢP ĐỒNG\n" +
-      "Kính gửi: Anh/Chị " + farmerName + ",\n\n" +
-      "Cơ sở " + traderName + " trân trọng xác nhận:\n" +
-      "• Hợp đồng mua bán Tôm số #" + contract.id + " ĐÃ ĐƯỢC THIẾT LẬP THÀNH CÔNG.\n" +
-      "• Đã giao/nhận tiền cọc: " + depositText + ".\n" +
-      "• Lịch cân chốt: Ngày " + weighingDate + " (" + shrimpName + " - " + priceText + ").\n\n" +
-      "🔗 Bản hợp đồng có hiệu lực pháp lý được lưu trữ bảo mật tại:\n" +
-      shareUrl + "\n\n" +
-      "Cảm ơn Anh/Chị đã tin tưởng hợp tác cùng cơ sở!"
+      CONFIRMATION: "✅ BIÊN NHẬN ĐẶT CỌC & XÁC NHẬN HỢP ĐỒNG\n" +
+        "Kính gửi: Anh/Chị " + farmerName + ",\n\n" +
+        "Cơ sở " + traderName + " trân trọng xác nhận:\n" +
+        "• Hợp đồng mua bán Tôm số #" + cObj.id + " ĐÃ ĐƯỢC THIẾT LẬP THÀNH CÔNG.\n" +
+        "• Đã giao/nhận tiền cọc: " + depositText + ".\n" +
+        "• Lịch cân chốt: Ngày " + weighingDate + " (" + shrimpName + " - " + priceText + ").\n\n" +
+        "🔗 Bản hợp đồng có hiệu lực pháp lý được lưu trữ bảo mật tại:\n" +
+        url + "\n\n" +
+        "Cảm ơn Anh/Chị đã tin tưởng hợp tác cùng cơ sở!"
+    };
   };
 
-  const [customMessage, setCustomMessage] = w.useState(templates.STANDARD);
+  const shareUrl = w.useMemo(() => encodeContractForShare(contract), [contract?.id, contract?._updatedAt, contract?.farmerSigned, contract?.agreedPrice, contract?.depositMoney, contract?.weighingDate, contract?.farmerName, contract?.estimatedYield, contract?.pondLocation?.lat, contract?.pondLocation?.lng]);
+  const templates = w.useMemo(() => buildTemplatesForContract(contract, shareUrl), [contract?.id, contract?._updatedAt, contract?.farmerSigned, contract?.agreedPrice, contract?.depositMoney, contract?.weighingDate, contract?.farmerName, contract?.estimatedYield, shareUrl]);
 
-  // Khi đổi mẫu template, cập nhật lại nội dung tin nhắn
+  const [customMessage, setCustomMessage] = w.useState(() => buildTemplatesForContract(contract, shareUrl).STANDARD || "");
+
+  w.useEffect(() => {
+    if (contract && contract.id) {
+      setCustomMessage(templates[selectedTemplate] || templates.STANDARD);
+    }
+  }, [contract?.id, shareUrl]);
+
+  if (!contract) return null;
+
+  const farmerName = contract.farmer?.fullName || contract.farmerName || "Chủ ao";
+  const farmerPhone = contract.farmer?.phone || contract.farmerPhone || "";
+  const cleanPhone = farmerPhone.replace(/[^0-9]/g, "");
+  const depositAmt = Number(contract.depositMoney ?? contract.deposit ?? 0);
+  const priceVal = Number(contract.agreedPrice || contract.unitPrice || 0);
+  const weighingDate = contract.weighingDate || "Theo thỏa thuận";
+  const priceText = priceVal ? (priceVal.toLocaleString() + " đ/kg") : "Theo bảng phân loại size tôm";
+
   const handleSelectTemplate = (tKey) => {
     setSelectedTemplate(tKey);
     setCustomMessage(templates[tKey] || templates.STANDARD);
   };
 
-  // Khôi phục mẫu ban đầu
   const handleResetToCurrentTemplate = () => {
     setCustomMessage(templates[selectedTemplate] || templates.STANDARD);
     setCopyToast("Đã khôi phục về mẫu gốc!");
     setTimeout(() => setCopyToast(""), 2000);
   };
 
-  // Chèn nhanh thông tin vào vị trí con trỏ
   const handleInsertTag = (tagText) => {
     if (textareaRef.current) {
       const el = textareaRef.current;
@@ -6105,29 +6318,24 @@ const Xm_ShareZaloModal = ({ contract, onClose }) => {
     }
   };
 
-  const [showUniversalZalo, setShowUniversalZalo] = w.useState(false);
-
-  // Mở Zalo và tự động sao chép nội dung
   const handleOpenZalo = () => {
     copyToClipboardRobust(customMessage);
     setCopied(true);
-    setCopyToast("✓ Đã tự động sao chép tin nhắn! Đang mở Zalo của " + farmerName + "...");
+    setCopyToast("✓ Đã sao chép tin nhắn! Chọn mở Zalo bên dưới:");
     setTimeout(() => { setCopied(false); setCopyToast(""); }, 4000);
-    if (cleanPhone) {
-      window.open("https://zalo.me/" + cleanPhone, "_blank");
-    } else {
-      setShowUniversalZalo(true);
-    }
+    setShowUniversalZalo(true);
   };
 
-  // Gửi qua tin nhắn SMS điện thoại
   const handleSendSMS = () => {
     copyToClipboardRobust(customMessage);
     const smsBody = "HD Tom Cang Xanh #" + contract.id + " gui Anh/Chi " + farmerName + ". Ngay can: " + weighingDate + ". Gia: " + priceText + ". Coc: " + (depositAmt ? depositAmt.toLocaleString() + "d" : "0d") + ". Xem va ky tai: " + shareUrl;
-    window.open("sms:" + cleanPhone + "?body=" + encodeURIComponent(smsBody), "_self");
+    const link = document.createElement("a");
+    link.href = "sms:" + cleanPhone + "?body=" + encodeURIComponent(smsBody);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  // Sao chép chỉ riêng liên kết
   const handleCopyLinkOnly = () => {
     copyToClipboardRobust(shareUrl);
     setCopied(true);
@@ -6135,7 +6343,6 @@ const Xm_ShareZaloModal = ({ contract, onClose }) => {
     setTimeout(() => { setCopied(false); setCopyToast(""); }, 2500);
   };
 
-  // Sao chép toàn bộ tin nhắn
   const handleCopyFullMessage = () => {
     copyToClipboardRobust(customMessage);
     setCopied(true);
@@ -6143,7 +6350,6 @@ const Xm_ShareZaloModal = ({ contract, onClose }) => {
     setTimeout(() => { setCopied(false); setCopyToast(""); }, 2500);
   };
 
-  // Chia sẻ hệ điều hành đa kênh
   const handleNativeShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -6156,24 +6362,27 @@ const Xm_ShareZaloModal = ({ contract, onClose }) => {
     }
   };
 
-  // Tải ảnh mã QR về máy
   const qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=350x350&margin=12&data=" + encodeURIComponent(shareUrl);
   const handleDownloadQR = () => {
     const link = document.createElement("a");
     link.href = qrCodeUrl;
     link.target = "_blank";
+    link.rel = "noopener noreferrer";
     link.download = "QR-Hop-Dong-" + contract.id + ".png";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  return c.jsxs("div", {
-    className: "fixed inset-0 z-[160] flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-200 overflow-y-auto",
+  return c.jsxs(c.Fragment, {
     children: [
-      c.jsx("div", { className: "fixed inset-0 bg-black/75 backdrop-blur-sm", onClick: onClose }),
       c.jsxs("div", {
-        className: "relative bg-white dark:bg-slate-900 rounded-[28px] max-w-xl w-full overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col my-auto z-10 font-sans",
+        className: "fixed inset-0 z-[220] flex items-center justify-center p-2 sm:p-4 overflow-y-auto",
+        children: [
+          c.jsx("div", { className: "fixed inset-0 bg-black/75 backdrop-blur-sm", onClick: onClose }),
+          c.jsxs("div", {
+            onClick: e => e.stopPropagation(),
+            className: "relative bg-white dark:bg-slate-900 rounded-[28px] max-w-xl w-full overflow-hidden shadow-2xl border border-emerald-500/30 flex flex-col my-auto z-10 font-sans",
         children: [
           // Header
           c.jsxs("div", {
@@ -6413,24 +6622,29 @@ const Xm_ShareZaloModal = ({ contract, onClose }) => {
             ]
           })
         ]
+      })
+        ]
       }),
       showUniversalZalo && c.jsx(Xm_UniversalZaloModal, {
         title: "Gửi Hợp Đồng Cho " + farmerName,
         content: customMessage,
+        initialPhone: cleanPhone,
+        shareUrl: shareUrl,
         onClose: () => setShowUniversalZalo(false)
       })
     ]
   });
 };
 
-const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
-  if (!contract) return null;
-  const [cData, setCData] = w.useState(contract);
+const Xm_ContractModal = ({ contract, onClose, onUpdateContract, onShare, onShareWorkers }) => {
+  const [cData, setCData] = w.useState(contract || null);
   const [showShareModal, setShowShareModal] = w.useState(false);
   const [showSigningModal, setShowSigningModal] = w.useState(false);
   const [viewingMap, setViewingMap] = w.useState(false);
   const [justSignedNotice, setJustSignedNotice] = w.useState(false);
   const [isEditingTerms, setIsEditingTerms] = w.useState(false);
+  const [toastMsg, setToastMsg] = w.useState("");
+  const [confirmDelete, setConfirmDelete] = w.useState(false);
   const [editForm, setEditForm] = w.useState({
     agreedPrice: "",
     depositMoney: "",
@@ -6441,80 +6655,41 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
     tareSpec: "",
     qualityStandard: "",
     compensationTerms: "",
+    estimatedYield: "",
+    shrimpSizeCount: "",
+    pondArea: "",
+    pondAccessNote: "",
     farmerName: "",
     farmerPhone: "",
     farmerAddress: "",
     farmerIdCard: ""
   });
 
-  const handleOpenEditTerms = () => {
-    setEditForm({
-      agreedPrice: cData.agreedPrice || "",
-      depositMoney: cData.depositMoney ?? cData.deposit ?? "",
-      weighingDate: cData.weighingDate || "",
-      weighingTime: cData.weighingTime || "06:00",
-      shrimpType: cData.shrimpType || "Tôm càng xanh",
-      rejectionSpec: cData.rejectionSpec || "Tôm mềm, ốp, gãy càng dạt sang hàng xào",
-      tareSpec: cData.tareSpec || "Trừ bì ráo nước chuẩn 1kg/thùng",
-      qualityStandard: cData.qualityStandard || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước",
-      compensationTerms: cData.compensationTerms || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc",
-      farmerName: cData.farmer?.fullName || "",
-      farmerPhone: cData.farmer?.phone || "",
-      farmerAddress: cData.farmer?.address || "",
-      farmerIdCard: cData.farmer?.idCard || ""
-    });
-    setIsEditingTerms(true);
-  };
-
-  const handleSaveEditTerms = () => {
-    const updated = {
-      ...cData,
-      agreedPrice: Number(editForm.agreedPrice) || 0,
-      depositMoney: Number(editForm.depositMoney) || 0,
-      weighingDate: editForm.weighingDate,
-      weighingTime: editForm.weighingTime,
-      shrimpType: editForm.shrimpType,
-      rejectionSpec: editForm.rejectionSpec,
-      tareSpec: editForm.tareSpec,
-      qualityStandard: editForm.qualityStandard,
-      compensationTerms: editForm.compensationTerms,
-      farmer: {
-        ...cData.farmer,
-        fullName: editForm.farmerName,
-        phone: editForm.farmerPhone,
-        address: editForm.farmerAddress,
-        idCard: editForm.farmerIdCard
-      }
-    };
-    saveContract(updated);
-    setCData(updated);
-    if (onUpdateContract) onUpdateContract(updated);
-    try {
-      window.dispatchEvent(new CustomEvent("tom_contract_updated", { detail: updated }));
-      if (typeof BroadcastChannel !== "undefined") {
-        const ch = new BroadcastChannel("tom_contracts_channel");
-        ch.postMessage({ type: "CONTRACT_UPDATED", contract: updated });
-        ch.close();
-      }
-    } catch (e) {}
-    setIsEditingTerms(false);
-    alert("✓ Đã lưu cập nhật điều khoản hợp đồng thành công!");
-  };
-
-  // Đồng bộ khi prop contract thay đổi
   w.useEffect(() => {
-    if (contract) setCData(contract);
-  }, [contract]);
+    if (contract) {
+      setCData(prev => {
+        if (prev && prev.id === contract.id && prev._updatedAt === contract._updatedAt && prev.farmerSigned === contract.farmerSigned && prev.agreedPrice === contract.agreedPrice && prev.depositMoney === contract.depositMoney) {
+          return prev;
+        }
+        return contract;
+      });
+    }
+  }, [contract?.id, contract?._updatedAt, contract?.farmerSigned, contract?.agreedPrice, contract?.depositMoney]);
 
-  // Lắng nghe cập nhật thời gian thực khi khách ký trên điện thoại
   w.useEffect(() => {
+    if (!cData || !cData.id) return;
+    const isSameSnapshot = (up) => up && cData && up.id === cData.id && up._updatedAt === cData._updatedAt && !!up.farmerSigned === !!cData.farmerSigned && up.agreedPrice === cData.agreedPrice && up.depositMoney === cData.depositMoney;
     const handleSync = (e) => {
       const up = e.detail;
-      if (up && (up.id === cData.id || up.farmerId === cData.farmerId)) {
+      if (up && (up.id === cData.id || (cData.farmerId && up.farmerId === cData.farmerId))) {
+        if (isSameSnapshot(up)) return;
+        const newlySigned = !!up.farmerSigned && !cData.farmerSigned;
         setCData(up);
-        setJustSignedNotice(true);
+        if (newlySigned) {
+          setJustSignedNotice(true);
+          setTimeout(() => setJustSignedNotice(false), 10000);
+        }
         if (onUpdateContract) onUpdateContract(up);
-        setTimeout(() => setJustSignedNotice(false), 10000);
       }
     };
     window.addEventListener("tom_contract_signed", handleSync);
@@ -6527,33 +6702,36 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
         bc.onmessage = (ev) => {
           if (ev.data && (ev.data.type === "CONTRACT_SIGNED" || ev.data.type === "CONTRACT_UPDATED")) {
             const up = ev.data.contract;
-            if (up && (up.id === cData.id || up.farmerId === cData.farmerId)) {
+            if (up && (up.id === cData.id || (cData.farmerId && up.farmerId === cData.farmerId))) {
+              if (isSameSnapshot(up)) return;
+              const newlySigned = !!up.farmerSigned && !cData.farmerSigned;
               setCData(up);
-              setJustSignedNotice(true);
+              if (newlySigned) {
+                setJustSignedNotice(true);
+                setTimeout(() => setJustSignedNotice(false), 10000);
+              }
               if (onUpdateContract) onUpdateContract(up);
-              setTimeout(() => setJustSignedNotice(false), 10000);
             }
           }
         };
       }
     } catch (e) {}
 
-    // Polling API Server liên tục mỗi 2 giây
     const pollInterval = setInterval(async () => {
       try {
         const res = await fetch("/api/contracts/" + encodeURIComponent(cData.id));
         if (res.ok) {
           const remote = await res.json();
-          if (remote && remote.farmerSigned && !cData.farmerSigned) {
+          if (remote && remote.id && remote.farmerSigned && !cData.farmerSigned) {
             setCData(remote);
-            saveContract(remote);
+            saveContract(remote, { fromPoll: true });
             setJustSignedNotice(true);
             if (onUpdateContract) onUpdateContract(remote);
             setTimeout(() => setJustSignedNotice(false), 10000);
           }
         }
       } catch (e) {}
-    }, 2000);
+    }, 3500);
 
     return () => {
       window.removeEventListener("tom_contract_signed", handleSync);
@@ -6561,30 +6739,131 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
       if (bc) bc.close();
       clearInterval(pollInterval);
     };
-  }, [cData.id, cData.farmerId, cData.farmerSigned]);
+  }, [cData?.id, cData?.farmerId, cData?.farmerSigned, cData?._updatedAt, cData?.agreedPrice, cData?.depositMoney]);
 
-  // Xử lý xoá trực tiếp hợp đồng
-  const handleDeleteDirectly = () => {
-    const pondName = cData.farmer?.fullName || "chủ ao";
-    if (confirm("Bạn có chắc chắn muốn XOÁ VĨNH VIỄN Hợp đồng #" + cData.id + " của " + pondName + "?\n\nDữ liệu hợp đồng sẽ bị xoá khỏi máy và máy chủ ngay lập tức.")) {
-      deleteContract(cData.id);
-      if (onClose) onClose();
-      alert("Đã xoá hợp đồng thành công!");
-    }
+  if (!contract || !cData) return null;
+
+  const handleOpenEditTerms = () => {
+    setEditForm({
+      agreedPrice: cData.agreedPrice || "",
+      depositMoney: cData.depositMoney ?? cData.deposit ?? "",
+      weighingDate: cData.weighingDate || "",
+      weighingTime: cData.weighingTime || "06:00",
+      shrimpType: cData.shrimpType || "Tôm càng xanh",
+      rejectionSpec: cData.rejectionSpec || "Tôm mềm, ốp, gãy càng dạt sang hàng xào",
+      tareSpec: cData.tareSpec || "Trừ bì ráo nước chuẩn 1kg/thùng",
+      qualityStandard: cData.qualityStandard || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước",
+      compensationTerms: cData.compensationTerms || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc",
+      estimatedYield: cData.estimatedYield ? String(cData.estimatedYield) : "",
+      shrimpSizeCount: cData.shrimpSizeCount || "",
+      pondArea: cData.pondArea || "",
+      pondAccessNote: cData.pondAccessNote || "",
+      farmerName: cData.farmer?.fullName || cData.farmerName || "",
+      farmerPhone: cData.farmer?.phone || cData.farmerPhone || "",
+      farmerAddress: cData.farmer?.address || cData.farmerAddress || "",
+      farmerIdCard: cData.farmer?.idCard || ""
+    });
+    setIsEditingTerms(true);
+  };
+
+  const handleSaveEditTerms = () => {
+    const estYieldNum = Number(editForm.estimatedYield) || 0;
+    const updated = {
+      ...cData,
+      agreedPrice: Number(editForm.agreedPrice) || 0,
+      unitPrice: Number(editForm.agreedPrice) || 0,
+      depositMoney: Number(editForm.depositMoney) || 0,
+      deposit: Number(editForm.depositMoney) || 0,
+      weighingDate: editForm.weighingDate,
+      weighingTime: editForm.weighingTime,
+      shrimpType: editForm.shrimpType,
+      rejectionSpec: editForm.rejectionSpec,
+      tareSpec: editForm.tareSpec,
+      qualityStandard: editForm.qualityStandard,
+      compensationTerms: editForm.compensationTerms,
+      estimatedYield: estYieldNum,
+      shrimpSizeCount: editForm.shrimpSizeCount.trim(),
+      pondArea: editForm.pondArea.trim(),
+      pondAccessNote: editForm.pondAccessNote.trim(),
+      farmerName: editForm.farmerName,
+      farmerPhone: editForm.farmerPhone,
+      farmerAddress: editForm.farmerAddress,
+      farmer: {
+        ...cData.farmer,
+        fullName: editForm.farmerName,
+        phone: editForm.farmerPhone,
+        address: editForm.farmerAddress,
+        idCard: editForm.farmerIdCard
+      }
+    };
+    saveContract(updated);
+
+    // Sync contract term updates back to the Farmer/Pond record in Ot.FARMERS
+    try {
+      if (typeof me !== "undefined" && me.getFarmers) {
+        const farmersList = me.getFarmers();
+        let syncedFarmer = false;
+        const nextFarmers = farmersList.map(fItem => {
+          if (fItem && (fItem.id === cData.farmerId || fItem.id === cData.pondId || fItem.contractId === cData.id)) {
+            syncedFarmer = true;
+            return {
+              ...fItem,
+              name: editForm.farmerName || fItem.name,
+              phone: editForm.farmerPhone || fItem.phone,
+              address: editForm.farmerAddress || fItem.address,
+              idCard: editForm.farmerIdCard || fItem.idCard,
+              defaultPrice: Number(editForm.agreedPrice) || fItem.defaultPrice,
+              defaultDeposit: Number(editForm.depositMoney) || 0,
+              weighingDate: editForm.weighingDate || fItem.weighingDate,
+              weighingTime: editForm.weighingTime || fItem.weighingTime,
+              shrimpType: editForm.shrimpType || fItem.shrimpType,
+              tareSpec: editForm.tareSpec || fItem.tareSpec,
+              rejectionSpec: editForm.rejectionSpec || fItem.rejectionSpec,
+              estimatedYield: estYieldNum || fItem.estimatedYield || "",
+              shrimpSizeCount: editForm.shrimpSizeCount.trim() || fItem.shrimpSizeCount || "",
+              area: editForm.pondArea.trim() || fItem.area || "",
+              accessNote: editForm.pondAccessNote.trim() || fItem.accessNote || "",
+              contractId: cData.id
+            };
+          }
+          return fItem;
+        });
+        if (syncedFarmer) {
+          me.save(Ot.FARMERS, nextFarmers);
+        }
+      }
+    } catch (e) {}
+
+    setCData(updated);
+    if (onUpdateContract) onUpdateContract(updated);
+    setIsEditingTerms(false);
+    setToastMsg("✓ Đã lưu cập nhật điều khoản hợp đồng & đồng bộ Chủ Ao!");
+    setTimeout(() => setToastMsg(""), 3500);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteContract(cData.id);
+    setConfirmDelete(false);
+    if (onClose) onClose();
   };
 
   const depositAmt = Number(cData.depositMoney ?? cData.deposit ?? 0);
   const priceVal = Number(cData.agreedPrice || 0);
+  const estYieldVal = Number(cData.estimatedYield || 0);
   const isSigned = cData.status === "SIGNED_LEGAL" || !!cData.farmerSigned;
   const depositTextWords = depositAmt && typeof numberToWordsVN === "function" ? numberToWordsVN(depositAmt) : "";
+  const pondCoords = cData.farmer?.coordinates || cData.pondLocation || null;
 
-  return c.jsxs("div", {
-    className: "fixed inset-0 z-[120] flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-200 overflow-y-auto",
+  return c.jsxs(c.Fragment, {
     children: [
-      c.jsx("div", { className: "fixed inset-0 bg-black/75 backdrop-blur-sm print:hidden", onClick: onClose }),
       c.jsxs("div", {
-        className: "relative bg-white dark:bg-slate-900 rounded-[28px] max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto z-10 font-sans print:border-none print:shadow-none print:max-h-none print:m-0 print:p-0",
+        className: "fixed inset-0 z-[120] flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-200 overflow-y-auto",
         children: [
+          c.jsx("div", { className: "fixed inset-0 bg-black/75 backdrop-blur-sm print:hidden", onClick: onClose }),
+          c.jsxs("div", {
+            onClick: (e) => e.stopPropagation(),
+            className: "relative bg-white dark:bg-slate-900 rounded-[28px] max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto z-10 font-sans print:border-none print:shadow-none print:max-h-none print:m-0 print:p-0",
+            children: [
           // Modal Top Header (Hidden on Print)
           c.jsxs("div", {
             className: "bg-[#1b4d1e] text-white p-4 flex items-center justify-between shadow-md print:hidden",
@@ -6632,26 +6911,32 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                   c.jsxs("button", {
                     type: "button",
                     onClick: () => setShowShareModal(true),
-                    className: "px-4 py-2 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20 active:scale-95 transition-all cursor-pointer",
-                    children: [c.jsx(ZaloIcon, { size: 16 }), "Gửi Khách Hàng (Zalo/SMS/QR)"]
+                    className: "px-3.5 py-2 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20 active:scale-95 transition-all cursor-pointer",
+                    children: [c.jsx(ZaloIcon, { size: 16 }), "Gửi Khách Hàng (Zalo/QR)"]
+                  }),
+                  onShareWorkers && c.jsxs("button", {
+                    type: "button",
+                    onClick: () => onShareWorkers(cData),
+                    className: "px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer active:scale-95",
+                    children: [c.jsx(tc, { size: 15 }), "Gửi Nhân Công"]
                   }),
                   c.jsxs("button", {
                     type: "button",
                     onClick: handleOpenEditTerms,
-                    className: "px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer active:scale-95",
+                    className: "px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer active:scale-95",
                     children: [c.jsx("span", { children: "✏️" }), "Sửa Điều Khoản"]
                   }),
                   !isSigned && c.jsxs("button", {
                     type: "button",
                     onClick: () => setShowSigningModal(true),
                     className: "px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer",
-                    children: [c.jsx("span", { children: "✍️" }), "Ký Thay Tại Chỗ"]
+                    children: [c.jsx("span", { children: "✍️" }), "Ký Tại Chỗ"]
                   }),
                   c.jsxs("button", {
                     type: "button",
-                    onClick: handleDeleteDirectly,
+                    onClick: () => setConfirmDelete(true),
                     className: "px-3 py-2 bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors border border-red-200 dark:border-red-900 cursor-pointer active:scale-95",
-                    children: [c.jsx("span", { children: "🗑️" }), "Xoá HĐ"]
+                    children: [c.jsx(Iu, { size: 14 }), "Xoá HĐ"]
                   })
                 ]
               }),
@@ -6662,15 +6947,51 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                     type: "button",
                     onClick: () => window.print(),
                     className: "px-3.5 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl font-bold text-xs flex items-center gap-1.5 text-slate-800 dark:text-slate-200 hover:bg-slate-50 cursor-pointer shadow-sm",
-                    children: [c.jsx(Ms, { size: 16 }), "In / Tải PDF A4"]
+                    children: [c.jsx(Ms, { size: 16 }), "In / PDF A4"]
                   })
                 ]
               })
             ]
           }),
 
-          // Thông báo thời gian thực khi khách vừa ký
-          /* Flashing notification banner removed */
+          // Non-blocking Toast Banner
+          toastMsg && c.jsx("div", {
+            className: "mx-4 mt-3 p-2.5 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 rounded-xl text-xs font-black text-center print:hidden",
+            children: toastMsg
+          }),
+
+          justSignedNotice && c.jsx("div", {
+            className: "mx-4 mt-3 p-2.5 bg-emerald-600 text-white rounded-xl text-xs font-black text-center print:hidden",
+            children: "✓ Chủ ao vừa ký xác nhận hợp đồng điện tử thành công!"
+          }),
+
+          // Inline Delete Confirmation Bar
+          confirmDelete && c.jsxs("div", {
+            className: "mx-4 mt-3 p-3.5 bg-red-50 dark:bg-red-950/50 border border-red-300 dark:border-red-800 rounded-2xl flex flex-wrap items-center justify-between gap-2 print:hidden",
+            children: [
+              c.jsxs("p", {
+                className: "text-xs font-bold text-red-800 dark:text-red-200",
+                children: ["Xác nhận XOÁ VĨNH VIỄN Hợp đồng #", cData.id, " của ", cData.farmer?.fullName || "chủ ao", "?"]
+              }),
+              c.jsxs("div", {
+                className: "flex items-center gap-2",
+                children: [
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => setConfirmDelete(false),
+                    className: "px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer",
+                    children: "Huỷ"
+                  }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: handleConfirmDelete,
+                    className: "px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black cursor-pointer",
+                    children: "Xác nhận xoá"
+                  })
+                ]
+              })
+            ]
+          }),
 
           // Contract Body (Printable Area)
           c.jsxs("div", {
@@ -6689,13 +7010,20 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                     ]
                   }),
                   c.jsxs("div", {
-                    className: "grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center",
+                    className: "grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center",
                     children: [
                       c.jsxs("div", {
                         className: "bg-white dark:bg-slate-800/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs",
                         children: [
                           c.jsx("div", { className: "text-[10px] text-slate-500 font-bold uppercase", children: "Chủng loại tôm" }),
                           c.jsx("div", { className: "font-black text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm mt-0.5 truncate", children: cData.shrimpType || "Tôm Càng Xanh" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "bg-white dark:bg-slate-800/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs",
+                        children: [
+                          c.jsx("div", { className: "text-[10px] text-slate-500 font-bold uppercase", children: "Ước lượng tôm" }),
+                          c.jsx("div", { className: "font-black text-teal-700 dark:text-teal-300 text-xs sm:text-sm mt-0.5", children: estYieldVal > 0 ? (`~${estYieldVal.toLocaleString()} kg` + (cData.shrimpSizeCount ? ` (${cData.shrimpSizeCount})` : "")) : (cData.shrimpSizeCount || "Chưa đánh") })
                         ]
                       }),
                       c.jsxs("div", {
@@ -6713,7 +7041,7 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                         ]
                       }),
                       c.jsxs("div", {
-                        className: "bg-white dark:bg-slate-800/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs",
+                        className: "col-span-2 sm:col-span-1 bg-white dark:bg-slate-800/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs",
                         children: [
                           c.jsx("div", { className: "text-[10px] text-slate-500 font-bold uppercase", children: "Ngày kéo cân" }),
                           c.jsxs("div", { className: "font-black text-amber-700 dark:text-amber-400 text-xs sm:text-sm mt-0.5", children: [cData.weighingDate || "Thỏa thuận", " (", cData.weighingTime || "06:00", ")"] })
@@ -6761,10 +7089,23 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                       c.jsxs("p", { children: [c.jsx("strong", { children: "Điện thoại: " }), cData.farmer?.phone || "Chưa cập nhật"] }),
                       c.jsxs("p", { children: [c.jsx("strong", { children: "CCCD: " }), cData.farmer?.idCard || "Chưa cập nhật"] }),
                       c.jsxs("p", { children: [c.jsx("strong", { children: "Địa chỉ ao: " }), cData.farmer?.address || "Chưa cập nhật"] }),
-                      cData.farmer?.coordinates && c.jsxs("div", {
+                      (estYieldVal > 0 || cData.pondArea || cData.shrimpSizeCount) && c.jsxs("p", {
+                        className: "text-xs text-emerald-800 dark:text-emerald-300 print:text-black font-bold",
+                        children: [
+                          "Sản lượng dự kiến: ",
+                          estYieldVal > 0 ? `~${estYieldVal.toLocaleString()} kg` : "Đang cập nhật",
+                          cData.shrimpSizeCount ? ` • Size: ${cData.shrimpSizeCount}` : "",
+                          cData.pondArea ? ` • Diện tích: ${cData.pondArea}` : ""
+                        ]
+                      }),
+                      cData.pondAccessNote && c.jsxs("p", {
+                        className: "text-[11px] text-amber-800 dark:text-amber-300 print:text-black",
+                        children: [c.jsx("strong", { children: "Đường vào ao: " }), cData.pondAccessNote]
+                      }),
+                      pondCoords && pondCoords.lat && pondCoords.lng && c.jsxs("div", {
                         className: "pt-1 flex items-center justify-between text-xs text-blue-700 bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700 print:hidden",
                         children: [
-                          c.jsxs("span", { children: ["Tọa độ GPS ao: ", cData.farmer.coordinates.lat.toFixed(5) + ", " + cData.farmer.coordinates.lng.toFixed(5)] }),
+                          c.jsxs("span", { children: ["Tọa độ GPS ao: ", Number(pondCoords.lat).toFixed(5) + ", " + Number(pondCoords.lng).toFixed(5)] }),
                           c.jsxs("button", {
                             type: "button",
                             onClick: () => setViewingMap(true),
@@ -6924,9 +7265,12 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                 ]
               })
             ]
-          }),
-
-          // Modals
+          })
+        ]
+      })
+    ]
+  }),
+          // Sibling Modals rendered outside z-[120] / z-10 overflow-hidden
           showShareModal && c.jsx(Xm_ShareZaloModal, {
             contract: cData,
             onClose: () => setShowShareModal(false)
@@ -6939,17 +7283,21 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
               if (onUpdateContract) onUpdateContract(up);
             }
           }),
-          viewingMap && cData.farmer?.coordinates && c.jsx(Xm_MapModal, {
-            coordinates: cData.farmer.coordinates,
-            address: cData.farmer.address,
-            pondName: cData.farmer.fullName,
+          viewingMap && pondCoords && pondCoords.lat && pondCoords.lng && c.jsx(Xm_MapModal, {
+            coordinates: pondCoords,
+            address: cData.farmer?.address || cData.farmerAddress,
+            pondName: cData.farmer?.fullName || cData.farmerName,
+            accessNote: cData.pondAccessNote,
+            estimatedYield: estYieldVal,
+            onShareWorker: onShareWorkers ? () => { setViewingMap(false); onShareWorkers(cData); } : null,
             onClose: () => setViewingMap(false)
           }),
           isEditingTerms && c.jsxs("div", {
-            className: "fixed inset-0 z-[150] flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200 overflow-y-auto",
+            className: "fixed inset-0 z-[210] flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200 overflow-y-auto",
             children: [
               c.jsx("div", { className: "fixed inset-0 bg-black/75 backdrop-blur-sm", onClick: () => setIsEditingTerms(false) }),
               c.jsxs("div", {
+                onClick: (e) => e.stopPropagation(),
                 className: "relative bg-white dark:bg-slate-900 rounded-[24px] max-w-xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 my-auto z-10 font-sans max-h-[90vh] overflow-y-auto",
                 children: [
                   c.jsxs("div", {
@@ -6988,6 +7336,47 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                                 type: "number",
                                 value: editForm.depositMoney,
                                 onChange: (e) => setEditForm({ ...editForm, depositMoney: e.target.value }),
+                                className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                              })
+                            ]
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "grid grid-cols-3 gap-2",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Ước lượng (kg):" }),
+                              c.jsx("input", {
+                                type: "number",
+                                value: editForm.estimatedYield,
+                                onChange: (e) => setEditForm({ ...editForm, estimatedYield: e.target.value }),
+                                placeholder: "Vd: 2000",
+                                className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Size tôm:" }),
+                              c.jsx("input", {
+                                type: "text",
+                                value: editForm.shrimpSizeCount,
+                                onChange: (e) => setEditForm({ ...editForm, shrimpSizeCount: e.target.value }),
+                                placeholder: "30-40 con/kg",
+                                className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Diện tích ao:" }),
+                              c.jsx("input", {
+                                type: "text",
+                                value: editForm.pondArea,
+                                onChange: (e) => setEditForm({ ...editForm, pondArea: e.target.value }),
+                                placeholder: "5 công",
                                 className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
                               })
                             ]
@@ -7055,6 +7444,18 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
                         ]
                       }),
                       c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "block font-bold text-slate-700 dark:text-slate-300 mb-1", children: "Ghi chú đường vào ao (xe/ghe/bờ đê):" }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: editForm.pondAccessNote,
+                            onChange: (e) => setEditForm({ ...editForm, pondAccessNote: e.target.value }),
+                            placeholder: "Vd: Qua cầu sắt rẽ trái 300m, ghe tải đậu ngay cống...",
+                            className: "w-full p-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
                         className: "p-3 bg-slate-50 dark:bg-slate-800 rounded-xl space-y-2 border border-slate-200 dark:border-slate-700",
                         children: [
                           c.jsx("span", { className: "font-black uppercase text-[10px] text-slate-500", children: "Thông tin chủ ao (Bên B):" }),
@@ -7116,22 +7517,22 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract }) => {
               })
             ]
           })
-        ]
-      })
     ]
   });
 };
 
-const Xm_MapModal = ({ coordinates, address, pondName, onClose }) => {
+const Xm_MapModal = ({ coordinates, address, pondName, accessNote, estimatedYield, onShareWorker, onClose }) => {
+  const [copiedToast, setCopiedToast] = w.useState("");
   if (!coordinates || !coordinates.lat || !coordinates.lng) return null;
-  const lat = coordinates.lat;
-  const lng = coordinates.lng;
+  const lat = Number(coordinates.lat);
+  const lng = Number(coordinates.lng);
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
   const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.012}%2C${lat-0.012}%2C${lng+0.012}%2C${lat+0.012}&layer=mapnik&marker=${lat}%2C${lng}`;
 
   const copyCoords = () => {
     copyToClipboardRobust(`${lat}, ${lng}`);
-    alert(`Đã sao chép toạ độ: ${lat}, ${lng}`);
+    setCopiedToast(`✓ Đã sao chép tọa độ: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+    setTimeout(() => setCopiedToast(""), 3000);
   };
 
   return c.jsxs("div", {
@@ -7151,53 +7552,75 @@ const Xm_MapModal = ({ coordinates, address, pondName, onClose }) => {
                   c.jsxs("div", {
                     children: [
                       c.jsx("h3", { className: "font-black uppercase text-sm leading-tight", children: pondName || "Vị trí ao tôm" }),
-                      c.jsxs("p", { className: "text-[11px] opacity-80", children: ["Toạ độ GPS: ", lat.toFixed(5), ", ", lng.toFixed(5)] })
+                      c.jsxs("p", {
+                        className: "text-[11px] opacity-85 font-mono",
+                        children: [
+                          "GPS: ", lat.toFixed(5), ", ", lng.toFixed(5),
+                          coordinates.accuracy ? ` (±${Math.round(coordinates.accuracy)}m)` : ""
+                        ]
+                      })
                     ]
                   })
                 ]
               }),
               c.jsx("button", {
+                type: "button",
                 onClick: onClose,
-                className: "p-2 hover:bg-white/20 rounded-full transition-colors",
+                className: "p-2 hover:bg-white/20 rounded-full transition-colors cursor-pointer",
                 children: c.jsx(_a, { size: 20 })
               })
             ]
           }),
           c.jsxs("div", {
-            className: "p-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2",
+            className: "p-3 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-300 space-y-1",
             children: [
-              c.jsx("span", { className: "font-black text-green-700 dark:text-green-400 uppercase text-[10px]", children: "Địa chỉ:" }),
-              c.jsx("span", { className: "truncate", children: address || "Chưa có địa chỉ chi tiết" })
+              c.jsxs("div", { className: "flex items-center gap-2", children: [
+                c.jsx("span", { className: "font-black text-green-700 dark:text-green-400 uppercase text-[10px]", children: "Địa chỉ:" }),
+                c.jsx("span", { className: "truncate", children: address || "Chưa có địa chỉ chi tiết" })
+              ]}),
+              (estimatedYield > 0 || accessNote) && c.jsxs("div", {
+                className: "flex flex-wrap items-center gap-2 text-[11px] text-amber-700 dark:text-amber-300",
+                children: [
+                  estimatedYield > 0 && c.jsxs("span", { className: "px-2 py-0.5 bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 rounded-md font-black", children: ["🦐 ~", Number(estimatedYield).toLocaleString(), " kg"] }),
+                  accessNote && c.jsxs("span", { className: "truncate", children: ["🛣️ ", accessNote] })
+                ]
+              })
             ]
           }),
           c.jsx("div", {
-            className: "flex-1 relative min-h-[300px] bg-gray-100",
+            className: "flex-1 relative min-h-[290px] bg-gray-100",
             children: c.jsx("iframe", {
               title: "Ao Tôm Map",
               src: osmEmbedUrl,
-              className: "w-full h-full border-0 min-h-[300px]",
+              className: "w-full h-full border-0 min-h-[290px]",
               loading: "lazy"
             })
           }),
+          copiedToast && c.jsx("div", {
+            className: "mx-4 mt-2 p-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-bold text-center",
+            children: copiedToast
+          }),
           c.jsxs("div", {
-            className: "p-4 bg-white dark:bg-gray-900 flex flex-col sm:flex-row gap-2.5",
+            className: "p-4 bg-white dark:bg-gray-900 flex flex-wrap gap-2",
             children: [
               c.jsxs("a", {
                 href: googleMapsUrl,
                 target: "_blank",
                 rel: "noopener noreferrer",
-                className: "flex-1 bg-[#2e7d32] hover:bg-green-800 text-white font-black py-3 px-4 rounded-xl text-xs uppercase flex items-center justify-center gap-2 shadow-md transition-colors",
-                children: [c.jsx(MapIcon, { size: 16 }), " Mở Google Maps chỉ đường"]
+                className: "flex-1 min-w-[160px] bg-[#2e7d32] hover:bg-green-800 text-white font-black py-3 px-4 rounded-xl text-xs uppercase flex items-center justify-center gap-2 shadow-md transition-colors",
+                children: [c.jsx(MapIcon, { size: 16 }), " Chỉ đường Google Maps"]
+              }),
+              onShareWorker && c.jsxs("button", {
+                type: "button",
+                onClick: onShareWorker,
+                className: "bg-orange-500 hover:bg-orange-600 text-white font-black py-3 px-4 rounded-xl text-xs uppercase flex items-center justify-center gap-1.5 shadow-md transition-colors cursor-pointer",
+                children: [c.jsx(tc, { size: 16 }), " Gửi Nhân Công"]
               }),
               c.jsxs("button", {
+                type: "button",
                 onClick: copyCoords,
-                className: "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold py-3 px-4 rounded-xl text-xs uppercase flex items-center justify-center gap-2 transition-colors",
-                children: [c.jsx(ec, { size: 16 }), " Sao chép toạ độ"]
-              }),
-              c.jsx("button", {
-                onClick: onClose,
-                className: "px-4 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-bold uppercase",
-                children: "Đóng"
+                className: "bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold py-3 px-3.5 rounded-xl text-xs uppercase flex items-center justify-center gap-1.5 transition-colors cursor-pointer",
+                children: [c.jsx(CopyIcon, { size: 15 }), " Chép GPS"]
               })
             ]
           })
@@ -7391,7 +7814,8 @@ const Xm_TraderConfig = ({ setRoute }) => {
       setTimeout(() => setCopyToast(""), 3000);
     } catch(e) {
       console.warn("Export error:", e);
-      alert("Lỗi khi xuất file sao lưu: " + (e?.message || e));
+      setCopyToast("Lỗi khi xuất file sao lưu: " + (e?.message || e));
+      setTimeout(() => setCopyToast(""), 4000);
     }
   };
 
@@ -7458,10 +7882,12 @@ const Xm_TraderConfig = ({ setRoute }) => {
         setHasUnsavedChanges(false);
         setSavedToast(true);
         setTimeout(() => setSavedToast(false), 4000);
-        alert("Khôi phục toàn bộ dữ liệu thiết lập và ứng dụng thành công!");
+        setCopyToast("✓ Khôi phục toàn bộ dữ liệu thiết lập và ứng dụng thành công!");
+        setTimeout(() => setCopyToast(""), 4000);
       } catch(err) {
         console.warn("Import error:", err);
-        alert("Khôi phục thất bại: File không hợp lệ hoặc bị lỗi định dạng!");
+        setCopyToast("Khôi phục thất bại: File không hợp lệ hoặc bị lỗi định dạng!");
+        setTimeout(() => setCopyToast(""), 4000);
       } finally {
         if (e.target) e.target.value = "";
       }
@@ -8422,35 +8848,94 @@ const Xm_TraderConfig = ({ setRoute }) => {
 // ============================================================================
 const Km = PinIcon;
 const Xm_ElectronicContractModal = Xm_ContractModal;
+
 const Xm_LocationPickerModal = ({ farmer, onClose, onSaveLocation }) => {
   const [lat, setLat] = w.useState(farmer?.lat ? String(farmer.lat) : "");
   const [lng, setLng] = w.useState(farmer?.lng ? String(farmer.lng) : "");
+  const [accuracy, setAccuracy] = w.useState(farmer?.gpsAccuracy || null);
+  const [accessNote, setAccessNote] = w.useState(farmer?.accessNote || "");
+  const [pasteInput, setPasteInput] = w.useState("");
   const [loading, setLoading] = w.useState(false);
+  const [statusMsg, setStatusMsg] = w.useState("");
+  const [errorMsg, setErrorMsg] = w.useState("");
+
+  w.useEffect(() => {
+    if (farmer) {
+      setLat(farmer.lat ? String(farmer.lat) : "");
+      setLng(farmer.lng ? String(farmer.lng) : "");
+      setAccuracy(farmer.gpsAccuracy || null);
+      setAccessNote(farmer.accessNote || "");
+      setErrorMsg("");
+      setStatusMsg("");
+    }
+  }, [farmer?.id]);
+
+  if (!farmer) return null;
+
+  const numLat = parseFloat(lat);
+  const numLng = parseFloat(lng);
+  const hasValidCoords = !isNaN(numLat) && !isNaN(numLng) && numLat >= -90 && numLat <= 90 && numLng >= -180 && numLng <= 180 && (numLat !== 0 || numLng !== 0);
+  const googleMapsUrl = hasValidCoords ? `https://www.google.com/maps/dir/?api=1&destination=${numLat},${numLng}` : "";
+  const osmEmbedUrl = hasValidCoords ? `https://www.openstreetmap.org/export/embed.html?bbox=${numLng - 0.008}%2C${numLat - 0.008}%2C${numLng + 0.008}%2C${numLat + 0.008}&layer=mapnik&marker=${numLat}%2C${numLng}` : "";
+
   const handleGetGPS = () => {
+    setErrorMsg("");
+    setStatusMsg("");
     if (typeof navigator !== "undefined" && navigator.geolocation) {
       setLoading(true);
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          setLat(pos.coords.latitude.toFixed(6));
-          setLng(pos.coords.longitude.toFixed(6));
+          const newLat = pos.coords.latitude.toFixed(6);
+          const newLng = pos.coords.longitude.toFixed(6);
+          const acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
+          setLat(newLat);
+          setLng(newLng);
+          setAccuracy(acc);
           setLoading(false);
+          setStatusMsg(`✓ Đã chốt tọa độ GPS (${newLat}, ${newLng})${acc ? ` • Sai số ±${acc}m` : ""}`);
         },
         (err) => {
-          alert("Không thể lấy vị trí GPS: " + (err?.message || "Lỗi định vị"));
           setLoading(false);
+          setErrorMsg("Không thể tự lấy GPS: " + (err?.message || "Vui lòng bật Định vị / GPS hoặc dán link Google Maps bên dưới."));
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
     } else {
-      alert("Thiết bị hoặc trình duyệt không hỗ trợ định vị GPS");
+      setErrorMsg("Trình duyệt chưa hỗ trợ GPS tự động. Vui lòng dán link Google Maps hoặc nhập tọa độ thủ công.");
     }
   };
+
+  const handleParsePaste = (val) => {
+    setPasteInput(val);
+    setErrorMsg("");
+    if (!val || !val.trim()) return;
+    const parsed = typeof parseGpsInput_v4 === "function" ? parseGpsInput_v4(val) : null;
+    if (parsed) {
+      setLat(String(parsed.lat));
+      setLng(String(parsed.lng));
+      setAccuracy(null);
+      setStatusMsg(`✓ Đã tách tọa độ từ dữ liệu dán: ${parsed.lat}, ${parsed.lng}`);
+    }
+  };
+
+  const handleConfirmSave = () => {
+    setErrorMsg("");
+    if (!hasValidCoords) {
+      setErrorMsg("Vui lòng bấm Lấy Tọa Độ GPS, dán link Google Maps, hoặc nhập Vĩ độ / Kinh độ hợp lệ!");
+      return;
+    }
+    onSaveLocation(Number(numLat.toFixed(6)), Number(numLng.toFixed(6)), {
+      accuracy: accuracy || null,
+      accessNote: accessNote.trim()
+    });
+  };
+
   return c.jsxs("div", {
-    className: "fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm",
+    className: "fixed inset-0 z-[130] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto",
     children: [
       c.jsx("div", { className: "fixed inset-0", onClick: onClose }),
       c.jsxs("div", {
-        className: "relative bg-white dark:bg-gray-900 rounded-[28px] max-w-md w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-800 z-10 font-roboto space-y-4",
+        className: "relative bg-white dark:bg-gray-900 rounded-[28px] max-w-lg w-full p-5 shadow-2xl border border-gray-100 dark:border-gray-800 z-10 font-roboto space-y-3.5 my-auto max-h-[92vh] overflow-y-auto",
         children: [
           c.jsxs("div", {
             className: "flex items-center justify-between border-b pb-3 dark:border-gray-800",
@@ -8459,82 +8944,855 @@ const Xm_LocationPickerModal = ({ farmer, onClose, onSaveLocation }) => {
                 className: "flex items-center gap-2 text-green-700 dark:text-green-400",
                 children: [
                   c.jsx(PinIcon, { size: 22 }),
-                  c.jsx("h3", { className: "font-black uppercase text-base", children: "Định Vị Tọa Độ Ao Tôm" })
-                ]
-              }),
-              c.jsx("button", { onClick: onClose, className: "p-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 font-bold", children: "✕" })
-            ]
-          }),
-          c.jsxs("div", {
-            className: "space-y-3",
-            children: [
-              c.jsxs("div", {
-                className: "bg-green-50 dark:bg-green-950/30 p-3 rounded-xl text-xs",
-                children: [
-                  c.jsx("p", { className: "font-black text-green-900 dark:text-green-200 uppercase", children: farmer?.name || "Chủ ao" }),
-                  c.jsx("p", { className: "text-gray-500 dark:text-gray-400 text-[11px]", children: farmer?.address || "Địa chỉ ao tôm" })
-                ]
-              }),
-              c.jsxs("div", {
-                className: "grid grid-cols-2 gap-2",
-                children: [
                   c.jsxs("div", {
                     children: [
-                      c.jsx("label", { className: "text-[10px] font-bold text-gray-400 block mb-1 uppercase", children: "Vĩ độ (Latitude)" }),
-                      c.jsx("input", {
-                        type: "number",
-                        step: "any",
-                        value: lat,
-                        onChange: e => setLat(e.target.value),
-                        placeholder: "Vd: 9.176823",
-                        className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl text-xs font-mono font-bold outline-none"
-                      })
+                      c.jsx("h3", { className: "font-black uppercase text-sm sm:text-base leading-tight", children: "Định Vị & Đánh Dấu Ao Tôm GPS" }),
+                      c.jsx("p", { className: "text-[11px] text-gray-500 font-semibold", children: "Chấm tọa độ tại bờ ao hoặc dán link Google Maps" })
                     ]
+                  })
+                ]
+              }),
+              c.jsx("button", { type: "button", onClick: onClose, className: "p-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 font-bold cursor-pointer", children: "✕" })
+            ]
+          }),
+
+          c.jsxs("div", {
+            className: "bg-green-50 dark:bg-green-950/30 p-3 rounded-2xl border border-green-200 dark:border-green-800/50 text-xs flex items-center justify-between gap-2",
+            children: [
+              c.jsxs("div", {
+                className: "min-w-0",
+                children: [
+                  c.jsx("p", { className: "font-black text-green-900 dark:text-green-200 uppercase truncate", children: farmer?.name || "Chủ ao" }),
+                  c.jsx("p", { className: "text-gray-600 dark:text-gray-400 text-[11px] truncate", children: farmer?.address || "Chưa có địa chỉ" })
+                ]
+              }),
+              Number(farmer?.estimatedYield || 0) > 0 && c.jsxs("span", {
+                className: "shrink-0 px-2.5 py-1 bg-teal-600 text-white rounded-xl font-black text-[11px]",
+                children: ["🦐 ~", Number(farmer.estimatedYield).toLocaleString(), " kg"]
+              })
+            ]
+          }),
+
+          c.jsxs("button", {
+            type: "button",
+            onClick: handleGetGPS,
+            disabled: loading,
+            className: "w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-black text-xs uppercase flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer",
+            children: [c.jsx(PinIcon, { size: 17 }), loading ? "Đang dò vệ tinh GPS chính xác cao..." : "📍 Lấy Tọa Độ GPS Ngay Tại Bờ Ao"]
+          }),
+
+          c.jsxs("div", {
+            className: "space-y-1",
+            children: [
+              c.jsx("label", { className: "text-[10px] font-black text-gray-500 uppercase block", children: "Hoặc dán Link Google Maps / Tọa độ (9.1768, 105.1523):" }),
+              c.jsx("input", {
+                type: "text",
+                value: pasteInput,
+                onChange: (e) => handleParsePaste(e.target.value),
+                placeholder: "Dán link maps.google.com/... hoặc 9.176823, 105.152341",
+                className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold outline-none focus:border-blue-500"
+              })
+            ]
+          }),
+
+          c.jsxs("div", {
+            className: "grid grid-cols-2 gap-2",
+            children: [
+              c.jsxs("div", {
+                children: [
+                  c.jsx("label", { className: "text-[10px] font-bold text-gray-400 block mb-1 uppercase", children: "Vĩ độ (Latitude)" }),
+                  c.jsx("input", {
+                    type: "number",
+                    step: "any",
+                    value: lat,
+                    onChange: e => { setLat(e.target.value); setAccuracy(null); },
+                    placeholder: "Vd: 9.176823",
+                    className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-mono font-bold outline-none"
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                children: [
+                  c.jsx("label", { className: "text-[10px] font-bold text-gray-400 block mb-1 uppercase", children: "Kinh độ (Longitude)" }),
+                  c.jsx("input", {
+                    type: "number",
+                    step: "any",
+                    value: lng,
+                    onChange: e => { setLng(e.target.value); setAccuracy(null); },
+                    placeholder: "Vd: 105.152341",
+                    className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-mono font-bold outline-none"
+                  })
+                ]
+              })
+            ]
+          }),
+
+          c.jsxs("div", {
+            className: "space-y-1",
+            children: [
+              c.jsx("label", { className: "text-[10px] font-black text-gray-500 uppercase block", children: "Ghi chú đường vào ao (Cho ghe / xe / nhân công):" }),
+              c.jsx("input", {
+                type: "text",
+                value: accessNote,
+                onChange: (e) => setAccessNote(e.target.value),
+                placeholder: "Vd: Qua cầu sắt rẽ trái 300m, ghe đậu cống Bà Đen...",
+                className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold outline-none focus:border-green-500"
+              })
+            ]
+          }),
+
+          hasValidCoords && c.jsxs("div", {
+            className: "rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 space-y-0",
+            children: [
+              c.jsx("iframe", {
+                title: "Xem trước vị trí ao",
+                src: osmEmbedUrl,
+                className: "w-full h-44 border-0",
+                loading: "lazy"
+              }),
+              c.jsxs("div", {
+                className: "px-3 py-2 bg-gray-50 dark:bg-gray-800 flex items-center justify-between text-[11px]",
+                children: [
+                  c.jsxs("span", { className: "font-mono font-bold text-emerald-700 dark:text-emerald-400", children: [numLat.toFixed(5), ", ", numLng.toFixed(5), accuracy ? ` (±${accuracy}m)` : ""] }),
+                  c.jsxs("a", {
+                    href: googleMapsUrl,
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    className: "text-blue-600 dark:text-blue-400 font-black hover:underline flex items-center gap-1",
+                    children: [c.jsx(MapIcon, { size: 12 }), "Kiểm tra Google Maps"]
+                  })
+                ]
+              })
+            ]
+          }),
+
+          statusMsg && c.jsx("div", {
+            className: "p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-bold text-emerald-700 dark:text-emerald-300 text-center",
+            children: statusMsg
+          }),
+
+          errorMsg && c.jsx("div", {
+            className: "p-2.5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs font-bold text-red-700 dark:text-red-300 text-center",
+            children: errorMsg
+          }),
+
+          c.jsxs("div", {
+            className: "flex gap-2 pt-1",
+            children: [
+              c.jsx("button", {
+                type: "button",
+                onClick: onClose,
+                className: "flex-1 py-3 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl font-black text-xs uppercase active:scale-95 cursor-pointer",
+                children: "Đóng"
+              }),
+              c.jsx("button", {
+                type: "button",
+                onClick: handleConfirmSave,
+                className: "flex-[2] py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black text-xs uppercase shadow-md active:scale-95 cursor-pointer",
+                children: "💾 Lưu Tọa Độ & Ghi Chú"
+              })
+            ]
+          })
+        ]
+      })
+    ]
+  });
+};
+
+// ==================== CHIA SẺ VỊ TRÍ AO CHO NHÂN CÔNG ĐI GẠT TÔM ====================
+const WORKER_ROLE_PRESETS_V4 = [
+  {
+    id: "HARVEST",
+    label: "🥅 Đội gạt tôm / Kéo lưới",
+    roleTitle: "ĐỘI KÉO LƯỚI & GẠT TÔM",
+    defaultTools: ["Lưới kéo ao & chài", "Rổ/Thau nhựa đựng tôm", "Cân điện tử & sổ ghi", "Áo mưa & đèn pin"]
+  },
+  {
+    id: "BOAT",
+    label: "🚤 Ghe / Xe oxy thu mua",
+    roleTitle: "TÀI XẾ GHE / XE OXY THU MUA",
+    defaultTools: ["Bồn & máy sục khí oxy", "Bình oxy dự phòng", "Đá lạnh / thùng xốp", "Cân treo & dây buộc"]
+  },
+  {
+    id: "CARRY",
+    label: "💪 Đội cân & Bốc xếp",
+    roleTitle: "ĐỘI CÂN ĐO & BỐC XẾP",
+    defaultTools: ["Cân điện tử BLE", "Bao bì / giỏ cân", "Phiếu cân thanh toán", "Nước uống"]
+  }
+];
+
+const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
+  const [workerRole, setWorkerRole] = w.useState("HARVEST");
+  const [workerName, setWorkerName] = w.useState("");
+  const [workerPhone, setWorkerPhone] = w.useState("");
+  const [activeTab, setActiveTab] = w.useState("MESSAGE"); // "MESSAGE" | "QR"
+  const [customNote, setCustomNote] = w.useState("");
+  const [accessNote, setAccessNote] = w.useState(pond?.accessNote || contract?.pondAccessNote || "");
+  const [assemblyTime, setAssemblyTime] = w.useState(pond?.weighingTime || contract?.weighingTime || "05:00");
+  const [selectedTools, setSelectedTools] = w.useState(WORKER_ROLE_PRESETS_V4[0].defaultTools);
+  const [gpsLat, setGpsLat] = w.useState(Number(pond?.lat || contract?.pondLocation?.lat || contract?.farmer?.coordinates?.lat || 0) || null);
+  const [gpsLng, setGpsLng] = w.useState(Number(pond?.lng || contract?.pondLocation?.lng || contract?.farmer?.coordinates?.lng || 0) || null);
+  const [gettingGps, setGettingGps] = w.useState(false);
+  const [toastMsg, setToastMsg] = w.useState("");
+  const [showUniversalZalo, setShowUniversalZalo] = w.useState(false);
+  const [editedMsg, setEditedMsg] = w.useState("");
+  const [isCustomEdited, setIsCustomEdited] = w.useState(false);
+
+  w.useEffect(() => {
+    setAccessNote(pond?.accessNote || contract?.pondAccessNote || "");
+    setAssemblyTime(pond?.weighingTime || contract?.weighingTime || "05:00");
+    setGpsLat(Number(pond?.lat || contract?.pondLocation?.lat || contract?.farmer?.coordinates?.lat || 0) || null);
+    setGpsLng(Number(pond?.lng || contract?.pondLocation?.lng || contract?.farmer?.coordinates?.lng || 0) || null);
+    setIsCustomEdited(false);
+    setToastMsg("");
+  }, [pond?.id, contract?.id]);
+
+  if (!pond && !contract) return null;
+
+  const farmerName = pond?.name || contract?.farmer?.fullName || contract?.farmerName || "Chủ ao";
+  const farmerPhone = pond?.phone || contract?.farmer?.phone || contract?.farmerPhone || "";
+  const pondAddress = pond?.address || contract?.farmer?.address || contract?.farmerAddress || "Theo chỉ dẫn địa phương";
+  const shrimpType = pond?.shrimpType || contract?.shrimpType || "Tôm Càng Xanh";
+  const estYield = Number(pond?.estimatedYield || contract?.estimatedYield || 0);
+  const sizeCount = pond?.shrimpSizeCount || contract?.shrimpSizeCount || "";
+  const pondArea = pond?.area || contract?.pondArea || "";
+  const weighingDate = pond?.weighingDate || contract?.weighingDate || "Theo lịch hẹn";
+  const traderProf = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {};
+  const traderName = contract?.trader?.fullName || traderProf.fullName || "Cơ sở Thu Mua Tôm";
+  const traderPhone = contract?.trader?.phone || traderProf.phone || "";
+
+  const hasGps = !!(gpsLat && gpsLng);
+  const googleMapsUrl = hasGps
+    ? `https://www.google.com/maps/dir/?api=1&destination=${gpsLat},${gpsLng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pondAddress)}`;
+
+  const roleObj = WORKER_ROLE_PRESETS_V4.find(r => r.id === workerRole) || WORKER_ROLE_PRESETS_V4[0];
+
+  const generateDispatchText = () => {
+    const tonsStr = estYield >= 1000 ? ` (~${(estYield / 1000).toFixed(2).replace(/\.?0+$/, "")} tấn)` : "";
+    const lines = [
+      `🚤 LỆNH ĐIỀU ĐỘNG ${roleObj.roleTitle}`,
+      workerName.trim() ? `👷 Tổ/Nhân công: ${workerName.trim()}` : null,
+      `🏠 Cơ sở: ${traderName}${traderPhone ? ` (ĐT: ${traderPhone})` : ""}`,
+      `━━━━━━━━━━━━━━━━━━`,
+      `📌 ĐỊA ĐIỂM AO THU HOẠCH:`,
+      `• Chủ ao: Anh/Chị ${farmerName}${farmerPhone ? ` - SĐT: ${farmerPhone}` : ""}`,
+      `• Địa chỉ: ${pondAddress}`,
+      accessNote.trim() ? `• Đường vào ao: ${accessNote.trim()}` : null,
+      hasGps ? `• Tọa độ GPS: ${Number(gpsLat).toFixed(6)}, ${Number(gpsLng).toFixed(6)}` : `• Định vị: Chưa chấm GPS (hỏi trực tiếp chủ ao qua SĐT trên)`,
+      `🗺️ BẤM CHỈ ĐƯỜNG GOOGLE MAPS:`,
+      googleMapsUrl,
+      ``,
+      `🦐 THÔNG TIN TÔM & LỊCH GẠT:`,
+      `• Thời gian tập trung: ${assemblyTime} ngày ${weighingDate}`,
+      `• Chủng loại: ${shrimpType}`,
+      estYield > 0 ? `• Sản lượng ước tính: ~${estYield.toLocaleString()} kg${tonsStr}` : null,
+      sizeCount ? `• Cỡ tôm dự kiến: ${sizeCount}` : null,
+      pondArea ? `• Diện tích ao: ${pondArea}` : null,
+      selectedTools.length > 0 ? `` : null,
+      selectedTools.length > 0 ? `🧰 DỤNG CỤ MANG THEO:` : null,
+      ...selectedTools.map(t => `  ✓ ${t}`),
+      customNote.trim() ? `\n📝 Ghi chú thêm: ${customNote.trim()}` : null,
+      ``,
+      `Anh em có mặt đúng giờ, kiểm tra kỹ sục khí oxy & dụng cụ trước khi xuất phát!`
+    ].filter(x => x !== null && x !== undefined);
+    return lines.join("\n");
+  };
+
+  const finalMessage = isCustomEdited ? editedMsg : generateDispatchText();
+
+  const handleRoleChange = (r) => {
+    setWorkerRole(r.id);
+    setSelectedTools(r.defaultTools);
+    setIsCustomEdited(false);
+  };
+
+  const toggleTool = (tool) => {
+    setIsCustomEdited(false);
+    setSelectedTools(prev => prev.includes(tool) ? prev.filter(x => x !== tool) : [...prev, tool]);
+  };
+
+  const handleQuickCaptureGps = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setToastMsg("Thiết bị không hỗ trợ định vị GPS.");
+      return;
+    }
+    setGettingGps(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const nLat = Number(pos.coords.latitude.toFixed(6));
+        const nLng = Number(pos.coords.longitude.toFixed(6));
+        const acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
+        setGpsLat(nLat);
+        setGpsLng(nLng);
+        setIsCustomEdited(false);
+        setGettingGps(false);
+        if (typeof onUpdatePondGps === "function") {
+          onUpdatePondGps(nLat, nLng, { accuracy: acc, accessNote });
+        }
+        setToastMsg(`✓ Đã lấy & lưu tọa độ GPS (${nLat}, ${nLng})!`);
+        setTimeout(() => setToastMsg(""), 3500);
+      },
+      (err) => {
+        setGettingGps(false);
+        setToastMsg("Không thể lấy GPS: " + (err?.message || "Hãy bật định vị"));
+      },
+      { enableHighAccuracy: true, timeout: 12000 }
+    );
+  };
+
+  const cleanWorkerPhone = workerPhone.replace(/[^0-9]/g, "");
+
+  const handleOpenZaloWorker = () => {
+    copyToClipboardRobust(finalMessage);
+    setToastMsg("✓ Đã sao chép lệnh & link chỉ đường! Chọn mở Zalo bên dưới:");
+    setTimeout(() => setToastMsg(""), 3500);
+    setShowUniversalZalo(true);
+  };
+
+  const handleSendSmsWorker = () => {
+    copyToClipboardRobust(finalMessage);
+    const link = document.createElement("a");
+    link.href = `sms:${cleanWorkerPhone}?body=${encodeURIComponent(finalMessage)}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleNativeShareWorker = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Vị trí ao ${farmerName} - ${roleObj.roleTitle}`,
+        text: finalMessage,
+        url: googleMapsUrl
+      }).catch(() => {});
+    } else {
+      copyToClipboardRobust(finalMessage);
+      setToastMsg("✓ Đã sao chép tin nhắn điều động nhân công!");
+      setTimeout(() => setToastMsg(""), 3000);
+    }
+  };
+
+  const qrMapUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=${encodeURIComponent(googleMapsUrl)}`;
+
+  return c.jsxs(c.Fragment, {
+    children: [
+      c.jsx("div", {
+        className: "fixed inset-0 z-[220] flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto",
+        onClick: onClose,
+        children: c.jsxs("div", {
+          onClick: (e) => e.stopPropagation(),
+          className: "relative bg-white dark:bg-slate-900 rounded-[28px] max-w-xl w-full overflow-hidden shadow-2xl border border-orange-500/30 flex flex-col my-auto z-10 font-sans max-h-[92vh]",
+          children: [
+          c.jsxs("div", {
+            className: "bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 text-white p-4 flex items-center justify-between shadow-md",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-3",
+                children: [
+                  c.jsx("div", {
+                    className: "w-11 h-11 bg-white/15 rounded-2xl flex items-center justify-center shadow-inner",
+                    children: c.jsx(tc, { size: 24 })
                   }),
                   c.jsxs("div", {
                     children: [
-                      c.jsx("label", { className: "text-[10px] font-bold text-gray-400 block mb-1 uppercase", children: "Kinh độ (Longitude)" }),
-                      c.jsx("input", {
-                        type: "number",
-                        step: "any",
-                        value: lng,
-                        onChange: e => setLng(e.target.value),
-                        placeholder: "Vd: 105.152341",
-                        className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl text-xs font-mono font-bold outline-none"
+                      c.jsx("h3", { className: "font-black text-sm sm:text-base uppercase tracking-tight", children: "Chia Sẻ Vị Trí Ao Cho Nhân Công" }),
+                      c.jsxs("p", { className: "text-xs text-amber-100 font-semibold", children: ["Ao: ", farmerName, estYield > 0 ? ` • ~${estYield.toLocaleString()} kg` : ""] })
+                    ]
+                  })
+                ]
+              }),
+              c.jsx("button", { type: "button", onClick: onClose, className: "p-2 hover:bg-white/20 rounded-full cursor-pointer", children: c.jsx(_a, { size: 20 }) })
+            ]
+          }),
+
+          c.jsxs("div", {
+            className: "flex border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 p-1.5 gap-1.5",
+            children: [
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => setActiveTab("MESSAGE"),
+                className: `flex-1 py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer ${activeTab === "MESSAGE" ? "bg-white dark:bg-slate-900 text-orange-600 shadow-sm border border-slate-200 dark:border-slate-700" : "text-slate-500"}`,
+                children: [c.jsx(Share2Icon, { size: 15 }), "Gửi Lệnh & Vị Trí"]
+              }),
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => setActiveTab("QR"),
+                className: `flex-1 py-2 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer ${activeTab === "QR" ? "bg-white dark:bg-slate-900 text-orange-600 shadow-sm border border-slate-200 dark:border-slate-700" : "text-slate-500"}`,
+                children: [c.jsx(QrCodeIcon, { size: 15 }), "QR Chỉ Đường Google Maps"]
+              })
+            ]
+          }),
+
+          c.jsxs("div", {
+            className: "p-4 space-y-3.5 overflow-y-auto",
+            children: [
+              // GPS Status Banner
+              c.jsxs("div", {
+                className: `p-3 rounded-2xl border flex flex-wrap items-center justify-between gap-2 text-xs ${hasGps ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200" : "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200"}`,
+                children: [
+                  c.jsxs("div", {
+                    className: "flex items-center gap-2 min-w-0",
+                    children: [
+                      c.jsx(PinIcon, { size: 17, className: hasGps ? "text-emerald-600 shrink-0" : "text-amber-600 shrink-0" }),
+                      c.jsxs("div", {
+                        className: "min-w-0",
+                        children: [
+                          c.jsx("p", { className: "font-black truncate", children: hasGps ? `Đã có GPS: ${Number(gpsLat).toFixed(5)}, ${Number(gpsLng).toFixed(5)}` : "Ao này chưa có tọa độ GPS chính xác" }),
+                          c.jsx("p", { className: "text-[11px] opacity-80 truncate", children: pondAddress })
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: handleQuickCaptureGps,
+                    disabled: gettingGps,
+                    className: "px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-current rounded-xl font-black text-[11px] cursor-pointer shrink-0",
+                    children: gettingGps ? "Đang dò..." : (hasGps ? "🔄 Cập nhật GPS" : "📍 Chấm GPS ngay")
+                  })
+                ]
+              }),
+
+              activeTab === "MESSAGE" ? c.jsxs("div", {
+                className: "space-y-3",
+                children: [
+                  // Role presets
+                  c.jsxs("div", {
+                    className: "space-y-1.5",
+                    children: [
+                      c.jsx("label", { className: "text-[10px] font-black text-slate-500 uppercase", children: "Chọn bộ phận nhân công:" }),
+                      c.jsx("div", {
+                        className: "grid grid-cols-1 sm:grid-cols-3 gap-1.5",
+                        children: WORKER_ROLE_PRESETS_V4.map(r => c.jsx("button", {
+                          type: "button",
+                          onClick: () => handleRoleChange(r),
+                          className: `px-2.5 py-2 rounded-xl text-[11px] font-black border text-center cursor-pointer transition-all ${workerRole === r.id ? "bg-orange-600 text-white border-orange-600 shadow-sm" : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                          children: r.label
+                        }, r.id))
+                      })
+                    ]
+                  }),
+
+                  // Worker Info & Assembly Time
+                  c.jsxs("div", {
+                    className: "grid grid-cols-3 gap-2 text-xs",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-0.5", children: "Tên tổ / Nhân công" }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: workerName,
+                            onChange: e => { setWorkerName(e.target.value); setIsCustomEdited(false); },
+                            placeholder: "Vd: Tổ anh Ba",
+                            className: "w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-0.5", children: "SĐT Zalo thợ (tùy chọn)" }),
+                          c.jsx("input", {
+                            type: "tel",
+                            value: workerPhone,
+                            onChange: e => setWorkerPhone(e.target.value),
+                            placeholder: "09xx xxx xxx",
+                            className: "w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-0.5", children: "Giờ tập trung" }),
+                          c.jsx("input", {
+                            type: "time",
+                            value: assemblyTime,
+                            onChange: e => { setAssemblyTime(e.target.value); setIsCustomEdited(false); },
+                            className: "w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold"
+                          })
+                        ]
+                      })
+                    ]
+                  }),
+
+                  // Access note & extra note
+                  c.jsxs("div", {
+                    className: "grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-0.5", children: "Chỉ dẫn đường vào ao / Điểm đậu ghe xe" }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: accessNote,
+                            onChange: e => { setAccessNote(e.target.value); setIsCustomEdited(false); },
+                            placeholder: "Vd: Qua cầu sắt rẽ phải 300m...",
+                            className: "w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-0.5", children: "Dặn dò thêm cho đội gạt" }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: customNote,
+                            onChange: e => { setCustomNote(e.target.value); setIsCustomEdited(false); },
+                            placeholder: "Vd: Đem thêm 2 bình oxy, 10 sọt...",
+                            className: "w-full p-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800"
+                          })
+                        ]
+                      })
+                    ]
+                  }),
+
+                  // Equipment checklist chips
+                  c.jsxs("div", {
+                    className: "flex flex-wrap items-center gap-1.5",
+                    children: [
+                      c.jsx("span", { className: "text-[10px] font-black text-slate-500 uppercase mr-1", children: "Dụng cụ:" }),
+                      roleObj.defaultTools.map(tool => {
+                        const active = selectedTools.includes(tool);
+                        return c.jsx("button", {
+                          type: "button",
+                          onClick: () => toggleTool(tool),
+                          className: `px-2 py-1 rounded-lg text-[10px] font-bold border cursor-pointer ${active ? "bg-emerald-600 text-white border-emerald-600" : "bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700"}`,
+                          children: (active ? "✓ " : "+ ") + tool
+                        }, tool);
+                      })
+                    ]
+                  }),
+
+                  // Editable Dispatch Message
+                  c.jsxs("div", {
+                    className: "space-y-1",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex justify-between items-center text-[11px] font-bold text-slate-600 dark:text-slate-300",
+                        children: [
+                          c.jsx("span", { children: "Nội dung tin nhắn gửi nhân công:" }),
+                          isCustomEdited && c.jsx("button", {
+                            type: "button",
+                            onClick: () => setIsCustomEdited(false),
+                            className: "text-orange-600 hover:underline cursor-pointer",
+                            children: "↺ Tạo lại tự động"
+                          })
+                        ]
+                      }),
+                      c.jsx("textarea", {
+                        rows: 7,
+                        value: finalMessage,
+                        onChange: (e) => { setEditedMsg(e.target.value); setIsCustomEdited(true); },
+                        className: "w-full p-3 text-xs font-mono rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 outline-none leading-relaxed focus:border-orange-500"
+                      })
+                    ]
+                  }),
+
+                  toastMsg && c.jsx("div", {
+                    className: "p-2.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 rounded-xl text-xs font-bold text-center",
+                    children: toastMsg
+                  }),
+
+                  // Dispatch Action Buttons
+                  c.jsxs("div", {
+                    className: "grid grid-cols-2 sm:grid-cols-4 gap-2",
+                    children: [
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: handleOpenZaloWorker,
+                        className: "col-span-2 py-3 px-3 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer active:scale-95",
+                        children: [c.jsx(ZaloIcon, { size: 17 }), cleanWorkerPhone ? `Mở Zalo (${cleanWorkerPhone})` : "Gửi Qua Zalo / Sao Chép"]
+                      }),
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: () => {
+                          copyToClipboardRobust(finalMessage);
+                          setToastMsg("✓ Đã sao chép đầy đủ tin nhắn & link bản đồ!");
+                          setTimeout(() => setToastMsg(""), 2500);
+                        },
+                        className: "py-3 px-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 rounded-xl font-bold text-xs flex items-center justify-center gap-1 cursor-pointer",
+                        children: [c.jsx(CopyIcon, { size: 14 }), "Chép Tin"]
+                      }),
+                      cleanWorkerPhone ? c.jsxs("button", {
+                        type: "button",
+                        onClick: handleSendSmsWorker,
+                        className: "py-3 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1 cursor-pointer",
+                        children: [c.jsx(PhoneCallIcon, { size: 14 }), "Gửi SMS"]
+                      }) : c.jsxs("button", {
+                        type: "button",
+                        onClick: handleNativeShareWorker,
+                        className: "py-3 px-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1 cursor-pointer",
+                        children: [c.jsx(Share2Icon, { size: 14 }), "Chia Sẻ"]
+                      })
+                    ]
+                  })
+                ]
+              }) : c.jsxs("div", {
+                className: "text-center space-y-3 py-2",
+                children: [
+                  c.jsx("p", {
+                    className: "text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto",
+                    children: "Đội gạt tôm hoặc tài xế ghe/xe mở camera điện thoại / Zalo quét mã QR bên dưới để mở thẳng chỉ đường Google Maps đến bờ ao:"
+                  }),
+                  c.jsxs("div", {
+                    className: "p-4 bg-white rounded-3xl border-2 border-orange-500 shadow-lg inline-block",
+                    children: [
+                      c.jsx("img", { src: qrMapUrl, alt: "QR Chỉ Đường Ao Tôm", className: "w-56 h-56 object-contain mx-auto" }),
+                      c.jsxs("p", { className: "font-black text-xs text-slate-800 uppercase mt-2", children: ["AO: ", farmerName] }),
+                      c.jsx("p", { className: "text-[11px] text-slate-500 font-mono", children: hasGps ? `${Number(gpsLat).toFixed(5)}, ${Number(gpsLng).toFixed(5)}` : pondAddress })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "flex justify-center gap-2",
+                    children: [
+                      c.jsxs("a", {
+                        href: googleMapsUrl,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black text-xs flex items-center gap-1.5",
+                        children: [c.jsx(MapIcon, { size: 15 }), "Mở Google Maps"]
+                      }),
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: () => {
+                          copyToClipboardRobust(googleMapsUrl);
+                          setToastMsg("✓ Đã sao chép link chỉ đường Google Maps!");
+                          setTimeout(() => setToastMsg(""), 2500);
+                        },
+                        className: "px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl font-bold text-xs flex items-center gap-1.5 cursor-pointer",
+                        children: [c.jsx(CopyIcon, { size: 15 }), "Chép Link Maps"]
+                      })
+                    ]
+                  }),
+                  toastMsg && c.jsx("div", {
+                    className: "p-2 bg-emerald-50 text-emerald-700 rounded-xl text-xs font-bold",
+                    children: toastMsg
+                  })
+                ]
+              })
+            ]
+          })
+          ]
+        })
+      }),
+      showUniversalZalo && c.jsx(Xm_UniversalZaloModal, {
+        title: `Gửi Vị Trí Ao ${farmerName} Cho Nhân Công`,
+        content: finalMessage,
+        initialPhone: cleanWorkerPhone,
+        shareUrl: googleMapsUrl,
+        onClose: () => setShowUniversalZalo(false)
+      })
+    ]
+  });
+};
+
+// ==================== BẢN ĐỒ TỔNG HỢP CÁC AO CẦN THU HOẠCH ====================
+const Xm_AllPondsMapModal = ({ ponds, onClose, onSelectLocationPicker, onShareWorkers, onStartWeighing }) => {
+  const [myPos, setMyPos] = w.useState(null);
+  const [locating, setLocating] = w.useState(false);
+  const [gpsNotice, setGpsNotice] = w.useState("");
+  const [filterMode, setFilterMode] = w.useState("ALL"); // "ALL" | "GPS" | "NO_GPS"
+  const [previewPond, setPreviewPond] = w.useState(() => (ponds || []).find(p => p && p.lat && p.lng) || null);
+
+  const pendingPonds = w.useMemo(() => (ponds || []).filter(p => p && !p.weighed && p.status !== "WEIGHED"), [ponds]);
+  const gpsPonds = w.useMemo(() => pendingPonds.filter(p => p.lat && p.lng), [pendingPonds]);
+  const totalYieldKg = w.useMemo(() => pendingPonds.reduce((sum, p) => sum + (Number(p.estimatedYield) || 0), 0), [pendingPonds]);
+
+  const handleLocateMe = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setGpsNotice("Thiết bị không hỗ trợ định vị GPS.");
+      return;
+    }
+    setLocating(true);
+    setGpsNotice("");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setMyPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocating(false);
+        setGpsNotice("✓ Đã xác định vị trí của bạn & tính khoảng cách đến từng ao!");
+      },
+      (err) => {
+        setLocating(false);
+        setGpsNotice("Không lấy được vị trí hiện tại: " + (err?.message || "Vui lòng bật GPS"));
+      },
+      { enableHighAccuracy: true, timeout: 12000 }
+    );
+  };
+
+  const filteredList = w.useMemo(() => {
+    let list = pendingPonds;
+    if (filterMode === "GPS") list = pendingPonds.filter(p => p.lat && p.lng);
+    else if (filterMode === "NO_GPS") list = pendingPonds.filter(p => !p.lat || !p.lng);
+
+    if (myPos && typeof calcDistanceKm_v4 === "function") {
+      return [...list].sort((a, b) => {
+        const dA = (a.lat && a.lng) ? calcDistanceKm_v4(myPos.lat, myPos.lng, Number(a.lat), Number(a.lng)) : 99999;
+        const dB = (b.lat && b.lng) ? calcDistanceKm_v4(myPos.lat, myPos.lng, Number(b.lat), Number(b.lng)) : 99999;
+        return dA - dB;
+      });
+    }
+    return list;
+  }, [pendingPonds, filterMode, myPos]);
+
+  return c.jsxs("div", {
+    className: "fixed inset-0 z-[150] flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto",
+    children: [
+      c.jsx("div", { className: "fixed inset-0", onClick: onClose }),
+      c.jsxs("div", {
+        className: "relative bg-white dark:bg-slate-900 rounded-[28px] max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col my-auto z-10 font-sans max-h-[92vh]",
+        children: [
+          c.jsxs("div", {
+            className: "bg-gradient-to-r from-[#1b4d1e] to-[#2e7d32] text-white p-4 flex items-center justify-between shadow-md",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-2.5",
+                children: [
+                  c.jsx(MapIcon, { size: 22, className: "text-yellow-300" }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("h3", { className: "font-black text-sm sm:text-base uppercase", children: "Bản Đồ & Khoảng Cách Các Ao Thu Hoạch" }),
+                      c.jsxs("p", {
+                        className: "text-[11px] text-emerald-100",
+                        children: [pendingPonds.length, " ao chờ cân • ", gpsPonds.length, " đã chấm GPS • Tổng ~", totalYieldKg.toLocaleString(), " kg"]
                       })
                     ]
                   })
                 ]
               }),
+              c.jsx("button", { type: "button", onClick: onClose, className: "p-2 hover:bg-white/20 rounded-full cursor-pointer", children: c.jsx(_a, { size: 20 }) })
+            ]
+          }),
+
+          c.jsxs("div", {
+            className: "p-3 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-1.5",
+                children: [
+                  [
+                    { k: "ALL", label: `Tất cả (${pendingPonds.length})` },
+                    { k: "GPS", label: `Có GPS (${gpsPonds.length})` },
+                    { k: "NO_GPS", label: `Chưa GPS (${pendingPonds.length - gpsPonds.length})` }
+                  ].map(tab => c.jsx("button", {
+                    type: "button",
+                    onClick: () => setFilterMode(tab.k),
+                    className: `px-2.5 py-1.5 rounded-xl text-[11px] font-black cursor-pointer ${filterMode === tab.k ? "bg-emerald-700 text-white" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"}`,
+                    children: tab.label
+                  }, tab.k))
+                ]
+              }),
               c.jsxs("button", {
                 type: "button",
-                onClick: handleGetGPS,
-                disabled: loading,
-                className: "w-full py-2.5 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-100 rounded-xl font-black text-xs uppercase flex items-center justify-center gap-2 active:scale-95 transition-all",
-                children: [c.jsx(PinIcon, { size: 16 }), loading ? "Đang định vị vệ tinh GPS..." : "📍 Lấy Tọa Độ GPS Hiện Tại"]
+                onClick: handleLocateMe,
+                disabled: locating,
+                className: "px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-black flex items-center gap-1.5 cursor-pointer shadow-xs",
+                children: [c.jsx(PinIcon, { size: 13 }), locating ? "Đang dò..." : "📡 Định vị tôi để đo km"]
               })
             ]
           }),
+
+          gpsNotice && c.jsx("div", {
+            className: "mx-4 mt-2 p-2 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-xl text-xs font-bold text-center",
+            children: gpsNotice
+          }),
+
           c.jsxs("div", {
-            className: "flex gap-2 pt-2",
+            className: "p-4 space-y-3 overflow-y-auto",
             children: [
-              c.jsx("button", {
-                type: "button",
-                onClick: onClose,
-                className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl font-black text-xs uppercase active:scale-95",
-                children: "Đóng"
+              previewPond && previewPond.lat && previewPond.lng && c.jsxs("div", {
+                className: "rounded-2xl overflow-hidden border border-emerald-200 dark:border-emerald-800 bg-slate-100 dark:bg-slate-800",
+                children: [
+                  c.jsx("iframe", {
+                    title: "Bản đồ ao đang chọn",
+                    src: `https://www.openstreetmap.org/export/embed.html?bbox=${Number(previewPond.lng) - 0.01}%2C${Number(previewPond.lat) - 0.01}%2C${Number(previewPond.lng) + 0.01}%2C${Number(previewPond.lat) + 0.01}&layer=mapnik&marker=${previewPond.lat}%2C${previewPond.lng}`,
+                    className: "w-full h-52 border-0",
+                    loading: "lazy"
+                  }),
+                  c.jsxs("div", {
+                    className: "px-3 py-2 bg-emerald-50 dark:bg-emerald-950/50 flex flex-wrap items-center justify-between gap-2 text-xs",
+                    children: [
+                      c.jsxs("span", { className: "font-black text-emerald-900 dark:text-emerald-200", children: ["📍 Đang xem: ", previewPond.name, " (", Number(previewPond.lat).toFixed(5), ", ", Number(previewPond.lng).toFixed(5), ")"] }),
+                      c.jsxs("a", {
+                        href: `https://www.google.com/maps/dir/?api=1&destination=${previewPond.lat},${previewPond.lng}`,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "px-3 py-1 bg-emerald-700 text-white rounded-lg font-black text-[11px] flex items-center gap-1",
+                        children: [c.jsx(MapIcon, { size: 12 }), "Chỉ đường Google Maps"]
+                      })
+                    ]
+                  })
+                ]
               }),
-              c.jsx("button", {
-                type: "button",
-                onClick: () => {
-                  if (lat && lng) {
-                    onSaveLocation(Number(lat), Number(lng));
-                  } else {
-                    alert("Vui lòng nhập hoặc lấy tọa độ GPS hợp lệ!");
-                  }
-                },
-                className: "flex-1 py-2.5 bg-green-600 text-white rounded-xl font-black text-xs uppercase shadow-md active:scale-95",
-                children: "Lưu Tọa Độ"
+
+              filteredList.length === 0 ? c.jsx("div", {
+                className: "p-8 text-center text-xs font-bold text-slate-400",
+                children: "Không có ao nào trong mục này."
+              }) : filteredList.map(pond => {
+                const hasCoords = !!(pond.lat && pond.lng);
+                const distKm = (myPos && hasCoords && typeof calcDistanceKm_v4 === "function")
+                  ? calcDistanceKm_v4(myPos.lat, myPos.lng, Number(pond.lat), Number(pond.lng))
+                  : null;
+                const estKg = Number(pond.estimatedYield || 0);
+                return c.jsxs("div", {
+                  className: "p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "space-y-1 min-w-0",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex flex-wrap items-center gap-1.5",
+                          children: [
+                            c.jsx("span", { className: "font-black text-sm text-slate-900 dark:text-white uppercase", children: pond.name }),
+                            estKg > 0 && c.jsxs("span", { className: "px-2 py-0.5 bg-teal-50 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 rounded-md text-[10px] font-black", children: ["🦐 ~", estKg.toLocaleString(), " kg"] }),
+                            distKm !== null && c.jsxs("span", { className: "px-2 py-0.5 bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 rounded-md text-[10px] font-black", children: ["📏 ~", distKm.toFixed(1), " km"] })
+                          ]
+                        }),
+                        c.jsx("p", { className: "text-xs text-slate-500 dark:text-slate-400 truncate", children: pond.address || "Chưa có địa chỉ" }),
+                        pond.accessNote && c.jsxs("p", { className: "text-[11px] text-amber-700 dark:text-amber-300", children: ["🛣️ ", pond.accessNote] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex flex-wrap items-center gap-1.5 shrink-0",
+                      children: [
+                        hasCoords ? c.jsxs(w.Fragment, {
+                          children: [
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setPreviewPond(pond),
+                              className: "px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl text-[11px] font-black cursor-pointer",
+                              children: "👁️ Xem bản đồ"
+                            }),
+                            c.jsxs("a", {
+                              href: `https://www.google.com/maps/dir/?api=1&destination=${pond.lat},${pond.lng}`,
+                              target: "_blank",
+                              rel: "noopener noreferrer",
+                              className: "px-2.5 py-1.5 bg-blue-600 text-white rounded-xl text-[11px] font-black flex items-center gap-1",
+                              children: [c.jsx(MapIcon, { size: 12 }), "Chỉ đường"]
+                            })
+                          ]
+                        }) : c.jsx("button", {
+                          type: "button",
+                          onClick: () => { onClose(); onSelectLocationPicker(pond); },
+                          className: "px-2.5 py-1.5 bg-amber-500 text-white rounded-xl text-[11px] font-black cursor-pointer",
+                          children: "📍 Chấm GPS ngay"
+                        }),
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => { onClose(); onShareWorkers(pond); },
+                          className: "px-2.5 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-[11px] font-black flex items-center gap-1 cursor-pointer",
+                          children: [c.jsx(tc, { size: 12 }), "Nhân công"]
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => { onClose(); onStartWeighing(pond); },
+                          className: "px-2.5 py-1.5 bg-green-700 text-white rounded-xl text-[11px] font-black cursor-pointer",
+                          children: "⚖️ Cân"
+                        })
+                      ]
+                    })
+                  ]
+                }, pond.id);
               })
             ]
           })
@@ -8547,17 +9805,34 @@ const Xm_LocationPickerModal = ({ farmer, onClose, onSaveLocation }) => {
 const Cm = ({ setRoute: S }) => {
   const [b, p] = w.useState(() => me.getFarmers());
   const [f, O] = w.useState("");
-  const [D, U] = w.useState("UNWEIGHED"); // "UNWEIGHED" | "WEIGHED" | "ADD"
-  const [Y, A] = w.useState(null);
+  const [D, U] = w.useState("UNWEIGHED"); // "UNWEIGHED" | "CONTRACTS" | "WEIGHED" | "ADD"
+  const [pondFilter, setPondFilter] = w.useState("ALL"); // "ALL" | "URGENT" | "GPS" | "NO_GPS" | "SIGNED" | "PENDING_CONTRACT"
+  const [contractFilter, setContractFilter] = w.useState("ALL"); // "ALL" | "SIGNED" | "PENDING"
 
-  // Modals
-  const [selectedPondForContract, setSelectedPondForContract] = w.useState(null);
+  // Modals & Interactive States
   const [selectedContractForView, setSelectedContractForView] = w.useState(null);
   const [selectedContractForShare, setSelectedContractForShare] = w.useState(null);
   const [locationPickerPond, setLocationPickerPond] = w.useState(null);
+  const [workerShareTarget, setWorkerShareTarget] = w.useState(null); // { pond, contract }
+  const [showAllPondsMap, setShowAllPondsMap] = w.useState(false);
+  const [yieldEditPond, setYieldEditPond] = w.useState(null);
+  const [yieldEditForm, setYieldEditForm] = w.useState({ estimatedYield: "", shrimpSizeCount: "", area: "", accessNote: "" });
+  const [editingPond, setEditingPond] = w.useState(null);
+  const [showCreateContractModal, setShowCreateContractModal] = w.useState(false);
+  const [confirmDeleteItem, setConfirmDeleteItem] = w.useState(null); // { type: "POND" | "CONTRACT", id, name, contractId }
   const [contractsList, setContractsList] = w.useState(() => (typeof getContracts === "function" ? getContracts() : []));
+  const [toast, setToast] = w.useState({ msg: "", type: "success" });
+  const [formGettingGps, setFormGettingGps] = w.useState(false);
+  const [formGpsPaste, setFormGpsPaste] = w.useState("");
 
-  // Tự động kiểm tra dọn dẹp hợp đồng sau 30 ngày cân xong và cập nhật thời gian thực
+  const showToast = (msg, type = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => {
+      setToast(prev => (prev.msg === msg ? { msg: "", type: "success" } : prev));
+    }, 3800);
+  };
+
+  // Sync contracts, farmers, and server poll cleanly (respecting deleted tombstones)
   w.useEffect(() => {
     try {
       if (typeof cleanupExpiredContracts === "function") cleanupExpiredContracts();
@@ -8577,7 +9852,7 @@ const Cm = ({ setRoute: S }) => {
         if (prof && Array.isArray(prof.shrimpTypes) && prof.shrimpTypes.length > 0) {
           setShrimpTags(prof.shrimpTypes.map(st => st.name));
         }
-      } catch(e) {}
+      } catch (e) {}
     };
     window.addEventListener("tom_contract_signed", onSync);
     window.addEventListener("tom_contract_updated", onSync);
@@ -8602,16 +9877,27 @@ const Cm = ({ setRoute: S }) => {
         const res = await fetch(`/api/contracts/poll?since=${lastSync}`);
         if (res.ok) {
           const data = await res.json();
-          if (data && data.contracts && data.contracts.length > 0) {
-            lastSync = data.serverTime || Date.now();
-            data.contracts.forEach(c => {
-              if (typeof saveContract === "function") saveContract(c);
-            });
-            if (typeof getContracts === "function") setContractsList(getContracts());
+          if (data) {
+            if (data.serverTime) lastSync = data.serverTime;
+            let hasChanges = false;
+            if (Array.isArray(data.deletedIds) && data.deletedIds.length > 0 && typeof markContractDeletedLocal_v4 === "function") {
+              markContractDeletedLocal_v4(data.deletedIds);
+              hasChanges = true;
+            }
+            if (Array.isArray(data.contracts) && data.contracts.length > 0) {
+              lastSync = data.serverTime || Date.now();
+              data.contracts.forEach(cItem => {
+                if (typeof saveContract === "function") saveContract(cItem, { fromPoll: true });
+              });
+              hasChanges = true;
+            }
+            if (hasChanges && typeof getContracts === "function") {
+              setContractsList(getContracts());
+            }
           }
         }
       } catch (e) {}
-    }, 2500);
+    }, 4000);
 
     return () => {
       window.removeEventListener("tom_contract_signed", onSync);
@@ -8625,8 +9911,6 @@ const Cm = ({ setRoute: S }) => {
     };
   }, []);
 
-
-  // Standard specs generator from Trader Profile
   const getStandardSpecsString = () => {
     try {
       const prof = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : null;
@@ -8636,11 +9920,10 @@ const Cm = ({ setRoute: S }) => {
           .map(s => s.text.trim());
         if (specs.length > 0) return specs.join("; ");
       }
-    } catch(e) {}
+    } catch (e) {}
     return "Kéo lưới vét rạng sáng hoặc đặt dớn sạch bún bùn; Tỷ lệ tôm sống oxy đạt từ 95% trở lên lúc cân tại bờ ao; Tôm khỏe mạnh, đều màu, nguyên vẹn càng và vỏ cứng; Quy cách trừ bì: Ráo nước chuẩn 1 kg / 100 kg";
   };
 
-  // Customizable shrimp tags
   const [shrimpTags, setShrimpTags] = w.useState(() => {
     try {
       const saved = localStorage.getItem("annong_custom_shrimp_tags");
@@ -8648,13 +9931,13 @@ const Cm = ({ setRoute: S }) => {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
-    } catch(e) {}
+    } catch (e) {}
     try {
       const prof = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : null;
       if (prof && Array.isArray(prof.shrimpTypes) && prof.shrimpTypes.length > 0) {
         return prof.shrimpTypes.map(st => st.name);
       }
-    } catch(e) {}
+    } catch (e) {}
     return [
       "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
       "Tôm Càng Xanh Loại 1",
@@ -8672,11 +9955,10 @@ const Cm = ({ setRoute: S }) => {
     setShrimpTags(tags);
     try {
       localStorage.setItem("annong_custom_shrimp_tags", JSON.stringify(tags));
-    } catch(e) {}
+    } catch (e) {}
   };
 
-  // New Pond Form State
-  const [v, _] = w.useState({
+  const createInitialFormState = () => ({
     name: "",
     phone: "",
     area: "",
@@ -8684,9 +9966,10 @@ const Cm = ({ setRoute: S }) => {
     province: "Cà Mau",
     district: "",
     commune: "",
-    shrimpType: "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
+    shrimpType: (shrimpTags && shrimpTags[0]) || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
     rejectionSpec: getStandardSpecsString(),
     estimatedYield: "",
+    shrimpSizeCount: "",
     depositMoney: (typeof getTraderProfileV3 === "function" && getTraderProfileV3().defaultDeposit !== undefined ? String(getTraderProfileV3().defaultDeposit) : "5000000"),
     weighingDate: getLocalYYYYMMDD_v4(),
     weighingTime: "06:00",
@@ -8696,11 +9979,31 @@ const Cm = ({ setRoute: S }) => {
     qualityStandard: "Tôm khỏe mạnh, đều màu, nguyên vẹn càng",
     tareSpec: "Trừ hao ráo nước chuẩn 1kg/thùng cân",
     compensationTerms: "Bồi hoàn 100% tiền cọc và phạt gấp đôi (02 lần) nếu tự ý bán cho người khác",
+    accessNote: "",
     lat: null,
-    lng: null
+    lng: null,
+    gpsAccuracy: null
   });
 
-  // Calculate days difference to today
+  const [v, _] = w.useState(() => createInitialFormState());
+
+  // Standalone Contract Creation Form
+  const [newContractForm, setNewContractForm] = w.useState(() => ({
+    selectedFarmerId: "",
+    farmerName: "",
+    farmerPhone: "",
+    farmerAddress: "",
+    shrimpType: (shrimpTags && shrimpTags[0]) || "Tôm Càng Xanh Loại 1",
+    agreedPrice: "160000",
+    depositMoney: (typeof getTraderProfileV3 === "function" && getTraderProfileV3().defaultDeposit !== undefined ? String(getTraderProfileV3().defaultDeposit) : "5000000"),
+    weighingDate: getLocalYYYYMMDD_v4(),
+    weighingTime: "06:00",
+    estimatedYield: "",
+    shrimpSizeCount: "",
+    tareSpec: "Trừ hao ráo nước chuẩn 1kg/thùng cân",
+    rejectionSpec: getStandardSpecsString()
+  }));
+
   const getDaysDiff = (dateStr) => {
     if (!dateStr) return 999999;
     const now = new Date();
@@ -8710,31 +10013,69 @@ const Cm = ({ setRoute: S }) => {
     return Math.round((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
   };
 
-  // Sort unweighed ponds by nearest harvest date
+  const findContractForPond = (pond) => {
+    if (!pond) return null;
+    return contractsList.find(cItem => cItem && (cItem.farmerId === pond.id || cItem.pondId === pond.id || (pond.contractId && cItem.id === pond.contractId))) || null;
+  };
+
   const unweighedPonds = w.useMemo(() => {
     const list = b.filter(x => !x.weighed && x.status !== "WEIGHED");
-    return list.sort((a, bItem) => {
-      const diffA = getDaysDiff(a.weighingDate);
-      const diffB = getDaysDiff(bItem.weighingDate);
-      // Ponds with nearest positive diff (today=0, tomorrow=1) first, overdue next, no date last
-      return diffA - diffB;
-    });
+    return list.sort((a, bItem) => getDaysDiff(a.weighingDate) - getDaysDiff(bItem.weighingDate));
   }, [b]);
 
-  // Weighed ponds
-  const weighedPonds = w.useMemo(() => {
-    return b.filter(x => x.weighed === true || x.status === "WEIGHED");
-  }, [b]);
+  const weighedPonds = w.useMemo(() => b.filter(x => x.weighed === true || x.status === "WEIGHED"), [b]);
 
-  // Filtered by search query
+  const statsSummary = w.useMemo(() => {
+    const totalPendingKg = unweighedPonds.reduce((sum, x) => sum + (Number(x.estimatedYield) || 0), 0);
+    const gpsCount = unweighedPonds.filter(x => x.lat && x.lng).length;
+    const signedCount = contractsList.filter(cItem => cItem && (cItem.status === "SIGNED_LEGAL" || cItem.farmerSigned)).length;
+    return { totalPendingKg, gpsCount, signedCount };
+  }, [unweighedPonds, contractsList]);
+
   const displayedPonds = w.useMemo(() => {
-    const source = D === "WEIGHED" ? weighedPonds : unweighedPonds;
+    let source = D === "WEIGHED" ? weighedPonds : unweighedPonds;
+    if (D === "UNWEIGHED" && pondFilter !== "ALL") {
+      source = source.filter(pond => {
+        if (pondFilter === "URGENT") {
+          const dd = getDaysDiff(pond.weighingDate);
+          return dd <= 2;
+        }
+        if (pondFilter === "GPS") return !!(pond.lat && pond.lng);
+        if (pondFilter === "NO_GPS") return !(pond.lat && pond.lng);
+        const fc = findContractForPond(pond);
+        const isSigned = !!(fc && (fc.status === "SIGNED_LEGAL" || fc.farmerSigned));
+        if (pondFilter === "SIGNED") return isSigned;
+        if (pondFilter === "PENDING_CONTRACT") return !isSigned;
+        return true;
+      });
+    }
     if (!f.trim()) return source;
     const q = f.toLowerCase();
-    return source.filter(x => (x.name || "").toLowerCase().includes(q) || (x.phone || "").includes(q) || (x.address || "").toLowerCase().includes(q));
-  }, [D, unweighedPonds, weighedPonds, f]);
+    return source.filter(x =>
+      (x.name || "").toLowerCase().includes(q) ||
+      (x.phone || "").includes(q) ||
+      (x.address || "").toLowerCase().includes(q) ||
+      (x.shrimpType || "").toLowerCase().includes(q)
+    );
+  }, [D, unweighedPonds, weighedPonds, pondFilter, contractsList, f]);
 
-  // Action: Start Weighing This Pond Immediately
+  const displayedContracts = w.useMemo(() => {
+    let list = contractsList;
+    if (contractFilter === "SIGNED") {
+      list = list.filter(cItem => cItem.status === "SIGNED_LEGAL" || cItem.farmerSigned);
+    } else if (contractFilter === "PENDING") {
+      list = list.filter(cItem => cItem.status !== "SIGNED_LEGAL" && !cItem.farmerSigned);
+    }
+    if (!f.trim()) return list;
+    const q = f.toLowerCase();
+    return list.filter(cItem =>
+      (cItem.id || "").toLowerCase().includes(q) ||
+      (cItem.farmer?.fullName || cItem.farmerName || "").toLowerCase().includes(q) ||
+      (cItem.farmer?.phone || cItem.farmerPhone || "").includes(q) ||
+      (cItem.farmer?.address || cItem.farmerAddress || "").toLowerCase().includes(q)
+    );
+  }, [contractsList, contractFilter, f]);
+
   const handleStartWeighingThisPond = (pond) => {
     const profTare = typeof getTraderProfileV3 === "function" ? parseNumericSetting_v4(getTraderProfileV3().tarePer100Kg, 1) : 1;
     let parsedTare = profTare;
@@ -8757,7 +10098,6 @@ const Cm = ({ setRoute: S }) => {
     S(re.WEIGHING);
   };
 
-  // Action: Mark Pond as Weighed / Unweighed
   const handleToggleWeighedStatus = (pondId, currentStatus) => {
     const updated = b.map(x => {
       if (x.id === pondId) {
@@ -8768,42 +10108,150 @@ const Cm = ({ setRoute: S }) => {
     });
     p(updated);
     me.save(Ot.FARMERS, updated);
+    showToast(currentStatus ? "Đã chuyển lại sang Ao Cần Cân" : "✓ Đã đánh dấu Ao Đã Cân Xong!");
   };
 
-  // Delete Pond
-  const handleDeletePond = (id) => {
-    if (confirm("Bạn có chắc chắn muốn xóa chủ ao này khỏi hệ thống?")) {
-      me.deleteFarmer(id);
-      if (typeof deleteContract === 'function') deleteContract(id);
+  // Non-blocking confirmed delete (handles both Pond and Contract)
+  const executeConfirmedDelete = () => {
+    if (!confirmDeleteItem) return;
+    if (confirmDeleteItem.type === "POND") {
+      me.deleteFarmer(confirmDeleteItem.id);
+      if (typeof deleteContract === "function") {
+        deleteContract(confirmDeleteItem.id);
+        if (confirmDeleteItem.contractId) deleteContract(confirmDeleteItem.contractId);
+      }
       p(me.getFarmers());
-      if (typeof getContracts === 'function') setContractsList(getContracts());
+      if (typeof getContracts === "function") setContractsList(getContracts());
+      showToast(`✓ Đã xoá ao "${confirmDeleteItem.name}" và hợp đồng liên quan.`);
+    } else if (confirmDeleteItem.type === "CONTRACT") {
+      if (typeof deleteContract === "function") deleteContract(confirmDeleteItem.id);
+      if (typeof getContracts === "function") setContractsList(getContracts());
+      showToast(`✓ Đã xoá Hợp đồng #${confirmDeleteItem.id}`);
     }
+    setConfirmDeleteItem(null);
   };
 
-  // Save new pond & create contract
-  const handleSavePond = (shouldCreateContract = true) => {
-    if (!v.name.trim()) {
-      alert("Vui lòng nhập họ tên chủ ao tôm!");
+  // Capture GPS directly inside the Add Pond form
+  const handleGetFormGPS = () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      showToast("Trình duyệt không hỗ trợ định vị GPS.", "error");
       return;
     }
-    const traderProf = getTraderProfileV3();
+    setFormGettingGps(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const nLat = Number(pos.coords.latitude.toFixed(6));
+        const nLng = Number(pos.coords.longitude.toFixed(6));
+        const acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
+        _(prev => ({ ...prev, lat: nLat, lng: nLng, gpsAccuracy: acc }));
+        setFormGettingGps(false);
+        showToast(`✓ Đã lấy tọa độ GPS ao (${nLat}, ${nLng})${acc ? ` ±${acc}m` : ""}`);
+      },
+      (err) => {
+        setFormGettingGps(false);
+        showToast("Không thể lấy GPS: " + (err?.message || "Hãy bật định vị hoặc dán link Google Maps"), "error");
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  };
+
+  const handleFormGpsPaste = (raw) => {
+    setFormGpsPaste(raw);
+    if (!raw || !raw.trim() || typeof parseGpsInput_v4 !== "function") return;
+    const parsed = parseGpsInput_v4(raw);
+    if (parsed) {
+      _(prev => ({ ...prev, lat: parsed.lat, lng: parsed.lng, gpsAccuracy: null }));
+      showToast(`✓ Đã nhận diện tọa độ: ${parsed.lat}, ${parsed.lng}`);
+    }
+  };
+
+  const buildContractPayload = ({ pondObj, contractId, overrides = {} }) => {
+    const traderProf = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {};
+    const latNum = pondObj.lat ? Number(pondObj.lat) : null;
+    const lngNum = pondObj.lng ? Number(pondObj.lng) : null;
+    const priceNum = Number(overrides.agreedPrice ?? pondObj.defaultPrice ?? pondObj.traderPrice) || 160000;
+    const depositNum = Number(overrides.depositMoney ?? pondObj.defaultDeposit ?? 0) || 0;
+    const estYieldNum = Number(overrides.estimatedYield ?? pondObj.estimatedYield ?? 0) || 0;
+    return {
+      id: contractId,
+      pondId: pondObj.id,
+      farmerId: pondObj.id,
+      farmerName: overrides.farmerName || pondObj.name || "Chủ ao",
+      farmerPhone: overrides.farmerPhone || pondObj.phone || "",
+      farmerAddress: overrides.farmerAddress || pondObj.address || "",
+      farmerIdCard: pondObj.idCard || "",
+      traderName: traderProf.fullName || "Cơ Sở Thu Mua Tôm Càng Xanh",
+      traderPhone: traderProf.phone || "",
+      traderAddress: traderProf.address || "",
+      traderIdCard: traderProf.idCard || "",
+      shrimpType: overrides.shrimpType || pondObj.shrimpType || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
+      rejectionSpec: overrides.rejectionSpec || pondObj.rejectionSpec || getStandardSpecsString(),
+      tareSpec: overrides.tareSpec || pondObj.tareSpec || "Trừ hao ráo nước chuẩn 1kg/thùng cân",
+      depositMoney: depositNum,
+      deposit: depositNum,
+      estimatedYield: estYieldNum,
+      shrimpSizeCount: overrides.shrimpSizeCount || pondObj.shrimpSizeCount || "",
+      pondArea: pondObj.area || "",
+      pondAccessNote: pondObj.accessNote || "",
+      agreedPrice: priceNum,
+      unitPrice: priceNum,
+      weighingDate: overrides.weighingDate || pondObj.weighingDate || getLocalYYYYMMDD_v4(),
+      weighingTime: overrides.weighingTime || pondObj.weighingTime || "06:00",
+      catchingMethod: pondObj.catchingMethod || "Kéo lưới hoặc dớn",
+      oxygenRatio: pondObj.oxygenRatio || "95%",
+      qualityStandard: pondObj.qualityStandard || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước",
+      compensationTerms: pondObj.compensationTerms || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc",
+      createdAt: new Date().toISOString(),
+      signedAt: null,
+      farmerSignature: null,
+      traderSignature: null,
+      status: "PENDING_FARMER",
+      farmer: {
+        fullName: overrides.farmerName || pondObj.name || "Chủ ao",
+        phone: overrides.farmerPhone || pondObj.phone || "",
+        address: overrides.farmerAddress || pondObj.address || "",
+        idCard: pondObj.idCard || "",
+        coordinates: (latNum && lngNum) ? { lat: latNum, lng: lngNum } : null,
+        agreed: false
+      },
+      trader: {
+        fullName: traderProf.fullName || "Cơ Sở Thu Mua Tôm Càng Xanh",
+        phone: traderProf.phone || "",
+        address: traderProf.address || "",
+        idCard: traderProf.idCard || "",
+        agreed: true
+      },
+      pondLocation: (latNum && lngNum) ? { lat: latNum, lng: lngNum } : null
+    };
+  };
+
+  // Save new pond & optionally create electronic contract
+  const handleSavePond = (shouldCreateContract = true) => {
+    if (!v.name.trim()) {
+      showToast("Vui lòng nhập họ tên chủ ao tôm!", "error");
+      return;
+    }
     const newId = Date.now().toString();
-    const contractId = "HDTCX-" + (1e9 + Math.floor(Math.random() * 9e8));
+    const contractId = shouldCreateContract ? ("HDTCX-" + (1e9 + Math.floor(Math.random() * 9e8))) : null;
+    const composedAddress = v.address || `${v.commune ? v.commune + ", " : ""}${v.district ? v.district + ", " : ""}${v.province}`;
 
     const newFarmer = {
       id: newId,
-      name: v.name,
-      phone: v.phone,
-      area: v.area,
-      address: v.address || `${v.commune ? v.commune + ", " : ""}${v.district ? v.district + ", " : ""}${v.province}`,
-      lat: v.lat,
-      lng: v.lng,
+      name: v.name.trim(),
+      phone: v.phone.trim(),
+      area: v.area.trim(),
+      address: composedAddress,
+      lat: v.lat ? Number(v.lat) : null,
+      lng: v.lng ? Number(v.lng) : null,
+      gpsAccuracy: v.gpsAccuracy || null,
+      accessNote: v.accessNote.trim(),
       defaultPrice: Number(v.traderPrice) || 160000,
       defaultDeposit: Number(v.depositMoney) || 0,
       shrimpType: v.shrimpType || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
       rejectionSpec: v.rejectionSpec || getStandardSpecsString(),
       tareSpec: v.tareSpec || "Trừ hao ráo nước chuẩn 1kg/thùng cân",
-      estimatedYield: v.estimatedYield,
+      estimatedYield: v.estimatedYield ? Number(v.estimatedYield) : "",
+      shrimpSizeCount: v.shrimpSizeCount.trim(),
       weighingDate: v.weighingDate,
       weighingTime: v.weighingTime,
       contractId: contractId,
@@ -8813,90 +10261,217 @@ const Cm = ({ setRoute: S }) => {
 
     me.addFarmer(newFarmer);
 
-    if (shouldCreateContract) {
-      const newContract = {
-        id: contractId,
-        farmerId: newId,
-        farmerName: v.name,
-        farmerPhone: v.phone,
-        farmerAddress: newFarmer.address,
-        farmerIdCard: "",
-        traderName: traderProf.fullName,
-        traderPhone: traderProf.phone,
-        traderAddress: traderProf.address,
-        traderIdCard: traderProf.idCard,
-        shrimpType: v.shrimpType || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
-        rejectionSpec: v.rejectionSpec || getStandardSpecsString(),
-        tareSpec: v.tareSpec || "Trừ hao ráo nước chuẩn 1kg/thùng cân",
-        depositMoney: Number(v.depositMoney) || 0,
-        estimatedYield: Number(v.estimatedYield) || 0,
-        agreedPrice: Number(v.traderPrice) || 160000,
-        unitPrice: Number(v.traderPrice) || 160000,
-        weighingDate: v.weighingDate,
-        weighingTime: v.weighingTime,
-        catchingMethod: v.catchingMethod,
-        oxygenRatio: v.oxygenRatio,
-        qualityStandard: v.qualityStandard || "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao, vỏ sạch không bọng nước",
-        compensationTerms: v.compensationTerms || "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc",
-        createdAt: new Date().toISOString(),
-        signedAt: null,
-        farmerSignature: null,
-        traderSignature: null,
-        status: "PENDING_FARMER",
-        farmer: {
-          fullName: v.name,
-          phone: v.phone,
-          address: newFarmer.address,
-          idCard: "",
-          coordinates: (v.lat && v.lng) ? { lat: Number(v.lat), lng: Number(v.lng) } : null,
-          agreed: false
-        },
-        trader: {
-          fullName: traderProf.fullName || "Cơ Sở Thu Mua Tôm Càng Xanh",
-          phone: traderProf.phone || "",
-          address: traderProf.address || "",
-          idCard: traderProf.idCard || "",
-          agreed: true
-        },
-        pondLocation: v.lat && v.lng ? { lat: v.lat, lng: v.lng } : null
-      };
-
+    if (shouldCreateContract && contractId) {
+      const newContract = buildContractPayload({ pondObj: newFarmer, contractId });
       try {
         if (typeof saveContract === "function") saveContract(newContract);
         else if (window.saveContract) window.saveContract(newContract);
-        if (typeof syncContractToCloud === "function") syncContractToCloud(newContract);
       } catch (e) {}
-
       if (typeof getContracts === "function") setContractsList(getContracts());
-
-      // Open share modal
-      setSelectedContractForShare(newContract);
+      setSelectedContractForView(newContract);
+      showToast("✓ Đã lưu Chủ Ao & tạo Hợp Đồng Điện Tử thành công!");
+    } else {
+      showToast("✓ Đã lưu thông tin Chủ Ao thành công!");
     }
 
     p(me.getFarmers());
-    _({
-      name: "",
-      phone: "",
-      area: "",
-      address: "",
-      province: "Cà Mau",
-      district: "",
-      commune: "",
-      shrimpType: (shrimpTags && shrimpTags[0]) || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
-      rejectionSpec: getStandardSpecsString(),
-      estimatedYield: "",
-      depositMoney: (typeof getTraderProfileV3 === "function" && getTraderProfileV3().defaultDeposit !== undefined ? String(getTraderProfileV3().defaultDeposit) : ""),
-      traderPrice: "",
-      weighingDate: getLocalYYYYMMDD_v4(),
-      weighingTime: "05:00",
-      tareSpec: "Trừ hao ráo nước chuẩn 1kg/thùng cân",
-      catchingMethod: "Kéo lưới hoặc dớn",
-      oxygenRatio: "95%",
-      qualityStandard: "Tôm tươi sống oxy ≥ 95% lúc cân tại bờ ao",
-      compensationTerms: "Bên nào vi phạm bồi thường gấp 02 lần tiền cọc"
-    });
+    _(createInitialFormState());
+    setFormGpsPaste("");
     U("UNWEIGHED");
-    alert("Đã lưu thông tin chủ ao thành công!");
+  };
+
+  // Open or create contract directly from any Pond card
+  const handleOpenOrCreateContractForPond = (pond) => {
+    const existing = findContractForPond(pond);
+    if (existing) {
+      setSelectedContractForView(existing);
+      return;
+    }
+    const genId = pond.contractId || ("HDTCX-" + (1e9 + Math.floor(Math.random() * 9e8)));
+    const newC = buildContractPayload({ pondObj: pond, contractId: genId });
+    if (pond.weighed) newC.status = "COMPLETED";
+
+    const updatedFarmers = b.map(x => x.id === pond.id ? { ...x, contractId: genId } : x);
+    p(updatedFarmers);
+    me.save(Ot.FARMERS, updatedFarmers);
+
+    if (typeof saveContract === "function") saveContract(newC);
+    if (typeof getContracts === "function") setContractsList(getContracts());
+    setSelectedContractForView(newC);
+    showToast(`✓ Đã khởi tạo Hợp Đồng #${genId} cho ${pond.name}`);
+  };
+
+  // Create Contract from standalone Contracts Tab modal
+  const handleCreateStandaloneContract = () => {
+    if (!newContractForm.farmerName.trim()) {
+      showToast("Vui lòng chọn Chủ ao hoặc nhập Họ tên chủ ao!", "error");
+      return;
+    }
+    let targetFarmer = newContractForm.selectedFarmerId ? b.find(x => x.id === newContractForm.selectedFarmerId) : null;
+    const genId = "HDTCX-" + (1e9 + Math.floor(Math.random() * 9e8));
+    if (!targetFarmer) {
+      const newFid = Date.now().toString();
+      targetFarmer = {
+        id: newFid,
+        name: newContractForm.farmerName.trim(),
+        phone: newContractForm.farmerPhone.trim(),
+        address: newContractForm.farmerAddress.trim(),
+        defaultPrice: Number(newContractForm.agreedPrice) || 160000,
+        defaultDeposit: Number(newContractForm.depositMoney) || 0,
+        shrimpType: newContractForm.shrimpType,
+        rejectionSpec: newContractForm.rejectionSpec,
+        tareSpec: newContractForm.tareSpec,
+        estimatedYield: Number(newContractForm.estimatedYield) || "",
+        shrimpSizeCount: newContractForm.shrimpSizeCount.trim(),
+        weighingDate: newContractForm.weighingDate,
+        weighingTime: newContractForm.weighingTime,
+        contractId: genId,
+        weighed: false,
+        status: "CONTRACTED"
+      };
+      me.addFarmer(targetFarmer);
+      p(me.getFarmers());
+    } else {
+      const nextF = b.map(x => x.id === targetFarmer.id ? { ...x, contractId: genId } : x);
+      p(nextF);
+      me.save(Ot.FARMERS, nextF);
+    }
+
+    const createdC = buildContractPayload({
+      pondObj: targetFarmer,
+      contractId: genId,
+      overrides: {
+        farmerName: newContractForm.farmerName.trim(),
+        farmerPhone: newContractForm.farmerPhone.trim(),
+        farmerAddress: newContractForm.farmerAddress.trim(),
+        shrimpType: newContractForm.shrimpType,
+        agreedPrice: newContractForm.agreedPrice,
+        depositMoney: newContractForm.depositMoney,
+        weighingDate: newContractForm.weighingDate,
+        weighingTime: newContractForm.weighingTime,
+        estimatedYield: newContractForm.estimatedYield,
+        shrimpSizeCount: newContractForm.shrimpSizeCount,
+        tareSpec: newContractForm.tareSpec,
+        rejectionSpec: newContractForm.rejectionSpec
+      }
+    });
+    if (typeof saveContract === "function") saveContract(createdC);
+    if (typeof getContracts === "function") setContractsList(getContracts());
+    setShowCreateContractModal(false);
+    setSelectedContractForView(createdC);
+    showToast(`✓ Đã tạo Hợp đồng điện tử #${genId} thành công!`);
+  };
+
+  // Sync Pond GPS + AccessNote updates to both Farmer list and Linked Contract
+  const updatePondLocationAndSyncContract = (pondObj, lat, lng, extra = {}) => {
+    if (!pondObj) return;
+    const updatedFarmers = b.map(x => {
+      if (x.id === pondObj.id) {
+        return {
+          ...x,
+          lat,
+          lng,
+          gpsAccuracy: extra.accuracy !== undefined ? extra.accuracy : x.gpsAccuracy,
+          accessNote: extra.accessNote !== undefined ? extra.accessNote : x.accessNote
+        };
+      }
+      return x;
+    });
+    p(updatedFarmers);
+    me.save(Ot.FARMERS, updatedFarmers);
+
+    const linked = findContractForPond(pondObj);
+    if (linked && typeof saveContract === "function") {
+      const updatedC = {
+        ...linked,
+        pondLocation: { lat, lng },
+        pondAccessNote: extra.accessNote !== undefined ? extra.accessNote : (linked.pondAccessNote || ""),
+        farmer: {
+          ...(linked.farmer || {}),
+          coordinates: { lat, lng }
+        }
+      };
+      saveContract(updatedC);
+      if (typeof getContracts === "function") setContractsList(getContracts());
+    }
+    showToast(`✓ Đã lưu định vị GPS ao "${pondObj.name}"!`);
+  };
+
+  // Save Quick Yield Tagging
+  const handleSaveYieldTag = () => {
+    if (!yieldEditPond) return;
+    const nextYield = Number(yieldEditForm.estimatedYield) || 0;
+    const updatedFarmers = b.map(x => x.id === yieldEditPond.id ? {
+      ...x,
+      estimatedYield: nextYield || "",
+      shrimpSizeCount: yieldEditForm.shrimpSizeCount.trim(),
+      area: yieldEditForm.area.trim(),
+      accessNote: yieldEditForm.accessNote.trim()
+    } : x);
+    p(updatedFarmers);
+    me.save(Ot.FARMERS, updatedFarmers);
+
+    const linked = findContractForPond(yieldEditPond);
+    if (linked && typeof saveContract === "function") {
+      saveContract({
+        ...linked,
+        estimatedYield: nextYield,
+        shrimpSizeCount: yieldEditForm.shrimpSizeCount.trim(),
+        pondArea: yieldEditForm.area.trim(),
+        pondAccessNote: yieldEditForm.accessNote.trim()
+      });
+      if (typeof getContracts === "function") setContractsList(getContracts());
+    }
+    showToast(`✓ Đã cập nhật sản lượng ước tính cho ao "${yieldEditPond.name}"!`);
+    setYieldEditPond(null);
+  };
+
+  // Save Full Pond Edits
+  const handleSaveEditedPond = () => {
+    if (!editingPond || !editingPond.name?.trim()) {
+      showToast("Tên chủ ao không được để trống!", "error");
+      return;
+    }
+    const updatedFarmers = b.map(x => x.id === editingPond.id ? {
+      ...x,
+      ...editingPond,
+      defaultPrice: Number(editingPond.defaultPrice) || 160000,
+      defaultDeposit: Number(editingPond.defaultDeposit) || 0,
+      estimatedYield: editingPond.estimatedYield ? Number(editingPond.estimatedYield) : ""
+    } : x);
+    p(updatedFarmers);
+    me.save(Ot.FARMERS, updatedFarmers);
+
+    const linked = findContractForPond(editingPond);
+    if (linked && typeof saveContract === "function") {
+      saveContract({
+        ...linked,
+        farmerName: editingPond.name.trim(),
+        farmerPhone: editingPond.phone || "",
+        farmerAddress: editingPond.address || "",
+        agreedPrice: Number(editingPond.defaultPrice) || linked.agreedPrice,
+        unitPrice: Number(editingPond.defaultPrice) || linked.unitPrice,
+        depositMoney: Number(editingPond.defaultDeposit) || 0,
+        deposit: Number(editingPond.defaultDeposit) || 0,
+        shrimpType: editingPond.shrimpType || linked.shrimpType,
+        tareSpec: editingPond.tareSpec || linked.tareSpec,
+        weighingDate: editingPond.weighingDate || linked.weighingDate,
+        weighingTime: editingPond.weighingTime || linked.weighingTime,
+        estimatedYield: Number(editingPond.estimatedYield) || 0,
+        shrimpSizeCount: editingPond.shrimpSizeCount || "",
+        pondArea: editingPond.area || "",
+        pondAccessNote: editingPond.accessNote || "",
+        farmer: {
+          ...(linked.farmer || {}),
+          fullName: editingPond.name.trim(),
+          phone: editingPond.phone || "",
+          address: editingPond.address || ""
+        }
+      });
+      if (typeof getContracts === "function") setContractsList(getContracts());
+    }
+    showToast(`✓ Đã lưu chỉnh sửa thông tin ao "${editingPond.name}"!`);
+    setEditingPond(null);
   };
 
   return c.jsxs("div", {
@@ -8904,95 +10479,200 @@ const Cm = ({ setRoute: S }) => {
     children: [
       // Top Bar
       c.jsxs("div", {
-        className: "bg-[#2e7d32] dark:bg-[#1b4d1e] p-4 text-white flex items-center justify-between shadow-lg sticky top-0 z-40",
+        className: "bg-[#2e7d32] dark:bg-[#1b4d1e] p-3.5 sm:p-4 text-white flex items-center justify-between shadow-lg sticky top-0 z-40 gap-2",
         children: [
           c.jsxs("div", {
-            className: "flex items-center gap-3",
+            className: "flex items-center gap-2.5 min-w-0",
             children: [
               c.jsx("button", {
+                type: "button",
                 onClick: () => S(re.DASHBOARD),
-                className: "p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors",
-                children: c.jsx(On, { size: 24 })
+                className: "p-2 bg-white/10 hover:bg-white/20 rounded-xl transition-colors cursor-pointer shrink-0",
+                children: c.jsx(On, { size: 22 })
               }),
-              c.jsx("div", {
-                children: c.jsx("h1", { className: "text-lg font-black uppercase tracking-tight", children: "Danh Sách Ao Tôm" })
+              c.jsxs("div", {
+                className: "min-w-0",
+                children: [
+                  c.jsx("h1", { className: "text-base sm:text-lg font-black uppercase tracking-tight truncate", children: "Ao Tôm & Hợp Đồng 4.0" }),
+                  c.jsxs("p", { className: "text-[10px] text-emerald-100 font-bold truncate", children: [unweighedPonds.length, " ao chờ cân • ", statsSummary.gpsCount, " GPS • ", contractsList.length, " HĐĐT"] })
+                ]
               })
             ]
           }),
-          c.jsx("button", {
-            onClick: () => {
-              if (D !== "ADD") {
-                _({
-                  ...v,
-                  rejectionSpec: getStandardSpecsString(),
-                  depositMoney: (typeof getTraderProfileV3 === "function" && getTraderProfileV3().defaultDeposit !== undefined ? String(getTraderProfileV3().defaultDeposit) : "")
-                });
-                U("ADD");
-              } else {
-                U("UNWEIGHED");
-              }
-            },
-            className: "bg-yellow-400 text-green-950 px-3.5 py-1.5 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-md active:scale-95",
-            children: [c.jsx(As, { size: 16 }), D === "ADD" ? "Quay lại" : "Thêm Ao"]
+          c.jsxs("div", {
+            className: "flex items-center gap-1.5 shrink-0",
+            children: [
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => setShowAllPondsMap(true),
+                className: "bg-white/15 hover:bg-white/25 text-white px-2.5 py-1.5 rounded-xl font-black text-[11px] uppercase flex items-center gap-1 active:scale-95 cursor-pointer",
+                title: "Bản đồ các ao thu hoạch",
+                children: [c.jsx(MapIcon, { size: 14 }), c.jsx("span", { className: "hidden sm:inline", children: "Bản Đồ" })]
+              }),
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => {
+                  if (D !== "ADD") {
+                    _(createInitialFormState());
+                    setFormGpsPaste("");
+                    U("ADD");
+                  } else {
+                    U("UNWEIGHED");
+                  }
+                },
+                className: "bg-yellow-400 hover:bg-yellow-300 text-green-950 px-3 py-1.5 rounded-xl font-black text-xs uppercase flex items-center gap-1 shadow-md active:scale-95 cursor-pointer",
+                children: [c.jsx(As, { size: 15 }), D === "ADD" ? "Quay lại" : "Thêm Ao"]
+              })
+            ]
           })
         ]
       }),
 
-      // Navigation Tabs
-      c.jsx("div", {
-        className: "p-4 pb-0 max-w-4xl mx-auto w-full",
+      // Non-blocking Toast Banner
+      toast.msg && c.jsx("div", {
+        className: `mx-4 mt-3 max-w-4xl sm:mx-auto w-[calc(100%-2rem)] p-3 rounded-2xl text-xs font-black text-center shadow-md border animate-in fade-in duration-200 ${
+          toast.type === "error"
+            ? "bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border-red-300 dark:border-red-800"
+            : "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700"
+        }`,
+        children: toast.msg
+      }),
+
+      // Quick Summary Stats Strip
+      D !== "ADD" && c.jsx("div", {
+        className: "px-4 pt-3 max-w-4xl mx-auto w-full",
         children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-900 p-1.5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex gap-1",
+          className: "grid grid-cols-2 sm:grid-cols-4 gap-2",
           children: [
-            c.jsxs("button", {
-              onClick: () => U("UNWEIGHED"),
-              className: `flex-1 py-2.5 rounded-xl font-black text-xs uppercase flex items-center justify-center gap-2 transition-all ${D === "UNWEIGHED" ? "bg-green-600 text-white shadow-md" : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"}`,
+            c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 p-2.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xs",
               children: [
-                c.jsx($u, { size: 16 }),
-                "Ao Cần Cân",
-                c.jsx("span", { className: `px-2 py-0.5 rounded-full text-[10px] ${D === "UNWEIGHED" ? "bg-white/20 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"}`, children: unweighedPonds.length })
+                c.jsx("span", { className: "text-[10px] font-bold text-gray-400 uppercase block", children: "Ao Cần Cân" }),
+                c.jsxs("span", { className: "text-base font-black text-green-700 dark:text-green-400", children: [unweighedPonds.length, " ao"] })
               ]
             }),
-            c.jsxs("button", {
-              onClick: () => U("WEIGHED"),
-              className: `flex-1 py-2.5 rounded-xl font-black text-xs uppercase flex items-center justify-center gap-2 transition-all ${D === "WEIGHED" ? "bg-blue-600 text-white shadow-md" : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"}`,
+            c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 p-2.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xs",
               children: [
-                c.jsx(P1, { size: 16 }),
-                "Ao Đã Cân",
-                c.jsx("span", { className: `px-2 py-0.5 rounded-full text-[10px] ${D === "WEIGHED" ? "bg-white/20 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"}`, children: weighedPonds.length })
+                c.jsx("span", { className: "text-[10px] font-bold text-gray-400 uppercase block", children: "Tổng Tôm Dự Kiến" }),
+                c.jsxs("span", {
+                  className: "text-base font-black text-teal-700 dark:text-teal-400",
+                  children: [
+                    statsSummary.totalPendingKg > 0 ? `${statsSummary.totalPendingKg.toLocaleString()} kg` : "0 kg",
+                    statsSummary.totalPendingKg >= 1000 && c.jsxs("span", { className: "text-[10px] ml-1 opacity-75", children: ["(~", (statsSummary.totalPendingKg / 1000).toFixed(1), " tấn)"] })
+                  ]
+                })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 p-2.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xs",
+              children: [
+                c.jsx("span", { className: "text-[10px] font-bold text-gray-400 uppercase block", children: "Định Vị GPS Ao" }),
+                c.jsxs("span", { className: "text-base font-black text-blue-700 dark:text-blue-400", children: [statsSummary.gpsCount, "/", unweighedPonds.length, " ao"] })
+              ]
+            }),
+            c.jsxs("div", {
+              className: "bg-white dark:bg-gray-900 p-2.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xs",
+              children: [
+                c.jsx("span", { className: "text-[10px] font-bold text-gray-400 uppercase block", children: "Hợp Đồng ĐT" }),
+                c.jsxs("span", { className: "text-base font-black text-emerald-700 dark:text-emerald-400", children: [statsSummary.signedCount, "/", contractsList.length, " đã ký"] })
               ]
             })
           ]
         })
       }),
 
-      // Search Bar (When in lists)
-      D !== "ADD" && c.jsx("div", {
-        className: "px-4 pt-3 max-w-4xl mx-auto w-full",
+      // Navigation Tabs (3 Main Views)
+      c.jsx("div", {
+        className: "p-4 pb-0 max-w-4xl mx-auto w-full",
         children: c.jsxs("div", {
-          className: "relative",
+          className: "bg-white dark:bg-gray-900 p-1.5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 grid grid-cols-3 gap-1",
           children: [
-            c.jsx(Id, { size: 18, className: "absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" }),
-            c.jsx("input", {
-              type: "text",
-              placeholder: "Tìm chủ ao theo tên, số điện thoại hoặc địa chỉ...",
-              value: f,
-              onChange: (e) => O(e.target.value),
-              className: "w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs font-bold outline-none shadow-sm"
+            c.jsxs("button", {
+              type: "button",
+              onClick: () => U("UNWEIGHED"),
+              className: `py-2.5 px-1 rounded-xl font-black text-[11px] sm:text-xs uppercase flex items-center justify-center gap-1.5 transition-all cursor-pointer ${D === "UNWEIGHED" ? "bg-green-600 text-white shadow-md" : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"}`,
+              children: [
+                c.jsx($u, { size: 14 }),
+                c.jsx("span", { children: "Ao Cần Cân" }),
+                c.jsx("span", { className: `px-1.5 py-0.5 rounded-full text-[10px] ${D === "UNWEIGHED" ? "bg-white/20 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"}`, children: unweighedPonds.length })
+              ]
+            }),
+            c.jsxs("button", {
+              type: "button",
+              onClick: () => U("CONTRACTS"),
+              className: `py-2.5 px-1 rounded-xl font-black text-[11px] sm:text-xs uppercase flex items-center justify-center gap-1.5 transition-all cursor-pointer ${D === "CONTRACTS" ? "bg-emerald-700 text-white shadow-md" : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"}`,
+              children: [
+                c.jsx(im, { size: 14 }),
+                c.jsx("span", { children: "Hợp Đồng ĐT" }),
+                c.jsx("span", { className: `px-1.5 py-0.5 rounded-full text-[10px] ${D === "CONTRACTS" ? "bg-white/20 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"}`, children: contractsList.length })
+              ]
+            }),
+            c.jsxs("button", {
+              type: "button",
+              onClick: () => U("WEIGHED"),
+              className: `py-2.5 px-1 rounded-xl font-black text-[11px] sm:text-xs uppercase flex items-center justify-center gap-1.5 transition-all cursor-pointer ${D === "WEIGHED" ? "bg-blue-600 text-white shadow-md" : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"}`,
+              children: [
+                c.jsx(P1, { size: 14 }),
+                c.jsx("span", { children: "Ao Đã Cân" }),
+                c.jsx("span", { className: `px-1.5 py-0.5 rounded-full text-[10px] ${D === "WEIGHED" ? "bg-white/20 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"}`, children: weighedPonds.length })
+              ]
             })
           ]
         })
+      }),
+
+      // Search & Filter Bar
+      D !== "ADD" && c.jsxs("div", {
+        className: "px-4 pt-3 max-w-4xl mx-auto w-full space-y-2",
+        children: [
+          c.jsxs("div", {
+            className: "relative",
+            children: [
+              c.jsx(Id, { size: 18, className: "absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" }),
+              c.jsx("input", {
+                type: "text",
+                placeholder: D === "CONTRACTS" ? "Tìm hợp đồng theo mã #HDTCX, tên chủ ao, SĐT..." : "Tìm chủ ao theo tên, SĐT, địa chỉ, loại tôm...",
+                value: f,
+                onChange: (e) => O(e.target.value),
+                className: "w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 text-xs font-bold outline-none shadow-sm"
+              })
+            ]
+          }),
+          D === "UNWEIGHED" && c.jsx("div", {
+            className: "flex items-center gap-1.5 overflow-x-auto pb-1",
+            children: [
+              { k: "ALL", label: "Tất cả" },
+              { k: "URGENT", label: "🚨 Gạt sớm (≤2 ngày)" },
+              { k: "GPS", label: "📍 Đã chấm GPS" },
+              { k: "NO_GPS", label: "⚠️ Chưa GPS" },
+              { k: "SIGNED", label: "✓ HĐ Đã ký" },
+              { k: "PENDING_CONTRACT", label: "⏳ Chưa ký HĐ" }
+            ].map(item => c.jsx("button", {
+              type: "button",
+              onClick: () => setPondFilter(item.k),
+              className: `px-3 py-1.5 rounded-xl text-[11px] font-black whitespace-nowrap border cursor-pointer transition-all ${pondFilter === item.k ? "bg-green-700 text-white border-green-700 shadow-xs" : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-800"}`,
+              children: item.label
+            }, item.k))
+          })
+        ]
       }),
 
       // Main Tab Content
       c.jsx("div", {
         className: "p-4 max-w-4xl mx-auto w-full",
         children: D === "ADD" ? (
-          // FORM THÊM CHỦ AO MỚI
+          // FORM THÊM CHỦ AO MỚI (VỚI ĐÁNH LƯỢNG TÔM + GPS + ĐƯỜNG VÀO AO)
           c.jsxs("div", {
-            className: "bg-white dark:bg-gray-900 p-6 rounded-[32px] shadow-sm border border-gray-100 dark:border-gray-800 space-y-4 animate-in fade-in duration-200",
+            className: "bg-white dark:bg-gray-900 p-5 sm:p-6 rounded-[32px] shadow-sm border border-gray-100 dark:border-gray-800 space-y-4 animate-in fade-in duration-200",
             children: [
-              c.jsx("h2", { className: "text-base font-black uppercase text-gray-800 dark:text-gray-100 border-b pb-3 border-gray-100 dark:border-gray-800", children: "Thêm Chủ Ao Thu Mua Tôm Mới" }),
+              c.jsxs("div", {
+                className: "flex items-center justify-between border-b pb-3 border-gray-100 dark:border-gray-800",
+                children: [
+                  c.jsx("h2", { className: "text-base font-black uppercase text-gray-800 dark:text-gray-100", children: "Thêm Chủ Ao & Thiết Lập Thu Mua" }),
+                  c.jsx("button", { type: "button", onClick: () => U("UNWEIGHED"), className: "text-xs font-bold text-gray-400 hover:text-gray-600 cursor-pointer", children: "✕ Đóng" })
+                ]
+              }),
               c.jsxs("div", {
                 className: "grid grid-cols-1 sm:grid-cols-2 gap-3",
                 children: [
@@ -9042,6 +10722,135 @@ const Cm = ({ setRoute: S }) => {
                       })
                     ]
                   }),
+
+                  // SECTION MỚI: ĐÁNH LƯỢNG TÔM & QUY MÔ AO
+                  c.jsxs("div", {
+                    className: "sm:col-span-2 p-4 bg-teal-50/60 dark:bg-teal-950/20 rounded-2xl border border-teal-200 dark:border-teal-800/50 space-y-3",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex items-center justify-between",
+                        children: [
+                          c.jsx("label", { className: "text-xs font-black text-teal-900 dark:text-teal-300 uppercase", children: "🦐 Đánh Lượng Tôm Dự Kiến & Diện Tích Ao" }),
+                          Number(v.estimatedYield || 0) >= 1000 && c.jsxs("span", {
+                            className: "px-2 py-0.5 bg-teal-600 text-white rounded-lg text-[10px] font-black",
+                            children: ["≈ ", (Number(v.estimatedYield) / 1000).toFixed(2).replace(/\.?0+$/, ""), " tấn"]
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "grid grid-cols-1 sm:grid-cols-3 gap-2.5",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[11px] font-bold text-gray-500 block mb-1", children: "Ước lượng sản lượng (kg)" }),
+                              c.jsx("input", {
+                                type: "number",
+                                value: v.estimatedYield,
+                                onChange: (e) => _({ ...v, estimatedYield: e.target.value }),
+                                placeholder: "Vd: 2000",
+                                className: "w-full p-2.5 bg-white dark:bg-gray-800 border border-teal-200 dark:border-teal-700 rounded-xl font-black text-xs outline-none"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[11px] font-bold text-gray-500 block mb-1", children: "Cỡ tôm (con/kg)" }),
+                              c.jsx("input", {
+                                type: "text",
+                                value: v.shrimpSizeCount,
+                                onChange: (e) => _({ ...v, shrimpSizeCount: e.target.value }),
+                                placeholder: "Vd: 30-40 con/kg",
+                                className: "w-full p-2.5 bg-white dark:bg-gray-800 border border-teal-200 dark:border-teal-700 rounded-xl font-bold text-xs outline-none"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[11px] font-bold text-gray-500 block mb-1", children: "Diện tích / Số công ao" }),
+                              c.jsx("input", {
+                                type: "text",
+                                value: v.area,
+                                onChange: (e) => _({ ...v, area: e.target.value }),
+                                placeholder: "Vd: 5 công / 1.2 ha",
+                                className: "w-full p-2.5 bg-white dark:bg-gray-800 border border-teal-200 dark:border-teal-700 rounded-xl font-bold text-xs outline-none"
+                              })
+                            ]
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "flex flex-wrap items-center gap-1.5",
+                        children: [
+                          c.jsx("span", { className: "text-[10px] font-bold text-gray-500 mr-1", children: "Chọn nhanh kg:" }),
+                          [500, 1000, 1500, 2000, 3000, 5000].map(kgVal => c.jsx("button", {
+                            type: "button",
+                            onClick: () => _({ ...v, estimatedYield: String(kgVal) }),
+                            className: `px-2 py-1 rounded-lg text-[10px] font-black border cursor-pointer ${Number(v.estimatedYield) === kgVal ? "bg-teal-600 text-white border-teal-600" : "bg-white dark:bg-gray-800 text-teal-800 dark:text-teal-300 border-teal-200 dark:border-teal-700"}`,
+                            children: kgVal >= 1000 ? `${kgVal / 1000} tấn` : `${kgVal} kg`
+                          }, kgVal)),
+                          c.jsx("span", { className: "text-[10px] font-bold text-gray-500 ml-2 mr-1", children: "Size:" }),
+                          ["20-25 con/kg", "30-35 con/kg", "40-50 con/kg", "50-60 con/kg"].map(sz => c.jsx("button", {
+                            type: "button",
+                            onClick: () => _({ ...v, shrimpSizeCount: sz }),
+                            className: `px-2 py-1 rounded-lg text-[10px] font-bold border cursor-pointer ${v.shrimpSizeCount === sz ? "bg-teal-600 text-white border-teal-600" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
+                            children: sz
+                          }, sz))
+                        ]
+                      })
+                    ]
+                  }),
+
+                  // SECTION MỚI: ĐÁNH DẤU TỌA ĐỘ GPS & ĐƯỜNG VÀO AO
+                  c.jsxs("div", {
+                    className: "sm:col-span-2 p-4 bg-blue-50/60 dark:bg-blue-950/20 rounded-2xl border border-blue-200 dark:border-blue-800/50 space-y-2.5",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex flex-wrap items-center justify-between gap-2",
+                        children: [
+                          c.jsx("label", { className: "text-xs font-black text-blue-900 dark:text-blue-300 uppercase flex items-center gap-1.5", children: [c.jsx(PinIcon, { size: 15 }), "Đánh Dấu Tọa Độ GPS Bờ Ao"] }),
+                          v.lat && v.lng ? c.jsxs("div", {
+                            className: "flex items-center gap-2",
+                            children: [
+                              c.jsxs("span", { className: "px-2 py-0.5 bg-emerald-600 text-white rounded-lg font-mono text-[10px] font-bold", children: [Number(v.lat).toFixed(5), ", ", Number(v.lng).toFixed(5)] }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => _({ ...v, lat: null, lng: null, gpsAccuracy: null }),
+                                className: "text-[10px] font-bold text-red-500 hover:underline cursor-pointer",
+                                children: "Xóa GPS"
+                              })
+                            ]
+                          }) : c.jsx("span", { className: "text-[10px] font-bold text-gray-400", children: "Chưa gắn tọa độ" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
+                        children: [
+                          c.jsxs("button", {
+                            type: "button",
+                            onClick: handleGetFormGPS,
+                            disabled: formGettingGps,
+                            className: "py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs uppercase flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-95",
+                            children: [c.jsx(PinIcon, { size: 15 }), formGettingGps ? "Đang dò vệ tinh GPS..." : "📍 Lấy Tọa Độ GPS Tại Chỗ"]
+                          }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: formGpsPaste,
+                            onChange: (e) => handleFormGpsPaste(e.target.value),
+                            placeholder: "Hoặc dán link Google Maps / 9.1768, 105.1523",
+                            className: "w-full p-2.5 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-xl text-xs font-bold outline-none"
+                          })
+                        ]
+                      }),
+                      c.jsx("input", {
+                        type: "text",
+                        value: v.accessNote,
+                        onChange: (e) => _({ ...v, accessNote: e.target.value }),
+                        placeholder: "Ghi chú đường vào ao cho ghe / xe / nhân công (Vd: Qua cầu sắt rẽ phải 300m)...",
+                        className: "w-full p-2.5 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-xl text-xs font-semibold outline-none"
+                      })
+                    ]
+                  }),
+
                   // Section: Loại tôm thu mua (Customizable tags)
                   c.jsxs("div", {
                     className: "sm:col-span-2 space-y-3 p-4 bg-emerald-50/50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200/80 dark:border-emerald-800/50",
@@ -9056,7 +10865,7 @@ const Cm = ({ setRoute: S }) => {
                           c.jsxs("div", {
                             className: "flex items-center gap-2",
                             children: [
-                              c.jsx("span", { className: "text-[10px] text-emerald-700 dark:text-emerald-400 font-bold", children: "Bấm chọn thẻ hoặc sửa/xóa:" }),
+                              c.jsx("span", { className: "text-[10px] text-emerald-700 dark:text-emerald-400 font-bold", children: "Bấm chọn thẻ:" }),
                               c.jsxs("button", {
                                 type: "button",
                                 onClick: () => setShowAddTagBox(!showAddTagBox),
@@ -9068,7 +10877,7 @@ const Cm = ({ setRoute: S }) => {
                         ]
                       }),
                       showAddTagBox && c.jsxs("div", {
-                        className: "flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded-xl border border-emerald-300 dark:border-emerald-700 animate-in fade-in",
+                        className: "flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded-xl border border-emerald-300 dark:border-emerald-700",
                         children: [
                           c.jsx("input", {
                             type: "text",
@@ -9094,7 +10903,7 @@ const Cm = ({ setRoute: S }) => {
                           c.jsx("button", {
                             type: "button",
                             onClick: () => { setShowAddTagBox(false); setNewTagText(""); },
-                            className: "px-2 py-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs font-bold cursor-pointer",
+                            className: "px-2 py-1.5 text-gray-400 hover:text-gray-600 text-xs font-bold cursor-pointer",
                             children: "Hủy"
                           })
                         ]
@@ -9123,9 +10932,7 @@ const Cm = ({ setRoute: S }) => {
                                       const oldVal = updated[idx];
                                       updated[idx] = editingTagText.trim();
                                       saveShrimpTags(updated);
-                                      if (v.shrimpType === oldVal) {
-                                        _({ ...v, shrimpType: editingTagText.trim() });
-                                      }
+                                      if (v.shrimpType === oldVal) _({ ...v, shrimpType: editingTagText.trim() });
                                     }
                                     setEditingTagIdx(null);
                                   },
@@ -9156,17 +10963,11 @@ const Cm = ({ setRoute: S }) => {
                                 children: tag
                               }),
                               c.jsxs("div", {
-                                className: `flex items-center pr-1.5 pl-0.5 gap-0.5 border-l ${
-                                  isSelected ? "border-emerald-600/60" : "border-gray-200 dark:border-gray-700"
-                                }`,
+                                className: `flex items-center pr-1.5 pl-0.5 gap-0.5 border-l ${isSelected ? "border-emerald-600/60" : "border-gray-200 dark:border-gray-700"}`,
                                 children: [
                                   c.jsx("button", {
                                     type: "button",
-                                    onClick: (e) => {
-                                      e.stopPropagation();
-                                      setEditingTagIdx(idx);
-                                      setEditingTagText(tag);
-                                    },
+                                    onClick: (e) => { e.stopPropagation(); setEditingTagIdx(idx); setEditingTagText(tag); },
                                     title: "Sửa thẻ này",
                                     className: "p-1 hover:opacity-100 opacity-60 text-[11px] cursor-pointer",
                                     children: "✏️"
@@ -9177,9 +10978,7 @@ const Cm = ({ setRoute: S }) => {
                                       e.stopPropagation();
                                       const updated = shrimpTags.filter((_, i) => i !== idx);
                                       saveShrimpTags(updated);
-                                      if (v.shrimpType === tag && updated.length > 0) {
-                                        _({ ...v, shrimpType: updated[0] });
-                                      }
+                                      if (v.shrimpType === tag && updated.length > 0) _({ ...v, shrimpType: updated[0] });
                                     },
                                     title: "Xóa thẻ này",
                                     className: "p-1 hover:opacity-100 opacity-60 text-[11px] cursor-pointer hover:text-red-400",
@@ -9206,7 +11005,8 @@ const Cm = ({ setRoute: S }) => {
                       })
                     ]
                   }),
-                  // Section: Quy cách dạt tôm thu mua (Defaulted from Trader Config)
+
+                  // Section: Quy cách dạt tôm thu mua
                   c.jsxs("div", {
                     className: "sm:col-span-2 space-y-2 p-3.5 bg-amber-50/50 dark:bg-amber-950/20 rounded-2xl border border-amber-200/80 dark:border-amber-800/50",
                     children: [
@@ -9220,27 +11020,22 @@ const Cm = ({ setRoute: S }) => {
                           c.jsx("button", {
                             type: "button",
                             onClick: () => _({ ...v, rejectionSpec: getStandardSpecsString() }),
-                            className: "text-[11px] font-bold text-amber-800 dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer",
-                            title: "Tự động khôi phục lại các tiêu chuẩn từ Thiết lập thông tin",
-                            children: "🔄 Lấy quy cách chuẩn từ Thiết Lập"
+                            className: "text-[11px] font-bold text-amber-800 dark:text-amber-400 hover:underline cursor-pointer",
+                            children: "🔄 Lấy từ Thiết Lập"
                           })
                         ]
                       }),
-                      c.jsx("p", {
-                        className: "text-[11px] text-amber-700 dark:text-amber-400 font-medium",
-                        children: "Mặc định áp dụng toàn bộ Danh Sách Quy Cách Thu Bắt Tiêu Chuẩn từ Thiết Lập Thông Tin. Bạn có thể tự do gõ thêm hoặc sửa đổi nội dung bên dưới:"
-                      }),
                       c.jsx("textarea", {
-                        rows: 4,
+                        rows: 3,
                         value: v.rejectionSpec || "",
                         onChange: (e) => _({ ...v, rejectionSpec: e.target.value }),
-                        placeholder: "Nhập thêm quy cách bắt tôm, trừ hao ráo nước hoặc điều khoản dạt tôm tại bờ ao...",
+                        placeholder: "Nhập thêm quy cách bắt tôm, trừ hao ráo nước hoặc điều khoản dạt tôm...",
                         className: "w-full p-3 bg-white dark:bg-gray-800 border border-amber-300 dark:border-amber-700 rounded-xl font-bold text-xs outline-none leading-relaxed focus:ring-2 focus:ring-amber-500"
                       })
                     ]
                   }),
 
-                  // Price & Deposit inputs
+                  // Price & Deposit
                   c.jsxs("div", {
                     children: [
                       c.jsx("label", { className: "text-xs font-bold text-gray-500 block mb-1", children: "Giá thương lái mua (VNĐ/kg) (*)" }),
@@ -9266,7 +11061,7 @@ const Cm = ({ setRoute: S }) => {
                     ]
                   }),
 
-                  // Section: Quy cách trừ hao ráo nước & trừ bì
+                  // Tare Spec
                   c.jsxs("div", {
                     className: "sm:col-span-2 space-y-1.5",
                     children: [
@@ -9278,7 +11073,6 @@ const Cm = ({ setRoute: S }) => {
                           "100 con trừ 3 kg",
                           "Không trừ bì thùng"
                         ].map(tare => c.jsx("button", {
-                          key: tare,
                           type: "button",
                           onClick: () => _({ ...v, tareSpec: tare }),
                           className: `px-2.5 py-1 rounded-lg text-xs font-bold border cursor-pointer ${
@@ -9287,7 +11081,7 @@ const Cm = ({ setRoute: S }) => {
                               : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-200"
                           }`,
                           children: tare
-                        }))
+                        }, tare))
                       }),
                       c.jsx("input", {
                         type: "text",
@@ -9298,6 +11092,7 @@ const Cm = ({ setRoute: S }) => {
                       })
                     ]
                   }),
+
                   c.jsxs("div", {
                     className: "sm:col-span-2",
                     children: [
@@ -9314,21 +11109,199 @@ const Cm = ({ setRoute: S }) => {
                 ]
               }),
               c.jsxs("div", {
-                className: "pt-4 flex gap-3",
+                className: "pt-4 flex flex-col sm:flex-row gap-3",
                 children: [
                   c.jsxs("button", {
                     type: "button",
                     onClick: () => handleSavePond(true),
-                    className: "flex-1 p-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-2xl font-black text-xs uppercase flex items-center justify-center gap-2 shadow-lg border-b-4 border-yellow-700 active:scale-95",
+                    className: "flex-1 p-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-2xl font-black text-xs uppercase flex items-center justify-center gap-2 shadow-lg border-b-4 border-yellow-700 active:scale-95 cursor-pointer",
                     children: [c.jsx(im, { size: 18 }), "Lưu & Tạo Hợp Đồng Điện Tử"]
                   }),
                   c.jsxs("button", {
                     type: "button",
                     onClick: () => handleSavePond(false),
-                    className: "p-4 bg-green-700 hover:bg-green-800 text-white rounded-2xl font-black text-xs uppercase flex items-center justify-center gap-2 shadow-lg active:scale-95",
+                    className: "p-4 bg-green-700 hover:bg-green-800 text-white rounded-2xl font-black text-xs uppercase flex items-center justify-center gap-2 shadow-lg active:scale-95 cursor-pointer",
                     children: [c.jsx(ec, { size: 18 }), "Chỉ Lưu Chủ Ao"]
                   })
                 ]
+              })
+            ]
+          })
+        ) : D === "CONTRACTS" ? (
+          // TAB HỢP ĐỒNG ĐIỆN TỬ CHUYÊN BIỆT
+          c.jsxs("div", {
+            className: "space-y-3",
+            children: [
+              c.jsxs("div", {
+                className: "flex flex-wrap items-center justify-between gap-2 bg-white dark:bg-gray-900 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xs",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex items-center gap-1.5",
+                    children: [
+                      [
+                        { k: "ALL", label: `Tất cả (${contractsList.length})` },
+                        { k: "SIGNED", label: `✓ Đã ký (${statsSummary.signedCount})` },
+                        { k: "PENDING", label: `⏳ Chờ ký (${contractsList.length - statsSummary.signedCount})` }
+                      ].map(tab => c.jsx("button", {
+                        type: "button",
+                        onClick: () => setContractFilter(tab.k),
+                        className: `px-2.5 py-1.5 rounded-xl text-[11px] font-black cursor-pointer ${contractFilter === tab.k ? "bg-emerald-700 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`,
+                        children: tab.label
+                      }, tab.k))
+                    ]
+                  }),
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: () => {
+                      const firstPond = unweighedPonds[0] || b[0] || null;
+                      setNewContractForm({
+                        selectedFarmerId: firstPond?.id || "",
+                        farmerName: firstPond?.name || "",
+                        farmerPhone: firstPond?.phone || "",
+                        farmerAddress: firstPond?.address || "",
+                        shrimpType: firstPond?.shrimpType || (shrimpTags && shrimpTags[0]) || "Tôm Càng Xanh Loại 1",
+                        agreedPrice: String(firstPond?.defaultPrice || firstPond?.traderPrice || 160000),
+                        depositMoney: String(firstPond?.defaultDeposit ?? 5000000),
+                        weighingDate: firstPond?.weighingDate || getLocalYYYYMMDD_v4(),
+                        weighingTime: firstPond?.weighingTime || "06:00",
+                        estimatedYield: firstPond?.estimatedYield ? String(firstPond.estimatedYield) : "",
+                        shrimpSizeCount: firstPond?.shrimpSizeCount || "",
+                        tareSpec: firstPond?.tareSpec || "Trừ hao ráo nước chuẩn 1kg/thùng cân",
+                        rejectionSpec: firstPond?.rejectionSpec || getStandardSpecsString()
+                      });
+                      setShowCreateContractModal(true);
+                    },
+                    className: "px-3.5 py-2 bg-yellow-400 hover:bg-yellow-500 text-green-950 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95",
+                    children: [c.jsx(As, { size: 15 }), "Tạo Hợp Đồng Mới"]
+                  })
+                ]
+              }),
+
+              displayedContracts.length === 0 ? c.jsxs("div", {
+                className: "p-12 text-center bg-white dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 space-y-3",
+                children: [
+                  c.jsx(im, { size: 46, className: "mx-auto text-gray-300 dark:text-gray-600" }),
+                  c.jsx("p", { className: "font-black text-sm uppercase text-gray-500", children: "Chưa có hợp đồng điện tử nào" }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => setShowCreateContractModal(true),
+                    className: "px-4 py-2.5 bg-emerald-700 text-white font-black text-xs rounded-xl uppercase cursor-pointer",
+                    children: "+ Tạo hợp đồng ngay"
+                  })
+                ]
+              }) : displayedContracts.map(cItem => {
+                const isSigned = cItem.status === "SIGNED_LEGAL" || !!cItem.farmerSigned;
+                const linkedPond = b.find(x => x.id === cItem.farmerId || x.id === cItem.pondId || x.contractId === cItem.id) || null;
+                const coords = cItem.pondLocation || cItem.farmer?.coordinates || (linkedPond?.lat && linkedPond?.lng ? { lat: linkedPond.lat, lng: linkedPond.lng } : null);
+                const estKg = Number(cItem.estimatedYield || linkedPond?.estimatedYield || 0);
+                return c.jsxs("div", {
+                  className: "p-4 bg-white dark:bg-gray-900 rounded-[26px] border border-gray-100 dark:border-gray-800 shadow-sm space-y-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex items-start justify-between gap-2",
+                      children: [
+                        c.jsxs("div", {
+                          className: "min-w-0",
+                          children: [
+                            c.jsxs("div", {
+                              className: "flex flex-wrap items-center gap-1.5",
+                              children: [
+                                c.jsxs("span", { className: "px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-md font-mono text-[10px] font-black", children: ["#", cItem.id] }),
+                                c.jsx("h3", { className: "font-black text-sm sm:text-base text-gray-900 dark:text-white uppercase", children: cItem.farmer?.fullName || cItem.farmerName || "Chủ ao" })
+                              ]
+                            }),
+                            c.jsxs("p", { className: "text-xs text-gray-500 mt-0.5 truncate", children: [cItem.farmer?.phone || cItem.farmerPhone || "Chưa có SĐT", " • ", cItem.farmer?.address || cItem.farmerAddress || "Chưa có địa chỉ"] })
+                          ]
+                        }),
+                        isSigned ? c.jsx("span", {
+                          className: "px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-xl text-[10px] font-black whitespace-nowrap",
+                          children: "✓ ĐÃ KÝ HỢP PHÁP"
+                        }) : c.jsx("span", {
+                          className: "px-2.5 py-1 bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 rounded-xl text-[10px] font-black whitespace-nowrap",
+                          children: "⏳ CHỜ KHÁCH KÝ"
+                        })
+                      ]
+                    }),
+
+                    c.jsxs("div", {
+                      className: "grid grid-cols-2 sm:grid-cols-4 gap-2 bg-gray-50 dark:bg-gray-800/60 p-3 rounded-2xl text-xs",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("span", { className: "text-[10px] text-gray-400 uppercase block", children: "Giá chốt" }),
+                            c.jsxs("span", { className: "font-black text-green-700 dark:text-green-400", children: [Number(cItem.agreedPrice || 0).toLocaleString(), " đ/kg"] })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("span", { className: "text-[10px] text-gray-400 uppercase block", children: "Tiền cọc" }),
+                            c.jsxs("span", { className: "font-black text-blue-700 dark:text-blue-400", children: [Number(cItem.depositMoney ?? cItem.deposit ?? 0).toLocaleString(), " đ"] })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("span", { className: "text-[10px] text-gray-400 uppercase block", children: "Ước lượng" }),
+                            c.jsx("span", { className: "font-black text-teal-700 dark:text-teal-400", children: estKg > 0 ? `~${estKg.toLocaleString()} kg` : "Chưa đánh" })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("span", { className: "text-[10px] text-gray-400 uppercase block", children: "Ngày cân" }),
+                            c.jsx("span", { className: "font-bold text-gray-700 dark:text-gray-200", children: `${cItem.weighingDate || "Thỏa thuận"} (${cItem.weighingTime || "06:00"})` })
+                          ]
+                        })
+                      ]
+                    }),
+
+                    c.jsxs("div", {
+                      className: "flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-gray-100 dark:border-gray-800",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex flex-wrap items-center gap-1.5",
+                          children: [
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => setSelectedContractForView(cItem),
+                              className: "px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-[11px] font-black uppercase flex items-center gap-1 cursor-pointer",
+                              children: [c.jsx(cm, { size: 13 }), "Xem & Sửa HĐ"]
+                            }),
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => setSelectedContractForShare(cItem),
+                              className: "px-3 py-1.5 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl text-[11px] font-black uppercase flex items-center gap-1 cursor-pointer",
+                              children: [c.jsx(ZaloIcon, { size: 13 }), "Gửi Khách / QR"]
+                            }),
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => setWorkerShareTarget({ pond: linkedPond, contract: cItem }),
+                              className: "px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-[11px] font-black uppercase flex items-center gap-1 cursor-pointer",
+                              children: [c.jsx(tc, { size: 13 }), "Gửi Nhân Công"]
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "flex items-center gap-1.5",
+                          children: [
+                            coords && coords.lat && coords.lng && c.jsxs("a", {
+                              href: `https://www.google.com/maps/dir/?api=1&destination=${coords.lat},${coords.lng}`,
+                              target: "_blank",
+                              rel: "noopener noreferrer",
+                              className: "px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 rounded-xl text-[11px] font-black flex items-center gap-1",
+                              children: [c.jsx(MapIcon, { size: 12 }), "Maps"]
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setConfirmDeleteItem({ type: "CONTRACT", id: cItem.id, name: cItem.farmer?.fullName || cItem.farmerName || cItem.id }),
+                              className: "p-2 text-gray-400 hover:text-red-600 rounded-xl cursor-pointer",
+                              title: "Xóa hợp đồng",
+                              children: c.jsx(Iu, { size: 16 })
+                            })
+                          ]
+                        })
+                      ]
+                    })
+                  ]
+                }, cItem.id);
               })
             ]
           })
@@ -9338,10 +11311,11 @@ const Cm = ({ setRoute: S }) => {
             className: "p-12 text-center bg-white dark:bg-gray-900 rounded-[32px] border border-gray-100 dark:border-gray-800 space-y-3",
             children: [
               c.jsx($u, { size: 48, className: "mx-auto text-gray-300 dark:text-gray-600" }),
-              c.jsx("p", { className: "font-black text-sm uppercase text-gray-500", children: D === "WEIGHED" ? "Chưa có ao nào đã cân hoàn tất" : "Không có ao tôm nào cần cân trong danh sách" }),
+              c.jsx("p", { className: "font-black text-sm uppercase text-gray-500", children: D === "WEIGHED" ? "Chưa có ao nào đã cân hoàn tất" : "Không có ao tôm nào phù hợp bộ lọc" }),
               c.jsx("button", {
-                onClick: () => U("ADD"),
-                className: "px-4 py-2 bg-green-600 text-white font-bold text-xs rounded-xl uppercase",
+                type: "button",
+                onClick: () => { _(createInitialFormState()); U("ADD"); },
+                className: "px-4 py-2 bg-green-600 text-white font-bold text-xs rounded-xl uppercase cursor-pointer",
                 children: "+ Thêm chủ ao mới"
               })
             ]
@@ -9374,52 +11348,91 @@ const Cm = ({ setRoute: S }) => {
                 badgeText = "✓ ĐÃ CÂN XONG";
               }
 
+              const foundC = findContractForPond(pond);
+              const isC = !!(foundC && (foundC.status === "SIGNED_LEGAL" || foundC.farmerSigned));
+              const hasCoords = !!(pond.lat && pond.lng);
+              const estKg = Number(pond.estimatedYield || foundC?.estimatedYield || 0);
+              const sizeCnt = pond.shrimpSizeCount || foundC?.shrimpSizeCount || "";
+
               return c.jsxs("div", {
                 className: "p-4 bg-white dark:bg-gray-900 rounded-[28px] border border-gray-100 dark:border-gray-800 shadow-sm space-y-3 hover:shadow-md transition-all",
                 children: [
                   // Pond Card Header
                   c.jsxs("div", {
-                    className: "flex items-start justify-between gap-3",
+                    className: "flex items-start justify-between gap-2",
                     children: [
                       c.jsxs("div", {
+                        className: "min-w-0",
                         children: [
                           c.jsxs("div", {
-                            className: "flex items-center gap-2",
+                            className: "flex flex-wrap items-center gap-1.5",
                             children: [
                               c.jsx("h3", { className: "font-black text-base text-gray-900 dark:text-gray-100 uppercase", children: pond.name }),
-                              (() => {
-                                const foundC = contractsList.find(c => c && (c.farmerId === pond.id || c.pondId === pond.id || c.id === pond.contractId));
-                                if (!foundC) return null;
-                                const isC = foundC?.status === "SIGNED_LEGAL" || !!foundC?.farmerSigned;
-                                return isC ? c.jsxs("span", {
-                                  className: "px-2.5 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-full text-[10px] font-black flex items-center gap-1 shadow-xs",
-                                  children: [
-                                    c.jsx("span", { children: "✓" }),
-                                    "KHÁCH HÀNG ĐÃ KÝ",
-                                    foundC.farmerSignedAt && c.jsxs("span", { className: "font-medium opacity-75 hidden sm:inline", children: [" (", foundC.farmerSignedAt, ")"] })
-                                  ]
-                                }) : c.jsxs("span", {
-                                  className: "px-2.5 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700 rounded-full text-[10px] font-black flex items-center gap-1 shadow-xs",
-                                  children: [
-                                    c.jsx("span", { children: "⏳" }),
-                                    "CHỜ KHÁCH KÝ"
-                                  ]
-                                });
-                              })(),
-                              pond.phone && c.jsxs("a", {
+                              foundC && c.jsx("button", {
+                                type: "button",
+                                onClick: () => setSelectedContractForView(foundC),
+                                className: isC
+                                  ? "px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 rounded-full text-[10px] font-black cursor-pointer"
+                                  : "px-2 py-0.5 bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700 rounded-full text-[10px] font-black cursor-pointer",
+                                children: isC ? "✓ KHÁCH ĐÃ KÝ HĐ" : "⏳ CHỜ KÝ HĐ"
+                              }),
+                              pond.phone && c.jsx("a", {
                                 href: `tel:${pond.phone}`,
                                 className: "p-1.5 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-100 transition-colors",
                                 title: "Gọi điện",
-                                children: c.jsx(hm, { size: 14 })
+                                children: c.jsx(hm, { size: 13 })
                               })
                             ]
                           }),
-                          c.jsx("p", { className: "text-xs text-gray-400 font-semibold truncate", children: pond.address || "Địa chỉ chưa cập nhật" })
+                          c.jsx("p", { className: "text-xs text-gray-500 dark:text-gray-400 font-semibold truncate mt-0.5", children: pond.address || "Địa chỉ chưa cập nhật" })
                         ]
                       }),
                       c.jsx("span", {
-                        className: `px-3 py-1 rounded-xl text-[11px] font-black uppercase whitespace-nowrap ${badgeColor}`,
+                        className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase whitespace-nowrap shrink-0 ${badgeColor}`,
                         children: badgeText
+                      })
+                    ]
+                  }),
+
+                  // Quick GPS & Yield Status Chips
+                  c.jsxs("div", {
+                    className: "flex flex-wrap items-center gap-1.5",
+                    children: [
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: () => setLocationPickerPond(pond),
+                        className: `px-2.5 py-1 rounded-xl text-[11px] font-black flex items-center gap-1 cursor-pointer border ${hasCoords ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800" : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-dashed border-gray-300 dark:border-gray-700"}`,
+                        children: [c.jsx(Km, { size: 12 }), hasCoords ? `${Number(pond.lat).toFixed(4)}, ${Number(pond.lng).toFixed(4)}` : "+ Chấm GPS ao"]
+                      }),
+                      hasCoords && c.jsxs("a", {
+                        href: `https://www.google.com/maps/dir/?api=1&destination=${pond.lat},${pond.lng}`,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl text-[11px] font-black flex items-center gap-1",
+                        children: [c.jsx(MapIcon, { size: 12 }), "Chỉ đường"]
+                      }),
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: () => {
+                          setYieldEditPond(pond);
+                          setYieldEditForm({
+                            estimatedYield: estKg > 0 ? String(estKg) : "",
+                            shrimpSizeCount: sizeCnt,
+                            area: pond.area || "",
+                            accessNote: pond.accessNote || ""
+                          });
+                        },
+                        className: `px-2.5 py-1 rounded-xl text-[11px] font-black flex items-center gap-1 cursor-pointer border ${estKg > 0 ? "bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border-teal-200 dark:border-teal-800" : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-dashed border-gray-300 dark:border-gray-700"}`,
+                        children: [
+                          "🦐 ",
+                          estKg > 0 ? `~${estKg.toLocaleString()} kg` : "Đánh lượng tôm",
+                          sizeCnt ? ` • ${sizeCnt}` : "",
+                          pond.area ? ` • ${pond.area}` : ""
+                        ]
+                      }),
+                      pond.accessNote && c.jsxs("span", {
+                        className: "px-2.5 py-1 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 rounded-xl text-[10px] font-bold truncate max-w-full",
+                        children: ["🛣️ ", pond.accessNote]
                       })
                     ]
                   }),
@@ -9431,7 +11444,7 @@ const Cm = ({ setRoute: S }) => {
                       c.jsxs("div", {
                         children: [
                           c.jsx("span", { className: "text-[10px] text-gray-400 uppercase block", children: "Loại tôm" }),
-                          c.jsx("span", { className: "font-black text-gray-800 dark:text-gray-200", children: pond.shrimpType || "Tôm càng sen" })
+                          c.jsx("span", { className: "font-black text-gray-800 dark:text-gray-200 line-clamp-1", children: pond.shrimpType || "Tôm càng sen" })
                         ]
                       }),
                       c.jsxs("div", {
@@ -9449,7 +11462,7 @@ const Cm = ({ setRoute: S }) => {
                       c.jsxs("div", {
                         children: [
                           c.jsx("span", { className: "text-[10px] text-gray-400 uppercase block", children: "Trừ bì" }),
-                          c.jsx("span", { className: "font-bold text-gray-600 dark:text-gray-300 truncate block", children: pond.tareSpec || "100 con trừ 3 kg" })
+                          c.jsx("span", { className: "font-bold text-gray-600 dark:text-gray-300 truncate block", children: pond.tareSpec || "1kg/thùng" })
                         ]
                       })
                     ]
@@ -9457,116 +11470,59 @@ const Cm = ({ setRoute: S }) => {
 
                   // Action Buttons
                   c.jsxs("div", {
-                    className: "flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-gray-100 dark:border-gray-800",
+                    className: "flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-100 dark:border-gray-800",
                     children: [
-                      // Left Buttons: Hợp đồng, Toạ độ ao
                       c.jsxs("div", {
-                        className: "flex items-center gap-2",
+                        className: "flex flex-wrap items-center gap-1.5",
                         children: [
-                          // View Contract Button
                           c.jsxs("button", {
                             type: "button",
-                            onClick: () => {
-                              const contracts = (typeof window !== "undefined" && window.getContracts) ? window.getContracts() : (typeof getContracts === "function" ? getContracts() : []);
-                              let found = contracts.find(c => c && (c.farmerId === pond.id || c.id === pond.contractId || c.pondId === pond.id));
-                              if (!found) {
-                                const traderProf = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {};
-                                const genId = pond.contractId || ("HDTCX-" + (pond.id || Date.now()));
-                                found = {
-                                  id: genId,
-                                  pondId: pond.id,
-                                  farmerId: pond.id,
-                                  farmer: {
-                                    fullName: pond.name || "Chủ ao",
-                                    phone: pond.phone || "",
-                                    idCard: pond.idCard || "",
-                                    address: pond.address || "",
-                                    coordinates: (pond.lat && pond.lng) ? { lat: Number(pond.lat), lng: Number(pond.lng) } : null,
-                                    agreed: !!pond.weighed
-                                  },
-                                  trader: {
-                                    fullName: traderProf.fullName || "Cơ Sở Thu Mua Tôm Càng Xanh",
-                                    phone: traderProf.phone || "",
-                                    idCard: traderProf.idCard || "",
-                                    address: traderProf.address || "",
-                                    agreed: true
-                                  },
-                                  farmerName: pond.name,
-                                  farmerPhone: pond.phone,
-                                  farmerAddress: pond.address,
-                                  traderName: traderProf.fullName,
-                                  traderPhone: traderProf.phone,
-                                  traderAddress: traderProf.address,
-                                  shrimpType: pond.shrimpType || "Tôm càng xanh tỷ lệ sống từ 95% tăng lên",
-                                  rejectionSpec: pond.rejectionSpec || (typeof getStandardSpecsString === "function" ? getStandardSpecsString() : ""),
-                                  tareSpec: pond.tareSpec || "Trừ hao ráo nước chuẩn 1kg/thùng cân",
-                                  depositMoney: Number(pond.defaultDeposit) || 0,
-                                  agreedPrice: Number(pond.defaultPrice) || 160000,
-                                  unitPrice: Number(pond.defaultPrice) || 160000,
-                                  weighingDate: pond.weighingDate || getLocalYYYYMMDD_v4(),
-                                  weighingTime: pond.weighingTime || "06:00",
-                                  qualityStandard: "Tôm khỏe mạnh, sục oxy ≥ 95% lúc cân tại bờ ao, không bọng nước",
-                                  compensationTerms: "Bên nào tự ý hủy cọc hoặc vi phạm bồi thường gấp 02 lần tiền cọc",
-                                  status: pond.weighed ? "COMPLETED" : "PENDING_FARMER",
-                                  createdAt: new Date().toISOString()
-                                };
-                                if (typeof saveContract === "function") saveContract(found);
-                                else if (typeof window !== "undefined" && window.saveContract) window.saveContract(found);
-                              }
-                              setSelectedContractForView(found);
-                            },
-                            className: (() => {
-                              const foundC = contractsList.find(c => c && (c.farmerId === pond.id || c.pondId === pond.id || c.id === pond.contractId));
-                              const isC = foundC?.status === "SIGNED_LEGAL" || !!foundC?.farmerSigned;
-                              return isC 
-                                ? "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
-                                : "px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 transition-colors cursor-pointer";
-                            })(),
-                            children: [
-                              c.jsx(im, { size: 14 }),
-                              (() => {
-                                const foundC = contractsList.find(c => c && (c.farmerId === pond.id || c.pondId === pond.id || c.id === pond.contractId));
-                                return (foundC?.status === "SIGNED_LEGAL" || !!foundC?.farmerSigned) ? "✓ Hợp Đồng Đã Ký" : "Hợp Đồng";
-                              })()
-                            ]
+                            onClick: () => handleOpenOrCreateContractForPond(pond),
+                            className: isC
+                              ? "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-[11px] uppercase flex items-center gap-1 cursor-pointer shadow-xs"
+                              : "px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 rounded-xl font-black text-[11px] uppercase flex items-center gap-1 cursor-pointer",
+                            children: [c.jsx(im, { size: 13 }), isC ? "✓ HĐ Đã Ký" : (foundC ? "Hợp Đồng" : "+ Tạo HĐĐT")]
                           }),
-
-                          // GPS Location Button
+                          c.jsxs("button", {
+                            type: "button",
+                            onClick: () => setWorkerShareTarget({ pond, contract: foundC }),
+                            className: "px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-black text-[11px] uppercase flex items-center gap-1 cursor-pointer shadow-xs",
+                            children: [c.jsx(tc, { size: 13 }), "Gửi Nhân Công"]
+                          }),
                           c.jsxs("button", {
                             type: "button",
                             onClick: () => setLocationPickerPond(pond),
-                            className: `px-3 py-1.5 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 transition-colors ${pond.lat && pond.lng ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"}`,
-                            children: [c.jsx(Km, { size: 14 }), pond.lat && pond.lng ? "Vị Trí Ao" : "Định Vị"]
+                            className: `px-2.5 py-1.5 rounded-xl font-black text-[11px] uppercase flex items-center gap-1 cursor-pointer ${hasCoords ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300" : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"}`,
+                            children: [c.jsx(Km, { size: 13 }), hasCoords ? "Vị Trí" : "Định Vị"]
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => setEditingPond({ ...pond }),
+                            className: "px-2.5 py-1.5 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                            children: "✏️ Sửa"
                           })
                         ]
                       }),
 
-                      // Right Buttons: CÂN NGAY & Trạng thái đã cân
                       c.jsxs("div", {
-                        className: "flex items-center gap-2",
+                        className: "flex items-center gap-1.5 ml-auto",
                         children: [
-                          // CÂN NGAY (Primary Button)
                           D === "UNWEIGHED" && c.jsxs("button", {
                             type: "button",
                             onClick: () => handleStartWeighingThisPond(pond),
-                            className: "px-4 py-2 bg-gradient-to-r from-[#2e7d32] to-[#1b5e20] hover:from-green-700 hover:to-green-900 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-md active:scale-95 transition-all border-b-2 border-green-900",
-                            children: [c.jsx($u, { size: 16 }), "Cân Ngay"]
+                            className: "px-3.5 py-2 bg-gradient-to-r from-[#2e7d32] to-[#1b5e20] hover:from-green-700 hover:to-green-900 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer",
+                            children: [c.jsx($u, { size: 15 }), "Cân Ngay"]
                           }),
-
-                          // Toggle Weighed Button
                           c.jsxs("button", {
                             type: "button",
                             onClick: () => handleToggleWeighedStatus(pond.id, pond.weighed),
-                            className: `px-3 py-1.5 rounded-xl font-black text-xs uppercase flex items-center gap-1 transition-colors ${pond.weighed ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300" : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"}`,
-                            title: pond.weighed ? "Chuyển lại sang chưa cân" : "Đánh dấu đã cân xong",
-                            children: [c.jsx(P1, { size: 14 }), pond.weighed ? "Chưa Cân" : "Đã Cân Xong"]
+                            className: `px-2.5 py-1.5 rounded-xl font-black text-[11px] uppercase flex items-center gap-1 cursor-pointer ${pond.weighed ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300" : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"}`,
+                            children: [c.jsx(P1, { size: 13 }), pond.weighed ? "Chưa Cân" : "Đã Cân"]
                           }),
-
-                          // Delete
                           c.jsx("button", {
                             type: "button",
-                            onClick: () => handleDeletePond(pond.id),
-                            className: "p-2 text-gray-400 hover:text-red-600 rounded-xl transition-colors",
+                            onClick: () => setConfirmDeleteItem({ type: "POND", id: pond.id, name: pond.name, contractId: pond.contractId }),
+                            className: "p-2 text-gray-400 hover:text-red-600 rounded-xl transition-colors cursor-pointer",
                             title: "Xóa chủ ao",
                             children: c.jsx(Iu, { size: 16 })
                           })
@@ -9581,12 +11537,395 @@ const Cm = ({ setRoute: S }) => {
         )
       }),
 
+      // Quick Yield & Shrimp Size Modal
+      yieldEditPond && c.jsxs("div", {
+        className: "fixed inset-0 z-[140] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm",
+        children: [
+          c.jsx("div", { className: "fixed inset-0", onClick: () => setYieldEditPond(null) }),
+          c.jsxs("div", {
+            className: "relative bg-white dark:bg-gray-900 rounded-[28px] max-w-md w-full p-5 shadow-2xl border border-teal-200 dark:border-teal-800 z-10 space-y-3.5",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center justify-between border-b pb-3 dark:border-gray-800",
+                children: [
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("h3", { className: "font-black text-base uppercase text-teal-800 dark:text-teal-300", children: "🦐 Đánh Lượng Tôm Trong Ao" }),
+                      c.jsxs("p", { className: "text-xs text-gray-500 font-bold", children: ["Ao: ", yieldEditPond.name] })
+                    ]
+                  }),
+                  c.jsx("button", { type: "button", onClick: () => setYieldEditPond(null), className: "p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-pointer", children: c.jsx(_a, { size: 18 }) })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "space-y-2.5 text-xs",
+                children: [
+                  c.jsxs("div", {
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex justify-between items-center mb-1",
+                        children: [
+                          c.jsx("label", { className: "font-bold text-gray-600 dark:text-gray-300", children: "Ước lượng sản lượng (kg):" }),
+                          Number(yieldEditForm.estimatedYield || 0) >= 1000 && c.jsxs("span", {
+                            className: "text-teal-600 font-black",
+                            children: ["≈ ", (Number(yieldEditForm.estimatedYield) / 1000).toFixed(2).replace(/\.?0+$/, ""), " tấn"]
+                          })
+                        ]
+                      }),
+                      c.jsx("input", {
+                        type: "number",
+                        value: yieldEditForm.estimatedYield,
+                        onChange: e => setYieldEditForm({ ...yieldEditForm, estimatedYield: e.target.value }),
+                        placeholder: "Nhập số kg ước tính (vd: 2000)",
+                        className: "w-full p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-black text-sm outline-none"
+                      }),
+                      c.jsx("div", {
+                        className: "flex flex-wrap gap-1.5 mt-2",
+                        children: [500, 1000, 1500, 2000, 3000, 5000].map(kgVal => c.jsx("button", {
+                          type: "button",
+                          onClick: () => setYieldEditForm({ ...yieldEditForm, estimatedYield: String(kgVal) }),
+                          className: `px-2.5 py-1 rounded-lg text-[11px] font-black border cursor-pointer ${Number(yieldEditForm.estimatedYield) === kgVal ? "bg-teal-600 text-white border-teal-600" : "bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border-teal-200 dark:border-teal-800"}`,
+                          children: kgVal >= 1000 ? `${kgVal / 1000} tấn` : `${kgVal} kg`
+                        }, kgVal))
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "grid grid-cols-2 gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-gray-600 dark:text-gray-300 block mb-1", children: "Cỡ tôm (con/kg):" }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: yieldEditForm.shrimpSizeCount,
+                            onChange: e => setYieldEditForm({ ...yieldEditForm, shrimpSizeCount: e.target.value }),
+                            placeholder: "Vd: 30-40 con/kg",
+                            className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold outline-none"
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-gray-600 dark:text-gray-300 block mb-1", children: "Diện tích ao:" }),
+                          c.jsx("input", {
+                            type: "text",
+                            value: yieldEditForm.area,
+                            onChange: e => setYieldEditForm({ ...yieldEditForm, area: e.target.value }),
+                            placeholder: "Vd: 5 công",
+                            className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold outline-none"
+                          })
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-600 dark:text-gray-300 block mb-1", children: "Ghi chú đường vào ao:" }),
+                      c.jsx("input", {
+                        type: "text",
+                        value: yieldEditForm.accessNote,
+                        onChange: e => setYieldEditForm({ ...yieldEditForm, accessNote: e.target.value }),
+                        placeholder: "Vd: Qua cầu sắt rẽ phải 300m...",
+                        className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold outline-none"
+                      })
+                    ]
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex gap-2 pt-2",
+                children: [
+                  c.jsx("button", { type: "button", onClick: () => setYieldEditPond(null), className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                  c.jsx("button", { type: "button", onClick: handleSaveYieldTag, className: "flex-[2] py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-black text-xs uppercase shadow-md cursor-pointer", children: "💾 Lưu Sản Lượng" })
+                ]
+              })
+            ]
+          })
+        ]
+      }),
+
+      // Edit Pond Full Details Modal
+      editingPond && c.jsxs("div", {
+        className: "fixed inset-0 z-[140] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto",
+        children: [
+          c.jsx("div", { className: "fixed inset-0", onClick: () => setEditingPond(null) }),
+          c.jsxs("div", {
+            className: "relative bg-white dark:bg-gray-900 rounded-[28px] max-w-lg w-full p-5 shadow-2xl border border-gray-100 dark:border-gray-800 z-10 space-y-3 my-auto max-h-[90vh] overflow-y-auto",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center justify-between border-b pb-3 dark:border-gray-800",
+                children: [
+                  c.jsx("h3", { className: "font-black text-base uppercase text-gray-800 dark:text-white", children: "✏️ Sửa Thông Tin Chủ Ao" }),
+                  c.jsx("button", { type: "button", onClick: () => setEditingPond(null), className: "p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-pointer", children: c.jsx(_a, { size: 18 }) })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs",
+                children: [
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Tên chủ ao (*)" }),
+                      c.jsx("input", { type: "text", value: editingPond.name || "", onChange: e => setEditingPond({ ...editingPond, name: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Số điện thoại" }),
+                      c.jsx("input", { type: "tel", value: editingPond.phone || "", onChange: e => setEditingPond({ ...editingPond, phone: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Giá thu mua (đ/kg)" }),
+                      c.jsx("input", { type: "number", value: editingPond.defaultPrice || "", onChange: e => setEditingPond({ ...editingPond, defaultPrice: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Tiền cọc (VNĐ)" }),
+                      c.jsx("input", { type: "number", value: editingPond.defaultDeposit ?? "", onChange: e => setEditingPond({ ...editingPond, defaultDeposit: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Ngày bắt dự kiến" }),
+                      c.jsx("input", { type: "date", value: editingPond.weighingDate || "", onChange: e => setEditingPond({ ...editingPond, weighingDate: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Giờ bắt" }),
+                      c.jsx("input", { type: "time", value: editingPond.weighingTime || "06:00", onChange: e => setEditingPond({ ...editingPond, weighingTime: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Ước lượng (kg)" }),
+                      c.jsx("input", { type: "number", value: editingPond.estimatedYield || "", onChange: e => setEditingPond({ ...editingPond, estimatedYield: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Cỡ tôm (con/kg)" }),
+                      c.jsx("input", { type: "text", value: editingPond.shrimpSizeCount || "", onChange: e => setEditingPond({ ...editingPond, shrimpSizeCount: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "sm:col-span-2",
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Loại tôm thu mua" }),
+                      c.jsx("input", { type: "text", value: editingPond.shrimpType || "", onChange: e => setEditingPond({ ...editingPond, shrimpType: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "sm:col-span-2",
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Địa chỉ ao" }),
+                      c.jsx("input", { type: "text", value: editingPond.address || "", onChange: e => setEditingPond({ ...editingPond, address: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "sm:col-span-2",
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Ghi chú đường vào ao (xe/ghe/nhân công)" }),
+                      c.jsx("input", { type: "text", value: editingPond.accessNote || "", onChange: e => setEditingPond({ ...editingPond, accessNote: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex gap-2 pt-2",
+                children: [
+                  c.jsx("button", { type: "button", onClick: () => setEditingPond(null), className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                  c.jsx("button", { type: "button", onClick: handleSaveEditedPond, className: "flex-[2] py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black text-xs uppercase shadow-md cursor-pointer", children: "💾 Lưu Thay Đổi" })
+                ]
+              })
+            ]
+          })
+        ]
+      }),
+
+      // Standalone Create Electronic Contract Modal
+      showCreateContractModal && c.jsxs("div", {
+        className: "fixed inset-0 z-[140] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto",
+        children: [
+          c.jsx("div", { className: "fixed inset-0", onClick: () => setShowCreateContractModal(false) }),
+          c.jsxs("div", {
+            className: "relative bg-white dark:bg-gray-900 rounded-[28px] max-w-lg w-full p-5 shadow-2xl border border-emerald-200 dark:border-emerald-800 z-10 space-y-3.5 my-auto max-h-[90vh] overflow-y-auto",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center justify-between border-b pb-3 dark:border-gray-800",
+                children: [
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("h3", { className: "font-black text-base uppercase text-emerald-800 dark:text-emerald-300", children: "📄 Tạo Hợp Đồng Điện Tử Mới" }),
+                      c.jsx("p", { className: "text-[11px] text-gray-500 font-bold", children: "Chọn từ danh sách ao sẵn có hoặc nhập mới" })
+                    ]
+                  }),
+                  c.jsx("button", { type: "button", onClick: () => setShowCreateContractModal(false), className: "p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-pointer", children: c.jsx(_a, { size: 18 }) })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "space-y-2.5 text-xs",
+                children: [
+                  b.length > 0 && c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Chọn nhanh Chủ Ao có sẵn:" }),
+                      c.jsxs("select", {
+                        value: newContractForm.selectedFarmerId,
+                        onChange: e => {
+                          const fid = e.target.value;
+                          const matched = b.find(x => x.id === fid);
+                          if (matched) {
+                            setNewContractForm(prev => ({
+                              ...prev,
+                              selectedFarmerId: fid,
+                              farmerName: matched.name || "",
+                              farmerPhone: matched.phone || "",
+                              farmerAddress: matched.address || "",
+                              shrimpType: matched.shrimpType || prev.shrimpType,
+                              agreedPrice: String(matched.defaultPrice || matched.traderPrice || 160000),
+                              depositMoney: String(matched.defaultDeposit ?? 0),
+                              weighingDate: matched.weighingDate || prev.weighingDate,
+                              weighingTime: matched.weighingTime || "06:00",
+                              estimatedYield: matched.estimatedYield ? String(matched.estimatedYield) : "",
+                              shrimpSizeCount: matched.shrimpSizeCount || "",
+                              tareSpec: matched.tareSpec || prev.tareSpec,
+                              rejectionSpec: matched.rejectionSpec || prev.rejectionSpec
+                            }));
+                          } else {
+                            setNewContractForm(prev => ({ ...prev, selectedFarmerId: "", farmerName: "", farmerPhone: "", farmerAddress: "" }));
+                          }
+                        },
+                        className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold outline-none",
+                        children: [
+                          c.jsx("option", { value: "", children: "-- Nhập chủ ao mới hoàn toàn --" }),
+                          b.map(fItem => c.jsx("option", { value: fItem.id, children: `${fItem.name} (${fItem.phone || "Chưa có SĐT"})` }, fItem.id))
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "grid grid-cols-2 gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Họ tên chủ ao (*)" }),
+                          c.jsx("input", { type: "text", value: newContractForm.farmerName, onChange: e => setNewContractForm({ ...newContractForm, farmerName: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Số điện thoại" }),
+                          c.jsx("input", { type: "tel", value: newContractForm.farmerPhone, onChange: e => setNewContractForm({ ...newContractForm, farmerPhone: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Giá chốt (đ/kg)" }),
+                          c.jsx("input", { type: "number", value: newContractForm.agreedPrice, onChange: e => setNewContractForm({ ...newContractForm, agreedPrice: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Tiền đặt cọc (VNĐ)" }),
+                          c.jsx("input", { type: "number", value: newContractForm.depositMoney, onChange: e => setNewContractForm({ ...newContractForm, depositMoney: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Ngày cân tôm" }),
+                          c.jsx("input", { type: "date", value: newContractForm.weighingDate, onChange: e => setNewContractForm({ ...newContractForm, weighingDate: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Ước lượng (kg)" }),
+                          c.jsx("input", { type: "number", value: newContractForm.estimatedYield, onChange: e => setNewContractForm({ ...newContractForm, estimatedYield: e.target.value }), placeholder: "Vd: 2000", className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Địa chỉ ao" }),
+                      c.jsx("input", { type: "text", value: newContractForm.farmerAddress, onChange: e => setNewContractForm({ ...newContractForm, farmerAddress: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Loại tôm thu mua" }),
+                      c.jsx("input", { type: "text", value: newContractForm.shrimpType, onChange: e => setNewContractForm({ ...newContractForm, shrimpType: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
+                    ]
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex gap-2 pt-2",
+                children: [
+                  c.jsx("button", { type: "button", onClick: () => setShowCreateContractModal(false), className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                  c.jsx("button", { type: "button", onClick: handleCreateStandaloneContract, className: "flex-[2] py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase shadow-md cursor-pointer", children: "✓ Tạo Hợp Đồng Điện Tử" })
+                ]
+              })
+            ]
+          })
+        ]
+      }),
+
+      // In-App Confirm Delete Modal
+      confirmDeleteItem && c.jsxs("div", {
+        className: "fixed inset-0 z-[180] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm",
+        children: [
+          c.jsx("div", { className: "fixed inset-0", onClick: () => setConfirmDeleteItem(null) }),
+          c.jsxs("div", {
+            className: "relative bg-white dark:bg-gray-900 rounded-[24px] max-w-sm w-full p-5 shadow-2xl border border-red-200 dark:border-red-800 z-10 space-y-4 text-center",
+            children: [
+              c.jsx("div", { className: "w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 flex items-center justify-center mx-auto", children: c.jsx(Iu, { size: 22 }) }),
+              c.jsxs("div", {
+                className: "space-y-1",
+                children: [
+                  c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: confirmDeleteItem.type === "CONTRACT" ? "Xóa Hợp Đồng Điện Tử?" : "Xóa Chủ Ao Tôm?" }),
+                  c.jsxs("p", {
+                    className: "text-xs text-gray-500 dark:text-gray-400",
+                    children: [
+                      "Bạn chắc chắn muốn xoá ",
+                      c.jsx("strong", { className: "text-red-600", children: confirmDeleteItem.name }),
+                      confirmDeleteItem.type === "POND" ? " cùng hợp đồng liên kết khỏi máy và máy chủ?" : " khỏi máy và máy chủ?"
+                    ]
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex gap-2",
+                children: [
+                  c.jsx("button", { type: "button", onClick: () => setConfirmDeleteItem(null), className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                  c.jsx("button", { type: "button", onClick: executeConfirmedDelete, className: "flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "Xoá vĩnh viễn" })
+                ]
+              })
+            ]
+          })
+        ]
+      }),
+
       // Contract Viewer Modal if selected
       selectedContractForView && c.jsx(Xm_ElectronicContractModal, {
         contract: selectedContractForView,
-        onClose: () => setSelectedContractForView(null),
-        onShare: () => {
-          setSelectedContractForShare(selectedContractForView);
+        onClose: () => {
+          setSelectedContractForView(null);
+          if (typeof getContracts === "function") setContractsList(getContracts());
+        },
+        onUpdateContract: (up) => {
+          setSelectedContractForView(up);
+          if (typeof getContracts === "function") setContractsList(getContracts());
+          p(me.getFarmers());
+        },
+        onShare: (ct) => {
+          setSelectedContractForShare(ct || selectedContractForView);
+        },
+        onShareWorkers: (ct) => {
+          const matchedPond = b.find(x => x.id === ct?.farmerId || x.id === ct?.pondId || x.contractId === ct?.id) || null;
+          setWorkerShareTarget({ pond: matchedPond, contract: ct || selectedContractForView });
         }
       }),
 
@@ -9600,17 +11939,35 @@ const Cm = ({ setRoute: S }) => {
       locationPickerPond && c.jsx(Xm_LocationPickerModal, {
         farmer: locationPickerPond,
         onClose: () => setLocationPickerPond(null),
-        onSaveLocation: (lat, lng) => {
-          const updated = b.map(x => x.id === locationPickerPond.id ? { ...x, lat, lng } : x);
-          p(updated);
-          me.save(Ot.FARMERS, updated);
+        onSaveLocation: (lat, lng, extra) => {
+          updatePondLocationAndSyncContract(locationPickerPond, lat, lng, extra);
           setLocationPickerPond(null);
         }
+      }),
+
+      // Worker Dispatch Share Modal if selected
+      workerShareTarget && c.jsx(Xm_WorkerShareModal, {
+        pond: workerShareTarget.pond,
+        contract: workerShareTarget.contract,
+        onUpdatePondGps: (lat, lng, extra) => {
+          const targetPond = workerShareTarget.pond;
+          if (targetPond) updatePondLocationAndSyncContract(targetPond, lat, lng, extra);
+        },
+        onClose: () => setWorkerShareTarget(null)
+      }),
+
+      // All Ponds Map Modal
+      showAllPondsMap && c.jsx(Xm_AllPondsMapModal, {
+        ponds: b,
+        onClose: () => setShowAllPondsMap(false),
+        onSelectLocationPicker: (pond) => setLocationPickerPond(pond),
+        onShareWorkers: (pond) => setWorkerShareTarget({ pond, contract: findContractForPond(pond) }),
+        onStartWeighing: (pond) => handleStartWeighingThisPond(pond)
       })
     ]
   });
 };;
-const km=({setRoute:S})=>{const[b,p]=w.useState([]),[f,O]=w.useState([]),[D,U]=w.useState(!1),Y=me.isPremium(),A=w.useMemo(()=>{const v=me.getSessions();return b.map(_=>{const z=v.filter(se=>se.vehicleId===_.id),L=z.reduce((se,Oe)=>se+Oe.totalNet,0),te=z.reduce((se,Oe)=>se+Oe.totalMoney,0),Q=L/1e3*(_.costPerTrip||2e5);return{id:_.id,weight:L,revenue:te,cost:Q}})},[b]);return w.useEffect(()=>{p(me.getVehicles()),O(me.getFarmers())},[]),c.jsxs("div",{className:"flex flex-col h-full bg-[#f4f7f6] font-roboto",children:[c.jsxs("div",{className:"p-4 bg-[#1e4ea1] text-white flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-2 bg-white/10 rounded-xl",children:c.jsx(On,{})}),c.jsx("h2",{className:"text-xl font-black uppercase italic tracking-tighter",children:"Đội Ghe / Xe"})]}),c.jsx("button",{onClick:()=>U(!D),className:"bg-yellow-400 text-blue-900 w-10 h-10 rounded-full flex items-center justify-center",children:D?c.jsx(_a,{}):c.jsx(As,{})})]}),c.jsxs("div",{className:"p-4 space-y-4 overflow-auto pb-24",children:[Y&&c.jsxs("div",{className:"bg-white p-6 rounded-[35px] shadow-sm border border-blue-100",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-4",children:[c.jsx(Ds,{size:18,className:"text-blue-600"}),c.jsx("span",{className:"text-[11px] font-black uppercase italic text-gray-500",children:"Báo cáo lợi nhuận vận chuyển (Ước tính)"})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("div",{className:"bg-blue-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-blue-400 uppercase block",children:"Tổng Sản Lượng"}),c.jsxs("span",{className:"text-xl font-black text-blue-900",children:[A.reduce((v,_)=>v+_.weight,0).toLocaleString()," kg"]})]}),c.jsxs("div",{className:"bg-green-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-green-400 uppercase block",children:"Ước tính phí ghe"}),c.jsxs("span",{className:"text-xl font-black text-green-900",children:[A.reduce((v,_)=>v+_.cost,0).toLocaleString(),"đ"]})]})]})]}),b.map(v=>{const _=A.find(z=>z.id===v.id);return c.jsx("div",{className:"bg-white rounded-[35px] shadow-sm border border-gray-100 overflow-hidden",children:c.jsxs("div",{className:"p-6",children:[c.jsx("div",{className:"flex justify-between items-start mb-4",children:c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center",children:c.jsx(tc,{size:24})}),c.jsxs("div",{children:[c.jsx("h3",{className:"text-lg font-black uppercase text-gray-800 leading-none",children:v.name}),c.jsxs("p",{className:"text-[9px] font-bold text-gray-400 uppercase mt-1",children:["Tải trọng: ",v.capacity," Tấn"]})]})]})}),Y&&c.jsxs("div",{className:"mt-4 pt-4 border-t border-gray-50 flex justify-between items-center",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx(nm,{size:14,className:"text-green-600"}),c.jsxs("span",{className:"text-xs font-black text-gray-700",children:["Hiệu suất: ",_==null?void 0:_.weight.toLocaleString()," kg"]})]}),c.jsx("button",{className:"text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-3 py-1 rounded-full",children:"Xem chi phí"})]})]})},v.id)})]})]})},Um=({setRoute:S,role:b})=>{const[p,f]=w.useState(me.getSettings()),[O,D]=w.useState(!1),U=_=>{f(_),me.save(Ot.SETTINGS,_);try{const prof=getTraderProfileV3();if(_&&_.tarePer100Kg!==undefined&&Number(prof.tarePer100Kg)!==Number(_.tarePer100Kg)){saveTraderProfileV3({...prof,tarePer100Kg:Number(_.tarePer100Kg),tareRatioValue:Number(_.tarePer100Kg)})}}catch(e){}_.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark"),D(!0),setTimeout(()=>D(!1),2e3)};w.useEffect(()=>{const s=()=>f(me.getSettings());window.addEventListener("app-data-updated",s);window.addEventListener("cloud_data_synced",s);return()=>{window.removeEventListener("app-data-updated",s);window.removeEventListener("cloud_data_synced",s)};},[]),Y=({icon:_,title:z})=>c.jsxs("div",{className:"bg-[#f8f9fa] dark:bg-gray-800 p-4 flex items-center gap-3 border-b border-gray-100 dark:border-gray-700",children:[c.jsx("div",{className:"text-green-600 dark:text-green-400",children:_}),c.jsx("span",{className:"font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter text-sm italic",children:z})]}),A=({label:_,desc:z,value:L,onChange:te})=>c.jsxs("div",{className:"p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 active:bg-gray-50 dark:active:bg-gray-800 transition-colors",children:[c.jsxs("div",{className:"flex-1",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),z&&c.jsx("div",{className:"text-[10px] font-bold text-gray-400 dark:text-gray-500 leading-tight mt-0.5 pr-4 uppercase italic",children:z})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:L,onChange:Q=>te(Q.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-green-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]}),v=({label:_,options:z,value:L,onSelect:te})=>c.jsxs("div",{className:"p-4 space-y-3 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),c.jsx("div",{className:"grid grid-cols-3 gap-2",children:z.map(Q=>c.jsx("button",{onClick:()=>te(Q.val),className:`py-2 px-1 rounded-xl border-2 transition-all font-black uppercase text-[9px] ${L===Q.val?"border-green-600 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 shadow-md":"border-gray-50 dark:border-gray-800 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500"}`,children:Q.label},Q.val))})]});return c.jsxs("div",{className:"flex flex-col h-full bg-[#f2f2f2] dark:bg-[#121212] font-roboto",children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-5 text-white flex items-center justify-between shadow-xl sticky top-0 z-50",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-1 hover:bg-white/10 rounded-lg",children:c.jsx(_a,{size:28})}),c.jsxs("span",{className:"text-2xl font-black uppercase italic tracking-tighter",children:["Cấu Hình ",b==="OWNER"?"Vựa Thu Mua":"Nông Dân"]})]}),O&&c.jsxs("div",{className:"bg-white/20 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1",children:[c.jsx(P1,{size:12})," Đã Lưu"]})]}),c.jsxs("div",{className:"flex-1 overflow-auto pb-32",children:[c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(om,{size:18}),title:"Giao diện hệ thống"}),c.jsx(A,{label:"Chế độ tối (Dark Mode)",desc:"Sử dụng giao diện màu tối để bảo vệ mắt và tiết kiệm pin",value:p.darkMode,onChange:_=>U({...p,darkMode:_})})]}),b==="FARMER"&&c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(am,{size:18}),title:"Dọn dẹp bộ nhớ"}),c.jsxs("div",{className:"p-4 space-y-4",children:[c.jsxs("div",{className:"flex justify-between items-center",children:[c.jsx("span",{className:"text-xs font-black uppercase text-gray-600 dark:text-gray-400 italic",children:"Tự xóa phiếu sau:"}),c.jsxs("span",{className:"text-lg font-black text-red-600 dark:text-red-400 italic",children:[p.autoDeleteDays," Ngày"]})]}),c.jsx("input",{type:"range",min:"7",max:"180",step:"1",value:p.autoDeleteDays,onChange:_=>U({...p,autoDeleteDays:parseInt(_.target.value)}),className:"w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-600 dark:accent-red-400"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase italic",children:"(*) Giúp app hoạt động mượt mà hơn. Dữ liệu trên Cloud vẫn được giữ nếu bạn không xóa thủ công."})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(An,{size:18}),title:"Thiết Bị Bluetooth"}),c.jsxs("button",{onClick:()=>S(re.BLUETOOTH),className:"w-full p-4 flex items-center justify-between bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border-b border-gray-100 dark:border-gray-800",children:[c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"font-black text-blue-900 dark:text-blue-300 uppercase text-sm italic",children:"Cài đặt Cân & Máy in"}),c.jsx("p",{className:"text-[10px] font-bold text-blue-400 dark:text-blue-500 uppercase leading-tight mt-1",children:"Kết nối cân điện tử BLE và Máy in nhiệt"})]}),c.jsx(An,{className:"text-blue-600 dark:text-blue-400"})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(vm,{size:18}),title:"An Toàn Dữ Liệu"}),c.jsx(A,{label:"Khóa thông số khi cân",desc:"Ngăn chạm nhầm thay đổi giá/cọc khi đang nhập số",value:p.lockParamsDuringWeighing,onChange:_=>U({...p,lockParamsDuringWeighing:_})}),c.jsx(A,{label:"Tự động lưu nháp",desc:"Bảo vệ dữ liệu khi tắt app đột ngột",value:p.autoSaveDraft,onChange:_=>U({...p,autoSaveDraft:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(Ds,{size:18}),title:"Quy Trình & Tính Toán"}),c.jsx(v,{label:"Quy cách trừ bì tôm mặc định",options:[{label:"Không trừ bì (0%)",val:0},{label:"100kg - 1kg (1% Chuẩn)",val:1},{label:"100kg - 1.5kg (1.5%)",val:1.5},{label:"100kg - 2kg (2%)",val:2},{label:"100kg - 3kg (3%)",val:3},{label:"100kg - 4kg (4%)",val:4}],value:parseNumericSetting_v4(p.tarePer100Kg,1),onSelect:_=>U({...p,tarePer100Kg:Number(_)})}),c.jsx(v,{label:"Làm tròn tiền thanh toán",options:[{label:"Không",val:"none"},{label:"Đến 500đ",val:"500"},{label:"Đến 1.000đ",val:"1000"}],value:p.currencyRounding,onSelect:_=>U({...p,currencyRounding:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(jm,{size:18}),title:"Giọng Nói & Âm Thanh"}),c.jsx(A,{label:"Đọc số khi nhập",value:p.useVoice,onChange:_=>U({...p,useVoice:_})}),c.jsx(v,{label:"Tốc độ đọc số",options:[{label:"Nhanh",val:"nhanh"},{label:"Vừa",val:"vừa"},{label:"Chậm",val:"chậm"}],value:p.voiceSpeed,onSelect:_=>U({...p,voiceSpeed:_})}),c.jsx(A,{label:"Báo đủ 5 mã cân",desc:"Rung và Chuông",value:p.soundOn5,onChange:_=>U({...p,soundOn5:_})})]})]}),c.jsx("div",{className:"fixed bottom-0 w-full p-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t dark:border-gray-800 flex gap-4 shadow-2xl z-50",children:c.jsxs("button",{onClick:()=>S(re.DASHBOARD),className:"flex-1 bg-green-700 dark:bg-green-800 text-white p-5 rounded-[25px] font-black uppercase shadow-xl border-b-8 border-green-900 dark:border-black flex items-center justify-center gap-3 active:translate-y-2 active:border-b-0 transition-all",children:[c.jsx(ec,{size:24})," Xác Nhận Cấu Hình"]})})]})},Hm=({onSelect:S})=>{const[b,p]=w.useState(!1),f=Pu.currentUser,O=async()=>{p(!0);try{await Mn.loginWithGoogle();S("OWNER");}catch{alert("Đăng nhập thất bại. Vui lòng thử lại!")}p(!1)};w.useEffect(()=>{if(f){S("OWNER");}},[f]);return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center p-6 text-white",children:[c.jsxs("div",{className:"mb-10 text-center",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Tôm Càng Xanh Logo",className:"w-24 h-24 mx-auto mb-4 object-contain rounded-3xl shadow-xl bg-white/10 p-1.5"}),c.jsx("h1",{className:"text-4xl font-black italic tracking-tighter uppercase",children:"Tôm Càng Xanh"}),c.jsx("p",{className:"text-xs font-bold opacity-60 uppercase mt-2",children:"Nền tảng quản lý thông minh Tôm Càng Xanh"})]}),f?c.jsxs("div",{className:"flex flex-col items-center gap-3 animate-in zoom-in-95",children:[c.jsx("div",{className:"w-10 h-10 border-4 border-yellow-300 border-t-transparent rounded-full animate-spin mb-2"}),c.jsxs("p",{className:"font-black uppercase tracking-wider text-yellow-300 text-sm",children:["Đang vào vai trò Chủ Vựa: ",f.displayName||""]})]}):c.jsxs("div",{className:"w-full max-w-sm space-y-4",children:[c.jsxs("button",{onClick:O,disabled:b,className:"w-full bg-white text-gray-800 p-6 rounded-[30px] font-black uppercase flex items-center justify-center gap-3 shadow-2xl active:scale-95 transition-all hover:bg-yellow-50 cursor-pointer",children:[c.jsx(fm,{size:24,className:"text-red-500"}),b?"Đang kết nối...":"Đăng nhập với Google"]}),c.jsx("p",{className:"text-center text-[10px] opacity-50 px-6 uppercase font-bold",children:"Mặc định tài khoản Chủ Vựa & Dữ liệu đồng bộ an toàn"})]}),c.jsxs("div",{className:"mt-12 flex items-center gap-2 opacity-40 font-bold text-[10px] uppercase",children:[c.jsx(Pd,{size:14})," Bảo mật bởi Firebase Google"]})]})},Rm=({setRoute:S})=>{const[b,p]=w.useState("scale"),[f,O]=w.useState(me.getSettings()),[D,U]=w.useState(!1),[Y,A]=w.useState(0);w.useEffect(()=>{let z;return D&&(A(0),z=setInterval(()=>{A(L=>L+1)},1e3)),()=>clearInterval(z)},[D]);const v=()=>{me.save(Ot.SETTINGS,f),alert("Đã lưu cấu hình!")},_=({label:z,desc:L,value:te,onToggle:Q})=>c.jsxs("div",{className:"flex items-start justify-between py-4 border-b border-gray-100 px-2",children:[c.jsxs("div",{className:"flex-1 pr-4",children:[c.jsx("h4",{className:"font-black text-gray-800 text-sm uppercase tracking-tight",children:z}),c.jsx("p",{className:"text-[10px] text-gray-500 font-bold leading-tight mt-0.5",children:L})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:te,onChange:se=>Q(se.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]});return c.jsxs("div",{className:"flex flex-col h-full bg-white font-roboto select-none",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"bg-white p-1 rounded-lg text-[#e91e63]",children:c.jsx(_a,{size:24,strokeWidth:3})}),c.jsx("span",{className:"text-xl font-black text-white uppercase italic tracking-tighter",children:"Bluetooth"})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:f.enableBluetooth,onChange:z=>O({...f,enableBluetooth:z.target.checked}),className:"sr-only peer"}),c.jsx("div",{className:"w-14 h-7 bg-white/20 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:after:translate-x-full shadow-lg border border-white/10"})]})]}),c.jsxs("div",{className:"flex bg-white border-b border-gray-200",children:[c.jsxs("button",{onClick:()=>p("scale"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="scale"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx($u,{size:24,className:b==="scale"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="scale"?"text-green-800":"text-gray-600"}`,children:"Cân điện tử"})]}),c.jsxs("button",{onClick:()=>p("printer"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="printer"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx(Ms,{size:24,className:b==="printer"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="printer"?"text-green-800":"text-gray-600"}`,children:"In nhiệt"})]})]}),c.jsx("div",{className:"flex-1 overflow-auto p-4 space-y-6",children:b==="scale"?c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với Cân điện tử Bluetooth loại BLE"}),c.jsx(_,{label:"Tắt/Mở Cân điện tử",desc:"Nếu không muốn sử dụng cân điện tử hãy tắt nó",value:f.enableScale,onToggle:z=>O({...f,enableScale:z})}),c.jsx(_,{label:"Nhập thủ công",desc:"Hiện một hộp thoại nhỏ để xem mã cân điện tử",value:f.manualScaleInput,onToggle:z=>O({...f,manualScaleInput:z})}),c.jsxs("div",{className:"mt-8",children:[c.jsx("h3",{className:"text-red-600 font-black uppercase text-lg italic mb-1",children:"Cân điện tử đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm kết nối Cân điện tử Bluetooth"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx($u,{size:32,className:"text-red-500"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Bấm vào tên Cân điện tử để đảo khối lượng hiển thị."})]}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsxs("div",{className:"text-center",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-base italic leading-none",children:"Số lần kiểm tra khớp số"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-500 mt-1 uppercase leading-tight",children:"Chức năng lọc nhiễu dữ liệu cân, chỉ sử dụng cho Cân điện tử BLE"})]}),c.jsxs("div",{className:"px-4",children:[c.jsx("input",{type:"range",min:"0",max:"10",step:"1",value:f.scaleMatchSteps,onChange:z=>O({...f,scaleMatchSteps:parseInt(z.target.value)}),className:"w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsx("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-400 px-1",children:[0,1,2,3,4,5,6,7,8,9,10].map(z=>c.jsx("span",{children:z},z))})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Tăng số lần khớp số sẽ làm giảm tốc độ hiện số của Cân điện tử."}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Nếu nhận thấy tốc độ mã cân chậm hãy giảm nó lại"})]})]})]}):c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với máy in nhiệt Bluetooth"}),c.jsx(_,{label:"Tắt/Mở Máy in nhiệt",desc:"Nếu không muốn sử dụng máy in nhiệt hãy tắt nó",value:f.enablePrinter,onToggle:z=>O({...f,enablePrinter:z})}),c.jsx(_,{label:"Bluetooth Classic",desc:"Nếu không in được bằng cách thông thường, hãy bật nó lên",value:f.printerClassicMode,onToggle:z=>O({...f,printerClassicMode:z})}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsx("h3",{className:"text-center font-black text-lg text-gray-800 italic uppercase",children:"Khổ giấy máy in"}),c.jsxs("div",{className:"px-6",children:[c.jsx("input",{type:"range",min:"58",max:"80",step:"22",value:f.paperSize,onChange:z=>O({...f,paperSize:parseInt(z.target.value)}),className:"w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsxs("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-500 px-1 uppercase italic",children:[c.jsx("span",{children:"58mm"}),c.jsx("span",{children:"80mm"})]})]})]}),c.jsxs("div",{className:"mt-10",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-lg italic mb-1",children:"Máy in đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm Máy in"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx(Ms,{size:32,className:"text-green-600"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Hãy bấm vào (+) để chọn máy in nhiệt muốn kết nối."})]})]})}),c.jsx("div",{className:"p-4 bg-gray-100/50 border-t border-gray-200",children:c.jsxs("div",{className:"bg-gray-200 p-4 rounded-[25px] shadow-inner space-y-3",children:[c.jsxs("div",{className:"flex justify-between items-center px-1",children:[c.jsx("span",{className:"font-black text-blue-900 uppercase italic text-base tracking-tighter",children:"Cài đặt khác"}),c.jsxs("button",{onClick:v,className:"bg-yellow-400 text-blue-900 px-5 py-1.5 rounded-full font-black text-sm uppercase flex items-center gap-2 shadow-md active:scale-95 transition-all",children:[c.jsx(ec,{size:16})," Lưu"]})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("label",{className:"text-[10px] font-black text-gray-600 uppercase italic ml-2",children:"Tên hoá đơn"}),c.jsx("input",{value:f.invoiceName,onChange:z=>O({...f,invoiceName:z.target.value}),className:"w-full p-4 bg-white rounded-2xl font-black text-lg outline-none border-none shadow-sm placeholder:text-gray-300",placeholder:"TÔM CÀNG XANH"})]})]})}),D&&c.jsxs("div",{className:"fixed inset-0 z-[100] flex flex-col bg-white animate-in slide-in-from-bottom duration-300",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-lg",children:[c.jsx("div",{className:"flex items-center gap-2",children:c.jsxs("button",{onClick:()=>U(!1),className:"bg-white px-4 py-2 rounded-full text-[#e91e63] font-black uppercase text-sm flex items-center gap-2 shadow-md active:scale-95 transition-all border border-[#e91e63]/20",children:[c.jsx(_a,{size:18,strokeWidth:3})," Thoát"]})}),c.jsxs("button",{className:"bg-yellow-400 text-blue-900 px-6 py-2 rounded-full font-black uppercase text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-all",children:[c.jsx(An,{size:18})," Tìm Blue"]})]}),c.jsx("div",{className:"bg-gray-100 py-3 text-center border-b border-gray-200",children:c.jsx("h3",{className:"font-black text-lg uppercase tracking-tight text-gray-800",children:"Thiết bị Bluetooth (L1)"})}),c.jsxs("div",{className:"flex-1 overflow-auto p-4",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-6",children:[c.jsxs("p",{className:"text-red-500 font-bold text-sm",children:["Thời gian tìm: ",Y," giây"]}),c.jsx(gm,{size:14,className:"text-red-500 animate-spin"})]}),c.jsx("div",{className:"space-y-4",children:[{name:"[TV] Samsung 7 Series (65)",addr:"8C:79:F5:B7:87:4B"}].map((z,L)=>c.jsxs("div",{className:"flex items-center justify-between p-4 bg-white border-b border-gray-100 last:border-0 group active:bg-blue-50 transition-colors",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"text-gray-400 group-active:text-blue-500",children:c.jsx(An,{size:24})}),c.jsxs("div",{children:[c.jsx("h4",{className:"font-black text-gray-800 text-base leading-tight",children:z.name}),c.jsx("p",{className:"text-[10px] font-bold text-gray-400 uppercase tracking-widest",children:z.addr})]})]}),c.jsxs("button",{className:"bg-gray-100 text-gray-800 px-6 py-2.5 rounded-full font-black uppercase text-xs flex items-center gap-2 shadow-sm border border-gray-200 active:bg-blue-600 active:text-white transition-all",children:[c.jsx(An,{size:14})," Kết nối"]})]},L))})]})]})]})};
+const km=({setRoute:S})=>{const[b,p]=w.useState([]),[f,O]=w.useState([]),[D,U]=w.useState(!1),Y=me.isPremium(),A=w.useMemo(()=>{const v=me.getSessions();return b.map(_=>{const z=v.filter(se=>se.vehicleId===_.id),L=z.reduce((se,Oe)=>se+Oe.totalNet,0),te=z.reduce((se,Oe)=>se+Oe.totalMoney,0),Q=L/1e3*(_.costPerTrip||2e5);return{id:_.id,weight:L,revenue:te,cost:Q}})},[b]);return w.useEffect(()=>{p(me.getVehicles()),O(me.getFarmers())},[]),c.jsxs("div",{className:"flex flex-col h-full bg-[#f4f7f6] font-roboto",children:[c.jsxs("div",{className:"p-4 bg-[#1e4ea1] text-white flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-2 bg-white/10 rounded-xl",children:c.jsx(On,{})}),c.jsx("h2",{className:"text-xl font-black uppercase italic tracking-tighter",children:"Đội Ghe / Xe"})]}),c.jsx("button",{onClick:()=>U(!D),className:"bg-yellow-400 text-blue-900 w-10 h-10 rounded-full flex items-center justify-center",children:D?c.jsx(_a,{}):c.jsx(As,{})})]}),c.jsxs("div",{className:"p-4 space-y-4 overflow-auto pb-24",children:[Y&&c.jsxs("div",{className:"bg-white p-6 rounded-[35px] shadow-sm border border-blue-100",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-4",children:[c.jsx(Ds,{size:18,className:"text-blue-600"}),c.jsx("span",{className:"text-[11px] font-black uppercase italic text-gray-500",children:"Báo cáo lợi nhuận vận chuyển (Ước tính)"})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("div",{className:"bg-blue-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-blue-400 uppercase block",children:"Tổng Sản Lượng"}),c.jsxs("span",{className:"text-xl font-black text-blue-900",children:[A.reduce((v,_)=>v+_.weight,0).toLocaleString()," kg"]})]}),c.jsxs("div",{className:"bg-green-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-green-400 uppercase block",children:"Ước tính phí ghe"}),c.jsxs("span",{className:"text-xl font-black text-green-900",children:[A.reduce((v,_)=>v+_.cost,0).toLocaleString(),"đ"]})]})]})]}),b.map(v=>{const _=A.find(z=>z.id===v.id);return c.jsx("div",{className:"bg-white rounded-[35px] shadow-sm border border-gray-100 overflow-hidden",children:c.jsxs("div",{className:"p-6",children:[c.jsx("div",{className:"flex justify-between items-start mb-4",children:c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center",children:c.jsx(tc,{size:24})}),c.jsxs("div",{children:[c.jsx("h3",{className:"text-lg font-black uppercase text-gray-800 leading-none",children:v.name}),c.jsxs("p",{className:"text-[9px] font-bold text-gray-400 uppercase mt-1",children:["Tải trọng: ",v.capacity," Tấn"]})]})]})}),Y&&c.jsxs("div",{className:"mt-4 pt-4 border-t border-gray-50 flex justify-between items-center",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx(nm,{size:14,className:"text-green-600"}),c.jsxs("span",{className:"text-xs font-black text-gray-700",children:["Hiệu suất: ",_==null?void 0:_.weight.toLocaleString()," kg"]})]}),c.jsx("button",{className:"text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-3 py-1 rounded-full",children:"Xem chi phí"})]})]})},v.id)})]})]})},Um=({setRoute:S,role:b})=>{const[p,f]=w.useState(me.getSettings()),[O,D]=w.useState(!1),U=_=>{f(_),me.save(Ot.SETTINGS,_);try{const prof=getTraderProfileV3();if(_&&_.tarePer100Kg!==undefined&&Number(prof.tarePer100Kg)!==Number(_.tarePer100Kg)){saveTraderProfileV3({...prof,tarePer100Kg:Number(_.tarePer100Kg),tareRatioValue:Number(_.tarePer100Kg)})}}catch(e){}_.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark"),D(!0),setTimeout(()=>D(!1),2e3)};w.useEffect(()=>{const s=()=>f(me.getSettings());window.addEventListener("app-data-updated",s);window.addEventListener("cloud_data_synced",s);return()=>{window.removeEventListener("app-data-updated",s);window.removeEventListener("cloud_data_synced",s)};},[]),Y=({icon:_,title:z})=>c.jsxs("div",{className:"bg-[#f8f9fa] dark:bg-gray-800 p-4 flex items-center gap-3 border-b border-gray-100 dark:border-gray-700",children:[c.jsx("div",{className:"text-green-600 dark:text-green-400",children:_}),c.jsx("span",{className:"font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter text-sm italic",children:z})]}),A=({label:_,desc:z,value:L,onChange:te})=>c.jsxs("div",{className:"p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 active:bg-gray-50 dark:active:bg-gray-800 transition-colors",children:[c.jsxs("div",{className:"flex-1",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),z&&c.jsx("div",{className:"text-[10px] font-bold text-gray-400 dark:text-gray-500 leading-tight mt-0.5 pr-4 uppercase italic",children:z})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:L,onChange:Q=>te(Q.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-green-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]}),v=({label:_,options:z,value:L,onSelect:te})=>c.jsxs("div",{className:"p-4 space-y-3 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),c.jsx("div",{className:"grid grid-cols-3 gap-2",children:z.map(Q=>c.jsx("button",{onClick:()=>te(Q.val),className:`py-2 px-1 rounded-xl border-2 transition-all font-black uppercase text-[9px] ${L===Q.val?"border-green-600 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 shadow-md":"border-gray-50 dark:border-gray-800 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500"}`,children:Q.label},Q.val))})]});return c.jsxs("div",{className:"flex flex-col h-full bg-[#f2f2f2] dark:bg-[#121212] font-roboto",children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-5 text-white flex items-center justify-between shadow-xl sticky top-0 z-50",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-1 hover:bg-white/10 rounded-lg",children:c.jsx(_a,{size:28})}),c.jsxs("span",{className:"text-2xl font-black uppercase italic tracking-tighter",children:["Cấu Hình ",b==="OWNER"?"Vựa Thu Mua":"Nông Dân"]})]}),O&&c.jsxs("div",{className:"bg-white/20 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1",children:[c.jsx(P1,{size:12})," Đã Lưu"]})]}),c.jsxs("div",{className:"flex-1 overflow-auto pb-32",children:[c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(om,{size:18}),title:"Giao diện hệ thống"}),c.jsx(A,{label:"Chế độ tối (Dark Mode)",desc:"Sử dụng giao diện màu tối để bảo vệ mắt và tiết kiệm pin",value:p.darkMode,onChange:_=>U({...p,darkMode:_})})]}),b==="FARMER"&&c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(am,{size:18}),title:"Dọn dẹp bộ nhớ"}),c.jsxs("div",{className:"p-4 space-y-4",children:[c.jsxs("div",{className:"flex justify-between items-center",children:[c.jsx("span",{className:"text-xs font-black uppercase text-gray-600 dark:text-gray-400 italic",children:"Tự xóa phiếu sau:"}),c.jsxs("span",{className:"text-lg font-black text-red-600 dark:text-red-400 italic",children:[p.autoDeleteDays," Ngày"]})]}),c.jsx("input",{type:"range",min:"7",max:"180",step:"1",value:p.autoDeleteDays,onChange:_=>U({...p,autoDeleteDays:parseInt(_.target.value)}),className:"w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-600 dark:accent-red-400"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase italic",children:"(*) Giúp app hoạt động mượt mà hơn. Dữ liệu trên Cloud vẫn được giữ nếu bạn không xóa thủ công."})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(An,{size:18}),title:"Thiết Bị Bluetooth"}),c.jsxs("button",{onClick:()=>S(re.BLUETOOTH),className:"w-full p-4 flex items-center justify-between bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border-b border-gray-100 dark:border-gray-800",children:[c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"font-black text-blue-900 dark:text-blue-300 uppercase text-sm italic",children:"Cài đặt Cân & Máy in"}),c.jsx("p",{className:"text-[10px] font-bold text-blue-400 dark:text-blue-500 uppercase leading-tight mt-1",children:"Kết nối cân điện tử BLE và Máy in nhiệt"})]}),c.jsx(An,{className:"text-blue-600 dark:text-blue-400"})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(vm,{size:18}),title:"An Toàn Dữ Liệu"}),c.jsx(A,{label:"Khóa thông số khi cân",desc:"Ngăn chạm nhầm thay đổi giá/cọc khi đang nhập số",value:p.lockParamsDuringWeighing,onChange:_=>U({...p,lockParamsDuringWeighing:_})}),c.jsx(A,{label:"Tự động lưu nháp",desc:"Bảo vệ dữ liệu khi tắt app đột ngột",value:p.autoSaveDraft,onChange:_=>U({...p,autoSaveDraft:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(Ds,{size:18}),title:"Quy Trình & Tính Toán"}),c.jsx(v,{label:"Quy cách trừ bì tôm mặc định",options:[{label:"Không trừ bì (0%)",val:0},{label:"100kg - 1kg (1% Chuẩn)",val:1},{label:"100kg - 1.5kg (1.5%)",val:1.5},{label:"100kg - 2kg (2%)",val:2},{label:"100kg - 3kg (3%)",val:3},{label:"100kg - 4kg (4%)",val:4}],value:parseNumericSetting_v4(p.tarePer100Kg,1),onSelect:_=>U({...p,tarePer100Kg:Number(_)})}),c.jsx(v,{label:"Làm tròn tiền thanh toán",options:[{label:"Không",val:"none"},{label:"Đến 500đ",val:"500"},{label:"Đến 1.000đ",val:"1000"}],value:p.currencyRounding,onSelect:_=>U({...p,currencyRounding:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(jm,{size:18}),title:"Giọng Nói & Âm Thanh"}),c.jsx(A,{label:"Đọc số khi nhập",value:p.useVoice,onChange:_=>U({...p,useVoice:_})}),c.jsx(v,{label:"Tốc độ đọc số",options:[{label:"Nhanh",val:"nhanh"},{label:"Vừa",val:"vừa"},{label:"Chậm",val:"chậm"}],value:p.voiceSpeed,onSelect:_=>U({...p,voiceSpeed:_})}),c.jsx(A,{label:"Báo đủ 5 mã cân",desc:"Rung và Chuông",value:p.soundOn5,onChange:_=>U({...p,soundOn5:_})})]})]}),c.jsx("div",{className:"fixed bottom-0 w-full p-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t dark:border-gray-800 flex gap-4 shadow-2xl z-50",children:c.jsxs("button",{onClick:()=>S(re.DASHBOARD),className:"flex-1 bg-green-700 dark:bg-green-800 text-white p-5 rounded-[25px] font-black uppercase shadow-xl border-b-8 border-green-900 dark:border-black flex items-center justify-center gap-3 active:translate-y-2 active:border-b-0 transition-all",children:[c.jsx(ec,{size:24})," Xác Nhận Cấu Hình"]})})]})},Hm=({onSelect:S})=>{const[b,p]=w.useState(!1),[loginErr,setLoginErr]=w.useState(""),f=Pu.currentUser,O=async()=>{setLoginErr(""),p(!0);try{await Mn.loginWithGoogle();S("OWNER");}catch(err){setLoginErr("Đăng nhập thất bại. Vui lòng thử lại!")}p(!1)};w.useEffect(()=>{if(f){S("OWNER");}},[f]);return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center p-6 text-white",children:[c.jsxs("div",{className:"mb-10 text-center",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Tôm Càng Xanh Logo",className:"w-24 h-24 mx-auto mb-4 object-contain rounded-3xl shadow-xl bg-white/10 p-1.5"}),c.jsx("h1",{className:"text-4xl font-black italic tracking-tighter uppercase",children:"Tôm Càng Xanh"}),c.jsx("p",{className:"text-xs font-bold opacity-60 uppercase mt-2",children:"Nền tảng quản lý thông minh Tôm Càng Xanh"})]}),f?c.jsxs("div",{className:"flex flex-col items-center gap-3 animate-in zoom-in-95",children:[c.jsx("div",{className:"w-10 h-10 border-4 border-yellow-300 border-t-transparent rounded-full animate-spin mb-2"}),c.jsxs("p",{className:"font-black uppercase tracking-wider text-yellow-300 text-sm",children:["Đang vào vai trò Chủ Vựa: ",f.displayName||""]})]}):c.jsxs("div",{className:"w-full max-w-sm space-y-4",children:[loginErr&&c.jsx("div",{className:"p-3 bg-red-600/90 text-white rounded-2xl text-xs font-bold text-center shadow-lg",children:loginErr}),c.jsxs("button",{onClick:O,disabled:b,className:"w-full bg-white text-gray-800 p-6 rounded-[30px] font-black uppercase flex items-center justify-center gap-3 shadow-2xl active:scale-95 transition-all hover:bg-yellow-50 cursor-pointer",children:[c.jsx(fm,{size:24,className:"text-red-500"}),b?"Đang kết nối...":"Đăng nhập với Google"]}),c.jsx("p",{className:"text-center text-[10px] opacity-50 px-6 uppercase font-bold",children:"Mặc định tài khoản Chủ Vựa & Dữ liệu đồng bộ an toàn"})]}),c.jsxs("div",{className:"mt-12 flex items-center gap-2 opacity-40 font-bold text-[10px] uppercase",children:[c.jsx(Pd,{size:14})," Bảo mật bởi Firebase Google"]})]})},Rm=({setRoute:S})=>{const[b,p]=w.useState("scale"),[f,O]=w.useState(me.getSettings()),[D,U]=w.useState(!1),[Y,A]=w.useState(0),[btSavedNotice,setBtSavedNotice]=w.useState(!1);w.useEffect(()=>{let z;return D&&(A(0),z=setInterval(()=>{A(L=>L+1)},1e3)),()=>clearInterval(z)},[D]);const v=()=>{me.save(Ot.SETTINGS,f);setBtSavedNotice(!0);setTimeout(()=>setBtSavedNotice(!1),2500);},_=({label:z,desc:L,value:te,onToggle:Q})=>c.jsxs("div",{className:"flex items-start justify-between py-4 border-b border-gray-100 px-2",children:[c.jsxs("div",{className:"flex-1 pr-4",children:[c.jsx("h4",{className:"font-black text-gray-800 text-sm uppercase tracking-tight",children:z}),c.jsx("p",{className:"text-[10px] text-gray-500 font-bold leading-tight mt-0.5",children:L})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:te,onChange:se=>Q(se.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]});return c.jsxs("div",{className:"flex flex-col h-full bg-white font-roboto select-none",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"bg-white p-1 rounded-lg text-[#e91e63]",children:c.jsx(_a,{size:24,strokeWidth:3})}),c.jsx("span",{className:"text-xl font-black text-white uppercase italic tracking-tighter",children:"Bluetooth"})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:f.enableBluetooth,onChange:z=>O({...f,enableBluetooth:z.target.checked}),className:"sr-only peer"}),c.jsx("div",{className:"w-14 h-7 bg-white/20 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:after:translate-x-full shadow-lg border border-white/10"})]})]}),c.jsxs("div",{className:"flex bg-white border-b border-gray-200",children:[c.jsxs("button",{onClick:()=>p("scale"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="scale"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx($u,{size:24,className:b==="scale"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="scale"?"text-green-800":"text-gray-600"}`,children:"Cân điện tử"})]}),c.jsxs("button",{onClick:()=>p("printer"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="printer"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx(Ms,{size:24,className:b==="printer"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="printer"?"text-green-800":"text-gray-600"}`,children:"In nhiệt"})]})]}),c.jsx("div",{className:"flex-1 overflow-auto p-4 space-y-6",children:b==="scale"?c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với Cân điện tử Bluetooth loại BLE"}),c.jsx(_,{label:"Tắt/Mở Cân điện tử",desc:"Nếu không muốn sử dụng cân điện tử hãy tắt nó",value:f.enableScale,onToggle:z=>O({...f,enableScale:z})}),c.jsx(_,{label:"Nhập thủ công",desc:"Hiện một hộp thoại nhỏ để xem mã cân điện tử",value:f.manualScaleInput,onToggle:z=>O({...f,manualScaleInput:z})}),c.jsxs("div",{className:"mt-8",children:[c.jsx("h3",{className:"text-red-600 font-black uppercase text-lg italic mb-1",children:"Cân điện tử đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm kết nối Cân điện tử Bluetooth"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx($u,{size:32,className:"text-red-500"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Bấm vào tên Cân điện tử để đảo khối lượng hiển thị."})]}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsxs("div",{className:"text-center",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-base italic leading-none",children:"Số lần kiểm tra khớp số"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-500 mt-1 uppercase leading-tight",children:"Chức năng lọc nhiễu dữ liệu cân, chỉ sử dụng cho Cân điện tử BLE"})]}),c.jsxs("div",{className:"px-4",children:[c.jsx("input",{type:"range",min:"0",max:"10",step:"1",value:f.scaleMatchSteps,onChange:z=>O({...f,scaleMatchSteps:parseInt(z.target.value)}),className:"w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsx("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-400 px-1",children:[0,1,2,3,4,5,6,7,8,9,10].map(z=>c.jsx("span",{children:z},z))})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Tăng số lần khớp số sẽ làm giảm tốc độ hiện số của Cân điện tử."}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Nếu nhận thấy tốc độ mã cân chậm hãy giảm nó lại"})]})]})]}):c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với máy in nhiệt Bluetooth"}),c.jsx(_,{label:"Tắt/Mở Máy in nhiệt",desc:"Nếu không muốn sử dụng máy in nhiệt hãy tắt nó",value:f.enablePrinter,onToggle:z=>O({...f,enablePrinter:z})}),c.jsx(_,{label:"Bluetooth Classic",desc:"Nếu không in được bằng cách thông thường, hãy bật nó lên",value:f.printerClassicMode,onToggle:z=>O({...f,printerClassicMode:z})}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsx("h3",{className:"text-center font-black text-lg text-gray-800 italic uppercase",children:"Khổ giấy máy in"}),c.jsxs("div",{className:"px-6",children:[c.jsx("input",{type:"range",min:"58",max:"80",step:"22",value:f.paperSize,onChange:z=>O({...f,paperSize:parseInt(z.target.value)}),className:"w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsxs("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-500 px-1 uppercase italic",children:[c.jsx("span",{children:"58mm"}),c.jsx("span",{children:"80mm"})]})]})]}),c.jsxs("div",{className:"mt-10",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-lg italic mb-1",children:"Máy in đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm Máy in"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx(Ms,{size:32,className:"text-green-600"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Hãy bấm vào (+) để chọn máy in nhiệt muốn kết nối."})]})]})}),c.jsx("div",{className:"p-4 bg-gray-100/50 border-t border-gray-200",children:c.jsxs("div",{className:"bg-gray-200 p-4 rounded-[25px] shadow-inner space-y-3",children:[c.jsxs("div",{className:"flex justify-between items-center px-1",children:[c.jsx("span",{className:"font-black text-blue-900 uppercase italic text-base tracking-tighter",children:"Cài đặt khác"}),c.jsxs("div",{className:"flex items-center gap-2",children:[btSavedNotice&&c.jsx("span",{className:"text-[11px] font-black text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full",children:"✓ Đã lưu!"}),c.jsxs("button",{onClick:v,className:"bg-yellow-400 text-blue-900 px-5 py-1.5 rounded-full font-black text-sm uppercase flex items-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer",children:[c.jsx(ec,{size:16})," Lưu"]})]})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("label",{className:"text-[10px] font-black text-gray-600 uppercase italic ml-2",children:"Tên hoá đơn"}),c.jsx("input",{value:f.invoiceName,onChange:z=>O({...f,invoiceName:z.target.value}),className:"w-full p-4 bg-white rounded-2xl font-black text-lg outline-none border-none shadow-sm placeholder:text-gray-300",placeholder:"TÔM CÀNG XANH"})]})]})}),D&&c.jsxs("div",{className:"fixed inset-0 z-[100] flex flex-col bg-white animate-in slide-in-from-bottom duration-300",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-lg",children:[c.jsx("div",{className:"flex items-center gap-2",children:c.jsxs("button",{onClick:()=>U(!1),className:"bg-white px-4 py-2 rounded-full text-[#e91e63] font-black uppercase text-sm flex items-center gap-2 shadow-md active:scale-95 transition-all border border-[#e91e63]/20",children:[c.jsx(_a,{size:18,strokeWidth:3})," Thoát"]})}),c.jsxs("button",{className:"bg-yellow-400 text-blue-900 px-6 py-2 rounded-full font-black uppercase text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-all",children:[c.jsx(An,{size:18})," Tìm Blue"]})]}),c.jsx("div",{className:"bg-gray-100 py-3 text-center border-b border-gray-200",children:c.jsx("h3",{className:"font-black text-lg uppercase tracking-tight text-gray-800",children:"Thiết bị Bluetooth (L1)"})}),c.jsxs("div",{className:"flex-1 overflow-auto p-4",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-6",children:[c.jsxs("p",{className:"text-red-500 font-bold text-sm",children:["Thời gian tìm: ",Y," giây"]}),c.jsx(gm,{size:14,className:"text-red-500 animate-spin"})]}),c.jsx("div",{className:"space-y-4",children:[{name:"[TV] Samsung 7 Series (65)",addr:"8C:79:F5:B7:87:4B"}].map((z,L)=>c.jsxs("div",{className:"flex items-center justify-between p-4 bg-white border-b border-gray-100 last:border-0 group active:bg-blue-50 transition-colors",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"text-gray-400 group-active:text-blue-500",children:c.jsx(An,{size:24})}),c.jsxs("div",{children:[c.jsx("h4",{className:"font-black text-gray-800 text-base leading-tight",children:z.name}),c.jsx("p",{className:"text-[10px] font-bold text-gray-400 uppercase tracking-widest",children:z.addr})]})]}),c.jsxs("button",{className:"bg-gray-100 text-gray-800 px-6 py-2.5 rounded-full font-black uppercase text-xs flex items-center gap-2 shadow-sm border border-gray-200 active:bg-blue-600 active:text-white transition-all",children:[c.jsx(An,{size:14})," Kết nối"]})]},L))})]})]})]})};
 
 
 
@@ -10148,6 +12505,13 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
   const [editingBuyer, setEditingBuyer] = w.useState(null);
   const [gpsLoading, setGpsLoading] = w.useState(false);
   const [gpsSuccess, setGpsSuccess] = w.useState(false);
+  const [custToast, setCustToast] = w.useState(null);
+  const [confirmDeleteBuyerObj, setConfirmDeleteBuyerObj] = w.useState(null);
+
+  const showCustToast = (msg, type = "success") => {
+    setCustToast({ msg, type });
+    setTimeout(() => setCustToast(prev => (prev && prev.msg === msg ? null : prev)), 4000);
+  };
 
   const [formData, setFormData] = w.useState({
     targetGroup: "FACTORY",
@@ -10259,7 +12623,7 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
 
   const handleGetGps = () => {
     if (!navigator.geolocation) {
-      alert("Trình duyệt không hỗ trợ định vị GPS.");
+      showCustToast("Trình duyệt không hỗ trợ định vị GPS.", "error");
       return;
     }
     setGpsLoading(true);
@@ -10276,7 +12640,7 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
       },
       (err) => {
         setGpsLoading(false);
-        alert("Không thể lấy toạ độ GPS: " + (err.message || "Vui lòng cấp quyền định vị trong trình duyệt"));
+        showCustToast("Không thể lấy toạ độ GPS: " + (err.message || "Vui lòng cấp quyền định vị trong trình duyệt"), "error");
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
@@ -10291,13 +12655,13 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
     } else {
       url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(buyer.name);
     }
-    window.open(url, "_blank");
+    openExternalLinkSafe(url);
   };
 
   const handleSaveBuyer = (e) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      alert("Vui lòng nhập tên đối tác / khách hàng");
+      showCustToast("Vui lòng nhập tên đối tác / khách hàng", "error");
       return;
     }
     const cleanPrices = (formData.shrimpPrices || []).filter(sp => sp.typeName && sp.typeName.trim()).map(sp => ({
@@ -10322,13 +12686,11 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
     me.addBuyer(payload);
     refreshList();
     setShowModal(false);
+    showCustToast("✓ Đã lưu thông tin đối tác thành công!");
   };
 
   const handleDeleteBuyer = (buyer) => {
-    if (confirm("Bạn có chắc chắn muốn xóa khách hàng: " + buyer.name + "?")) {
-      me.deleteBuyer(buyer.id);
-      refreshList();
-    }
+    setConfirmDeleteBuyerObj(buyer);
   };
 
   const handleStartSaleForBuyer = (buyer) => {
@@ -11103,6 +13465,13 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
   const [settleKg, setSettleKg] = w.useState("");
   const [settleMoney, setSettleMoney] = w.useState("");
   const [showWeighGridModal, setShowWeighGridModal] = w.useState(false);
+  const [salesToast, setSalesToast] = w.useState(null);
+  const [confirmDeleteSaleId, setConfirmDeleteSaleId] = w.useState(null);
+
+  const showSalesToast = (msg, type = "success") => {
+    setSalesToast({ msg, type });
+    setTimeout(() => setSalesToast(prev => (prev && prev.msg === msg ? null : prev)), 5000);
+  };
 
   // Common Form States
   // 1. RETAIL STATES (merged with Trader Profile shrimpTypes)
@@ -11135,11 +13504,11 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     const kg = Number(retailKg) || 0;
     const price = Number(retailPrice) || 0;
     if (kg <= 0) {
-      alert("Vui lòng nhập số kg tôm bán lẻ!");
+      showSalesToast("Vui lòng nhập số kg tôm bán lẻ!", "error");
       return;
     }
     if (price <= 0) {
-      alert("Vui lòng nhập đơn giá bán lẻ tại thời điểm này!");
+      showSalesToast("Vui lòng nhập đơn giá bán lẻ tại thời điểm này!", "error");
       return;
     }
     const newSale = {
@@ -11176,10 +13545,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     refreshData();
     setRetailKg("");
     const finRetail = me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: newSale.totalMoney, netProfit: newSale.totalMoney, isProfit: true };
-    alert("✅ ĐÃ LƯU ĐƠN BÁN LẺ & ĐỒNG BỘ TÀI CHÍNH!\n\n" +
-          "💵 Đơn này: +" + _e(newSale.totalMoney) + " đ (" + fmtKg(newSale.totalNet) + " kg)\n" +
-          "📈 Tổng doanh thu kỳ này: " + _e(finRetail.totalRevenue) + " VNĐ\n" +
-          "📊 Lợi nhuận ròng hiện tại: " + (finRetail.isProfit ? "+" : "") + _e(finRetail.netProfit) + " VNĐ");
+    showSalesToast("✅ ĐÃ LƯU ĐƠN BÁN LẺ: +" + _e(newSale.totalMoney) + " đ (" + fmtKg(newSale.totalNet) + " kg) • Doanh thu kỳ: " + _e(finRetail.totalRevenue) + " đ");
   };
 
   // 2. MARKET (CHỢ ĐẦU MỐI) STATES
@@ -11195,7 +13561,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
   const handleSaveMarketStep1 = () => {
     const phi = Number(marketPhiCount) || 0;
     if (phi <= 0) {
-      alert("Vui lòng nhập số lượng phi (thùng/phi oxy) giao đi chợ!");
+      showSalesToast("Vui lòng nhập số lượng phi (thùng/phi oxy) giao đi chợ!", "error");
       return;
     }
     const newSale = {
@@ -11225,7 +13591,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     me.addSale(newSale);
     refreshData();
     setMarketPhiCount("");
-    alert("🚚 Đã lưu đơn giao chợ: " + phi + " phi oxy (" + newSale.buyerName + "). Trạng thái: ĐANG BÁN");
+    showSalesToast("🚚 Đã lưu đơn giao chợ: " + phi + " phi oxy (" + newSale.buyerName + "). Trạng thái: ĐANG BÁN");
   };
 
   // 3. FACTORY (CÔNG TY / NHÀ MÁY) STATES
@@ -11283,7 +13649,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     me.addSale(newSale);
     refreshData();
     setFactoryDeliveredKg("");
-    alert("🏭 Đã xuất giao công ty " + newSale.buyerName + ". Trạng thái: CHỜ KẾT QUẢ");
+    showSalesToast("🏭 Đã xuất giao công ty " + newSale.buyerName + ". Trạng thái: CHỜ KẾT QUẢ");
   };
 
   // Quick Settle Action (For Market or Factory)
@@ -11292,7 +13658,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     const kg = Number(settleKg) || 0;
     const money = Number(settleMoney) || 0;
     if (kg <= 0 || money <= 0) {
-      alert("Vui lòng nhập đầy đủ số kg và tổng tiền thực nhận!");
+      showSalesToast("Vui lòng nhập đầy đủ số kg và tổng tiền thực nhận!", "error");
       return;
     }
 
@@ -11315,10 +13681,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     setSettleKg("");
     setSettleMoney("");
     const finSettle = me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: money, netProfit: money, isProfit: true };
-    alert("✅ ĐÃ CHỐT ĐƠN & ĐỒNG BỘ TÀI CHÍNH!\n\n" +
-          "💵 Thực nhận đơn này: +" + _e(money) + " đ (" + fmtKg(kg) + " kg)\n" +
-          "📈 Tổng doanh thu kỳ này: " + _e(finSettle.totalRevenue) + " VNĐ\n" +
-          "📊 Lợi nhuận ròng hiện tại: " + (finSettle.isProfit ? "+" : "") + _e(finSettle.netProfit) + " VNĐ");
+    showSalesToast("✅ ĐÃ CHỐT ĐƠN: +" + _e(money) + " đ (" + fmtKg(kg) + " kg) • Doanh thu kỳ: " + _e(finSettle.totalRevenue) + " đ");
   };
 
   // Filtered lists for in-progress items
@@ -12145,12 +14508,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                         }),
                         c.jsx("button", {
                           type: "button",
-                          onClick: () => {
-                            if (confirm("Bạn có chắc chắn muốn xóa đơn xuất bán này?")) {
-                              me.deleteSale(sale.id);
-                              refreshData();
-                            }
-                          },
+                          onClick: () => setConfirmDeleteSaleId(sale.id),
                           className: "p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg cursor-pointer",
                           children: c.jsx(xm, { size: 16 })
                         })
@@ -12159,6 +14517,39 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                   ]
                 }, sale.id));
               })()
+            })
+          ]
+        })
+      }),
+      salesToast && c.jsx("div", {
+        className: `fixed top-16 right-3 left-3 sm:left-auto sm:max-w-md z-[260] p-3.5 rounded-2xl shadow-2xl text-xs font-black text-white ${salesToast.type === "error" ? "bg-red-600" : "bg-emerald-600"}`,
+        children: salesToast.msg
+      }),
+      confirmDeleteSaleId && c.jsx("div", {
+        className: "fixed inset-0 z-[220] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4",
+        onClick: () => setConfirmDeleteSaleId(null),
+        children: c.jsxs("div", {
+          onClick: e => e.stopPropagation(),
+          className: "bg-white dark:bg-gray-900 rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-gray-200 dark:border-gray-800 space-y-4",
+          children: [
+            c.jsx("h3", { className: "font-black text-base text-red-600 uppercase", children: "Xác nhận xóa đơn" }),
+            c.jsx("p", { className: "text-xs font-bold text-gray-700 dark:text-gray-300", children: "Bạn có chắc chắn muốn xóa đơn xuất bán này?" }),
+            c.jsxs("div", {
+              className: "flex gap-2 justify-end",
+              children: [
+                c.jsx("button", { type: "button", onClick: () => setConfirmDeleteSaleId(null), className: "px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => {
+                    me.deleteSale(confirmDeleteSaleId);
+                    refreshData();
+                    setConfirmDeleteSaleId(null);
+                    showSalesToast("✓ Đã xóa đơn xuất bán!");
+                  },
+                  className: "px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs cursor-pointer",
+                  children: "Xác nhận xóa"
+                })
+              ]
             })
           ]
         })
@@ -12174,6 +14565,8 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
   const [settleData, setSettleData] = w.useState({ actualKg: (initialSale && (initialSale.totalNet || initialSale.totalGross || initialSale.factoryDeliveredKg)) || 0, tare: 0, saleMoney: 0, commission: 0 });
   const [showPayDebtModal, setShowPayDebtModal] = w.useState(false);
   const [selectedBatchIdx, setSelectedBatchIdx] = w.useState(0);
+  const [saleZaloModal, setSaleZaloModal] = w.useState(null);
+  const [settleError, setSettleError] = w.useState("");
 
   w.useEffect(() => {
     setSale(initialSale);
@@ -12300,7 +14693,7 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
     } else {
       url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(sale.buyerName);
     }
-    window.open(url, "_blank");
+    openExternalLinkSafe(url);
   };
 
   const handleShareZalo = () => {
@@ -12332,8 +14725,11 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
     }
     msg += "Trạng thái: " + (sale.status === "PENDING_SETTLEMENT" ? "Chờ quyết toán chợ" : (sale.isPaidFull ? "Đã thu đủ 100%" : ("Ghi nợ: " + _e(sale.remainingDebt) + " đ"))) + "\n";
     copyToClipboardRobust(msg);
-    alert("Đã sao chép nội dung phiếu xuất bán! Đang mở Zalo...");
-    window.open("https://zalo.me", "_blank");
+    setSaleZaloModal({
+      title: "Gửi Phiếu Xuất Bán " + (sale.code || ""),
+      content: msg,
+      phone: sale.buyerPhone || ""
+    });
   };
 
   const batchesList = (sale.batches && sale.batches.length > 0) ? sale.batches : [{
@@ -12779,50 +15175,61 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
                 })
               ]
             }),
-            c.jsxs("div", {
-              className: "flex gap-3 justify-end",
-              children: [
-                c.jsx("button", {
-                  onClick: () => setShowSettlement(false),
-                  className: "px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold rounded-xl",
-                  children: "Hủy"
-                }),
-                c.jsx("button", {
-                  onClick: () => {
-                    const grossKg = Number(settleData.actualKg || sale.totalGross || sale.totalNet || 0);
-                    const finalNet = Math.max(0, grossKg - Number(settleData.tare || 0));
-                    const finalMoney = Math.max(0, Number(settleData.saleMoney || 0) - Number(settleData.commission || 0));
-                    if (finalNet <= 0 || finalMoney <= 0) {
-                      alert("Vui lòng nhập đầy đủ số kg thực tế và số tiền thu được!");
-                      return;
-                    }
-                    const updates = {
-                      totalTare: Number(settleData.tare || 0),
-                      totalGross: grossKg,
-                      totalNet: finalNet,
-                      unitPrice: finalNet > 0 ? Math.round(finalMoney / finalNet) : 0,
-                      marketSaleMoney: Number(settleData.saleMoney || 0),
-                      marketCommission: Number(settleData.commission || 0),
-                      totalMoney: finalMoney,
-                      status: "COMPLETED",
-                      isPaidFull: true,
-                      remainingDebt: 0,
-                      paidAmount: finalMoney,
-                      settledAt: new Date().toISOString()
-                    };
-                    const saved = me.updateSale(sale.id, updates);
-                    if (saved) {
-                      setSale(saved);
-                      setShowSettlement(false);
-                    }
-                  },
-                  className: "px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-black rounded-xl shadow-lg",
-                  children: "Lưu Quyết Toán"
-                })
-              ]
-            })
-          ]
-        })
+              settleError && c.jsx("div", {
+                className: "p-2.5 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-xl text-xs font-bold mb-3",
+                children: settleError
+              }),
+              c.jsxs("div", {
+                className: "flex gap-3 justify-end",
+                children: [
+                  c.jsx("button", {
+                    onClick: () => { setSettleError(""); setShowSettlement(false); },
+                    className: "px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold rounded-xl cursor-pointer",
+                    children: "Hủy"
+                  }),
+                  c.jsx("button", {
+                    onClick: () => {
+                      const grossKg = Number(settleData.actualKg || sale.totalGross || sale.totalNet || 0);
+                      const finalNet = Math.max(0, grossKg - Number(settleData.tare || 0));
+                      const finalMoney = Math.max(0, Number(settleData.saleMoney || 0) - Number(settleData.commission || 0));
+                      if (finalNet <= 0 || finalMoney <= 0) {
+                        setSettleError("Vui lòng nhập đầy đủ số kg thực tế và số tiền thu được!");
+                        return;
+                      }
+                      setSettleError("");
+                      const updates = {
+                        totalTare: Number(settleData.tare || 0),
+                        totalGross: grossKg,
+                        totalNet: finalNet,
+                        unitPrice: finalNet > 0 ? Math.round(finalMoney / finalNet) : 0,
+                        marketSaleMoney: Number(settleData.saleMoney || 0),
+                        marketCommission: Number(settleData.commission || 0),
+                        totalMoney: finalMoney,
+                        status: "COMPLETED",
+                        isPaidFull: true,
+                        remainingDebt: 0,
+                        paidAmount: finalMoney,
+                        settledAt: new Date().toISOString()
+                      };
+                      const saved = me.updateSale(sale.id, updates);
+                      if (saved) {
+                        setSale(saved);
+                        setShowSettlement(false);
+                      }
+                    },
+                    className: "px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-black rounded-xl shadow-lg cursor-pointer",
+                    children: "Lưu Quyết Toán"
+                  })
+                ]
+              })
+            ]
+          })
+        }),
+      saleZaloModal && c.jsx(Xm_UniversalZaloModal, {
+        title: saleZaloModal.title,
+        content: saleZaloModal.content,
+        initialPhone: saleZaloModal.phone,
+        onClose: () => setSaleZaloModal(null)
       })
     ]
   });
@@ -12939,6 +15346,13 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const [editingSavedTripId, setEditingSavedTripId] = w.useState(null);
   const [editingSavedTripName, setEditingSavedTripName] = w.useState("");
   const [copiedSummary, setCopiedSummary] = w.useState(false);
+  const [financeToast, setFinanceToast] = w.useState(null);
+  const [financeConfirm, setFinanceConfirm] = w.useState(null);
+
+  const showFinToast = (msg, type = "success") => {
+    setFinanceToast({ msg, type });
+    setTimeout(() => setFinanceToast(prev => (prev && prev.msg === msg ? null : prev)), 4000);
+  };
 
   // Helper to persist updates to localStorage and cloud
   const updateActiveTrip = (updater) => {
@@ -12975,9 +15389,9 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
         selectedSessionIds: null,
         selectedSaleIds: null
       }));
-      alert("✅ Đã đồng bộ tự động 100% số liệu Cân tôm, Cọc ao, Xuất bán và Thu-Chi!");
+      showFinToast("✅ Đã đồng bộ tự động 100% số liệu Cân tôm, Cọc ao, Xuất bán và Thu-Chi!");
     } catch(e) {
-      alert("Lỗi đồng bộ: " + e.message);
+      showFinToast("Lỗi đồng bộ: " + e.message, "error");
     }
   };
 
@@ -13071,7 +15485,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const handleSaveThuChi = () => {
     const amt = Number(thuChiAmount) || 0;
     if (amt <= 0) {
-      alert("Vui lòng nhập số tiền hợp lệ lớn hơn 0!");
+      showFinToast("Vui lòng nhập số tiền hợp lệ lớn hơn 0!", "error");
       return;
     }
 
@@ -13087,6 +15501,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
           note: thuChiNote.trim()
         } : e)
       }));
+      showFinToast("✓ Đã cập nhật phiếu Thu - Chi!");
     } else {
       const newTx = {
         id: "tx_" + Date.now(),
@@ -13101,6 +15516,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
         ...t,
         expenses: [...(t.expenses || []), newTx]
       }));
+      showFinToast("✓ Đã thêm khoản " + (thuChiType === "INCOME" ? "Thu" : "Chi") + ": " + _fmt(amt) + " đ");
     }
     setShowThuChiModal(false);
   };
@@ -13108,12 +15524,19 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
   const handleDeleteThuChi = (id) => {
     const target = allTransactions.find(e => e.id === id);
     const label = (target?.type === "INCOME" ? "khoản thu" : "khoản chi") + " \"" + (target?.category || "") + " (" + _fmt(target?.amount) + " đ)\"";
-    if (confirm("Bạn có chắc chắn muốn xóa " + label + "?")) {
-      updateActiveTrip(t => ({
-        ...t,
-        expenses: (t.expenses || []).filter(e => e.id !== id)
-      }));
-    }
+    setFinanceConfirm({
+      title: "Xóa giao dịch Thu - Chi",
+      msg: "Bạn có chắc chắn muốn xóa " + label + "?",
+      confirmText: "Xóa ngay",
+      danger: true,
+      onConfirm: () => {
+        updateActiveTrip(t => ({
+          ...t,
+          expenses: (t.expenses || []).filter(e => e.id !== id)
+        }));
+        showFinToast("✓ Đã xóa " + label);
+      }
+    });
   };
 
   // Sales and Revenue calculations (includes COMPLETED/SETTLED/isPaidFull + any partial paidAmount!)
@@ -13175,7 +15598,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     const kg = Number(quickSettleKg) || 0;
     const money = Number(quickSettleMoney) || 0;
     if (kg <= 0 || money <= 0) {
-      alert("Vui lòng nhập đầy đủ số kg và tổng tiền thực nhận!");
+      showFinToast("Vui lòng nhập đầy đủ số kg và tổng tiền thực nhận!", "error");
       return;
     }
     const updates = {
@@ -13196,15 +15619,11 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     setQuickSettleSale(null);
     setQuickSettleKg("");
     setQuickSettleMoney("");
-    alert("✅ Đã chốt đơn thành công và tự động cộng +" + _fmt(money) + " đ vào doanh thu tài chính!");
+    showFinToast("✅ Đã chốt đơn thành công và tự động cộng +" + _fmt(money) + " đ vào doanh thu tài chính!");
   };
 
   // Archive and settle current trip (records settled IDs so next trip starts fresh without double-counting)
-  const handleSettleAndArchiveTrip = () => {
-    if (!confirm("Bạn có chắc chắn muốn khóa và lưu chuyến tài chính này vào lịch sử? Các phiếu mua/đơn bán của chuyến này sẽ được lưu trữ và chuyến mới sẽ khởi tạo sạch.")) {
-      return;
-    }
-
+  const executeSettleAndArchiveTrip = () => {
     const justSettledSessionIds = effectiveSessions.map(s => s.id).filter(Boolean);
     const justSettledSaleIds = effectiveSales.map(s => s.id).filter(Boolean);
 
@@ -13263,72 +15682,101 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     setTripNote("");
     setFilterMode("ALL");
     setTimeout(() => { selfUpdatingRef.current = false; }, 0);
-    alert("✅ Đã quyết toán thành công và lưu vào lịch sử chuyến!");
+    showFinToast("✅ Đã quyết toán thành công và lưu vào lịch sử chuyến!");
+  };
+
+  const handleSettleAndArchiveTrip = () => {
+    setFinanceConfirm({
+      title: "Quyết Toán & Lưu Lịch Sử",
+      msg: "Bạn có chắc chắn muốn khóa và lưu chuyến tài chính này vào lịch sử? Các phiếu mua/đơn bán của chuyến này sẽ được lưu trữ và chuyến mới sẽ khởi tạo sạch.",
+      confirmText: "Khóa & Quyết toán",
+      danger: false,
+      onConfirm: executeSettleAndArchiveTrip
+    });
   };
 
   // Reset manual Thu-Chi in current trip
   const handleResetTrip = () => {
-    if (confirm("Bạn có chắc chắn muốn đặt lại sổ Thu - Chi của chuyến này về 0 và khôi phục đồng bộ tự động?")) {
-      updateActiveTrip(t => ({
-        ...t,
-        expenses: [],
-        filterMode: "ALL",
-        includePondDeposits: true,
-        shrimpPurchaseAuto: true,
-        revenueAuto: true,
-        shrimpPurchaseManualAmount: 0,
-        revenueManualAmount: 0,
-        selectedSessionIds: null,
-        selectedSaleIds: null
-      }));
-      setFilterMode("ALL");
-      setShowTripSettingsModal(false);
-      alert("✅ Đã đặt lại thu chi và bật đồng bộ tự động!");
-    }
+    setFinanceConfirm({
+      title: "Đặt lại sổ Thu - Chi",
+      msg: "Bạn có chắc chắn muốn đặt lại sổ Thu - Chi của chuyến này về 0 và khôi phục đồng bộ tự động?",
+      confirmText: "Đặt lại ngay",
+      danger: true,
+      onConfirm: () => {
+        updateActiveTrip(t => ({
+          ...t,
+          expenses: [],
+          filterMode: "ALL",
+          includePondDeposits: true,
+          shrimpPurchaseAuto: true,
+          revenueAuto: true,
+          shrimpPurchaseManualAmount: 0,
+          revenueManualAmount: 0,
+          selectedSessionIds: null,
+          selectedSaleIds: null
+        }));
+        setFilterMode("ALL");
+        setShowTripSettingsModal(false);
+        showFinToast("✅ Đã đặt lại thu chi và bật đồng bộ tự động!");
+      }
+    });
   };
 
   // Saved trip actions
   const handleDeleteSavedTrip = (id) => {
-    if (confirm("Bạn có chắc chắn muốn xóa chuyến này khỏi lịch sử? Thao tác này không thể hoàn tác.")) {
-      const nextSaved = (financeData.savedTrips || []).filter(t => t.id !== id);
-      const nextData = { ...financeData, savedTrips: nextSaved };
-      selfUpdatingRef.current = true;
-      me.saveFinanceData(nextData);
-      setFinanceData(nextData);
-      if (viewingSavedTrip && viewingSavedTrip.id === id) setViewingSavedTrip(null);
-      setTimeout(() => { selfUpdatingRef.current = false; }, 0);
-    }
+    setFinanceConfirm({
+      title: "Xóa lịch sử chuyến",
+      msg: "Bạn có chắc chắn muốn xóa chuyến này khỏi lịch sử? Thao tác này không thể hoàn tác.",
+      confirmText: "Xóa vĩnh viễn",
+      danger: true,
+      onConfirm: () => {
+        const nextSaved = (financeData.savedTrips || []).filter(t => t.id !== id);
+        const nextData = { ...financeData, savedTrips: nextSaved };
+        selfUpdatingRef.current = true;
+        me.saveFinanceData(nextData);
+        setFinanceData(nextData);
+        if (viewingSavedTrip && viewingSavedTrip.id === id) setViewingSavedTrip(null);
+        setTimeout(() => { selfUpdatingRef.current = false; }, 0);
+        showFinToast("✓ Đã xóa chuyến khỏi lịch sử!");
+      }
+    });
   };
 
   const handleRestoreSavedTrip = (savedTrip) => {
-    if (confirm("Bạn có chắc chắn muốn khôi phục chuyến \"" + savedTrip.name + "\" làm chuyến đang hoạt động? Chuyến hiện tại chưa quyết toán sẽ được thay thế.")) {
-      const restoredSettledSessions = new Set(Array.isArray(savedTrip.settledSessionIds) ? savedTrip.settledSessionIds : []);
-      const restoredSettledSales = new Set(Array.isArray(savedTrip.settledSaleIds) ? savedTrip.settledSaleIds : []);
-      const curArchSess = Array.isArray(trip.archivedSessionIds) ? trip.archivedSessionIds : [];
-      const curArchSale = Array.isArray(trip.archivedSaleIds) ? trip.archivedSaleIds : [];
+    setFinanceConfirm({
+      title: "Khôi phục chuyến tài chính",
+      msg: "Bạn có chắc chắn muốn khôi phục chuyến \"" + savedTrip.name + "\" làm chuyến đang hoạt động? Chuyến hiện tại chưa quyết toán sẽ được thay thế.",
+      confirmText: "Khôi phục",
+      danger: false,
+      onConfirm: () => {
+        const restoredSettledSessions = new Set(Array.isArray(savedTrip.settledSessionIds) ? savedTrip.settledSessionIds : []);
+        const restoredSettledSales = new Set(Array.isArray(savedTrip.settledSaleIds) ? savedTrip.settledSaleIds : []);
+        const curArchSess = Array.isArray(trip.archivedSessionIds) ? trip.archivedSessionIds : [];
+        const curArchSale = Array.isArray(trip.archivedSaleIds) ? trip.archivedSaleIds : [];
 
-      const nextData = {
-        ...financeData,
-        activeTrip: {
-          ...savedTrip,
-          id: "trip_" + Date.now(),
-          filterMode: savedTrip.filterMode || "ALL",
-          archivedSessionIds: curArchSess.filter(id => !restoredSettledSessions.has(id)),
-          archivedSaleIds: curArchSale.filter(id => !restoredSettledSales.has(id))
-        }
-      };
-      selfUpdatingRef.current = true;
-      me.saveFinanceData(nextData);
-      setFinanceData(nextData);
-      setTripName(savedTrip.name || "");
-      setTripDate(savedTrip.startDate || "");
-      setTripNote(savedTrip.note || "");
-      setFilterMode(savedTrip.filterMode || "ALL");
-      setShowSavedTripsModal(false);
-      setViewingSavedTrip(null);
-      setTimeout(() => { selfUpdatingRef.current = false; }, 0);
-      alert("✅ Đã khôi phục chuyến thành công!");
-    }
+        const nextData = {
+          ...financeData,
+          activeTrip: {
+            ...savedTrip,
+            id: "trip_" + Date.now(),
+            filterMode: savedTrip.filterMode || "ALL",
+            archivedSessionIds: curArchSess.filter(id => !restoredSettledSessions.has(id)),
+            archivedSaleIds: curArchSale.filter(id => !restoredSettledSales.has(id))
+          }
+        };
+        selfUpdatingRef.current = true;
+        me.saveFinanceData(nextData);
+        setFinanceData(nextData);
+        setTripName(savedTrip.name || "");
+        setTripDate(savedTrip.startDate || "");
+        setTripNote(savedTrip.note || "");
+        setFilterMode(savedTrip.filterMode || "ALL");
+        setShowSavedTripsModal(false);
+        setViewingSavedTrip(null);
+        setTimeout(() => { selfUpdatingRef.current = false; }, 0);
+        showFinToast("✅ Đã khôi phục chuyến thành công!");
+      }
+    });
   };
 
   const handleSaveEditSavedTripName = () => {
@@ -13368,17 +15816,10 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       "Tự doanh 100% • Tôm Càng Xanh"
     ].filter(Boolean).join("\n");
 
-    try {
-      if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text);
-        setCopiedSummary(true);
-        setTimeout(() => setCopiedSummary(false), 2500);
-      } else {
-        alert(text);
-      }
-    } catch(e) {
-      alert(text);
-    }
+    copyToClipboardRobust(text);
+    setCopiedSummary(true);
+    showFinToast("✓ Đã sao chép báo cáo quyết toán tài chính!");
+    setTimeout(() => setCopiedSummary(false), 2500);
   };
 
   // Unified Cashflow Stream (Manual Thu-Chi + Auto-Synced Purchases + Auto-Synced Pond Deposits + Auto-Synced Sales)
@@ -15472,36 +17913,42 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                 c.jsxs("button", {
                   type: "button",
                   onClick: () => {
-                    if (confirm("Khởi tạo chuyến mới tinh sạch hoàn toàn?")) {
-                      const newActiveTrip = {
-                        id: "trip_" + Date.now(),
-                        name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
-                        startDate: getLocalYYYYMMDD_v4(),
-                        note: "",
-                        filterMode: "ALL",
-                        includePondDeposits: true,
-                        archivedSessionIds: trip.archivedSessionIds || [],
-                        archivedSaleIds: trip.archivedSaleIds || [],
-                        shrimpPurchaseAuto: true,
-                        shrimpPurchaseManualAmount: 0,
-                        selectedSessionIds: null,
-                        expenses: [],
-                        revenueAuto: true,
-                        revenueManualAmount: 0,
-                        selectedSaleIds: null
-                      };
-                      selfUpdatingRef.current = true;
-                      const nextData = { ...financeData, activeTrip: newActiveTrip };
-                      me.saveFinanceData(nextData);
-                      setFinanceData(nextData);
-                      setFilterMode("ALL");
-                      setTripName(newActiveTrip.name);
-                      setTripDate(newActiveTrip.startDate);
-                      setTripNote("");
-                      setShowTripSettingsModal(false);
-                      setTimeout(() => { selfUpdatingRef.current = false; }, 0);
-                      alert("✅ Đã tạo chuyến mới tinh sạch!");
-                    }
+                    setFinanceConfirm({
+                      title: "Tạo chuyến mới tinh sạch",
+                      msg: "Khởi tạo chuyến mới tinh sạch hoàn toàn?",
+                      confirmText: "Tạo chuyến mới",
+                      danger: false,
+                      onConfirm: () => {
+                        const newActiveTrip = {
+                          id: "trip_" + Date.now(),
+                          name: "Chuyến thu mua ngày " + new Date().toLocaleDateString("vi-VN"),
+                          startDate: getLocalYYYYMMDD_v4(),
+                          note: "",
+                          filterMode: "ALL",
+                          includePondDeposits: true,
+                          archivedSessionIds: trip.archivedSessionIds || [],
+                          archivedSaleIds: trip.archivedSaleIds || [],
+                          shrimpPurchaseAuto: true,
+                          shrimpPurchaseManualAmount: 0,
+                          selectedSessionIds: null,
+                          expenses: [],
+                          revenueAuto: true,
+                          revenueManualAmount: 0,
+                          selectedSaleIds: null
+                        };
+                        selfUpdatingRef.current = true;
+                        const nextData = { ...financeData, activeTrip: newActiveTrip };
+                        me.saveFinanceData(nextData);
+                        setFinanceData(nextData);
+                        setFilterMode("ALL");
+                        setTripName(newActiveTrip.name);
+                        setTripDate(newActiveTrip.startDate);
+                        setTripNote("");
+                        setShowTripSettingsModal(false);
+                        setTimeout(() => { selfUpdatingRef.current = false; }, 0);
+                        showFinToast("✅ Đã tạo chuyến mới tinh sạch!");
+                      }
+                    });
                   },
                   className: "w-full p-3 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 text-left flex justify-between items-center cursor-pointer hover:bg-teal-100",
                   children: [
@@ -15758,6 +18205,43 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                   onClick: () => setViewingSavedTrip(null),
                   className: "px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer",
                   children: "Đóng"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+      financeToast && c.jsx("div", {
+        className: `fixed top-16 right-3 left-3 sm:left-auto sm:max-w-md z-[260] p-3.5 rounded-2xl shadow-2xl text-xs font-black text-white ${financeToast.type === "error" ? "bg-rose-600" : "bg-emerald-600"}`,
+        children: financeToast.msg
+      }),
+      financeConfirm && c.jsx("div", {
+        className: "fixed inset-0 z-[250] bg-black/65 backdrop-blur-xs flex items-center justify-center p-4",
+        onClick: () => setFinanceConfirm(null),
+        children: c.jsxs("div", {
+          onClick: e => e.stopPropagation(),
+          className: "bg-white text-slate-900 rounded-3xl max-w-sm w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4",
+          children: [
+            c.jsx("h3", { className: "font-black text-base uppercase text-slate-900", children: financeConfirm.title }),
+            c.jsx("p", { className: "text-xs font-bold text-slate-600 leading-relaxed", children: financeConfirm.msg }),
+            c.jsxs("div", {
+              className: "flex gap-2 justify-end pt-1",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setFinanceConfirm(null),
+                  className: "px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer",
+                  children: "Huỷ"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => {
+                    const fn = financeConfirm.onConfirm;
+                    setFinanceConfirm(null);
+                    if (fn) fn();
+                  },
+                  className: `px-4 py-2 text-white rounded-xl font-black text-xs cursor-pointer ${financeConfirm.danger ? "bg-rose-600 hover:bg-rose-700" : "bg-emerald-600 hover:bg-emerald-700"}`,
+                  children: financeConfirm.confirmText || "Xác nhận"
                 })
               ]
             })
