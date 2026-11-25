@@ -46,7 +46,7 @@ import{initializeApp as E1}from"https://www.gstatic.com/firebasejs/10.7.1/fireba
 `+r[a].replace(" at new "," at ");return e.displayName&&N.includes("<anonymous>")&&(N=N.replace("<anonymous>",e.displayName)),N}while(1<=a&&0<=n);break}}}finally{ac=!1,Error.prepareStackTrace=l}return(l=e?e.displayName||e.name:"")?Al(l):""}function lo(e,t){switch(e.tag){case 26:case 27:case 5:return Al(e.type);case 16:return Al("Lazy");case 13:return e.child!==t&&t!==null?Al("Suspense Fallback"):Al("Suspense");case 19:return Al("SuspenseList");case 0:case 15:return nc(e.type,!1);case 11:return nc(e.type.render,!1);case 1:return nc(e.type,!0);case 31:return Al("Activity");default:return""}}function Us(e){try{var t="",l=null;do t+=lo(e,l),l=e,e=e.return;while(e);return t}catch(a){return`
 Error generating stack: `+a.message+`
 `+a.stack}}var uc=Object.prototype.hasOwnProperty,cc=S.unstable_scheduleCallback,ic=S.unstable_cancelCallback,ao=S.unstable_shouldYield,no=S.unstable_requestPaint,ft=S.unstable_now,uo=S.unstable_getCurrentPriorityLevel,Hs=S.unstable_ImmediatePriority,Rs=S.unstable_UserBlockingPriority,Dn=S.unstable_NormalPriority,co=S.unstable_LowPriority,Bs=S.unstable_IdlePriority,io=S.log,so=S.unstable_setDisableYieldValue,Ca=null,rt=null;function ll(e){if(typeof io=="function"&&so(e),rt&&typeof rt.setStrictMode=="function")try{rt.setStrictMode(Ca,e)}catch{}}var dt=Math.clz32?Math.clz32:oo,fo=Math.log,ro=Math.LN2;function oo(e){return e>>>=0,e===0?32:31-(fo(e)/ro|0)|0}var Cn=256,kn=262144,Un=4194304;function Ml(e){var t=e&42;if(t!==0)return t;switch(e&-e){case 1:return 1;case 2:return 2;case 4:return 4;case 8:return 8;case 16:return 16;case 32:return 32;case 64:return 64;case 128:return 128;case 256:case 512:case 1024:case 2048:case 4096:case 8192:case 16384:case 32768:case 65536:case 131072:return e&261888;case 262144:case 524288:case 1048576:case 2097152:return e&3932160;case 4194304:case 8388608:case 16777216:case 33554432:return e&62914560;case 67108864:return 67108864;case 134217728:return 134217728;case 268435456:return 268435456;case 536870912:return 536870912;case 1073741824:return 0;default:return e}}function Hn(e,t,l){var a=e.pendingLanes;if(a===0)return 0;var n=0,u=e.suspendedLanes,i=e.pingedLanes;e=e.warmLanes;var s=a&134217727;return s!==0?(a=s&~u,a!==0?n=Ml(a):(i&=s,i!==0?n=Ml(i):l||(l=s&~e,l!==0&&(n=Ml(l))))):(s=a&~u,s!==0?n=Ml(s):i!==0?n=Ml(i):l||(l=a&~e,l!==0&&(n=Ml(l)))),n===0?0:t!==0&&t!==n&&(t&u)===0&&(u=n&-n,l=t&-t,u>=l||u===32&&(l&4194048)!==0)?t:n}function ka(e,t){return(e.pendingLanes&~(e.suspendedLanes&~e.pingedLanes)&t)===0}function ho(e,t){switch(e){case 1:case 2:case 4:case 8:case 64:return t+250;case 16:case 32:case 128:case 256:case 512:case 1024:case 2048:case 4096:case 8192:case 16384:case 32768:case 65536:case 131072:case 262144:case 524288:case 1048576:case 2097152:return t+5e3;case 4194304:case 8388608:case 16777216:case 33554432:return-1;case 67108864:case 134217728:case 268435456:case 536870912:case 1073741824:return-1;default:return-1}}function ws(){var e=Un;return Un<<=1,(Un&62914560)===0&&(Un=4194304),e}function sc(e){for(var t=[],l=0;31>l;l++)t.push(e);return t}function Ua(e,t){e.pendingLanes|=t,t!==268435456&&(e.suspendedLanes=0,e.pingedLanes=0,e.warmLanes=0)}function mo(e,t,l,a,n,u){var i=e.pendingLanes;e.pendingLanes=l,e.suspendedLanes=0,e.pingedLanes=0,e.warmLanes=0,e.expiredLanes&=l,e.entangledLanes&=l,e.errorRecoveryDisabledLanes&=l,e.shellSuspendCounter=0;var s=e.entanglements,r=e.expirationTimes,g=e.hiddenUpdates;for(l=i&~l;0<l;){var N=31-dt(l),E=1<<N;s[N]=0,r[N]=-1;var y=g[N];if(y!==null)for(g[N]=null,N=0;N<y.length;N++){var x=y[N];x!==null&&(x.lane&=-536870913)}l&=~E}a!==0&&qs(e,a,0),u!==0&&n===0&&e.tag!==0&&(e.suspendedLanes|=u&~(i&~t))}function qs(e,t,l){e.pendingLanes|=t,e.suspendedLanes&=~t;var a=31-dt(t);e.entangledLanes|=t,e.entanglements[a]=e.entanglements[a]|1073741824|l&261930}function Gs(e,t){var l=e.entangledLanes|=t;for(e=e.entanglements;l;){var a=31-dt(l),n=1<<a;n&t|e[a]&t&&(e[a]|=t),l&=~n}}function Ys(e,t){var l=t&-t;return l=(l&42)!==0?1:fc(l),(l&(e.suspendedLanes|t))!==0?0:l}function fc(e){switch(e){case 2:e=1;break;case 8:e=4;break;case 32:e=16;break;case 256:case 512:case 1024:case 2048:case 4096:case 8192:case 16384:case 32768:case 65536:case 131072:case 262144:case 524288:case 1048576:case 2097152:case 4194304:case 8388608:case 16777216:case 33554432:e=128;break;case 268435456:e=134217728;break;default:e=0}return e}function rc(e){return e&=-e,2<e?8<e?(e&134217727)!==0?32:268435456:8:2}function Ls(){var e=C.p;return e!==0?e:(e=window.event,e===void 0?32:Md(e.type))}function Xs(e,t){var l=C.p;try{return C.p=e,t()}finally{C.p=l}}var al=Math.random().toString(36).slice(2),Ve="__reactFiber$"+al,tt="__reactProps$"+al,Zl="__reactContainer$"+al,dc="__reactEvents$"+al,go="__reactListeners$"+al,yo="__reactHandles$"+al,Qs="__reactResources$"+al,Ha="__reactMarker$"+al;function oc(e){delete e[Ve],delete e[tt],delete e[dc],delete e[go],delete e[yo]}function Kl(e){var t=e[Ve];if(t)return t;for(var l=e.parentNode;l;){if(t=l[Zl]||l[Ve]){if(l=t.alternate,t.child!==null||l!==null&&l.child!==null)for(e=od(e);e!==null;){if(l=e[Ve])return l;e=od(e)}return t}e=l,l=e.parentNode}return null}function Jl(e){if(e=e[Ve]||e[Zl]){var t=e.tag;if(t===5||t===6||t===13||t===31||t===26||t===27||t===3)return e}return null}function Ra(e){var t=e.tag;if(t===5||t===26||t===27||t===6)return e.stateNode;throw Error(f(33))}function Wl(e){var t=e[Qs];return t||(t=e[Qs]={hoistableStyles:new Map,hoistableScripts:new Map}),t}function Xe(e){e[Ha]=!0}var Vs=new Set,Zs={};function Ol(e,t){Fl(e,t),Fl(e+"Capture",t)}function Fl(e,t){for(Zs[e]=t,e=0;e<t.length;e++)Vs.add(t[e])}var xo=RegExp("^[:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD][:A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040]*$"),Ks={},Js={};function vo(e){return uc.call(Js,e)?!0:uc.call(Ks,e)?!1:xo.test(e)?Js[e]=!0:(Ks[e]=!0,!1)}function Rn(e,t,l){if(vo(t))if(l===null)e.removeAttribute(t);else{switch(typeof l){case"undefined":case"function":case"symbol":e.removeAttribute(t);return;case"boolean":var a=t.toLowerCase().slice(0,5);if(a!=="data-"&&a!=="aria-"){e.removeAttribute(t);return}}e.setAttribute(t,""+l)}}function Bn(e,t,l){if(l===null)e.removeAttribute(t);else{switch(typeof l){case"undefined":case"function":case"symbol":case"boolean":e.removeAttribute(t);return}e.setAttribute(t,""+l)}}function wt(e,t,l,a){if(a===null)e.removeAttribute(l);else{switch(typeof a){case"undefined":case"function":case"symbol":case"boolean":e.removeAttribute(l);return}e.setAttributeNS(t,l,""+a)}}function bt(e){switch(typeof e){case"bigint":case"boolean":case"number":case"string":case"undefined":return e;case"object":return e;default:return""}}function Ws(e){var t=e.type;return(e=e.nodeName)&&e.toLowerCase()==="input"&&(t==="checkbox"||t==="radio")}function bo(e,t,l){var a=Object.getOwnPropertyDescriptor(e.constructor.prototype,t);if(!e.hasOwnProperty(t)&&typeof a<"u"&&typeof a.get=="function"&&typeof a.set=="function"){var n=a.get,u=a.set;return Object.defineProperty(e,t,{configurable:!0,get:function(){return n.call(this)},set:function(i){l=""+i,u.call(this,i)}}),Object.defineProperty(e,t,{enumerable:a.enumerable}),{getValue:function(){return l},setValue:function(i){l=""+i},stopTracking:function(){e._valueTracker=null,delete e[t]}}}}function hc(e){if(!e._valueTracker){var t=Ws(e)?"checked":"value";e._valueTracker=bo(e,t,""+e[t])}}function Fs(e){if(!e)return!1;var t=e._valueTracker;if(!t)return!0;var l=t.getValue(),a="";return e&&(a=Ws(e)?e.checked?"true":"false":e.value),e=a,e!==l?(t.setValue(e),!0):!1}function wn(e){if(e=e||(typeof document<"u"?document:void 0),typeof e>"u")return null;try{return e.activeElement||e.body}catch{return e.body}}var po=/[\n"\\]/g;function pt(e){return e.replace(po,function(t){return"\\"+t.charCodeAt(0).toString(16)+" "})}function mc(e,t,l,a,n,u,i,s){e.name="",i!=null&&typeof i!="function"&&typeof i!="symbol"&&typeof i!="boolean"?e.type=i:e.removeAttribute("type"),t!=null?i==="number"?(t===0&&e.value===""||e.value!=t)&&(e.value=""+bt(t)):e.value!==""+bt(t)&&(e.value=""+bt(t)):i!=="submit"&&i!=="reset"||e.removeAttribute("value"),t!=null?gc(e,i,bt(t)):l!=null?gc(e,i,bt(l)):a!=null&&e.removeAttribute("value"),n==null&&u!=null&&(e.defaultChecked=!!u),n!=null&&(e.checked=n&&typeof n!="function"&&typeof n!="symbol"),s!=null&&typeof s!="function"&&typeof s!="symbol"&&typeof s!="boolean"?e.name=""+bt(s):e.removeAttribute("name")}function $s(e,t,l,a,n,u,i,s){if(u!=null&&typeof u!="function"&&typeof u!="symbol"&&typeof u!="boolean"&&(e.type=u),t!=null||l!=null){if(!(u!=="submit"&&u!=="reset"||t!=null)){hc(e);return}l=l!=null?""+bt(l):"",t=t!=null?""+bt(t):l,s||t===e.value||(e.value=t),e.defaultValue=t}a=a??n,a=typeof a!="function"&&typeof a!="symbol"&&!!a,e.checked=s?e.checked:!!a,e.defaultChecked=!!a,i!=null&&typeof i!="function"&&typeof i!="symbol"&&typeof i!="boolean"&&(e.name=i),hc(e)}function gc(e,t,l){t==="number"&&wn(e.ownerDocument)===e||e.defaultValue===""+l||(e.defaultValue=""+l)}function $l(e,t,l,a){if(e=e.options,t){t={};for(var n=0;n<l.length;n++)t["$"+l[n]]=!0;for(l=0;l<e.length;l++)n=t.hasOwnProperty("$"+e[l].value),e[l].selected!==n&&(e[l].selected=n),n&&a&&(e[l].defaultSelected=!0)}else{for(l=""+bt(l),t=null,n=0;n<e.length;n++){if(e[n].value===l){e[n].selected=!0,a&&(e[n].defaultSelected=!0);return}t!==null||e[n].disabled||(t=e[n])}t!==null&&(t.selected=!0)}}function Is(e,t,l){if(t!=null&&(t=""+bt(t),t!==e.value&&(e.value=t),l==null)){e.defaultValue!==t&&(e.defaultValue=t);return}e.defaultValue=l!=null?""+bt(l):""}function Ps(e,t,l,a){if(t==null){if(a!=null){if(l!=null)throw Error(f(92));if(_t(a)){if(1<a.length)throw Error(f(93));a=a[0]}l=a}l==null&&(l=""),t=l}l=bt(t),e.defaultValue=l,a=e.textContent,a===l&&a!==""&&a!==null&&(e.value=a),hc(e)}function Il(e,t){if(t){var l=e.firstChild;if(l&&l===e.lastChild&&l.nodeType===3){l.nodeValue=t;return}}e.textContent=t}var So=new Set("animationIterationCount aspectRatio borderImageOutset borderImageSlice borderImageWidth boxFlex boxFlexGroup boxOrdinalGroup columnCount columns flex flexGrow flexPositive flexShrink flexNegative flexOrder gridArea gridRow gridRowEnd gridRowSpan gridRowStart gridColumn gridColumnEnd gridColumnSpan gridColumnStart fontWeight lineClamp lineHeight opacity order orphans scale tabSize widows zIndex zoom fillOpacity floodOpacity stopOpacity strokeDasharray strokeDashoffset strokeMiterlimit strokeOpacity strokeWidth MozAnimationIterationCount MozBoxFlex MozBoxFlexGroup MozLineClamp msAnimationIterationCount msFlex msZoom msFlexGrow msFlexNegative msFlexOrder msFlexPositive msFlexShrink msGridColumn msGridColumnSpan msGridRow msGridRowSpan WebkitAnimationIterationCount WebkitBoxFlex WebKitBoxFlexGroup WebkitBoxOrdinalGroup WebkitColumnCount WebkitColumns WebkitFlex WebkitFlexGrow WebkitFlexPositive WebkitFlexShrink WebkitLineClamp".split(" "));function ef(e,t,l){var a=t.indexOf("--")===0;l==null||typeof l=="boolean"||l===""?a?e.setProperty(t,""):t==="float"?e.cssFloat="":e[t]="":a?e.setProperty(t,l):typeof l!="number"||l===0||So.has(t)?t==="float"?e.cssFloat=l:e[t]=(""+l).trim():e[t]=l+"px"}function tf(e,t,l){if(t!=null&&typeof t!="object")throw Error(f(62));if(e=e.style,l!=null){for(var a in l)!l.hasOwnProperty(a)||t!=null&&t.hasOwnProperty(a)||(a.indexOf("--")===0?e.setProperty(a,""):a==="float"?e.cssFloat="":e[a]="");for(var n in t)a=t[n],t.hasOwnProperty(n)&&l[n]!==a&&ef(e,n,a)}else for(var u in t)t.hasOwnProperty(u)&&ef(e,u,t[u])}function yc(e){if(e.indexOf("-")===-1)return!1;switch(e){case"annotation-xml":case"color-profile":case"font-face":case"font-face-src":case"font-face-uri":case"font-face-format":case"font-face-name":case"missing-glyph":return!1;default:return!0}}var No=new Map([["acceptCharset","accept-charset"],["htmlFor","for"],["httpEquiv","http-equiv"],["crossOrigin","crossorigin"],["accentHeight","accent-height"],["alignmentBaseline","alignment-baseline"],["arabicForm","arabic-form"],["baselineShift","baseline-shift"],["capHeight","cap-height"],["clipPath","clip-path"],["clipRule","clip-rule"],["colorInterpolation","color-interpolation"],["colorInterpolationFilters","color-interpolation-filters"],["colorProfile","color-profile"],["colorRendering","color-rendering"],["dominantBaseline","dominant-baseline"],["enableBackground","enable-background"],["fillOpacity","fill-opacity"],["fillRule","fill-rule"],["floodColor","flood-color"],["floodOpacity","flood-opacity"],["fontFamily","font-family"],["fontSize","font-size"],["fontSizeAdjust","font-size-adjust"],["fontStretch","font-stretch"],["fontStyle","font-style"],["fontVariant","font-variant"],["fontWeight","font-weight"],["glyphName","glyph-name"],["glyphOrientationHorizontal","glyph-orientation-horizontal"],["glyphOrientationVertical","glyph-orientation-vertical"],["horizAdvX","horiz-adv-x"],["horizOriginX","horiz-origin-x"],["imageRendering","image-rendering"],["letterSpacing","letter-spacing"],["lightingColor","lighting-color"],["markerEnd","marker-end"],["markerMid","marker-mid"],["markerStart","marker-start"],["overlinePosition","overline-position"],["overlineThickness","overline-thickness"],["paintOrder","paint-order"],["panose-1","panose-1"],["pointerEvents","pointer-events"],["renderingIntent","rendering-intent"],["shapeRendering","shape-rendering"],["stopColor","stop-color"],["stopOpacity","stop-opacity"],["strikethroughPosition","strikethrough-position"],["strikethroughThickness","strikethrough-thickness"],["strokeDasharray","stroke-dasharray"],["strokeDashoffset","stroke-dashoffset"],["strokeLinecap","stroke-linecap"],["strokeLinejoin","stroke-linejoin"],["strokeMiterlimit","stroke-miterlimit"],["strokeOpacity","stroke-opacity"],["strokeWidth","stroke-width"],["textAnchor","text-anchor"],["textDecoration","text-decoration"],["textRendering","text-rendering"],["transformOrigin","transform-origin"],["underlinePosition","underline-position"],["underlineThickness","underline-thickness"],["unicodeBidi","unicode-bidi"],["unicodeRange","unicode-range"],["unitsPerEm","units-per-em"],["vAlphabetic","v-alphabetic"],["vHanging","v-hanging"],["vIdeographic","v-ideographic"],["vMathematical","v-mathematical"],["vectorEffect","vector-effect"],["vertAdvY","vert-adv-y"],["vertOriginX","vert-origin-x"],["vertOriginY","vert-origin-y"],["wordSpacing","word-spacing"],["writingMode","writing-mode"],["xmlnsXlink","xmlns:xlink"],["xHeight","x-height"]]),jo=/^[\u0000-\u001F ]*j[\r\n\t]*a[\r\n\t]*v[\r\n\t]*a[\r\n\t]*s[\r\n\t]*c[\r\n\t]*r[\r\n\t]*i[\r\n\t]*p[\r\n\t]*t[\r\n\t]*:/i;function qn(e){return jo.test(""+e)?"javascript:throw new Error('React has blocked a javascript: URL as a security precaution.')":e}function qt(){}var xc=null;function vc(e){return e=e.target||e.srcElement||window,e.correspondingUseElement&&(e=e.correspondingUseElement),e.nodeType===3?e.parentNode:e}var Pl=null,ea=null;function lf(e){var t=Jl(e);if(t&&(e=t.stateNode)){var l=e[tt]||null;e:switch(e=t.stateNode,t.type){case"input":if(mc(e,l.value,l.defaultValue,l.defaultValue,l.checked,l.defaultChecked,l.type,l.name),t=l.name,l.type==="radio"&&t!=null){for(l=e;l.parentNode;)l=l.parentNode;for(l=l.querySelectorAll('input[name="'+pt(""+t)+'"][type="radio"]'),t=0;t<l.length;t++){var a=l[t];if(a!==e&&a.form===e.form){var n=a[tt]||null;if(!n)throw Error(f(90));mc(a,n.value,n.defaultValue,n.defaultValue,n.checked,n.defaultChecked,n.type,n.name)}}for(t=0;t<l.length;t++)a=l[t],a.form===e.form&&Fs(a)}break e;case"textarea":Is(e,l.value,l.defaultValue);break e;case"select":t=l.value,t!=null&&$l(e,!!l.multiple,t,!1)}}}var bc=!1;function af(e,t,l){if(bc)return e(t,l);bc=!0;try{var a=e(t);return a}finally{if(bc=!1,(Pl!==null||ea!==null)&&(Eu(),Pl&&(t=Pl,e=ea,ea=Pl=null,lf(t),e)))for(t=0;t<e.length;t++)lf(e[t])}}function Ba(e,t){var l=e.stateNode;if(l===null)return null;var a=l[tt]||null;if(a===null)return null;l=a[t];e:switch(t){case"onClick":case"onClickCapture":case"onDoubleClick":case"onDoubleClickCapture":case"onMouseDown":case"onMouseDownCapture":case"onMouseMove":case"onMouseMoveCapture":case"onMouseUp":case"onMouseUpCapture":case"onMouseEnter":(a=!a.disabled)||(e=e.type,a=!(e==="button"||e==="input"||e==="select"||e==="textarea")),e=!a;break e;default:e=!1}if(e)return null;if(l&&typeof l!="function")throw Error(f(231,t,typeof l));return l}var Gt=!(typeof window>"u"||typeof window.document>"u"||typeof window.document.createElement>"u"),pc=!1;if(Gt)try{var wa={};Object.defineProperty(wa,"passive",{get:function(){pc=!0}}),window.addEventListener("test",wa,wa),window.removeEventListener("test",wa,wa)}catch{pc=!1}var nl=null,Sc=null,Gn=null;function nf(){if(Gn)return Gn;var e,t=Sc,l=t.length,a,n="value"in nl?nl.value:nl.textContent,u=n.length;for(e=0;e<l&&t[e]===n[e];e++);var i=l-e;for(a=1;a<=i&&t[l-a]===n[u-a];a++);return Gn=n.slice(e,1<a?1-a:void 0)}function Yn(e){var t=e.keyCode;return"charCode"in e?(e=e.charCode,e===0&&t===13&&(e=13)):e=t,e===10&&(e=13),32<=e||e===13?e:0}function Ln(){return!0}function uf(){return!1}function lt(e){function t(l,a,n,u,i){this._reactName=l,this._targetInst=n,this.type=a,this.nativeEvent=u,this.target=i,this.currentTarget=null;for(var s in e)e.hasOwnProperty(s)&&(l=e[s],this[s]=l?l(u):u[s]);return this.isDefaultPrevented=(u.defaultPrevented!=null?u.defaultPrevented:u.returnValue===!1)?Ln:uf,this.isPropagationStopped=uf,this}return z(t.prototype,{preventDefault:function(){this.defaultPrevented=!0;var l=this.nativeEvent;l&&(l.preventDefault?l.preventDefault():typeof l.returnValue!="unknown"&&(l.returnValue=!1),this.isDefaultPrevented=Ln)},stopPropagation:function(){var l=this.nativeEvent;l&&(l.stopPropagation?l.stopPropagation():typeof l.cancelBubble!="unknown"&&(l.cancelBubble=!0),this.isPropagationStopped=Ln)},persist:function(){},isPersistent:Ln}),t}var _l={eventPhase:0,bubbles:0,cancelable:0,timeStamp:function(e){return e.timeStamp||Date.now()},defaultPrevented:0,isTrusted:0},Xn=lt(_l),qa=z({},_l,{view:0,detail:0}),zo=lt(qa),Nc,jc,Ga,Qn=z({},qa,{screenX:0,screenY:0,clientX:0,clientY:0,pageX:0,pageY:0,ctrlKey:0,shiftKey:0,altKey:0,metaKey:0,getModifierState:Tc,button:0,buttons:0,relatedTarget:function(e){return e.relatedTarget===void 0?e.fromElement===e.srcElement?e.toElement:e.fromElement:e.relatedTarget},movementX:function(e){return"movementX"in e?e.movementX:(e!==Ga&&(Ga&&e.type==="mousemove"?(Nc=e.screenX-Ga.screenX,jc=e.screenY-Ga.screenY):jc=Nc=0,Ga=e),Nc)},movementY:function(e){return"movementY"in e?e.movementY:jc}}),cf=lt(Qn),To=z({},Qn,{dataTransfer:0}),Eo=lt(To),Ao=z({},qa,{relatedTarget:0}),zc=lt(Ao),Mo=z({},_l,{animationName:0,elapsedTime:0,pseudoElement:0}),Oo=lt(Mo),_o=z({},_l,{clipboardData:function(e){return"clipboardData"in e?e.clipboardData:window.clipboardData}}),Do=lt(_o),Co=z({},_l,{data:0}),sf=lt(Co),ko={Esc:"Escape",Spacebar:" ",Left:"ArrowLeft",Up:"ArrowUp",Right:"ArrowRight",Down:"ArrowDown",Del:"Delete",Win:"OS",Menu:"ContextMenu",Apps:"ContextMenu",Scroll:"ScrollLock",MozPrintableKey:"Unidentified"},Uo={8:"Backspace",9:"Tab",12:"Clear",13:"Enter",16:"Shift",17:"Control",18:"Alt",19:"Pause",20:"CapsLock",27:"Escape",32:" ",33:"PageUp",34:"PageDown",35:"End",36:"Home",37:"ArrowLeft",38:"ArrowUp",39:"ArrowRight",40:"ArrowDown",45:"Insert",46:"Delete",112:"F1",113:"F2",114:"F3",115:"F4",116:"F5",117:"F6",118:"F7",119:"F8",120:"F9",121:"F10",122:"F11",123:"F12",144:"NumLock",145:"ScrollLock",224:"Meta"},Ho={Alt:"altKey",Control:"ctrlKey",Meta:"metaKey",Shift:"shiftKey"};function Ro(e){var t=this.nativeEvent;return t.getModifierState?t.getModifierState(e):(e=Ho[e])?!!t[e]:!1}function Tc(){return Ro}var Bo=z({},qa,{key:function(e){if(e.key){var t=ko[e.key]||e.key;if(t!=="Unidentified")return t}return e.type==="keypress"?(e=Yn(e),e===13?"Enter":String.fromCharCode(e)):e.type==="keydown"||e.type==="keyup"?Uo[e.keyCode]||"Unidentified":""},code:0,location:0,ctrlKey:0,shiftKey:0,altKey:0,metaKey:0,repeat:0,locale:0,getModifierState:Tc,charCode:function(e){return e.type==="keypress"?Yn(e):0},keyCode:function(e){return e.type==="keydown"||e.type==="keyup"?e.keyCode:0},which:function(e){return e.type==="keypress"?Yn(e):e.type==="keydown"||e.type==="keyup"?e.keyCode:0}}),wo=lt(Bo),qo=z({},Qn,{pointerId:0,width:0,height:0,pressure:0,tangentialPressure:0,tiltX:0,tiltY:0,twist:0,pointerType:0,isPrimary:0}),ff=lt(qo),Go=z({},qa,{touches:0,targetTouches:0,changedTouches:0,altKey:0,metaKey:0,ctrlKey:0,shiftKey:0,getModifierState:Tc}),Yo=lt(Go),Lo=z({},_l,{propertyName:0,elapsedTime:0,pseudoElement:0}),Xo=lt(Lo),Qo=z({},Qn,{deltaX:function(e){return"deltaX"in e?e.deltaX:"wheelDeltaX"in e?-e.wheelDeltaX:0},deltaY:function(e){return"deltaY"in e?e.deltaY:"wheelDeltaY"in e?-e.wheelDeltaY:"wheelDelta"in e?-e.wheelDelta:0},deltaZ:0,deltaMode:0}),Vo=lt(Qo),Zo=z({},_l,{newState:0,oldState:0}),Ko=lt(Zo),Jo=[9,13,27,32],Ec=Gt&&"CompositionEvent"in window,Ya=null;Gt&&"documentMode"in document&&(Ya=document.documentMode);var Wo=Gt&&"TextEvent"in window&&!Ya,rf=Gt&&(!Ec||Ya&&8<Ya&&11>=Ya),df=" ",of=!1;function hf(e,t){switch(e){case"keyup":return Jo.indexOf(t.keyCode)!==-1;case"keydown":return t.keyCode!==229;case"keypress":case"mousedown":case"focusout":return!0;default:return!1}}function mf(e){return e=e.detail,typeof e=="object"&&"data"in e?e.data:null}var ta=!1;function Fo(e,t){switch(e){case"compositionend":return mf(t);case"keypress":return t.which!==32?null:(of=!0,df);case"textInput":return e=t.data,e===df&&of?null:e;default:return null}}function $o(e,t){if(ta)return e==="compositionend"||!Ec&&hf(e,t)?(e=nf(),Gn=Sc=nl=null,ta=!1,e):null;switch(e){case"paste":return null;case"keypress":if(!(t.ctrlKey||t.altKey||t.metaKey)||t.ctrlKey&&t.altKey){if(t.char&&1<t.char.length)return t.char;if(t.which)return String.fromCharCode(t.which)}return null;case"compositionend":return rf&&t.locale!=="ko"?null:t.data;default:return null}}var Io={color:!0,date:!0,datetime:!0,"datetime-local":!0,email:!0,month:!0,number:!0,password:!0,range:!0,search:!0,tel:!0,text:!0,time:!0,url:!0,week:!0};function gf(e){var t=e&&e.nodeName&&e.nodeName.toLowerCase();return t==="input"?!!Io[e.type]:t==="textarea"}function yf(e,t,l,a){Pl?ea?ea.push(a):ea=[a]:Pl=a,t=ku(t,"onChange"),0<t.length&&(l=new Xn("onChange","change",null,l,a),e.push({event:l,listeners:t}))}var La=null,Xa=null;function Po(e){I0(e,0)}function Vn(e){var t=Ra(e);if(Fs(t))return e}function xf(e,t){if(e==="change")return t}var vf=!1;if(Gt){var Ac;if(Gt){var Mc="oninput"in document;if(!Mc){var bf=document.createElement("div");bf.setAttribute("oninput","return;"),Mc=typeof bf.oninput=="function"}Ac=Mc}else Ac=!1;vf=Ac&&(!document.documentMode||9<document.documentMode)}function pf(){La&&(La.detachEvent("onpropertychange",Sf),Xa=La=null)}function Sf(e){if(e.propertyName==="value"&&Vn(Xa)){var t=[];yf(t,Xa,e,vc(e)),af(Po,t)}}function eh(e,t,l){e==="focusin"?(pf(),La=t,Xa=l,La.attachEvent("onpropertychange",Sf)):e==="focusout"&&pf()}function th(e){if(e==="selectionchange"||e==="keyup"||e==="keydown")return Vn(Xa)}function lh(e,t){if(e==="click")return Vn(t)}function ah(e,t){if(e==="input"||e==="change")return Vn(t)}function nh(e,t){return e===t&&(e!==0||1/e===1/t)||e!==e&&t!==t}var ot=typeof Object.is=="function"?Object.is:nh;function Qa(e,t){if(ot(e,t))return!0;if(typeof e!="object"||e===null||typeof t!="object"||t===null)return!1;var l=Object.keys(e),a=Object.keys(t);if(l.length!==a.length)return!1;for(a=0;a<l.length;a++){var n=l[a];if(!uc.call(t,n)||!ot(e[n],t[n]))return!1}return!0}function Nf(e){for(;e&&e.firstChild;)e=e.firstChild;return e}function jf(e,t){var l=Nf(e);e=0;for(var a;l;){if(l.nodeType===3){if(a=e+l.textContent.length,e<=t&&a>=t)return{node:l,offset:t-e};e=a}e:{for(;l;){if(l.nextSibling){l=l.nextSibling;break e}l=l.parentNode}l=void 0}l=Nf(l)}}function zf(e,t){return e&&t?e===t?!0:e&&e.nodeType===3?!1:t&&t.nodeType===3?zf(e,t.parentNode):"contains"in e?e.contains(t):e.compareDocumentPosition?!!(e.compareDocumentPosition(t)&16):!1:!1}function Tf(e){e=e!=null&&e.ownerDocument!=null&&e.ownerDocument.defaultView!=null?e.ownerDocument.defaultView:window;for(var t=wn(e.document);t instanceof e.HTMLIFrameElement;){try{var l=typeof t.contentWindow.location.href=="string"}catch{l=!1}if(l)e=t.contentWindow;else break;t=wn(e.document)}return t}function Oc(e){var t=e&&e.nodeName&&e.nodeName.toLowerCase();return t&&(t==="input"&&(e.type==="text"||e.type==="search"||e.type==="tel"||e.type==="url"||e.type==="password")||t==="textarea"||e.contentEditable==="true")}var uh=Gt&&"documentMode"in document&&11>=document.documentMode,la=null,_c=null,Va=null,Dc=!1;function Ef(e,t,l){var a=l.window===l?l.document:l.nodeType===9?l:l.ownerDocument;Dc||la==null||la!==wn(a)||(a=la,"selectionStart"in a&&Oc(a)?a={start:a.selectionStart,end:a.selectionEnd}:(a=(a.ownerDocument&&a.ownerDocument.defaultView||window).getSelection(),a={anchorNode:a.anchorNode,anchorOffset:a.anchorOffset,focusNode:a.focusNode,focusOffset:a.focusOffset}),Va&&Qa(Va,a)||(Va=a,a=ku(_c,"onSelect"),0<a.length&&(t=new Xn("onSelect","select",null,t,l),e.push({event:t,listeners:a}),t.target=la)))}function Dl(e,t){var l={};return l[e.toLowerCase()]=t.toLowerCase(),l["Webkit"+e]="webkit"+t,l["Moz"+e]="moz"+t,l}var aa={animationend:Dl("Animation","AnimationEnd"),animationiteration:Dl("Animation","AnimationIteration"),animationstart:Dl("Animation","AnimationStart"),transitionrun:Dl("Transition","TransitionRun"),transitionstart:Dl("Transition","TransitionStart"),transitioncancel:Dl("Transition","TransitionCancel"),transitionend:Dl("Transition","TransitionEnd")},Cc={},Af={};Gt&&(Af=document.createElement("div").style,"AnimationEvent"in window||(delete aa.animationend.animation,delete aa.animationiteration.animation,delete aa.animationstart.animation),"TransitionEvent"in window||delete aa.transitionend.transition);function Cl(e){if(Cc[e])return Cc[e];if(!aa[e])return e;var t=aa[e],l;for(l in t)if(t.hasOwnProperty(l)&&l in Af)return Cc[e]=t[l];return e}var Mf=Cl("animationend"),Of=Cl("animationiteration"),_f=Cl("animationstart"),ch=Cl("transitionrun"),ih=Cl("transitionstart"),sh=Cl("transitioncancel"),Df=Cl("transitionend"),Cf=new Map,kc="abort auxClick beforeToggle cancel canPlay canPlayThrough click close contextMenu copy cut drag dragEnd dragEnter dragExit dragLeave dragOver dragStart drop durationChange emptied encrypted ended error gotPointerCapture input invalid keyDown keyPress keyUp load loadedData loadedMetadata loadStart lostPointerCapture mouseDown mouseMove mouseOut mouseOver mouseUp paste pause play playing pointerCancel pointerDown pointerMove pointerOut pointerOver pointerUp progress rateChange reset resize seeked seeking stalled submit suspend timeUpdate touchCancel touchEnd touchStart volumeChange scroll toggle touchMove waiting wheel".split(" ");kc.push("scrollEnd");function Dt(e,t){Cf.set(e,t),Ol(t,[e])}var Zn=typeof reportError=="function"?reportError:function(e){if(typeof window=="object"&&typeof window.ErrorEvent=="function"){var t=new window.ErrorEvent("error",{bubbles:!0,cancelable:!0,message:typeof e=="object"&&e!==null&&typeof e.message=="string"?String(e.message):String(e),error:e});if(!window.dispatchEvent(t))return}else if(typeof process=="object"&&typeof process.emit=="function"){process.emit("uncaughtException",e);return}console.error(e)},St=[],na=0,Uc=0;function Kn(){for(var e=na,t=Uc=na=0;t<e;){var l=St[t];St[t++]=null;var a=St[t];St[t++]=null;var n=St[t];St[t++]=null;var u=St[t];if(St[t++]=null,a!==null&&n!==null){var i=a.pending;i===null?n.next=n:(n.next=i.next,i.next=n),a.pending=n}u!==0&&kf(l,n,u)}}function Jn(e,t,l,a){St[na++]=e,St[na++]=t,St[na++]=l,St[na++]=a,Uc|=a,e.lanes|=a,e=e.alternate,e!==null&&(e.lanes|=a)}function Hc(e,t,l,a){return Jn(e,t,l,a),Wn(e)}function kl(e,t){return Jn(e,null,null,t),Wn(e)}function kf(e,t,l){e.lanes|=l;var a=e.alternate;a!==null&&(a.lanes|=l);for(var n=!1,u=e.return;u!==null;)u.childLanes|=l,a=u.alternate,a!==null&&(a.childLanes|=l),u.tag===22&&(e=u.stateNode,e===null||e._visibility&1||(n=!0)),e=u,u=u.return;return e.tag===3?(u=e.stateNode,n&&t!==null&&(n=31-dt(l),e=u.hiddenUpdates,a=e[n],a===null?e[n]=[t]:a.push(t),t.lane=l|536870912),u):null}function Wn(e){if(50<mn)throw mn=0,Qi=null,Error(f(185));for(var t=e.return;t!==null;)e=t,t=e.return;return e.tag===3?e.stateNode:null}var ua={};function fh(e,t,l,a){this.tag=e,this.key=l,this.sibling=this.child=this.return=this.stateNode=this.type=this.elementType=null,this.index=0,this.refCleanup=this.ref=null,this.pendingProps=t,this.dependencies=this.memoizedState=this.updateQueue=this.memoizedProps=null,this.mode=a,this.subtreeFlags=this.flags=0,this.deletions=null,this.childLanes=this.lanes=0,this.alternate=null}function ht(e,t,l,a){return new fh(e,t,l,a)}function Rc(e){return e=e.prototype,!(!e||!e.isReactComponent)}function Yt(e,t){var l=e.alternate;return l===null?(l=ht(e.tag,t,e.key,e.mode),l.elementType=e.elementType,l.type=e.type,l.stateNode=e.stateNode,l.alternate=e,e.alternate=l):(l.pendingProps=t,l.type=e.type,l.flags=0,l.subtreeFlags=0,l.deletions=null),l.flags=e.flags&65011712,l.childLanes=e.childLanes,l.lanes=e.lanes,l.child=e.child,l.memoizedProps=e.memoizedProps,l.memoizedState=e.memoizedState,l.updateQueue=e.updateQueue,t=e.dependencies,l.dependencies=t===null?null:{lanes:t.lanes,firstContext:t.firstContext},l.sibling=e.sibling,l.index=e.index,l.ref=e.ref,l.refCleanup=e.refCleanup,l}function Uf(e,t){e.flags&=65011714;var l=e.alternate;return l===null?(e.childLanes=0,e.lanes=t,e.child=null,e.subtreeFlags=0,e.memoizedProps=null,e.memoizedState=null,e.updateQueue=null,e.dependencies=null,e.stateNode=null):(e.childLanes=l.childLanes,e.lanes=l.lanes,e.child=l.child,e.subtreeFlags=0,e.deletions=null,e.memoizedProps=l.memoizedProps,e.memoizedState=l.memoizedState,e.updateQueue=l.updateQueue,e.type=l.type,t=l.dependencies,e.dependencies=t===null?null:{lanes:t.lanes,firstContext:t.firstContext}),e}function Fn(e,t,l,a,n,u){var i=0;if(a=e,typeof e=="function")Rc(e)&&(i=1);else if(typeof e=="string")i=m1(e,l,R.current)?26:e==="html"||e==="head"||e==="body"?27:5;else e:switch(e){case Ue:return e=ht(31,l,t,n),e.elementType=Ue,e.lanes=u,e;case se:return Ul(l.children,n,u,t);case Oe:i=8,n|=24;break;case De:return e=ht(12,l,t,n|2),e.elementType=De,e.lanes=u,e;case de:return e=ht(13,l,t,n),e.elementType=de,e.lanes=u,e;case le:return e=ht(19,l,t,n),e.elementType=le,e.lanes=u,e;default:if(typeof e=="object"&&e!==null)switch(e.$$typeof){case Z:i=10;break e;case J:i=9;break e;case W:i=11;break e;case G:i=14;break e;case _e:i=16,a=null;break e}i=29,l=Error(f(130,e===null?"null":typeof e,"")),a=null}return t=ht(i,l,t,n),t.elementType=e,t.type=a,t.lanes=u,t}function Ul(e,t,l,a){return e=ht(7,e,a,t),e.lanes=l,e}function Bc(e,t,l){return e=ht(6,e,null,t),e.lanes=l,e}function Hf(e){var t=ht(18,null,null,0);return t.stateNode=e,t}function wc(e,t,l){return t=ht(4,e.children!==null?e.children:[],e.key,t),t.lanes=l,t.stateNode={containerInfo:e.containerInfo,pendingChildren:null,implementation:e.implementation},t}var Rf=new WeakMap;function Nt(e,t){if(typeof e=="object"&&e!==null){var l=Rf.get(e);return l!==void 0?l:(t={value:e,source:t,stack:Us(t)},Rf.set(e,t),t)}return{value:e,source:t,stack:Us(t)}}var ca=[],ia=0,$n=null,Za=0,jt=[],zt=0,ul=null,Ut=1,Ht="";function Lt(e,t){ca[ia++]=Za,ca[ia++]=$n,$n=e,Za=t}function Bf(e,t,l){jt[zt++]=Ut,jt[zt++]=Ht,jt[zt++]=ul,ul=e;var a=Ut;e=Ht;var n=32-dt(a)-1;a&=~(1<<n),l+=1;var u=32-dt(t)+n;if(30<u){var i=n-n%5;u=(a&(1<<i)-1).toString(32),a>>=i,n-=i,Ut=1<<32-dt(t)+n|l<<n|a,Ht=u+e}else Ut=1<<u|l<<n|a,Ht=e}function qc(e){e.return!==null&&(Lt(e,1),Bf(e,1,0))}function Gc(e){for(;e===$n;)$n=ca[--ia],ca[ia]=null,Za=ca[--ia],ca[ia]=null;for(;e===ul;)ul=jt[--zt],jt[zt]=null,Ht=jt[--zt],jt[zt]=null,Ut=jt[--zt],jt[zt]=null}function wf(e,t){jt[zt++]=Ut,jt[zt++]=Ht,jt[zt++]=ul,Ut=t.id,Ht=t.overflow,ul=e}var Ze=null,Ee=null,fe=!1,cl=null,Tt=!1,Yc=Error(f(519));function il(e){var t=Error(f(418,1<arguments.length&&arguments[1]!==void 0&&arguments[1]?"text":"HTML",""));throw Ka(Nt(t,e)),Yc}function qf(e){var t=e.stateNode,l=e.type,a=e.memoizedProps;switch(t[Ve]=e,t[tt]=a,l){case"dialog":ue("cancel",t),ue("close",t);break;case"iframe":case"object":case"embed":ue("load",t);break;case"video":case"audio":for(l=0;l<yn.length;l++)ue(yn[l],t);break;case"source":ue("error",t);break;case"img":case"image":case"link":ue("error",t),ue("load",t);break;case"details":ue("toggle",t);break;case"input":ue("invalid",t),$s(t,a.value,a.defaultValue,a.checked,a.defaultChecked,a.type,a.name,!0);break;case"select":ue("invalid",t);break;case"textarea":ue("invalid",t),Ps(t,a.value,a.defaultValue,a.children)}l=a.children,typeof l!="string"&&typeof l!="number"&&typeof l!="bigint"||t.textContent===""+l||a.suppressHydrationWarning===!0||ld(t.textContent,l)?(a.popover!=null&&(ue("beforetoggle",t),ue("toggle",t)),a.onScroll!=null&&ue("scroll",t),a.onScrollEnd!=null&&ue("scrollend",t),a.onClick!=null&&(t.onclick=qt),t=!0):t=!1,t||il(e,!0)}function Gf(e){for(Ze=e.return;Ze;)switch(Ze.tag){case 5:case 31:case 13:Tt=!1;return;case 27:case 3:Tt=!0;return;default:Ze=Ze.return}}function sa(e){if(e!==Ze)return!1;if(!fe)return Gf(e),fe=!0,!1;var t=e.tag,l;if((l=t!==3&&t!==27)&&((l=t===5)&&(l=e.type,l=!(l!=="form"&&l!=="button")||us(e.type,e.memoizedProps)),l=!l),l&&Ee&&il(e),Gf(e),t===13){if(e=e.memoizedState,e=e!==null?e.dehydrated:null,!e)throw Error(f(317));Ee=dd(e)}else if(t===31){if(e=e.memoizedState,e=e!==null?e.dehydrated:null,!e)throw Error(f(317));Ee=dd(e)}else t===27?(t=Ee,Sl(e.type)?(e=rs,rs=null,Ee=e):Ee=t):Ee=Ze?At(e.stateNode.nextSibling):null;return!0}function Hl(){Ee=Ze=null,fe=!1}function Lc(){var e=cl;return e!==null&&(ct===null?ct=e:ct.push.apply(ct,e),cl=null),e}function Ka(e){cl===null?cl=[e]:cl.push(e)}var Xc=o(null),Rl=null,Xt=null;function sl(e,t,l){k(Xc,t._currentValue),t._currentValue=l}function Qt(e){e._currentValue=Xc.current,M(Xc)}function Qc(e,t,l){for(;e!==null;){var a=e.alternate;if((e.childLanes&t)!==t?(e.childLanes|=t,a!==null&&(a.childLanes|=t)):a!==null&&(a.childLanes&t)!==t&&(a.childLanes|=t),e===l)break;e=e.return}}function Vc(e,t,l,a){var n=e.child;for(n!==null&&(n.return=e);n!==null;){var u=n.dependencies;if(u!==null){var i=n.child;u=u.firstContext;e:for(;u!==null;){var s=u;u=n;for(var r=0;r<t.length;r++)if(s.context===t[r]){u.lanes|=l,s=u.alternate,s!==null&&(s.lanes|=l),Qc(u.return,l,e),a||(i=null);break e}u=s.next}}else if(n.tag===18){if(i=n.return,i===null)throw Error(f(341));i.lanes|=l,u=i.alternate,u!==null&&(u.lanes|=l),Qc(i,l,e),i=null}else i=n.child;if(i!==null)i.return=n;else for(i=n;i!==null;){if(i===e){i=null;break}if(n=i.sibling,n!==null){n.return=i.return,i=n;break}i=i.return}n=i}}function fa(e,t,l,a){e=null;for(var n=t,u=!1;n!==null;){if(!u){if((n.flags&524288)!==0)u=!0;else if((n.flags&262144)!==0)break}if(n.tag===10){var i=n.alternate;if(i===null)throw Error(f(387));if(i=i.memoizedProps,i!==null){var s=n.type;ot(n.pendingProps.value,i.value)||(e!==null?e.push(s):e=[s])}}else if(n===ye.current){if(i=n.alternate,i===null)throw Error(f(387));i.memoizedState.memoizedState!==n.memoizedState.memoizedState&&(e!==null?e.push(Sn):e=[Sn])}n=n.return}e!==null&&Vc(t,e,l,a),t.flags|=262144}function In(e){for(e=e.firstContext;e!==null;){if(!ot(e.context._currentValue,e.memoizedValue))return!0;e=e.next}return!1}function Bl(e){Rl=e,Xt=null,e=e.dependencies,e!==null&&(e.firstContext=null)}function Ke(e){return Yf(Rl,e)}function Pn(e,t){return Rl===null&&Bl(e),Yf(e,t)}function Yf(e,t){var l=t._currentValue;if(t={context:t,memoizedValue:l,next:null},Xt===null){if(e===null)throw Error(f(308));Xt=t,e.dependencies={lanes:0,firstContext:t},e.flags|=524288}else Xt=Xt.next=t;return l}var rh=typeof AbortController<"u"?AbortController:function(){var e=[],t=this.signal={aborted:!1,addEventListener:function(l,a){e.push(a)}};this.abort=function(){t.aborted=!0,e.forEach(function(l){return l()})}},dh=S.unstable_scheduleCallback,oh=S.unstable_NormalPriority,we={$$typeof:Z,Consumer:null,Provider:null,_currentValue:null,_currentValue2:null,_threadCount:0};function Zc(){return{controller:new rh,data:new Map,refCount:0}}function Ja(e){e.refCount--,e.refCount===0&&dh(oh,function(){e.controller.abort()})}var Wa=null,Kc=0,ra=0,da=null;function hh(e,t){if(Wa===null){var l=Wa=[];Kc=0,ra=Fi(),da={status:"pending",value:void 0,then:function(a){l.push(a)}}}return Kc++,t.then(Lf,Lf),t}function Lf(){if(--Kc===0&&Wa!==null){da!==null&&(da.status="fulfilled");var e=Wa;Wa=null,ra=0,da=null;for(var t=0;t<e.length;t++)(0,e[t])()}}function mh(e,t){var l=[],a={status:"pending",value:null,reason:null,then:function(n){l.push(n)}};return e.then(function(){a.status="fulfilled",a.value=t;for(var n=0;n<l.length;n++)(0,l[n])(t)},function(n){for(a.status="rejected",a.reason=n,n=0;n<l.length;n++)(0,l[n])(void 0)}),a}var Xf=j.S;j.S=function(e,t){E0=ft(),typeof t=="object"&&t!==null&&typeof t.then=="function"&&hh(e,t),Xf!==null&&Xf(e,t)};var wl=o(null);function Jc(){var e=wl.current;return e!==null?e:ze.pooledCache}function eu(e,t){t===null?k(wl,wl.current):k(wl,t.pool)}function Qf(){var e=Jc();return e===null?null:{parent:we._currentValue,pool:e}}var oa=Error(f(460)),Wc=Error(f(474)),tu=Error(f(542)),lu={then:function(){}};function Vf(e){return e=e.status,e==="fulfilled"||e==="rejected"}function Zf(e,t,l){switch(l=e[l],l===void 0?e.push(t):l!==t&&(t.then(qt,qt),t=l),t.status){case"fulfilled":return t.value;case"rejected":throw e=t.reason,Jf(e),e;default:if(typeof t.status=="string")t.then(qt,qt);else{if(e=ze,e!==null&&100<e.shellSuspendCounter)throw Error(f(482));e=t,e.status="pending",e.then(function(a){if(t.status==="pending"){var n=t;n.status="fulfilled",n.value=a}},function(a){if(t.status==="pending"){var n=t;n.status="rejected",n.reason=a}})}switch(t.status){case"fulfilled":return t.value;case"rejected":throw e=t.reason,Jf(e),e}throw Gl=t,oa}}function ql(e){try{var t=e._init;return t(e._payload)}catch(l){throw l!==null&&typeof l=="object"&&typeof l.then=="function"?(Gl=l,oa):l}}var Gl=null;function Kf(){if(Gl===null)throw Error(f(459));var e=Gl;return Gl=null,e}function Jf(e){if(e===oa||e===tu)throw Error(f(483))}var ha=null,Fa=0;function au(e){var t=Fa;return Fa+=1,ha===null&&(ha=[]),Zf(ha,e,t)}function $a(e,t){t=t.props.ref,e.ref=t!==void 0?t:null}function nu(e,t){throw t.$$typeof===L?Error(f(525)):(e=Object.prototype.toString.call(t),Error(f(31,e==="[object Object]"?"object with keys {"+Object.keys(t).join(", ")+"}":e)))}function Wf(e){function t(h,d){if(e){var m=h.deletions;m===null?(h.deletions=[d],h.flags|=16):m.push(d)}}function l(h,d){if(!e)return null;for(;d!==null;)t(h,d),d=d.sibling;return null}function a(h){for(var d=new Map;h!==null;)h.key!==null?d.set(h.key,h):d.set(h.index,h),h=h.sibling;return d}function n(h,d){return h=Yt(h,d),h.index=0,h.sibling=null,h}function u(h,d,m){return h.index=m,e?(m=h.alternate,m!==null?(m=m.index,m<d?(h.flags|=67108866,d):m):(h.flags|=67108866,d)):(h.flags|=1048576,d)}function i(h){return e&&h.alternate===null&&(h.flags|=67108866),h}function s(h,d,m,T){return d===null||d.tag!==6?(d=Bc(m,h.mode,T),d.return=h,d):(d=n(d,m),d.return=h,d)}function r(h,d,m,T){var q=m.type;return q===se?N(h,d,m.props.children,T,m.key):d!==null&&(d.elementType===q||typeof q=="object"&&q!==null&&q.$$typeof===_e&&ql(q)===d.type)?(d=n(d,m.props),$a(d,m),d.return=h,d):(d=Fn(m.type,m.key,m.props,null,h.mode,T),$a(d,m),d.return=h,d)}function g(h,d,m,T){return d===null||d.tag!==4||d.stateNode.containerInfo!==m.containerInfo||d.stateNode.implementation!==m.implementation?(d=wc(m,h.mode,T),d.return=h,d):(d=n(d,m.children||[]),d.return=h,d)}function N(h,d,m,T,q){return d===null||d.tag!==7?(d=Ul(m,h.mode,T,q),d.return=h,d):(d=n(d,m),d.return=h,d)}function E(h,d,m){if(typeof d=="string"&&d!==""||typeof d=="number"||typeof d=="bigint")return d=Bc(""+d,h.mode,m),d.return=h,d;if(typeof d=="object"&&d!==null){switch(d.$$typeof){case te:return m=Fn(d.type,d.key,d.props,null,h.mode,m),$a(m,d),m.return=h,m;case Q:return d=wc(d,h.mode,m),d.return=h,d;case _e:return d=ql(d),E(h,d,m)}if(_t(d)||Te(d))return d=Ul(d,h.mode,m,null),d.return=h,d;if(typeof d.then=="function")return E(h,au(d),m);if(d.$$typeof===Z)return E(h,Pn(h,d),m);nu(h,d)}return null}function y(h,d,m,T){var q=d!==null?d.key:null;if(typeof m=="string"&&m!==""||typeof m=="number"||typeof m=="bigint")return q!==null?null:s(h,d,""+m,T);if(typeof m=="object"&&m!==null){switch(m.$$typeof){case te:return m.key===q?r(h,d,m,T):null;case Q:return m.key===q?g(h,d,m,T):null;case _e:return m=ql(m),y(h,d,m,T)}if(_t(m)||Te(m))return q!==null?null:N(h,d,m,T,null);if(typeof m.then=="function")return y(h,d,au(m),T);if(m.$$typeof===Z)return y(h,d,Pn(h,m),T);nu(h,m)}return null}function x(h,d,m,T,q){if(typeof T=="string"&&T!==""||typeof T=="number"||typeof T=="bigint")return h=h.get(m)||null,s(d,h,""+T,q);if(typeof T=="object"&&T!==null){switch(T.$$typeof){case te:return h=h.get(T.key===null?m:T.key)||null,r(d,h,T,q);case Q:return h=h.get(T.key===null?m:T.key)||null,g(d,h,T,q);case _e:return T=ql(T),x(h,d,m,T,q)}if(_t(T)||Te(T))return h=h.get(m)||null,N(d,h,T,q,null);if(typeof T.then=="function")return x(h,d,m,au(T),q);if(T.$$typeof===Z)return x(h,d,m,Pn(d,T),q);nu(d,T)}return null}function H(h,d,m,T){for(var q=null,oe=null,B=d,ee=d=0,ie=null;B!==null&&ee<m.length;ee++){B.index>ee?(ie=B,B=null):ie=B.sibling;var he=y(h,B,m[ee],T);if(he===null){B===null&&(B=ie);break}e&&B&&he.alternate===null&&t(h,B),d=u(he,d,ee),oe===null?q=he:oe.sibling=he,oe=he,B=ie}if(ee===m.length)return l(h,B),fe&&Lt(h,ee),q;if(B===null){for(;ee<m.length;ee++)B=E(h,m[ee],T),B!==null&&(d=u(B,d,ee),oe===null?q=B:oe.sibling=B,oe=B);return fe&&Lt(h,ee),q}for(B=a(B);ee<m.length;ee++)ie=x(B,h,ee,m[ee],T),ie!==null&&(e&&ie.alternate!==null&&B.delete(ie.key===null?ee:ie.key),d=u(ie,d,ee),oe===null?q=ie:oe.sibling=ie,oe=ie);return e&&B.forEach(function(El){return t(h,El)}),fe&&Lt(h,ee),q}function X(h,d,m,T){if(m==null)throw Error(f(151));for(var q=null,oe=null,B=d,ee=d=0,ie=null,he=m.next();B!==null&&!he.done;ee++,he=m.next()){B.index>ee?(ie=B,B=null):ie=B.sibling;var El=y(h,B,he.value,T);if(El===null){B===null&&(B=ie);break}e&&B&&El.alternate===null&&t(h,B),d=u(El,d,ee),oe===null?q=El:oe.sibling=El,oe=El,B=ie}if(he.done)return l(h,B),fe&&Lt(h,ee),q;if(B===null){for(;!he.done;ee++,he=m.next())he=E(h,he.value,T),he!==null&&(d=u(he,d,ee),oe===null?q=he:oe.sibling=he,oe=he);return fe&&Lt(h,ee),q}for(B=a(B);!he.done;ee++,he=m.next())he=x(B,h,ee,he.value,T),he!==null&&(e&&he.alternate!==null&&B.delete(he.key===null?ee:he.key),d=u(he,d,ee),oe===null?q=he:oe.sibling=he,oe=he);return e&&B.forEach(function(T1){return t(h,T1)}),fe&&Lt(h,ee),q}function Ne(h,d,m,T){if(typeof m=="object"&&m!==null&&m.type===se&&m.key===null&&(m=m.props.children),typeof m=="object"&&m!==null){switch(m.$$typeof){case te:e:{for(var q=m.key;d!==null;){if(d.key===q){if(q=m.type,q===se){if(d.tag===7){l(h,d.sibling),T=n(d,m.props.children),T.return=h,h=T;break e}}else if(d.elementType===q||typeof q=="object"&&q!==null&&q.$$typeof===_e&&ql(q)===d.type){l(h,d.sibling),T=n(d,m.props),$a(T,m),T.return=h,h=T;break e}l(h,d);break}else t(h,d);d=d.sibling}m.type===se?(T=Ul(m.props.children,h.mode,T,m.key),T.return=h,h=T):(T=Fn(m.type,m.key,m.props,null,h.mode,T),$a(T,m),T.return=h,h=T)}return i(h);case Q:e:{for(q=m.key;d!==null;){if(d.key===q)if(d.tag===4&&d.stateNode.containerInfo===m.containerInfo&&d.stateNode.implementation===m.implementation){l(h,d.sibling),T=n(d,m.children||[]),T.return=h,h=T;break e}else{l(h,d);break}else t(h,d);d=d.sibling}T=wc(m,h.mode,T),T.return=h,h=T}return i(h);case _e:return m=ql(m),Ne(h,d,m,T)}if(_t(m))return H(h,d,m,T);if(Te(m)){if(q=Te(m),typeof q!="function")throw Error(f(150));return m=q.call(m),X(h,d,m,T)}if(typeof m.then=="function")return Ne(h,d,au(m),T);if(m.$$typeof===Z)return Ne(h,d,Pn(h,m),T);nu(h,m)}return typeof m=="string"&&m!==""||typeof m=="number"||typeof m=="bigint"?(m=""+m,d!==null&&d.tag===6?(l(h,d.sibling),T=n(d,m),T.return=h,h=T):(l(h,d),T=Bc(m,h.mode,T),T.return=h,h=T),i(h)):l(h,d)}return function(h,d,m,T){try{Fa=0;var q=Ne(h,d,m,T);return ha=null,q}catch(B){if(B===oa||B===tu)throw B;var oe=ht(29,B,null,h.mode);return oe.lanes=T,oe.return=h,oe}finally{}}}var Yl=Wf(!0),Ff=Wf(!1),fl=!1;function Fc(e){e.updateQueue={baseState:e.memoizedState,firstBaseUpdate:null,lastBaseUpdate:null,shared:{pending:null,lanes:0,hiddenCallbacks:null},callbacks:null}}function $c(e,t){e=e.updateQueue,t.updateQueue===e&&(t.updateQueue={baseState:e.baseState,firstBaseUpdate:e.firstBaseUpdate,lastBaseUpdate:e.lastBaseUpdate,shared:e.shared,callbacks:null})}function rl(e){return{lane:e,tag:0,payload:null,callback:null,next:null}}function dl(e,t,l){var a=e.updateQueue;if(a===null)return null;if(a=a.shared,(ge&2)!==0){var n=a.pending;return n===null?t.next=t:(t.next=n.next,n.next=t),a.pending=t,t=Wn(e),kf(e,null,l),t}return Jn(e,a,t,l),Wn(e)}function Ia(e,t,l){if(t=t.updateQueue,t!==null&&(t=t.shared,(l&4194048)!==0)){var a=t.lanes;a&=e.pendingLanes,l|=a,t.lanes=l,Gs(e,l)}}function Ic(e,t){var l=e.updateQueue,a=e.alternate;if(a!==null&&(a=a.updateQueue,l===a)){var n=null,u=null;if(l=l.firstBaseUpdate,l!==null){do{var i={lane:l.lane,tag:l.tag,payload:l.payload,callback:null,next:null};u===null?n=u=i:u=u.next=i,l=l.next}while(l!==null);u===null?n=u=t:u=u.next=t}else n=u=t;l={baseState:a.baseState,firstBaseUpdate:n,lastBaseUpdate:u,shared:a.shared,callbacks:a.callbacks},e.updateQueue=l;return}e=l.lastBaseUpdate,e===null?l.firstBaseUpdate=t:e.next=t,l.lastBaseUpdate=t}var Pc=!1;function Pa(){if(Pc){var e=da;if(e!==null)throw e}}function en(e,t,l,a){Pc=!1;var n=e.updateQueue;fl=!1;var u=n.firstBaseUpdate,i=n.lastBaseUpdate,s=n.shared.pending;if(s!==null){n.shared.pending=null;var r=s,g=r.next;r.next=null,i===null?u=g:i.next=g,i=r;var N=e.alternate;N!==null&&(N=N.updateQueue,s=N.lastBaseUpdate,s!==i&&(s===null?N.firstBaseUpdate=g:s.next=g,N.lastBaseUpdate=r))}if(u!==null){var E=n.baseState;i=0,N=g=r=null,s=u;do{var y=s.lane&-536870913,x=y!==s.lane;if(x?(ce&y)===y:(a&y)===y){y!==0&&y===ra&&(Pc=!0),N!==null&&(N=N.next={lane:0,tag:s.tag,payload:s.payload,callback:null,next:null});e:{var H=e,X=s;y=t;var Ne=l;switch(X.tag){case 1:if(H=X.payload,typeof H=="function"){E=H.call(Ne,E,y);break e}E=H;break e;case 3:H.flags=H.flags&-65537|128;case 0:if(H=X.payload,y=typeof H=="function"?H.call(Ne,E,y):H,y==null)break e;E=z({},E,y);break e;case 2:fl=!0}}y=s.callback,y!==null&&(e.flags|=64,x&&(e.flags|=8192),x=n.callbacks,x===null?n.callbacks=[y]:x.push(y))}else x={lane:y,tag:s.tag,payload:s.payload,callback:s.callback,next:null},N===null?(g=N=x,r=E):N=N.next=x,i|=y;if(s=s.next,s===null){if(s=n.shared.pending,s===null)break;x=s,s=x.next,x.next=null,n.lastBaseUpdate=x,n.shared.pending=null}}while(!0);N===null&&(r=E),n.baseState=r,n.firstBaseUpdate=g,n.lastBaseUpdate=N,u===null&&(n.shared.lanes=0),yl|=i,e.lanes=i,e.memoizedState=E}}function $f(e,t){if(typeof e!="function")throw Error(f(191,e));e.call(t)}function If(e,t){var l=e.callbacks;if(l!==null)for(e.callbacks=null,e=0;e<l.length;e++)$f(l[e],t)}var ma=o(null),uu=o(0);function Pf(e,t){e=Pt,k(uu,e),k(ma,t),Pt=e|t.baseLanes}function ei(){k(uu,Pt),k(ma,ma.current)}function ti(){Pt=uu.current,M(ma),M(uu)}var mt=o(null),Et=null;function ol(e){var t=e.alternate;k(Re,Re.current&1),k(mt,e),Et===null&&(t===null||ma.current!==null||t.memoizedState!==null)&&(Et=e)}function li(e){k(Re,Re.current),k(mt,e),Et===null&&(Et=e)}function er(e){e.tag===22?(k(Re,Re.current),k(mt,e),Et===null&&(Et=e)):hl()}function hl(){k(Re,Re.current),k(mt,mt.current)}function gt(e){M(mt),Et===e&&(Et=null),M(Re)}var Re=o(0);function cu(e){for(var t=e;t!==null;){if(t.tag===13){var l=t.memoizedState;if(l!==null&&(l=l.dehydrated,l===null||ss(l)||fs(l)))return t}else if(t.tag===19&&(t.memoizedProps.revealOrder==="forwards"||t.memoizedProps.revealOrder==="backwards"||t.memoizedProps.revealOrder==="unstable_legacy-backwards"||t.memoizedProps.revealOrder==="together")){if((t.flags&128)!==0)return t}else if(t.child!==null){t.child.return=t,t=t.child;continue}if(t===e)break;for(;t.sibling===null;){if(t.return===null||t.return===e)return null;t=t.return}t.sibling.return=t.return,t=t.sibling}return null}var Vt=0,P=null,pe=null,qe=null,iu=!1,ga=!1,Ll=!1,su=0,tn=0,ya=null,gh=0;function Ce(){throw Error(f(321))}function ai(e,t){if(t===null)return!1;for(var l=0;l<t.length&&l<e.length;l++)if(!ot(e[l],t[l]))return!1;return!0}function ni(e,t,l,a,n,u){return Vt=u,P=t,t.memoizedState=null,t.updateQueue=null,t.lanes=0,j.H=e===null||e.memoizedState===null?Br:bi,Ll=!1,u=l(a,n),Ll=!1,ga&&(u=lr(t,l,a,n)),tr(e),u}function tr(e){j.H=nn;var t=pe!==null&&pe.next!==null;if(Vt=0,qe=pe=P=null,iu=!1,tn=0,ya=null,t)throw Error(f(300));e===null||Ge||(e=e.dependencies,e!==null&&In(e)&&(Ge=!0))}function lr(e,t,l,a){P=e;var n=0;do{if(ga&&(ya=null),tn=0,ga=!1,25<=n)throw Error(f(301));if(n+=1,qe=pe=null,e.updateQueue!=null){var u=e.updateQueue;u.lastEffect=null,u.events=null,u.stores=null,u.memoCache!=null&&(u.memoCache.index=0)}j.H=wr,u=t(l,a)}while(ga);return u}function yh(){var e=j.H,t=e.useState()[0];return t=typeof t.then=="function"?ln(t):t,e=e.useState()[0],(pe!==null?pe.memoizedState:null)!==e&&(P.flags|=1024),t}function ui(){var e=su!==0;return su=0,e}function ci(e,t,l){t.updateQueue=e.updateQueue,t.flags&=-2053,e.lanes&=~l}function ii(e){if(iu){for(e=e.memoizedState;e!==null;){var t=e.queue;t!==null&&(t.pending=null),e=e.next}iu=!1}Vt=0,qe=pe=P=null,ga=!1,tn=su=0,ya=null}function Ie(){var e={memoizedState:null,baseState:null,baseQueue:null,queue:null,next:null};return qe===null?P.memoizedState=qe=e:qe=qe.next=e,qe}function Be(){if(pe===null){var e=P.alternate;e=e!==null?e.memoizedState:null}else e=pe.next;var t=qe===null?P.memoizedState:qe.next;if(t!==null)qe=t,pe=e;else{if(e===null)throw P.alternate===null?Error(f(467)):Error(f(310));pe=e,e={memoizedState:pe.memoizedState,baseState:pe.baseState,baseQueue:pe.baseQueue,queue:pe.queue,next:null},qe===null?P.memoizedState=qe=e:qe=qe.next=e}return qe}function fu(){return{lastEffect:null,events:null,stores:null,memoCache:null}}function ln(e){var t=tn;return tn+=1,ya===null&&(ya=[]),e=Zf(ya,e,t),t=P,(qe===null?t.memoizedState:qe.next)===null&&(t=t.alternate,j.H=t===null||t.memoizedState===null?Br:bi),e}function ru(e){if(e!==null&&typeof e=="object"){if(typeof e.then=="function")return ln(e);if(e.$$typeof===Z)return Ke(e)}throw Error(f(438,String(e)))}function si(e){var t=null,l=P.updateQueue;if(l!==null&&(t=l.memoCache),t==null){var a=P.alternate;a!==null&&(a=a.updateQueue,a!==null&&(a=a.memoCache,a!=null&&(t={data:a.data.map(function(n){return n.slice()}),index:0})))}if(t==null&&(t={data:[],index:0}),l===null&&(l=fu(),P.updateQueue=l),l.memoCache=t,l=t.data[t.index],l===void 0)for(l=t.data[t.index]=Array(e),a=0;a<e;a++)l[a]=st;return t.index++,l}function Zt(e,t){return typeof t=="function"?t(e):t}function du(e){var t=Be();return fi(t,pe,e)}function fi(e,t,l){var a=e.queue;if(a===null)throw Error(f(311));a.lastRenderedReducer=l;var n=e.baseQueue,u=a.pending;if(u!==null){if(n!==null){var i=n.next;n.next=u.next,u.next=i}t.baseQueue=n=u,a.pending=null}if(u=e.baseState,n===null)e.memoizedState=u;else{t=n.next;var s=i=null,r=null,g=t,N=!1;do{var E=g.lane&-536870913;if(E!==g.lane?(ce&E)===E:(Vt&E)===E){var y=g.revertLane;if(y===0)r!==null&&(r=r.next={lane:0,revertLane:0,gesture:null,action:g.action,hasEagerState:g.hasEagerState,eagerState:g.eagerState,next:null}),E===ra&&(N=!0);else if((Vt&y)===y){g=g.next,y===ra&&(N=!0);continue}else E={lane:0,revertLane:g.revertLane,gesture:null,action:g.action,hasEagerState:g.hasEagerState,eagerState:g.eagerState,next:null},r===null?(s=r=E,i=u):r=r.next=E,P.lanes|=y,yl|=y;E=g.action,Ll&&l(u,E),u=g.hasEagerState?g.eagerState:l(u,E)}else y={lane:E,revertLane:g.revertLane,gesture:g.gesture,action:g.action,hasEagerState:g.hasEagerState,eagerState:g.eagerState,next:null},r===null?(s=r=y,i=u):r=r.next=y,P.lanes|=E,yl|=E;g=g.next}while(g!==null&&g!==t);if(r===null?i=u:r.next=s,!ot(u,e.memoizedState)&&(Ge=!0,N&&(l=da,l!==null)))throw l;e.memoizedState=u,e.baseState=i,e.baseQueue=r,a.lastRenderedState=u}return n===null&&(a.lanes=0),[e.memoizedState,a.dispatch]}function ri(e){var t=Be(),l=t.queue;if(l===null)throw Error(f(311));l.lastRenderedReducer=e;var a=l.dispatch,n=l.pending,u=t.memoizedState;if(n!==null){l.pending=null;var i=n=n.next;do u=e(u,i.action),i=i.next;while(i!==n);ot(u,t.memoizedState)||(Ge=!0),t.memoizedState=u,t.baseQueue===null&&(t.baseState=u),l.lastRenderedState=u}return[u,a]}function ar(e,t,l){var a=P,n=Be(),u=fe;if(u){if(l===void 0)throw Error(f(407));l=l()}else l=t();var i=!ot((pe||n).memoizedState,l);if(i&&(n.memoizedState=l,Ge=!0),n=n.queue,hi(cr.bind(null,a,n,e),[e]),n.getSnapshot!==t||i||qe!==null&&qe.memoizedState.tag&1){if(a.flags|=2048,xa(9,{destroy:void 0},ur.bind(null,a,n,l,t),null),ze===null)throw Error(f(349));u||(Vt&127)!==0||nr(a,t,l)}return l}function nr(e,t,l){e.flags|=16384,e={getSnapshot:t,value:l},t=P.updateQueue,t===null?(t=fu(),P.updateQueue=t,t.stores=[e]):(l=t.stores,l===null?t.stores=[e]:l.push(e))}function ur(e,t,l,a){t.value=l,t.getSnapshot=a,ir(t)&&sr(e)}function cr(e,t,l){return l(function(){ir(t)&&sr(e)})}function ir(e){var t=e.getSnapshot;e=e.value;try{var l=t();return!ot(e,l)}catch{return!0}}function sr(e){var t=kl(e,2);t!==null&&it(t,e,2)}function di(e){var t=Ie();if(typeof e=="function"){var l=e;if(e=l(),Ll){ll(!0);try{l()}finally{ll(!1)}}}return t.memoizedState=t.baseState=e,t.queue={pending:null,lanes:0,dispatch:null,lastRenderedReducer:Zt,lastRenderedState:e},t}function fr(e,t,l,a){return e.baseState=l,fi(e,pe,typeof a=="function"?a:Zt)}function xh(e,t,l,a,n){if(mu(e))throw Error(f(485));if(e=t.action,e!==null){var u={payload:n,action:e,next:null,isTransition:!0,status:"pending",value:null,reason:null,listeners:[],then:function(i){u.listeners.push(i)}};j.T!==null?l(!0):u.isTransition=!1,a(u),l=t.pending,l===null?(u.next=t.pending=u,rr(t,u)):(u.next=l.next,t.pending=l.next=u)}}function rr(e,t){var l=t.action,a=t.payload,n=e.state;if(t.isTransition){var u=j.T,i={};j.T=i;try{var s=l(n,a),r=j.S;r!==null&&r(i,s),dr(e,t,s)}catch(g){oi(e,t,g)}finally{u!==null&&i.types!==null&&(u.types=i.types),j.T=u}}else try{u=l(n,a),dr(e,t,u)}catch(g){oi(e,t,g)}}function dr(e,t,l){l!==null&&typeof l=="object"&&typeof l.then=="function"?l.then(function(a){or(e,t,a)},function(a){return oi(e,t,a)}):or(e,t,l)}function or(e,t,l){t.status="fulfilled",t.value=l,hr(t),e.state=l,t=e.pending,t!==null&&(l=t.next,l===t?e.pending=null:(l=l.next,t.next=l,rr(e,l)))}function oi(e,t,l){var a=e.pending;if(e.pending=null,a!==null){a=a.next;do t.status="rejected",t.reason=l,hr(t),t=t.next;while(t!==a)}e.action=null}function hr(e){e=e.listeners;for(var t=0;t<e.length;t++)(0,e[t])()}function mr(e,t){return t}function gr(e,t){if(fe){var l=ze.formState;if(l!==null){e:{var a=P;if(fe){if(Ee){t:{for(var n=Ee,u=Tt;n.nodeType!==8;){if(!u){n=null;break t}if(n=At(n.nextSibling),n===null){n=null;break t}}u=n.data,n=u==="F!"||u==="F"?n:null}if(n){Ee=At(n.nextSibling),a=n.data==="F!";break e}}il(a)}a=!1}a&&(t=l[0])}}return l=Ie(),l.memoizedState=l.baseState=t,a={pending:null,lanes:0,dispatch:null,lastRenderedReducer:mr,lastRenderedState:t},l.queue=a,l=Ur.bind(null,P,a),a.dispatch=l,a=di(!1),u=vi.bind(null,P,!1,a.queue),a=Ie(),n={state:t,dispatch:null,action:e,pending:null},a.queue=n,l=xh.bind(null,P,n,u,l),n.dispatch=l,a.memoizedState=e,[t,l,!1]}function yr(e){var t=Be();return xr(t,pe,e)}function xr(e,t,l){if(t=fi(e,t,mr)[0],e=du(Zt)[0],typeof t=="object"&&t!==null&&typeof t.then=="function")try{var a=ln(t)}catch(i){throw i===oa?tu:i}else a=t;t=Be();var n=t.queue,u=n.dispatch;return l!==t.memoizedState&&(P.flags|=2048,xa(9,{destroy:void 0},vh.bind(null,n,l),null)),[a,u,e]}function vh(e,t){e.action=t}function vr(e){var t=Be(),l=pe;if(l!==null)return xr(t,l,e);Be(),t=t.memoizedState,l=Be();var a=l.queue.dispatch;return l.memoizedState=e,[t,a,!1]}function xa(e,t,l,a){return e={tag:e,create:l,deps:a,inst:t,next:null},t=P.updateQueue,t===null&&(t=fu(),P.updateQueue=t),l=t.lastEffect,l===null?t.lastEffect=e.next=e:(a=l.next,l.next=e,e.next=a,t.lastEffect=e),e}function br(){return Be().memoizedState}function ou(e,t,l,a){var n=Ie();P.flags|=e,n.memoizedState=xa(1|t,{destroy:void 0},l,a===void 0?null:a)}function hu(e,t,l,a){var n=Be();a=a===void 0?null:a;var u=n.memoizedState.inst;pe!==null&&a!==null&&ai(a,pe.memoizedState.deps)?n.memoizedState=xa(t,u,l,a):(P.flags|=e,n.memoizedState=xa(1|t,u,l,a))}function pr(e,t){ou(8390656,8,e,t)}function hi(e,t){hu(2048,8,e,t)}function bh(e){P.flags|=4;var t=P.updateQueue;if(t===null)t=fu(),P.updateQueue=t,t.events=[e];else{var l=t.events;l===null?t.events=[e]:l.push(e)}}function Sr(e){var t=Be().memoizedState;return bh({ref:t,nextImpl:e}),function(){if((ge&2)!==0)throw Error(f(440));return t.impl.apply(void 0,arguments)}}function Nr(e,t){return hu(4,2,e,t)}function jr(e,t){return hu(4,4,e,t)}function zr(e,t){if(typeof t=="function"){e=e();var l=t(e);return function(){typeof l=="function"?l():t(null)}}if(t!=null)return e=e(),t.current=e,function(){t.current=null}}function Tr(e,t,l){l=l!=null?l.concat([e]):null,hu(4,4,zr.bind(null,t,e),l)}function mi(){}function Er(e,t){var l=Be();t=t===void 0?null:t;var a=l.memoizedState;return t!==null&&ai(t,a[1])?a[0]:(l.memoizedState=[e,t],e)}function Ar(e,t){var l=Be();t=t===void 0?null:t;var a=l.memoizedState;if(t!==null&&ai(t,a[1]))return a[0];if(a=e(),Ll){ll(!0);try{e()}finally{ll(!1)}}return l.memoizedState=[a,t],a}function gi(e,t,l){return l===void 0||(Vt&1073741824)!==0&&(ce&261930)===0?e.memoizedState=t:(e.memoizedState=l,e=M0(),P.lanes|=e,yl|=e,l)}function Mr(e,t,l,a){return ot(l,t)?l:ma.current!==null?(e=gi(e,l,a),ot(e,t)||(Ge=!0),e):(Vt&42)===0||(Vt&1073741824)!==0&&(ce&261930)===0?(Ge=!0,e.memoizedState=l):(e=M0(),P.lanes|=e,yl|=e,t)}function Or(e,t,l,a,n){var u=C.p;C.p=u!==0&&8>u?u:8;var i=j.T,s={};j.T=s,vi(e,!1,t,l);try{var r=n(),g=j.S;if(g!==null&&g(s,r),r!==null&&typeof r=="object"&&typeof r.then=="function"){var N=mh(r,a);an(e,t,N,vt(e))}else an(e,t,a,vt(e))}catch(E){an(e,t,{then:function(){},status:"rejected",reason:E},vt())}finally{C.p=u,i!==null&&s.types!==null&&(i.types=s.types),j.T=i}}function ph(){}function yi(e,t,l,a){if(e.tag!==5)throw Error(f(476));var n=_r(e).queue;Or(e,n,t,V,l===null?ph:function(){return Dr(e),l(a)})}function _r(e){var t=e.memoizedState;if(t!==null)return t;t={memoizedState:V,baseState:V,baseQueue:null,queue:{pending:null,lanes:0,dispatch:null,lastRenderedReducer:Zt,lastRenderedState:V},next:null};var l={};return t.next={memoizedState:l,baseState:l,baseQueue:null,queue:{pending:null,lanes:0,dispatch:null,lastRenderedReducer:Zt,lastRenderedState:l},next:null},e.memoizedState=t,e=e.alternate,e!==null&&(e.memoizedState=t),t}function Dr(e){var t=_r(e);t.next===null&&(t=e.alternate.memoizedState),an(e,t.next.queue,{},vt())}function xi(){return Ke(Sn)}function Cr(){return Be().memoizedState}function kr(){return Be().memoizedState}function Sh(e){for(var t=e.return;t!==null;){switch(t.tag){case 24:case 3:var l=vt();e=rl(l);var a=dl(t,e,l);a!==null&&(it(a,t,l),Ia(a,t,l)),t={cache:Zc()},e.payload=t;return}t=t.return}}function Nh(e,t,l){var a=vt();l={lane:a,revertLane:0,gesture:null,action:l,hasEagerState:!1,eagerState:null,next:null},mu(e)?Hr(t,l):(l=Hc(e,t,l,a),l!==null&&(it(l,e,a),Rr(l,t,a)))}function Ur(e,t,l){var a=vt();an(e,t,l,a)}function an(e,t,l,a){var n={lane:a,revertLane:0,gesture:null,action:l,hasEagerState:!1,eagerState:null,next:null};if(mu(e))Hr(t,n);else{var u=e.alternate;if(e.lanes===0&&(u===null||u.lanes===0)&&(u=t.lastRenderedReducer,u!==null))try{var i=t.lastRenderedState,s=u(i,l);if(n.hasEagerState=!0,n.eagerState=s,ot(s,i))return Jn(e,t,n,0),ze===null&&Kn(),!1}catch{}finally{}if(l=Hc(e,t,n,a),l!==null)return it(l,e,a),Rr(l,t,a),!0}return!1}function vi(e,t,l,a){if(a={lane:2,revertLane:Fi(),gesture:null,action:a,hasEagerState:!1,eagerState:null,next:null},mu(e)){if(t)throw Error(f(479))}else t=Hc(e,l,a,2),t!==null&&it(t,e,2)}function mu(e){var t=e.alternate;return e===P||t!==null&&t===P}function Hr(e,t){ga=iu=!0;var l=e.pending;l===null?t.next=t:(t.next=l.next,l.next=t),e.pending=t}function Rr(e,t,l){if((l&4194048)!==0){var a=t.lanes;a&=e.pendingLanes,l|=a,t.lanes=l,Gs(e,l)}}var nn={readContext:Ke,use:ru,useCallback:Ce,useContext:Ce,useEffect:Ce,useImperativeHandle:Ce,useLayoutEffect:Ce,useInsertionEffect:Ce,useMemo:Ce,useReducer:Ce,useRef:Ce,useState:Ce,useDebugValue:Ce,useDeferredValue:Ce,useTransition:Ce,useSyncExternalStore:Ce,useId:Ce,useHostTransitionStatus:Ce,useFormState:Ce,useActionState:Ce,useOptimistic:Ce,useMemoCache:Ce,useCacheRefresh:Ce};nn.useEffectEvent=Ce;var Br={readContext:Ke,use:ru,useCallback:function(e,t){return Ie().memoizedState=[e,t===void 0?null:t],e},useContext:Ke,useEffect:pr,useImperativeHandle:function(e,t,l){l=l!=null?l.concat([e]):null,ou(4194308,4,zr.bind(null,t,e),l)},useLayoutEffect:function(e,t){return ou(4194308,4,e,t)},useInsertionEffect:function(e,t){ou(4,2,e,t)},useMemo:function(e,t){var l=Ie();t=t===void 0?null:t;var a=e();if(Ll){ll(!0);try{e()}finally{ll(!1)}}return l.memoizedState=[a,t],a},useReducer:function(e,t,l){var a=Ie();if(l!==void 0){var n=l(t);if(Ll){ll(!0);try{l(t)}finally{ll(!1)}}}else n=t;return a.memoizedState=a.baseState=n,e={pending:null,lanes:0,dispatch:null,lastRenderedReducer:e,lastRenderedState:n},a.queue=e,e=e.dispatch=Nh.bind(null,P,e),[a.memoizedState,e]},useRef:function(e){var t=Ie();return e={current:e},t.memoizedState=e},useState:function(e){e=di(e);var t=e.queue,l=Ur.bind(null,P,t);return t.dispatch=l,[e.memoizedState,l]},useDebugValue:mi,useDeferredValue:function(e,t){var l=Ie();return gi(l,e,t)},useTransition:function(){var e=di(!1);return e=Or.bind(null,P,e.queue,!0,!1),Ie().memoizedState=e,[!1,e]},useSyncExternalStore:function(e,t,l){var a=P,n=Ie();if(fe){if(l===void 0)throw Error(f(407));l=l()}else{if(l=t(),ze===null)throw Error(f(349));(ce&127)!==0||nr(a,t,l)}n.memoizedState=l;var u={value:l,getSnapshot:t};return n.queue=u,pr(cr.bind(null,a,u,e),[e]),a.flags|=2048,xa(9,{destroy:void 0},ur.bind(null,a,u,l,t),null),l},useId:function(){var e=Ie(),t=ze.identifierPrefix;if(fe){var l=Ht,a=Ut;l=(a&~(1<<32-dt(a)-1)).toString(32)+l,t="_"+t+"R_"+l,l=su++,0<l&&(t+="H"+l.toString(32)),t+="_"}else l=gh++,t="_"+t+"r_"+l.toString(32)+"_";return e.memoizedState=t},useHostTransitionStatus:xi,useFormState:gr,useActionState:gr,useOptimistic:function(e){var t=Ie();t.memoizedState=t.baseState=e;var l={pending:null,lanes:0,dispatch:null,lastRenderedReducer:null,lastRenderedState:null};return t.queue=l,t=vi.bind(null,P,!0,l),l.dispatch=t,[e,t]},useMemoCache:si,useCacheRefresh:function(){return Ie().memoizedState=Sh.bind(null,P)},useEffectEvent:function(e){var t=Ie(),l={impl:e};return t.memoizedState=l,function(){if((ge&2)!==0)throw Error(f(440));return l.impl.apply(void 0,arguments)}}},bi={readContext:Ke,use:ru,useCallback:Er,useContext:Ke,useEffect:hi,useImperativeHandle:Tr,useInsertionEffect:Nr,useLayoutEffect:jr,useMemo:Ar,useReducer:du,useRef:br,useState:function(){return du(Zt)},useDebugValue:mi,useDeferredValue:function(e,t){var l=Be();return Mr(l,pe.memoizedState,e,t)},useTransition:function(){var e=du(Zt)[0],t=Be().memoizedState;return[typeof e=="boolean"?e:ln(e),t]},useSyncExternalStore:ar,useId:Cr,useHostTransitionStatus:xi,useFormState:yr,useActionState:yr,useOptimistic:function(e,t){var l=Be();return fr(l,pe,e,t)},useMemoCache:si,useCacheRefresh:kr};bi.useEffectEvent=Sr;var wr={readContext:Ke,use:ru,useCallback:Er,useContext:Ke,useEffect:hi,useImperativeHandle:Tr,useInsertionEffect:Nr,useLayoutEffect:jr,useMemo:Ar,useReducer:ri,useRef:br,useState:function(){return ri(Zt)},useDebugValue:mi,useDeferredValue:function(e,t){var l=Be();return pe===null?gi(l,e,t):Mr(l,pe.memoizedState,e,t)},useTransition:function(){var e=ri(Zt)[0],t=Be().memoizedState;return[typeof e=="boolean"?e:ln(e),t]},useSyncExternalStore:ar,useId:Cr,useHostTransitionStatus:xi,useFormState:vr,useActionState:vr,useOptimistic:function(e,t){var l=Be();return pe!==null?fr(l,pe,e,t):(l.baseState=e,[e,l.queue.dispatch])},useMemoCache:si,useCacheRefresh:kr};wr.useEffectEvent=Sr;function pi(e,t,l,a){t=e.memoizedState,l=l(a,t),l=l==null?t:z({},t,l),e.memoizedState=l,e.lanes===0&&(e.updateQueue.baseState=l)}var Si={enqueueSetState:function(e,t,l){e=e._reactInternals;var a=vt(),n=rl(a);n.payload=t,l!=null&&(n.callback=l),t=dl(e,n,a),t!==null&&(it(t,e,a),Ia(t,e,a))},enqueueReplaceState:function(e,t,l){e=e._reactInternals;var a=vt(),n=rl(a);n.tag=1,n.payload=t,l!=null&&(n.callback=l),t=dl(e,n,a),t!==null&&(it(t,e,a),Ia(t,e,a))},enqueueForceUpdate:function(e,t){e=e._reactInternals;var l=vt(),a=rl(l);a.tag=2,t!=null&&(a.callback=t),t=dl(e,a,l),t!==null&&(it(t,e,l),Ia(t,e,l))}};function qr(e,t,l,a,n,u,i){return e=e.stateNode,typeof e.shouldComponentUpdate=="function"?e.shouldComponentUpdate(a,u,i):t.prototype&&t.prototype.isPureReactComponent?!Qa(l,a)||!Qa(n,u):!0}function Gr(e,t,l,a){e=t.state,typeof t.componentWillReceiveProps=="function"&&t.componentWillReceiveProps(l,a),typeof t.UNSAFE_componentWillReceiveProps=="function"&&t.UNSAFE_componentWillReceiveProps(l,a),t.state!==e&&Si.enqueueReplaceState(t,t.state,null)}function Xl(e,t){var l=t;if("ref"in t){l={};for(var a in t)a!=="ref"&&(l[a]=t[a])}if(e=e.defaultProps){l===t&&(l=z({},l));for(var n in e)l[n]===void 0&&(l[n]=e[n])}return l}function Yr(e){Zn(e)}function Lr(e){console.error(e)}function Xr(e){Zn(e)}function gu(e,t){try{var l=e.onUncaughtError;l(t.value,{componentStack:t.stack})}catch(a){setTimeout(function(){throw a})}}function Qr(e,t,l){try{var a=e.onCaughtError;a(l.value,{componentStack:l.stack,errorBoundary:t.tag===1?t.stateNode:null})}catch(n){setTimeout(function(){throw n})}}function Ni(e,t,l){return l=rl(l),l.tag=3,l.payload={element:null},l.callback=function(){gu(e,t)},l}function Vr(e){return e=rl(e),e.tag=3,e}function Zr(e,t,l,a){var n=l.type.getDerivedStateFromError;if(typeof n=="function"){var u=a.value;e.payload=function(){return n(u)},e.callback=function(){Qr(t,l,a)}}var i=l.stateNode;i!==null&&typeof i.componentDidCatch=="function"&&(e.callback=function(){Qr(t,l,a),typeof n!="function"&&(xl===null?xl=new Set([this]):xl.add(this));var s=a.stack;this.componentDidCatch(a.value,{componentStack:s!==null?s:""})})}function jh(e,t,l,a,n){if(l.flags|=32768,a!==null&&typeof a=="object"&&typeof a.then=="function"){if(t=l.alternate,t!==null&&fa(t,l,n,!0),l=mt.current,l!==null){switch(l.tag){case 31:case 13:return Et===null?Au():l.alternate===null&&ke===0&&(ke=3),l.flags&=-257,l.flags|=65536,l.lanes=n,a===lu?l.flags|=16384:(t=l.updateQueue,t===null?l.updateQueue=new Set([a]):t.add(a),Ki(e,a,n)),!1;case 22:return l.flags|=65536,a===lu?l.flags|=16384:(t=l.updateQueue,t===null?(t={transitions:null,markerInstances:null,retryQueue:new Set([a])},l.updateQueue=t):(l=t.retryQueue,l===null?t.retryQueue=new Set([a]):l.add(a)),Ki(e,a,n)),!1}throw Error(f(435,l.tag))}return Ki(e,a,n),Au(),!1}if(fe)return t=mt.current,t!==null?((t.flags&65536)===0&&(t.flags|=256),t.flags|=65536,t.lanes=n,a!==Yc&&(e=Error(f(422),{cause:a}),Ka(Nt(e,l)))):(a!==Yc&&(t=Error(f(423),{cause:a}),Ka(Nt(t,l))),e=e.current.alternate,e.flags|=65536,n&=-n,e.lanes|=n,a=Nt(a,l),n=Ni(e.stateNode,a,n),Ic(e,n),ke!==4&&(ke=2)),!1;var u=Error(f(520),{cause:a});if(u=Nt(u,l),hn===null?hn=[u]:hn.push(u),ke!==4&&(ke=2),t===null)return!0;a=Nt(a,l),l=t;do{switch(l.tag){case 3:return l.flags|=65536,e=n&-n,l.lanes|=e,e=Ni(l.stateNode,a,e),Ic(l,e),!1;case 1:if(t=l.type,u=l.stateNode,(l.flags&128)===0&&(typeof t.getDerivedStateFromError=="function"||u!==null&&typeof u.componentDidCatch=="function"&&(xl===null||!xl.has(u))))return l.flags|=65536,n&=-n,l.lanes|=n,n=Vr(n),Zr(n,e,l,a),Ic(l,n),!1}l=l.return}while(l!==null);return!1}var ji=Error(f(461)),Ge=!1;function Je(e,t,l,a){t.child=e===null?Ff(t,null,l,a):Yl(t,e.child,l,a)}function Kr(e,t,l,a,n){l=l.render;var u=t.ref;if("ref"in a){var i={};for(var s in a)s!=="ref"&&(i[s]=a[s])}else i=a;return Bl(t),a=ni(e,t,l,i,u,n),s=ui(),e!==null&&!Ge?(ci(e,t,n),Kt(e,t,n)):(fe&&s&&qc(t),t.flags|=1,Je(e,t,a,n),t.child)}function Jr(e,t,l,a,n){if(e===null){var u=l.type;return typeof u=="function"&&!Rc(u)&&u.defaultProps===void 0&&l.compare===null?(t.tag=15,t.type=u,Wr(e,t,u,a,n)):(e=Fn(l.type,null,a,t,t.mode,n),e.ref=t.ref,e.return=t,t.child=e)}if(u=e.child,!Di(e,n)){var i=u.memoizedProps;if(l=l.compare,l=l!==null?l:Qa,l(i,a)&&e.ref===t.ref)return Kt(e,t,n)}return t.flags|=1,e=Yt(u,a),e.ref=t.ref,e.return=t,t.child=e}function Wr(e,t,l,a,n){if(e!==null){var u=e.memoizedProps;if(Qa(u,a)&&e.ref===t.ref)if(Ge=!1,t.pendingProps=a=u,Di(e,n))(e.flags&131072)!==0&&(Ge=!0);else return t.lanes=e.lanes,Kt(e,t,n)}return zi(e,t,l,a,n)}function Fr(e,t,l,a){var n=a.children,u=e!==null?e.memoizedState:null;if(e===null&&t.stateNode===null&&(t.stateNode={_visibility:1,_pendingMarkers:null,_retryCache:null,_transitions:null}),a.mode==="hidden"){if((t.flags&128)!==0){if(u=u!==null?u.baseLanes|l:l,e!==null){for(a=t.child=e.child,n=0;a!==null;)n=n|a.lanes|a.childLanes,a=a.sibling;a=n&~u}else a=0,t.child=null;return $r(e,t,u,l,a)}if((l&536870912)!==0)t.memoizedState={baseLanes:0,cachePool:null},e!==null&&eu(t,u!==null?u.cachePool:null),u!==null?Pf(t,u):ei(),er(t);else return a=t.lanes=536870912,$r(e,t,u!==null?u.baseLanes|l:l,l,a)}else u!==null?(eu(t,u.cachePool),Pf(t,u),hl(),t.memoizedState=null):(e!==null&&eu(t,null),ei(),hl());return Je(e,t,n,l),t.child}function un(e,t){return e!==null&&e.tag===22||t.stateNode!==null||(t.stateNode={_visibility:1,_pendingMarkers:null,_retryCache:null,_transitions:null}),t.sibling}function $r(e,t,l,a,n){var u=Jc();return u=u===null?null:{parent:we._currentValue,pool:u},t.memoizedState={baseLanes:l,cachePool:u},e!==null&&eu(t,null),ei(),er(t),e!==null&&fa(e,t,a,!0),t.childLanes=n,null}function yu(e,t){return t=vu({mode:t.mode,children:t.children},e.mode),t.ref=e.ref,e.child=t,t.return=e,t}function Ir(e,t,l){return Yl(t,e.child,null,l),e=yu(t,t.pendingProps),e.flags|=2,gt(t),t.memoizedState=null,e}function zh(e,t,l){var a=t.pendingProps,n=(t.flags&128)!==0;if(t.flags&=-129,e===null){if(fe){if(a.mode==="hidden")return e=yu(t,a),t.lanes=536870912,un(null,e);if(li(t),(e=Ee)?(e=rd(e,Tt),e=e!==null&&e.data==="&"?e:null,e!==null&&(t.memoizedState={dehydrated:e,treeContext:ul!==null?{id:Ut,overflow:Ht}:null,retryLane:536870912,hydrationErrors:null},l=Hf(e),l.return=t,t.child=l,Ze=t,Ee=null)):e=null,e===null)throw il(t);return t.lanes=536870912,null}return yu(t,a)}var u=e.memoizedState;if(u!==null){var i=u.dehydrated;if(li(t),n)if(t.flags&256)t.flags&=-257,t=Ir(e,t,l);else if(t.memoizedState!==null)t.child=e.child,t.flags|=128,t=null;else throw Error(f(558));else if(Ge||fa(e,t,l,!1),n=(l&e.childLanes)!==0,Ge||n){if(a=ze,a!==null&&(i=Ys(a,l),i!==0&&i!==u.retryLane))throw u.retryLane=i,kl(e,i),it(a,e,i),ji;Au(),t=Ir(e,t,l)}else e=u.treeContext,Ee=At(i.nextSibling),Ze=t,fe=!0,cl=null,Tt=!1,e!==null&&wf(t,e),t=yu(t,a),t.flags|=4096;return t}return e=Yt(e.child,{mode:a.mode,children:a.children}),e.ref=t.ref,t.child=e,e.return=t,e}function xu(e,t){var l=t.ref;if(l===null)e!==null&&e.ref!==null&&(t.flags|=4194816);else{if(typeof l!="function"&&typeof l!="object")throw Error(f(284));(e===null||e.ref!==l)&&(t.flags|=4194816)}}function zi(e,t,l,a,n){return Bl(t),l=ni(e,t,l,a,void 0,n),a=ui(),e!==null&&!Ge?(ci(e,t,n),Kt(e,t,n)):(fe&&a&&qc(t),t.flags|=1,Je(e,t,l,n),t.child)}function Pr(e,t,l,a,n,u){return Bl(t),t.updateQueue=null,l=lr(t,a,l,n),tr(e),a=ui(),e!==null&&!Ge?(ci(e,t,u),Kt(e,t,u)):(fe&&a&&qc(t),t.flags|=1,Je(e,t,l,u),t.child)}function e0(e,t,l,a,n){if(Bl(t),t.stateNode===null){var u=ua,i=l.contextType;typeof i=="object"&&i!==null&&(u=Ke(i)),u=new l(a,u),t.memoizedState=u.state!==null&&u.state!==void 0?u.state:null,u.updater=Si,t.stateNode=u,u._reactInternals=t,u=t.stateNode,u.props=a,u.state=t.memoizedState,u.refs={},Fc(t),i=l.contextType,u.context=typeof i=="object"&&i!==null?Ke(i):ua,u.state=t.memoizedState,i=l.getDerivedStateFromProps,typeof i=="function"&&(pi(t,l,i,a),u.state=t.memoizedState),typeof l.getDerivedStateFromProps=="function"||typeof u.getSnapshotBeforeUpdate=="function"||typeof u.UNSAFE_componentWillMount!="function"&&typeof u.componentWillMount!="function"||(i=u.state,typeof u.componentWillMount=="function"&&u.componentWillMount(),typeof u.UNSAFE_componentWillMount=="function"&&u.UNSAFE_componentWillMount(),i!==u.state&&Si.enqueueReplaceState(u,u.state,null),en(t,a,u,n),Pa(),u.state=t.memoizedState),typeof u.componentDidMount=="function"&&(t.flags|=4194308),a=!0}else if(e===null){u=t.stateNode;var s=t.memoizedProps,r=Xl(l,s);u.props=r;var g=u.context,N=l.contextType;i=ua,typeof N=="object"&&N!==null&&(i=Ke(N));var E=l.getDerivedStateFromProps;N=typeof E=="function"||typeof u.getSnapshotBeforeUpdate=="function",s=t.pendingProps!==s,N||typeof u.UNSAFE_componentWillReceiveProps!="function"&&typeof u.componentWillReceiveProps!="function"||(s||g!==i)&&Gr(t,u,a,i),fl=!1;var y=t.memoizedState;u.state=y,en(t,a,u,n),Pa(),g=t.memoizedState,s||y!==g||fl?(typeof E=="function"&&(pi(t,l,E,a),g=t.memoizedState),(r=fl||qr(t,l,r,a,y,g,i))?(N||typeof u.UNSAFE_componentWillMount!="function"&&typeof u.componentWillMount!="function"||(typeof u.componentWillMount=="function"&&u.componentWillMount(),typeof u.UNSAFE_componentWillMount=="function"&&u.UNSAFE_componentWillMount()),typeof u.componentDidMount=="function"&&(t.flags|=4194308)):(typeof u.componentDidMount=="function"&&(t.flags|=4194308),t.memoizedProps=a,t.memoizedState=g),u.props=a,u.state=g,u.context=i,a=r):(typeof u.componentDidMount=="function"&&(t.flags|=4194308),a=!1)}else{u=t.stateNode,$c(e,t),i=t.memoizedProps,N=Xl(l,i),u.props=N,E=t.pendingProps,y=u.context,g=l.contextType,r=ua,typeof g=="object"&&g!==null&&(r=Ke(g)),s=l.getDerivedStateFromProps,(g=typeof s=="function"||typeof u.getSnapshotBeforeUpdate=="function")||typeof u.UNSAFE_componentWillReceiveProps!="function"&&typeof u.componentWillReceiveProps!="function"||(i!==E||y!==r)&&Gr(t,u,a,r),fl=!1,y=t.memoizedState,u.state=y,en(t,a,u,n),Pa();var x=t.memoizedState;i!==E||y!==x||fl||e!==null&&e.dependencies!==null&&In(e.dependencies)?(typeof s=="function"&&(pi(t,l,s,a),x=t.memoizedState),(N=fl||qr(t,l,N,a,y,x,r)||e!==null&&e.dependencies!==null&&In(e.dependencies))?(g||typeof u.UNSAFE_componentWillUpdate!="function"&&typeof u.componentWillUpdate!="function"||(typeof u.componentWillUpdate=="function"&&u.componentWillUpdate(a,x,r),typeof u.UNSAFE_componentWillUpdate=="function"&&u.UNSAFE_componentWillUpdate(a,x,r)),typeof u.componentDidUpdate=="function"&&(t.flags|=4),typeof u.getSnapshotBeforeUpdate=="function"&&(t.flags|=1024)):(typeof u.componentDidUpdate!="function"||i===e.memoizedProps&&y===e.memoizedState||(t.flags|=4),typeof u.getSnapshotBeforeUpdate!="function"||i===e.memoizedProps&&y===e.memoizedState||(t.flags|=1024),t.memoizedProps=a,t.memoizedState=x),u.props=a,u.state=x,u.context=r,a=N):(typeof u.componentDidUpdate!="function"||i===e.memoizedProps&&y===e.memoizedState||(t.flags|=4),typeof u.getSnapshotBeforeUpdate!="function"||i===e.memoizedProps&&y===e.memoizedState||(t.flags|=1024),a=!1)}return u=a,xu(e,t),a=(t.flags&128)!==0,u||a?(u=t.stateNode,l=a&&typeof l.getDerivedStateFromError!="function"?null:u.render(),t.flags|=1,e!==null&&a?(t.child=Yl(t,e.child,null,n),t.child=Yl(t,null,l,n)):Je(e,t,l,n),t.memoizedState=u.state,e=t.child):e=Kt(e,t,n),e}function t0(e,t,l,a){return Hl(),t.flags|=256,Je(e,t,l,a),t.child}var Ti={dehydrated:null,treeContext:null,retryLane:0,hydrationErrors:null};function Ei(e){return{baseLanes:e,cachePool:Qf()}}function Ai(e,t,l){return e=e!==null?e.childLanes&~l:0,t&&(e|=xt),e}function l0(e,t,l){var a=t.pendingProps,n=!1,u=(t.flags&128)!==0,i;if((i=u)||(i=e!==null&&e.memoizedState===null?!1:(Re.current&2)!==0),i&&(n=!0,t.flags&=-129),i=(t.flags&32)!==0,t.flags&=-33,e===null){if(fe){if(n?ol(t):hl(),(e=Ee)?(e=rd(e,Tt),e=e!==null&&e.data!=="&"?e:null,e!==null&&(t.memoizedState={dehydrated:e,treeContext:ul!==null?{id:Ut,overflow:Ht}:null,retryLane:536870912,hydrationErrors:null},l=Hf(e),l.return=t,t.child=l,Ze=t,Ee=null)):e=null,e===null)throw il(t);return fs(e)?t.lanes=32:t.lanes=536870912,null}var s=a.children;return a=a.fallback,n?(hl(),n=t.mode,s=vu({mode:"hidden",children:s},n),a=Ul(a,n,l,null),s.return=t,a.return=t,s.sibling=a,t.child=s,a=t.child,a.memoizedState=Ei(l),a.childLanes=Ai(e,i,l),t.memoizedState=Ti,un(null,a)):(ol(t),Mi(t,s))}var r=e.memoizedState;if(r!==null&&(s=r.dehydrated,s!==null)){if(u)t.flags&256?(ol(t),t.flags&=-257,t=Oi(e,t,l)):t.memoizedState!==null?(hl(),t.child=e.child,t.flags|=128,t=null):(hl(),s=a.fallback,n=t.mode,a=vu({mode:"visible",children:a.children},n),s=Ul(s,n,l,null),s.flags|=2,a.return=t,s.return=t,a.sibling=s,t.child=a,Yl(t,e.child,null,l),a=t.child,a.memoizedState=Ei(l),a.childLanes=Ai(e,i,l),t.memoizedState=Ti,t=un(null,a));else if(ol(t),fs(s)){if(i=s.nextSibling&&s.nextSibling.dataset,i)var g=i.dgst;i=g,a=Error(f(419)),a.stack="",a.digest=i,Ka({value:a,source:null,stack:null}),t=Oi(e,t,l)}else if(Ge||fa(e,t,l,!1),i=(l&e.childLanes)!==0,Ge||i){if(i=ze,i!==null&&(a=Ys(i,l),a!==0&&a!==r.retryLane))throw r.retryLane=a,kl(e,a),it(i,e,a),ji;ss(s)||Au(),t=Oi(e,t,l)}else ss(s)?(t.flags|=192,t.child=e.child,t=null):(e=r.treeContext,Ee=At(s.nextSibling),Ze=t,fe=!0,cl=null,Tt=!1,e!==null&&wf(t,e),t=Mi(t,a.children),t.flags|=4096);return t}return n?(hl(),s=a.fallback,n=t.mode,r=e.child,g=r.sibling,a=Yt(r,{mode:"hidden",children:a.children}),a.subtreeFlags=r.subtreeFlags&65011712,g!==null?s=Yt(g,s):(s=Ul(s,n,l,null),s.flags|=2),s.return=t,a.return=t,a.sibling=s,t.child=a,un(null,a),a=t.child,s=e.child.memoizedState,s===null?s=Ei(l):(n=s.cachePool,n!==null?(r=we._currentValue,n=n.parent!==r?{parent:r,pool:r}:n):n=Qf(),s={baseLanes:s.baseLanes|l,cachePool:n}),a.memoizedState=s,a.childLanes=Ai(e,i,l),t.memoizedState=Ti,un(e.child,a)):(ol(t),l=e.child,e=l.sibling,l=Yt(l,{mode:"visible",children:a.children}),l.return=t,l.sibling=null,e!==null&&(i=t.deletions,i===null?(t.deletions=[e],t.flags|=16):i.push(e)),t.child=l,t.memoizedState=null,l)}function Mi(e,t){return t=vu({mode:"visible",children:t},e.mode),t.return=e,e.child=t}function vu(e,t){return e=ht(22,e,null,t),e.lanes=0,e}function Oi(e,t,l){return Yl(t,e.child,null,l),e=Mi(t,t.pendingProps.children),e.flags|=2,t.memoizedState=null,e}function a0(e,t,l){e.lanes|=t;var a=e.alternate;a!==null&&(a.lanes|=t),Qc(e.return,t,l)}function _i(e,t,l,a,n,u){var i=e.memoizedState;i===null?e.memoizedState={isBackwards:t,rendering:null,renderingStartTime:0,last:a,tail:l,tailMode:n,treeForkCount:u}:(i.isBackwards=t,i.rendering=null,i.renderingStartTime=0,i.last=a,i.tail=l,i.tailMode=n,i.treeForkCount=u)}function n0(e,t,l){var a=t.pendingProps,n=a.revealOrder,u=a.tail;a=a.children;var i=Re.current,s=(i&2)!==0;if(s?(i=i&1|2,t.flags|=128):i&=1,k(Re,i),Je(e,t,a,l),a=fe?Za:0,!s&&e!==null&&(e.flags&128)!==0)e:for(e=t.child;e!==null;){if(e.tag===13)e.memoizedState!==null&&a0(e,l,t);else if(e.tag===19)a0(e,l,t);else if(e.child!==null){e.child.return=e,e=e.child;continue}if(e===t)break e;for(;e.sibling===null;){if(e.return===null||e.return===t)break e;e=e.return}e.sibling.return=e.return,e=e.sibling}switch(n){case"forwards":for(l=t.child,n=null;l!==null;)e=l.alternate,e!==null&&cu(e)===null&&(n=l),l=l.sibling;l=n,l===null?(n=t.child,t.child=null):(n=l.sibling,l.sibling=null),_i(t,!1,n,l,u,a);break;case"backwards":case"unstable_legacy-backwards":for(l=null,n=t.child,t.child=null;n!==null;){if(e=n.alternate,e!==null&&cu(e)===null){t.child=n;break}e=n.sibling,n.sibling=l,l=n,n=e}_i(t,!0,l,null,u,a);break;case"together":_i(t,!1,null,null,void 0,a);break;default:t.memoizedState=null}return t.child}function Kt(e,t,l){if(e!==null&&(t.dependencies=e.dependencies),yl|=t.lanes,(l&t.childLanes)===0)if(e!==null){if(fa(e,t,l,!1),(l&t.childLanes)===0)return null}else return null;if(e!==null&&t.child!==e.child)throw Error(f(153));if(t.child!==null){for(e=t.child,l=Yt(e,e.pendingProps),t.child=l,l.return=t;e.sibling!==null;)e=e.sibling,l=l.sibling=Yt(e,e.pendingProps),l.return=t;l.sibling=null}return t.child}function Di(e,t){return(e.lanes&t)!==0?!0:(e=e.dependencies,!!(e!==null&&In(e)))}function Th(e,t,l){switch(t.tag){case 3:$e(t,t.stateNode.containerInfo),sl(t,we,e.memoizedState.cache),Hl();break;case 27:case 5:Da(t);break;case 4:$e(t,t.stateNode.containerInfo);break;case 10:sl(t,t.type,t.memoizedProps.value);break;case 31:if(t.memoizedState!==null)return t.flags|=128,li(t),null;break;case 13:var a=t.memoizedState;if(a!==null)return a.dehydrated!==null?(ol(t),t.flags|=128,null):(l&t.child.childLanes)!==0?l0(e,t,l):(ol(t),e=Kt(e,t,l),e!==null?e.sibling:null);ol(t);break;case 19:var n=(e.flags&128)!==0;if(a=(l&t.childLanes)!==0,a||(fa(e,t,l,!1),a=(l&t.childLanes)!==0),n){if(a)return n0(e,t,l);t.flags|=128}if(n=t.memoizedState,n!==null&&(n.rendering=null,n.tail=null,n.lastEffect=null),k(Re,Re.current),a)break;return null;case 22:return t.lanes=0,Fr(e,t,l,t.pendingProps);case 24:sl(t,we,e.memoizedState.cache)}return Kt(e,t,l)}function u0(e,t,l){if(e!==null)if(e.memoizedProps!==t.pendingProps)Ge=!0;else{if(!Di(e,l)&&(t.flags&128)===0)return Ge=!1,Th(e,t,l);Ge=(e.flags&131072)!==0}else Ge=!1,fe&&(t.flags&1048576)!==0&&Bf(t,Za,t.index);switch(t.lanes=0,t.tag){case 16:e:{var a=t.pendingProps;if(e=ql(t.elementType),t.type=e,typeof e=="function")Rc(e)?(a=Xl(e,a),t.tag=1,t=e0(null,t,e,a,l)):(t.tag=0,t=zi(null,t,e,a,l));else{if(e!=null){var n=e.$$typeof;if(n===W){t.tag=11,t=Kr(null,t,e,a,l);break e}else if(n===G){t.tag=14,t=Jr(null,t,e,a,l);break e}}throw t=et(e)||e,Error(f(306,t,""))}}return t;case 0:return zi(e,t,t.type,t.pendingProps,l);case 1:return a=t.type,n=Xl(a,t.pendingProps),e0(e,t,a,n,l);case 3:e:{if($e(t,t.stateNode.containerInfo),e===null)throw Error(f(387));a=t.pendingProps;var u=t.memoizedState;n=u.element,$c(e,t),en(t,a,null,l);var i=t.memoizedState;if(a=i.cache,sl(t,we,a),a!==u.cache&&Vc(t,[we],l,!0),Pa(),a=i.element,u.isDehydrated)if(u={element:a,isDehydrated:!1,cache:i.cache},t.updateQueue.baseState=u,t.memoizedState=u,t.flags&256){t=t0(e,t,a,l);break e}else if(a!==n){n=Nt(Error(f(424)),t),Ka(n),t=t0(e,t,a,l);break e}else{switch(e=t.stateNode.containerInfo,e.nodeType){case 9:e=e.body;break;default:e=e.nodeName==="HTML"?e.ownerDocument.body:e}for(Ee=At(e.firstChild),Ze=t,fe=!0,cl=null,Tt=!0,l=Ff(t,null,a,l),t.child=l;l;)l.flags=l.flags&-3|4096,l=l.sibling}else{if(Hl(),a===n){t=Kt(e,t,l);break e}Je(e,t,a,l)}t=t.child}return t;case 26:return xu(e,t),e===null?(l=yd(t.type,null,t.pendingProps,null))?t.memoizedState=l:fe||(l=t.type,e=t.pendingProps,a=Uu(ae.current).createElement(l),a[Ve]=t,a[tt]=e,We(a,l,e),Xe(a),t.stateNode=a):t.memoizedState=yd(t.type,e.memoizedProps,t.pendingProps,e.memoizedState),null;case 27:return Da(t),e===null&&fe&&(a=t.stateNode=hd(t.type,t.pendingProps,ae.current),Ze=t,Tt=!0,n=Ee,Sl(t.type)?(rs=n,Ee=At(a.firstChild)):Ee=n),Je(e,t,t.pendingProps.children,l),xu(e,t),e===null&&(t.flags|=4194304),t.child;case 5:return e===null&&fe&&((n=a=Ee)&&(a=t1(a,t.type,t.pendingProps,Tt),a!==null?(t.stateNode=a,Ze=t,Ee=At(a.firstChild),Tt=!1,n=!0):n=!1),n||il(t)),Da(t),n=t.type,u=t.pendingProps,i=e!==null?e.memoizedProps:null,a=u.children,us(n,u)?a=null:i!==null&&us(n,i)&&(t.flags|=32),t.memoizedState!==null&&(n=ni(e,t,yh,null,null,l),Sn._currentValue=n),xu(e,t),Je(e,t,a,l),t.child;case 6:return e===null&&fe&&((e=l=Ee)&&(l=l1(l,t.pendingProps,Tt),l!==null?(t.stateNode=l,Ze=t,Ee=null,e=!0):e=!1),e||il(t)),null;case 13:return l0(e,t,l);case 4:return $e(t,t.stateNode.containerInfo),a=t.pendingProps,e===null?t.child=Yl(t,null,a,l):Je(e,t,a,l),t.child;case 11:return Kr(e,t,t.type,t.pendingProps,l);case 7:return Je(e,t,t.pendingProps,l),t.child;case 8:return Je(e,t,t.pendingProps.children,l),t.child;case 12:return Je(e,t,t.pendingProps.children,l),t.child;case 10:return a=t.pendingProps,sl(t,t.type,a.value),Je(e,t,a.children,l),t.child;case 9:return n=t.type._context,a=t.pendingProps.children,Bl(t),n=Ke(n),a=a(n),t.flags|=1,Je(e,t,a,l),t.child;case 14:return Jr(e,t,t.type,t.pendingProps,l);case 15:return Wr(e,t,t.type,t.pendingProps,l);case 19:return n0(e,t,l);case 31:return zh(e,t,l);case 22:return Fr(e,t,l,t.pendingProps);case 24:return Bl(t),a=Ke(we),e===null?(n=Jc(),n===null&&(n=ze,u=Zc(),n.pooledCache=u,u.refCount++,u!==null&&(n.pooledCacheLanes|=l),n=u),t.memoizedState={parent:a,cache:n},Fc(t),sl(t,we,n)):((e.lanes&l)!==0&&($c(e,t),en(t,null,null,l),Pa()),n=e.memoizedState,u=t.memoizedState,n.parent!==a?(n={parent:a,cache:a},t.memoizedState=n,t.lanes===0&&(t.memoizedState=t.updateQueue.baseState=n),sl(t,we,a)):(a=u.cache,sl(t,we,a),a!==n.cache&&Vc(t,[we],l,!0))),Je(e,t,t.pendingProps.children,l),t.child;case 29:throw t.pendingProps}throw Error(f(156,t.tag))}function Jt(e){e.flags|=4}function Ci(e,t,l,a,n){if((t=(e.mode&32)!==0)&&(t=!1),t){if(e.flags|=16777216,(n&335544128)===n)if(e.stateNode.complete)e.flags|=8192;else if(C0())e.flags|=8192;else throw Gl=lu,Wc}else e.flags&=-16777217}function c0(e,t){if(t.type!=="stylesheet"||(t.state.loading&4)!==0)e.flags&=-16777217;else if(e.flags|=16777216,!Sd(t))if(C0())e.flags|=8192;else throw Gl=lu,Wc}function bu(e,t){t!==null&&(e.flags|=4),e.flags&16384&&(t=e.tag!==22?ws():536870912,e.lanes|=t,Sa|=t)}function cn(e,t){if(!fe)switch(e.tailMode){case"hidden":t=e.tail;for(var l=null;t!==null;)t.alternate!==null&&(l=t),t=t.sibling;l===null?e.tail=null:l.sibling=null;break;case"collapsed":l=e.tail;for(var a=null;l!==null;)l.alternate!==null&&(a=l),l=l.sibling;a===null?t||e.tail===null?e.tail=null:e.tail.sibling=null:a.sibling=null}}function Ae(e){var t=e.alternate!==null&&e.alternate.child===e.child,l=0,a=0;if(t)for(var n=e.child;n!==null;)l|=n.lanes|n.childLanes,a|=n.subtreeFlags&65011712,a|=n.flags&65011712,n.return=e,n=n.sibling;else for(n=e.child;n!==null;)l|=n.lanes|n.childLanes,a|=n.subtreeFlags,a|=n.flags,n.return=e,n=n.sibling;return e.subtreeFlags|=a,e.childLanes=l,t}function Eh(e,t,l){var a=t.pendingProps;switch(Gc(t),t.tag){case 16:case 15:case 0:case 11:case 7:case 8:case 12:case 9:case 14:return Ae(t),null;case 1:return Ae(t),null;case 3:return l=t.stateNode,a=null,e!==null&&(a=e.memoizedState.cache),t.memoizedState.cache!==a&&(t.flags|=2048),Qt(we),He(),l.pendingContext&&(l.context=l.pendingContext,l.pendingContext=null),(e===null||e.child===null)&&(sa(t)?Jt(t):e===null||e.memoizedState.isDehydrated&&(t.flags&256)===0||(t.flags|=1024,Lc())),Ae(t),null;case 26:var n=t.type,u=t.memoizedState;return e===null?(Jt(t),u!==null?(Ae(t),c0(t,u)):(Ae(t),Ci(t,n,null,a,l))):u?u!==e.memoizedState?(Jt(t),Ae(t),c0(t,u)):(Ae(t),t.flags&=-16777217):(e=e.memoizedProps,e!==a&&Jt(t),Ae(t),Ci(t,n,e,a,l)),null;case 27:if(_n(t),l=ae.current,n=t.type,e!==null&&t.stateNode!=null)e.memoizedProps!==a&&Jt(t);else{if(!a){if(t.stateNode===null)throw Error(f(166));return Ae(t),null}e=R.current,sa(t)?qf(t):(e=hd(n,a,l),t.stateNode=e,Jt(t))}return Ae(t),null;case 5:if(_n(t),n=t.type,e!==null&&t.stateNode!=null)e.memoizedProps!==a&&Jt(t);else{if(!a){if(t.stateNode===null)throw Error(f(166));return Ae(t),null}if(u=R.current,sa(t))qf(t);else{var i=Uu(ae.current);switch(u){case 1:u=i.createElementNS("http://www.w3.org/2000/svg",n);break;case 2:u=i.createElementNS("http://www.w3.org/1998/Math/MathML",n);break;default:switch(n){case"svg":u=i.createElementNS("http://www.w3.org/2000/svg",n);break;case"math":u=i.createElementNS("http://www.w3.org/1998/Math/MathML",n);break;case"script":u=i.createElement("div"),u.innerHTML="<script><\/script>",u=u.removeChild(u.firstChild);break;case"select":u=typeof a.is=="string"?i.createElement("select",{is:a.is}):i.createElement("select"),a.multiple?u.multiple=!0:a.size&&(u.size=a.size);break;default:u=typeof a.is=="string"?i.createElement(n,{is:a.is}):i.createElement(n)}}u[Ve]=t,u[tt]=a;e:for(i=t.child;i!==null;){if(i.tag===5||i.tag===6)u.appendChild(i.stateNode);else if(i.tag!==4&&i.tag!==27&&i.child!==null){i.child.return=i,i=i.child;continue}if(i===t)break e;for(;i.sibling===null;){if(i.return===null||i.return===t)break e;i=i.return}i.sibling.return=i.return,i=i.sibling}t.stateNode=u;e:switch(We(u,n,a),n){case"button":case"input":case"select":case"textarea":a=!!a.autoFocus;break e;case"img":a=!0;break e;default:a=!1}a&&Jt(t)}}return Ae(t),Ci(t,t.type,e===null?null:e.memoizedProps,t.pendingProps,l),null;case 6:if(e&&t.stateNode!=null)e.memoizedProps!==a&&Jt(t);else{if(typeof a!="string"&&t.stateNode===null)throw Error(f(166));if(e=ae.current,sa(t)){if(e=t.stateNode,l=t.memoizedProps,a=null,n=Ze,n!==null)switch(n.tag){case 27:case 5:a=n.memoizedProps}e[Ve]=t,e=!!(e.nodeValue===l||a!==null&&a.suppressHydrationWarning===!0||ld(e.nodeValue,l)),e||il(t,!0)}else e=Uu(e).createTextNode(a),e[Ve]=t,t.stateNode=e}return Ae(t),null;case 31:if(l=t.memoizedState,e===null||e.memoizedState!==null){if(a=sa(t),l!==null){if(e===null){if(!a)throw Error(f(318));if(e=t.memoizedState,e=e!==null?e.dehydrated:null,!e)throw Error(f(557));e[Ve]=t}else Hl(),(t.flags&128)===0&&(t.memoizedState=null),t.flags|=4;Ae(t),e=!1}else l=Lc(),e!==null&&e.memoizedState!==null&&(e.memoizedState.hydrationErrors=l),e=!0;if(!e)return t.flags&256?(gt(t),t):(gt(t),null);if((t.flags&128)!==0)throw Error(f(558))}return Ae(t),null;case 13:if(a=t.memoizedState,e===null||e.memoizedState!==null&&e.memoizedState.dehydrated!==null){if(n=sa(t),a!==null&&a.dehydrated!==null){if(e===null){if(!n)throw Error(f(318));if(n=t.memoizedState,n=n!==null?n.dehydrated:null,!n)throw Error(f(317));n[Ve]=t}else Hl(),(t.flags&128)===0&&(t.memoizedState=null),t.flags|=4;Ae(t),n=!1}else n=Lc(),e!==null&&e.memoizedState!==null&&(e.memoizedState.hydrationErrors=n),n=!0;if(!n)return t.flags&256?(gt(t),t):(gt(t),null)}return gt(t),(t.flags&128)!==0?(t.lanes=l,t):(l=a!==null,e=e!==null&&e.memoizedState!==null,l&&(a=t.child,n=null,a.alternate!==null&&a.alternate.memoizedState!==null&&a.alternate.memoizedState.cachePool!==null&&(n=a.alternate.memoizedState.cachePool.pool),u=null,a.memoizedState!==null&&a.memoizedState.cachePool!==null&&(u=a.memoizedState.cachePool.pool),u!==n&&(a.flags|=2048)),l!==e&&l&&(t.child.flags|=8192),bu(t,t.updateQueue),Ae(t),null);case 4:return He(),e===null&&es(t.stateNode.containerInfo),Ae(t),null;case 10:return Qt(t.type),Ae(t),null;case 19:if(M(Re),a=t.memoizedState,a===null)return Ae(t),null;if(n=(t.flags&128)!==0,u=a.rendering,u===null)if(n)cn(a,!1);else{if(ke!==0||e!==null&&(e.flags&128)!==0)for(e=t.child;e!==null;){if(u=cu(e),u!==null){for(t.flags|=128,cn(a,!1),e=u.updateQueue,t.updateQueue=e,bu(t,e),t.subtreeFlags=0,e=l,l=t.child;l!==null;)Uf(l,e),l=l.sibling;return k(Re,Re.current&1|2),fe&&Lt(t,a.treeForkCount),t.child}e=e.sibling}a.tail!==null&&ft()>zu&&(t.flags|=128,n=!0,cn(a,!1),t.lanes=4194304)}else{if(!n)if(e=cu(u),e!==null){if(t.flags|=128,n=!0,e=e.updateQueue,t.updateQueue=e,bu(t,e),cn(a,!0),a.tail===null&&a.tailMode==="hidden"&&!u.alternate&&!fe)return Ae(t),null}else 2*ft()-a.renderingStartTime>zu&&l!==536870912&&(t.flags|=128,n=!0,cn(a,!1),t.lanes=4194304);a.isBackwards?(u.sibling=t.child,t.child=u):(e=a.last,e!==null?e.sibling=u:t.child=u,a.last=u)}return a.tail!==null?(e=a.tail,a.rendering=e,a.tail=e.sibling,a.renderingStartTime=ft(),e.sibling=null,l=Re.current,k(Re,n?l&1|2:l&1),fe&&Lt(t,a.treeForkCount),e):(Ae(t),null);case 22:case 23:return gt(t),ti(),a=t.memoizedState!==null,e!==null?e.memoizedState!==null!==a&&(t.flags|=8192):a&&(t.flags|=8192),a?(l&536870912)!==0&&(t.flags&128)===0&&(Ae(t),t.subtreeFlags&6&&(t.flags|=8192)):Ae(t),l=t.updateQueue,l!==null&&bu(t,l.retryQueue),l=null,e!==null&&e.memoizedState!==null&&e.memoizedState.cachePool!==null&&(l=e.memoizedState.cachePool.pool),a=null,t.memoizedState!==null&&t.memoizedState.cachePool!==null&&(a=t.memoizedState.cachePool.pool),a!==l&&(t.flags|=2048),e!==null&&M(wl),null;case 24:return l=null,e!==null&&(l=e.memoizedState.cache),t.memoizedState.cache!==l&&(t.flags|=2048),Qt(we),Ae(t),null;case 25:return null;case 30:return null}throw Error(f(156,t.tag))}function Ah(e,t){switch(Gc(t),t.tag){case 1:return e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 3:return Qt(we),He(),e=t.flags,(e&65536)!==0&&(e&128)===0?(t.flags=e&-65537|128,t):null;case 26:case 27:case 5:return _n(t),null;case 31:if(t.memoizedState!==null){if(gt(t),t.alternate===null)throw Error(f(340));Hl()}return e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 13:if(gt(t),e=t.memoizedState,e!==null&&e.dehydrated!==null){if(t.alternate===null)throw Error(f(340));Hl()}return e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 19:return M(Re),null;case 4:return He(),null;case 10:return Qt(t.type),null;case 22:case 23:return gt(t),ti(),e!==null&&M(wl),e=t.flags,e&65536?(t.flags=e&-65537|128,t):null;case 24:return Qt(we),null;case 25:return null;default:return null}}function i0(e,t){switch(Gc(t),t.tag){case 3:Qt(we),He();break;case 26:case 27:case 5:_n(t);break;case 4:He();break;case 31:t.memoizedState!==null&&gt(t);break;case 13:gt(t);break;case 19:M(Re);break;case 10:Qt(t.type);break;case 22:case 23:gt(t),ti(),e!==null&&M(wl);break;case 24:Qt(we)}}function sn(e,t){try{var l=t.updateQueue,a=l!==null?l.lastEffect:null;if(a!==null){var n=a.next;l=n;do{if((l.tag&e)===e){a=void 0;var u=l.create,i=l.inst;a=u(),i.destroy=a}l=l.next}while(l!==n)}}catch(s){ve(t,t.return,s)}}function ml(e,t,l){try{var a=t.updateQueue,n=a!==null?a.lastEffect:null;if(n!==null){var u=n.next;a=u;do{if((a.tag&e)===e){var i=a.inst,s=i.destroy;if(s!==void 0){i.destroy=void 0,n=t;var r=l,g=s;try{g()}catch(N){ve(n,r,N)}}}a=a.next}while(a!==u)}}catch(N){ve(t,t.return,N)}}function s0(e){var t=e.updateQueue;if(t!==null){var l=e.stateNode;try{If(t,l)}catch(a){ve(e,e.return,a)}}}function f0(e,t,l){l.props=Xl(e.type,e.memoizedProps),l.state=e.memoizedState;try{l.componentWillUnmount()}catch(a){ve(e,t,a)}}function fn(e,t){try{var l=e.ref;if(l!==null){switch(e.tag){case 26:case 27:case 5:var a=e.stateNode;break;case 30:a=e.stateNode;break;default:a=e.stateNode}typeof l=="function"?e.refCleanup=l(a):l.current=a}}catch(n){ve(e,t,n)}}function Rt(e,t){var l=e.ref,a=e.refCleanup;if(l!==null)if(typeof a=="function")try{a()}catch(n){ve(e,t,n)}finally{e.refCleanup=null,e=e.alternate,e!=null&&(e.refCleanup=null)}else if(typeof l=="function")try{l(null)}catch(n){ve(e,t,n)}else l.current=null}function r0(e){var t=e.type,l=e.memoizedProps,a=e.stateNode;try{e:switch(t){case"button":case"input":case"select":case"textarea":l.autoFocus&&a.focus();break e;case"img":l.src?a.src=l.src:l.srcSet&&(a.srcset=l.srcSet)}}catch(n){ve(e,e.return,n)}}function ki(e,t,l){try{var a=e.stateNode;Wh(a,e.type,l,t),a[tt]=t}catch(n){ve(e,e.return,n)}}function d0(e){return e.tag===5||e.tag===3||e.tag===26||e.tag===27&&Sl(e.type)||e.tag===4}function Ui(e){e:for(;;){for(;e.sibling===null;){if(e.return===null||d0(e.return))return null;e=e.return}for(e.sibling.return=e.return,e=e.sibling;e.tag!==5&&e.tag!==6&&e.tag!==18;){if(e.tag===27&&Sl(e.type)||e.flags&2||e.child===null||e.tag===4)continue e;e.child.return=e,e=e.child}if(!(e.flags&2))return e.stateNode}}function Hi(e,t,l){var a=e.tag;if(a===5||a===6)e=e.stateNode,t?(l.nodeType===9?l.body:l.nodeName==="HTML"?l.ownerDocument.body:l).insertBefore(e,t):(t=l.nodeType===9?l.body:l.nodeName==="HTML"?l.ownerDocument.body:l,t.appendChild(e),l=l._reactRootContainer,l!=null||t.onclick!==null||(t.onclick=qt));else if(a!==4&&(a===27&&Sl(e.type)&&(l=e.stateNode,t=null),e=e.child,e!==null))for(Hi(e,t,l),e=e.sibling;e!==null;)Hi(e,t,l),e=e.sibling}function pu(e,t,l){var a=e.tag;if(a===5||a===6)e=e.stateNode,t?l.insertBefore(e,t):l.appendChild(e);else if(a!==4&&(a===27&&Sl(e.type)&&(l=e.stateNode),e=e.child,e!==null))for(pu(e,t,l),e=e.sibling;e!==null;)pu(e,t,l),e=e.sibling}function o0(e){var t=e.stateNode,l=e.memoizedProps;try{for(var a=e.type,n=t.attributes;n.length;)t.removeAttributeNode(n[0]);We(t,a,l),t[Ve]=e,t[tt]=l}catch(u){ve(e,e.return,u)}}var Wt=!1,Ye=!1,Ri=!1,h0=typeof WeakSet=="function"?WeakSet:Set,Qe=null;function Mh(e,t){if(e=e.containerInfo,as=Yu,e=Tf(e),Oc(e)){if("selectionStart"in e)var l={start:e.selectionStart,end:e.selectionEnd};else e:{l=(l=e.ownerDocument)&&l.defaultView||window;var a=l.getSelection&&l.getSelection();if(a&&a.rangeCount!==0){l=a.anchorNode;var n=a.anchorOffset,u=a.focusNode;a=a.focusOffset;try{l.nodeType,u.nodeType}catch{l=null;break e}var i=0,s=-1,r=-1,g=0,N=0,E=e,y=null;t:for(;;){for(var x;E!==l||n!==0&&E.nodeType!==3||(s=i+n),E!==u||a!==0&&E.nodeType!==3||(r=i+a),E.nodeType===3&&(i+=E.nodeValue.length),(x=E.firstChild)!==null;)y=E,E=x;for(;;){if(E===e)break t;if(y===l&&++g===n&&(s=i),y===u&&++N===a&&(r=i),(x=E.nextSibling)!==null)break;E=y,y=E.parentNode}E=x}l=s===-1||r===-1?null:{start:s,end:r}}else l=null}l=l||{start:0,end:0}}else l=null;for(ns={focusedElem:e,selectionRange:l},Yu=!1,Qe=t;Qe!==null;)if(t=Qe,e=t.child,(t.subtreeFlags&1028)!==0&&e!==null)e.return=t,Qe=e;else for(;Qe!==null;){switch(t=Qe,u=t.alternate,e=t.flags,t.tag){case 0:if((e&4)!==0&&(e=t.updateQueue,e=e!==null?e.events:null,e!==null))for(l=0;l<e.length;l++)n=e[l],n.ref.impl=n.nextImpl;break;case 11:case 15:break;case 1:if((e&1024)!==0&&u!==null){e=void 0,l=t,n=u.memoizedProps,u=u.memoizedState,a=l.stateNode;try{var H=Xl(l.type,n);e=a.getSnapshotBeforeUpdate(H,u),a.__reactInternalSnapshotBeforeUpdate=e}catch(X){ve(l,l.return,X)}}break;case 3:if((e&1024)!==0){if(e=t.stateNode.containerInfo,l=e.nodeType,l===9)is(e);else if(l===1)switch(e.nodeName){case"HEAD":case"HTML":case"BODY":is(e);break;default:e.textContent=""}}break;case 5:case 26:case 27:case 6:case 4:case 17:break;default:if((e&1024)!==0)throw Error(f(163))}if(e=t.sibling,e!==null){e.return=t.return,Qe=e;break}Qe=t.return}}function m0(e,t,l){var a=l.flags;switch(l.tag){case 0:case 11:case 15:$t(e,l),a&4&&sn(5,l);break;case 1:if($t(e,l),a&4)if(e=l.stateNode,t===null)try{e.componentDidMount()}catch(i){ve(l,l.return,i)}else{var n=Xl(l.type,t.memoizedProps);t=t.memoizedState;try{e.componentDidUpdate(n,t,e.__reactInternalSnapshotBeforeUpdate)}catch(i){ve(l,l.return,i)}}a&64&&s0(l),a&512&&fn(l,l.return);break;case 3:if($t(e,l),a&64&&(e=l.updateQueue,e!==null)){if(t=null,l.child!==null)switch(l.child.tag){case 27:case 5:t=l.child.stateNode;break;case 1:t=l.child.stateNode}try{If(e,t)}catch(i){ve(l,l.return,i)}}break;case 27:t===null&&a&4&&o0(l);case 26:case 5:$t(e,l),t===null&&a&4&&r0(l),a&512&&fn(l,l.return);break;case 12:$t(e,l);break;case 31:$t(e,l),a&4&&x0(e,l);break;case 13:$t(e,l),a&4&&v0(e,l),a&64&&(e=l.memoizedState,e!==null&&(e=e.dehydrated,e!==null&&(l=Bh.bind(null,l),a1(e,l))));break;case 22:if(a=l.memoizedState!==null||Wt,!a){t=t!==null&&t.memoizedState!==null||Ye,n=Wt;var u=Ye;Wt=a,(Ye=t)&&!u?It(e,l,(l.subtreeFlags&8772)!==0):$t(e,l),Wt=n,Ye=u}break;case 30:break;default:$t(e,l)}}function g0(e){var t=e.alternate;t!==null&&(e.alternate=null,g0(t)),e.child=null,e.deletions=null,e.sibling=null,e.tag===5&&(t=e.stateNode,t!==null&&oc(t)),e.stateNode=null,e.return=null,e.dependencies=null,e.memoizedProps=null,e.memoizedState=null,e.pendingProps=null,e.stateNode=null,e.updateQueue=null}var Me=null,at=!1;function Ft(e,t,l){for(l=l.child;l!==null;)y0(e,t,l),l=l.sibling}function y0(e,t,l){if(rt&&typeof rt.onCommitFiberUnmount=="function")try{rt.onCommitFiberUnmount(Ca,l)}catch{}switch(l.tag){case 26:Ye||Rt(l,t),Ft(e,t,l),l.memoizedState?l.memoizedState.count--:l.stateNode&&(l=l.stateNode,l.parentNode.removeChild(l));break;case 27:Ye||Rt(l,t);var a=Me,n=at;Sl(l.type)&&(Me=l.stateNode,at=!1),Ft(e,t,l),vn(l.stateNode),Me=a,at=n;break;case 5:Ye||Rt(l,t);case 6:if(a=Me,n=at,Me=null,Ft(e,t,l),Me=a,at=n,Me!==null)if(at)try{(Me.nodeType===9?Me.body:Me.nodeName==="HTML"?Me.ownerDocument.body:Me).removeChild(l.stateNode)}catch(u){ve(l,t,u)}else try{Me.removeChild(l.stateNode)}catch(u){ve(l,t,u)}break;case 18:Me!==null&&(at?(e=Me,sd(e.nodeType===9?e.body:e.nodeName==="HTML"?e.ownerDocument.body:e,l.stateNode),Oa(e)):sd(Me,l.stateNode));break;case 4:a=Me,n=at,Me=l.stateNode.containerInfo,at=!0,Ft(e,t,l),Me=a,at=n;break;case 0:case 11:case 14:case 15:ml(2,l,t),Ye||ml(4,l,t),Ft(e,t,l);break;case 1:Ye||(Rt(l,t),a=l.stateNode,typeof a.componentWillUnmount=="function"&&f0(l,t,a)),Ft(e,t,l);break;case 21:Ft(e,t,l);break;case 22:Ye=(a=Ye)||l.memoizedState!==null,Ft(e,t,l),Ye=a;break;default:Ft(e,t,l)}}function x0(e,t){if(t.memoizedState===null&&(e=t.alternate,e!==null&&(e=e.memoizedState,e!==null))){e=e.dehydrated;try{Oa(e)}catch(l){ve(t,t.return,l)}}}function v0(e,t){if(t.memoizedState===null&&(e=t.alternate,e!==null&&(e=e.memoizedState,e!==null&&(e=e.dehydrated,e!==null))))try{Oa(e)}catch(l){ve(t,t.return,l)}}function Oh(e){switch(e.tag){case 31:case 13:case 19:var t=e.stateNode;return t===null&&(t=e.stateNode=new h0),t;case 22:return e=e.stateNode,t=e._retryCache,t===null&&(t=e._retryCache=new h0),t;default:throw Error(f(435,e.tag))}}function Su(e,t){var l=Oh(e);t.forEach(function(a){if(!l.has(a)){l.add(a);var n=wh.bind(null,e,a);a.then(n,n)}})}function nt(e,t){var l=t.deletions;if(l!==null)for(var a=0;a<l.length;a++){var n=l[a],u=e,i=t,s=i;e:for(;s!==null;){switch(s.tag){case 27:if(Sl(s.type)){Me=s.stateNode,at=!1;break e}break;case 5:Me=s.stateNode,at=!1;break e;case 3:case 4:Me=s.stateNode.containerInfo,at=!0;break e}s=s.return}if(Me===null)throw Error(f(160));y0(u,i,n),Me=null,at=!1,u=n.alternate,u!==null&&(u.return=null),n.return=null}if(t.subtreeFlags&13886)for(t=t.child;t!==null;)b0(t,e),t=t.sibling}var Ct=null;function b0(e,t){var l=e.alternate,a=e.flags;switch(e.tag){case 0:case 11:case 14:case 15:nt(t,e),ut(e),a&4&&(ml(3,e,e.return),sn(3,e),ml(5,e,e.return));break;case 1:nt(t,e),ut(e),a&512&&(Ye||l===null||Rt(l,l.return)),a&64&&Wt&&(e=e.updateQueue,e!==null&&(a=e.callbacks,a!==null&&(l=e.shared.hiddenCallbacks,e.shared.hiddenCallbacks=l===null?a:l.concat(a))));break;case 26:var n=Ct;if(nt(t,e),ut(e),a&512&&(Ye||l===null||Rt(l,l.return)),a&4){var u=l!==null?l.memoizedState:null;if(a=e.memoizedState,l===null)if(a===null)if(e.stateNode===null){e:{a=e.type,l=e.memoizedProps,n=n.ownerDocument||n;t:switch(a){case"title":u=n.getElementsByTagName("title")[0],(!u||u[Ha]||u[Ve]||u.namespaceURI==="http://www.w3.org/2000/svg"||u.hasAttribute("itemprop"))&&(u=n.createElement(a),n.head.insertBefore(u,n.querySelector("head > title"))),We(u,a,l),u[Ve]=e,Xe(u),a=u;break e;case"link":var i=bd("link","href",n).get(a+(l.href||""));if(i){for(var s=0;s<i.length;s++)if(u=i[s],u.getAttribute("href")===(l.href==null||l.href===""?null:l.href)&&u.getAttribute("rel")===(l.rel==null?null:l.rel)&&u.getAttribute("title")===(l.title==null?null:l.title)&&u.getAttribute("crossorigin")===(l.crossOrigin==null?null:l.crossOrigin)){i.splice(s,1);break t}}u=n.createElement(a),We(u,a,l),n.head.appendChild(u);break;case"meta":if(i=bd("meta","content",n).get(a+(l.content||""))){for(s=0;s<i.length;s++)if(u=i[s],u.getAttribute("content")===(l.content==null?null:""+l.content)&&u.getAttribute("name")===(l.name==null?null:l.name)&&u.getAttribute("property")===(l.property==null?null:l.property)&&u.getAttribute("http-equiv")===(l.httpEquiv==null?null:l.httpEquiv)&&u.getAttribute("charset")===(l.charSet==null?null:l.charSet)){i.splice(s,1);break t}}u=n.createElement(a),We(u,a,l),n.head.appendChild(u);break;default:throw Error(f(468,a))}u[Ve]=e,Xe(u),a=u}e.stateNode=a}else pd(n,e.type,e.stateNode);else e.stateNode=vd(n,a,e.memoizedProps);else u!==a?(u===null?l.stateNode!==null&&(l=l.stateNode,l.parentNode.removeChild(l)):u.count--,a===null?pd(n,e.type,e.stateNode):vd(n,a,e.memoizedProps)):a===null&&e.stateNode!==null&&ki(e,e.memoizedProps,l.memoizedProps)}break;case 27:nt(t,e),ut(e),a&512&&(Ye||l===null||Rt(l,l.return)),l!==null&&a&4&&ki(e,e.memoizedProps,l.memoizedProps);break;case 5:if(nt(t,e),ut(e),a&512&&(Ye||l===null||Rt(l,l.return)),e.flags&32){n=e.stateNode;try{Il(n,"")}catch(H){ve(e,e.return,H)}}a&4&&e.stateNode!=null&&(n=e.memoizedProps,ki(e,n,l!==null?l.memoizedProps:n)),a&1024&&(Ri=!0);break;case 6:if(nt(t,e),ut(e),a&4){if(e.stateNode===null)throw Error(f(162));a=e.memoizedProps,l=e.stateNode;try{l.nodeValue=a}catch(H){ve(e,e.return,H)}}break;case 3:if(Bu=null,n=Ct,Ct=Hu(t.containerInfo),nt(t,e),Ct=n,ut(e),a&4&&l!==null&&l.memoizedState.isDehydrated)try{Oa(t.containerInfo)}catch(H){ve(e,e.return,H)}Ri&&(Ri=!1,p0(e));break;case 4:a=Ct,Ct=Hu(e.stateNode.containerInfo),nt(t,e),ut(e),Ct=a;break;case 12:nt(t,e),ut(e);break;case 31:nt(t,e),ut(e),a&4&&(a=e.updateQueue,a!==null&&(e.updateQueue=null,Su(e,a)));break;case 13:nt(t,e),ut(e),e.child.flags&8192&&e.memoizedState!==null!=(l!==null&&l.memoizedState!==null)&&(ju=ft()),a&4&&(a=e.updateQueue,a!==null&&(e.updateQueue=null,Su(e,a)));break;case 22:n=e.memoizedState!==null;var r=l!==null&&l.memoizedState!==null,g=Wt,N=Ye;if(Wt=g||n,Ye=N||r,nt(t,e),Ye=N,Wt=g,ut(e),a&8192)e:for(t=e.stateNode,t._visibility=n?t._visibility&-2:t._visibility|1,n&&(l===null||r||Wt||Ye||Ql(e)),l=null,t=e;;){if(t.tag===5||t.tag===26){if(l===null){r=l=t;try{if(u=r.stateNode,n)i=u.style,typeof i.setProperty=="function"?i.setProperty("display","none","important"):i.display="none";else{s=r.stateNode;var E=r.memoizedProps.style,y=E!=null&&E.hasOwnProperty("display")?E.display:null;s.style.display=y==null||typeof y=="boolean"?"":(""+y).trim()}}catch(H){ve(r,r.return,H)}}}else if(t.tag===6){if(l===null){r=t;try{r.stateNode.nodeValue=n?"":r.memoizedProps}catch(H){ve(r,r.return,H)}}}else if(t.tag===18){if(l===null){r=t;try{var x=r.stateNode;n?fd(x,!0):fd(r.stateNode,!1)}catch(H){ve(r,r.return,H)}}}else if((t.tag!==22&&t.tag!==23||t.memoizedState===null||t===e)&&t.child!==null){t.child.return=t,t=t.child;continue}if(t===e)break e;for(;t.sibling===null;){if(t.return===null||t.return===e)break e;l===t&&(l=null),t=t.return}l===t&&(l=null),t.sibling.return=t.return,t=t.sibling}a&4&&(a=e.updateQueue,a!==null&&(l=a.retryQueue,l!==null&&(a.retryQueue=null,Su(e,l))));break;case 19:nt(t,e),ut(e),a&4&&(a=e.updateQueue,a!==null&&(e.updateQueue=null,Su(e,a)));break;case 30:break;case 21:break;default:nt(t,e),ut(e)}}function ut(e){var t=e.flags;if(t&2){try{for(var l,a=e.return;a!==null;){if(d0(a)){l=a;break}a=a.return}if(l==null)throw Error(f(160));switch(l.tag){case 27:var n=l.stateNode,u=Ui(e);pu(e,u,n);break;case 5:var i=l.stateNode;l.flags&32&&(Il(i,""),l.flags&=-33);var s=Ui(e);pu(e,s,i);break;case 3:case 4:var r=l.stateNode.containerInfo,g=Ui(e);Hi(e,g,r);break;default:throw Error(f(161))}}catch(N){ve(e,e.return,N)}e.flags&=-3}t&4096&&(e.flags&=-4097)}function p0(e){if(e.subtreeFlags&1024)for(e=e.child;e!==null;){var t=e;p0(t),t.tag===5&&t.flags&1024&&t.stateNode.reset(),e=e.sibling}}function $t(e,t){if(t.subtreeFlags&8772)for(t=t.child;t!==null;)m0(e,t.alternate,t),t=t.sibling}function Ql(e){for(e=e.child;e!==null;){var t=e;switch(t.tag){case 0:case 11:case 14:case 15:ml(4,t,t.return),Ql(t);break;case 1:Rt(t,t.return);var l=t.stateNode;typeof l.componentWillUnmount=="function"&&f0(t,t.return,l),Ql(t);break;case 27:vn(t.stateNode);case 26:case 5:Rt(t,t.return),Ql(t);break;case 22:t.memoizedState===null&&Ql(t);break;case 30:Ql(t);break;default:Ql(t)}e=e.sibling}}function It(e,t,l){for(l=l&&(t.subtreeFlags&8772)!==0,t=t.child;t!==null;){var a=t.alternate,n=e,u=t,i=u.flags;switch(u.tag){case 0:case 11:case 15:It(n,u,l),sn(4,u);break;case 1:if(It(n,u,l),a=u,n=a.stateNode,typeof n.componentDidMount=="function")try{n.componentDidMount()}catch(g){ve(a,a.return,g)}if(a=u,n=a.updateQueue,n!==null){var s=a.stateNode;try{var r=n.shared.hiddenCallbacks;if(r!==null)for(n.shared.hiddenCallbacks=null,n=0;n<r.length;n++)$f(r[n],s)}catch(g){ve(a,a.return,g)}}l&&i&64&&s0(u),fn(u,u.return);break;case 27:o0(u);case 26:case 5:It(n,u,l),l&&a===null&&i&4&&r0(u),fn(u,u.return);break;case 12:It(n,u,l);break;case 31:It(n,u,l),l&&i&4&&x0(n,u);break;case 13:It(n,u,l),l&&i&4&&v0(n,u);break;case 22:u.memoizedState===null&&It(n,u,l),fn(u,u.return);break;case 30:break;default:It(n,u,l)}t=t.sibling}}function Bi(e,t){var l=null;e!==null&&e.memoizedState!==null&&e.memoizedState.cachePool!==null&&(l=e.memoizedState.cachePool.pool),e=null,t.memoizedState!==null&&t.memoizedState.cachePool!==null&&(e=t.memoizedState.cachePool.pool),e!==l&&(e!=null&&e.refCount++,l!=null&&Ja(l))}function wi(e,t){e=null,t.alternate!==null&&(e=t.alternate.memoizedState.cache),t=t.memoizedState.cache,t!==e&&(t.refCount++,e!=null&&Ja(e))}function kt(e,t,l,a){if(t.subtreeFlags&10256)for(t=t.child;t!==null;)S0(e,t,l,a),t=t.sibling}function S0(e,t,l,a){var n=t.flags;switch(t.tag){case 0:case 11:case 15:kt(e,t,l,a),n&2048&&sn(9,t);break;case 1:kt(e,t,l,a);break;case 3:kt(e,t,l,a),n&2048&&(e=null,t.alternate!==null&&(e=t.alternate.memoizedState.cache),t=t.memoizedState.cache,t!==e&&(t.refCount++,e!=null&&Ja(e)));break;case 12:if(n&2048){kt(e,t,l,a),e=t.stateNode;try{var u=t.memoizedProps,i=u.id,s=u.onPostCommit;typeof s=="function"&&s(i,t.alternate===null?"mount":"update",e.passiveEffectDuration,-0)}catch(r){ve(t,t.return,r)}}else kt(e,t,l,a);break;case 31:kt(e,t,l,a);break;case 13:kt(e,t,l,a);break;case 23:break;case 22:u=t.stateNode,i=t.alternate,t.memoizedState!==null?u._visibility&2?kt(e,t,l,a):rn(e,t):u._visibility&2?kt(e,t,l,a):(u._visibility|=2,va(e,t,l,a,(t.subtreeFlags&10256)!==0||!1)),n&2048&&Bi(i,t);break;case 24:kt(e,t,l,a),n&2048&&wi(t.alternate,t);break;default:kt(e,t,l,a)}}function va(e,t,l,a,n){for(n=n&&((t.subtreeFlags&10256)!==0||!1),t=t.child;t!==null;){var u=e,i=t,s=l,r=a,g=i.flags;switch(i.tag){case 0:case 11:case 15:va(u,i,s,r,n),sn(8,i);break;case 23:break;case 22:var N=i.stateNode;i.memoizedState!==null?N._visibility&2?va(u,i,s,r,n):rn(u,i):(N._visibility|=2,va(u,i,s,r,n)),n&&g&2048&&Bi(i.alternate,i);break;case 24:va(u,i,s,r,n),n&&g&2048&&wi(i.alternate,i);break;default:va(u,i,s,r,n)}t=t.sibling}}function rn(e,t){if(t.subtreeFlags&10256)for(t=t.child;t!==null;){var l=e,a=t,n=a.flags;switch(a.tag){case 22:rn(l,a),n&2048&&Bi(a.alternate,a);break;case 24:rn(l,a),n&2048&&wi(a.alternate,a);break;default:rn(l,a)}t=t.sibling}}var dn=8192;function ba(e,t,l){if(e.subtreeFlags&dn)for(e=e.child;e!==null;)N0(e,t,l),e=e.sibling}function N0(e,t,l){switch(e.tag){case 26:ba(e,t,l),e.flags&dn&&e.memoizedState!==null&&g1(l,Ct,e.memoizedState,e.memoizedProps);break;case 5:ba(e,t,l);break;case 3:case 4:var a=Ct;Ct=Hu(e.stateNode.containerInfo),ba(e,t,l),Ct=a;break;case 22:e.memoizedState===null&&(a=e.alternate,a!==null&&a.memoizedState!==null?(a=dn,dn=16777216,ba(e,t,l),dn=a):ba(e,t,l));break;default:ba(e,t,l)}}function j0(e){var t=e.alternate;if(t!==null&&(e=t.child,e!==null)){t.child=null;do t=e.sibling,e.sibling=null,e=t;while(e!==null)}}function on(e){var t=e.deletions;if((e.flags&16)!==0){if(t!==null)for(var l=0;l<t.length;l++){var a=t[l];Qe=a,T0(a,e)}j0(e)}if(e.subtreeFlags&10256)for(e=e.child;e!==null;)z0(e),e=e.sibling}function z0(e){switch(e.tag){case 0:case 11:case 15:on(e),e.flags&2048&&ml(9,e,e.return);break;case 3:on(e);break;case 12:on(e);break;case 22:var t=e.stateNode;e.memoizedState!==null&&t._visibility&2&&(e.return===null||e.return.tag!==13)?(t._visibility&=-3,Nu(e)):on(e);break;default:on(e)}}function Nu(e){var t=e.deletions;if((e.flags&16)!==0){if(t!==null)for(var l=0;l<t.length;l++){var a=t[l];Qe=a,T0(a,e)}j0(e)}for(e=e.child;e!==null;){switch(t=e,t.tag){case 0:case 11:case 15:ml(8,t,t.return),Nu(t);break;case 22:l=t.stateNode,l._visibility&2&&(l._visibility&=-3,Nu(t));break;default:Nu(t)}e=e.sibling}}function T0(e,t){for(;Qe!==null;){var l=Qe;switch(l.tag){case 0:case 11:case 15:ml(8,l,t);break;case 23:case 22:if(l.memoizedState!==null&&l.memoizedState.cachePool!==null){var a=l.memoizedState.cachePool.pool;a!=null&&a.refCount++}break;case 24:Ja(l.memoizedState.cache)}if(a=l.child,a!==null)a.return=l,Qe=a;else e:for(l=e;Qe!==null;){a=Qe;var n=a.sibling,u=a.return;if(g0(a),a===l){Qe=null;break e}if(n!==null){n.return=u,Qe=n;break e}Qe=u}}}var _h={getCacheForType:function(e){var t=Ke(we),l=t.data.get(e);return l===void 0&&(l=e(),t.data.set(e,l)),l},cacheSignal:function(){return Ke(we).controller.signal}},Dh=typeof WeakMap=="function"?WeakMap:Map,ge=0,ze=null,ne=null,ce=0,xe=0,yt=null,gl=!1,pa=!1,qi=!1,Pt=0,ke=0,yl=0,Vl=0,Gi=0,xt=0,Sa=0,hn=null,ct=null,Yi=!1,ju=0,E0=0,zu=1/0,Tu=null,xl=null,Le=0,vl=null,Na=null,el=0,Li=0,Xi=null,A0=null,mn=0,Qi=null;function vt(){return(ge&2)!==0&&ce!==0?ce&-ce:j.T!==null?Fi():Ls()}function M0(){if(xt===0)if((ce&536870912)===0||fe){var e=kn;kn<<=1,(kn&3932160)===0&&(kn=262144),xt=e}else xt=536870912;return e=mt.current,e!==null&&(e.flags|=32),xt}function it(e,t,l){(e===ze&&(xe===2||xe===9)||e.cancelPendingCommit!==null)&&(ja(e,0),bl(e,ce,xt,!1)),Ua(e,l),((ge&2)===0||e!==ze)&&(e===ze&&((ge&2)===0&&(Vl|=l),ke===4&&bl(e,ce,xt,!1)),Bt(e))}function O0(e,t,l){if((ge&6)!==0)throw Error(f(327));var a=!l&&(t&127)===0&&(t&e.expiredLanes)===0||ka(e,t),n=a?Uh(e,t):Zi(e,t,!0),u=a;do{if(n===0){pa&&!a&&bl(e,t,0,!1);break}else{if(l=e.current.alternate,u&&!Ch(l)){n=Zi(e,t,!1),u=!1;continue}if(n===2){if(u=t,e.errorRecoveryDisabledLanes&u)var i=0;else i=e.pendingLanes&-536870913,i=i!==0?i:i&536870912?536870912:0;if(i!==0){t=i;e:{var s=e;n=hn;var r=s.current.memoizedState.isDehydrated;if(r&&(ja(s,i).flags|=256),i=Zi(s,i,!1),i!==2){if(qi&&!r){s.errorRecoveryDisabledLanes|=u,Vl|=u,n=4;break e}u=ct,ct=n,u!==null&&(ct===null?ct=u:ct.push.apply(ct,u))}n=i}if(u=!1,n!==2)continue}}if(n===1){ja(e,0),bl(e,t,0,!0);break}e:{switch(a=e,u=n,u){case 0:case 1:throw Error(f(345));case 4:if((t&4194048)!==t)break;case 6:bl(a,t,xt,!gl);break e;case 2:ct=null;break;case 3:case 5:break;default:throw Error(f(329))}if((t&62914560)===t&&(n=ju+300-ft(),10<n)){if(bl(a,t,xt,!gl),Hn(a,0,!0)!==0)break e;el=t,a.timeoutHandle=cd(_0.bind(null,a,l,ct,Tu,Yi,t,xt,Vl,Sa,gl,u,"Throttled",-0,0),n);break e}_0(a,l,ct,Tu,Yi,t,xt,Vl,Sa,gl,u,null,-0,0)}}break}while(!0);Bt(e)}function _0(e,t,l,a,n,u,i,s,r,g,N,E,y,x){if(e.timeoutHandle=-1,E=t.subtreeFlags,E&8192||(E&16785408)===16785408){E={stylesheets:null,count:0,imgCount:0,imgBytes:0,suspenseyImages:[],waitingForImages:!0,waitingForViewTransition:!1,unsuspend:qt},N0(t,u,E);var H=(u&62914560)===u?ju-ft():(u&4194048)===u?E0-ft():0;if(H=y1(E,H),H!==null){el=u,e.cancelPendingCommit=H(w0.bind(null,e,t,u,l,a,n,i,s,r,N,E,null,y,x)),bl(e,u,i,!g);return}}w0(e,t,u,l,a,n,i,s,r)}function Ch(e){for(var t=e;;){var l=t.tag;if((l===0||l===11||l===15)&&t.flags&16384&&(l=t.updateQueue,l!==null&&(l=l.stores,l!==null)))for(var a=0;a<l.length;a++){var n=l[a],u=n.getSnapshot;n=n.value;try{if(!ot(u(),n))return!1}catch{return!1}}if(l=t.child,t.subtreeFlags&16384&&l!==null)l.return=t,t=l;else{if(t===e)break;for(;t.sibling===null;){if(t.return===null||t.return===e)return!0;t=t.return}t.sibling.return=t.return,t=t.sibling}}return!0}function bl(e,t,l,a){t&=~Gi,t&=~Vl,e.suspendedLanes|=t,e.pingedLanes&=~t,a&&(e.warmLanes|=t),a=e.expirationTimes;for(var n=t;0<n;){var u=31-dt(n),i=1<<u;a[u]=-1,n&=~i}l!==0&&qs(e,l,t)}function Eu(){return(ge&6)===0?(gn(0),!1):!0}function Vi(){if(ne!==null){if(xe===0)var e=ne.return;else e=ne,Xt=Rl=null,ii(e),ha=null,Fa=0,e=ne;for(;e!==null;)i0(e.alternate,e),e=e.return;ne=null}}function ja(e,t){var l=e.timeoutHandle;l!==-1&&(e.timeoutHandle=-1,Ih(l)),l=e.cancelPendingCommit,l!==null&&(e.cancelPendingCommit=null,l()),el=0,Vi(),ze=e,ne=l=Yt(e.current,null),ce=t,xe=0,yt=null,gl=!1,pa=ka(e,t),qi=!1,Sa=xt=Gi=Vl=yl=ke=0,ct=hn=null,Yi=!1,(t&8)!==0&&(t|=t&32);var a=e.entangledLanes;if(a!==0)for(e=e.entanglements,a&=t;0<a;){var n=31-dt(a),u=1<<n;t|=e[n],a&=~u}return Pt=t,Kn(),l}function D0(e,t){P=null,j.H=nn,t===oa||t===tu?(t=Kf(),xe=3):t===Wc?(t=Kf(),xe=4):xe=t===ji?8:t!==null&&typeof t=="object"&&typeof t.then=="function"?6:1,yt=t,ne===null&&(ke=1,gu(e,Nt(t,e.current)))}function C0(){var e=mt.current;return e===null?!0:(ce&4194048)===ce?Et===null:(ce&62914560)===ce||(ce&536870912)!==0?e===Et:!1}function k0(){var e=j.H;return j.H=nn,e===null?nn:e}function U0(){var e=j.A;return j.A=_h,e}function Au(){ke=4,gl||(ce&4194048)!==ce&&mt.current!==null||(pa=!0),(yl&134217727)===0&&(Vl&134217727)===0||ze===null||bl(ze,ce,xt,!1)}function Zi(e,t,l){var a=ge;ge|=2;var n=k0(),u=U0();(ze!==e||ce!==t)&&(Tu=null,ja(e,t)),t=!1;var i=ke;e:do try{if(xe!==0&&ne!==null){var s=ne,r=yt;switch(xe){case 8:Vi(),i=6;break e;case 3:case 2:case 9:case 6:mt.current===null&&(t=!0);var g=xe;if(xe=0,yt=null,za(e,s,r,g),l&&pa){i=0;break e}break;default:g=xe,xe=0,yt=null,za(e,s,r,g)}}kh(),i=ke;break}catch(N){D0(e,N)}while(!0);return t&&e.shellSuspendCounter++,Xt=Rl=null,ge=a,j.H=n,j.A=u,ne===null&&(ze=null,ce=0,Kn()),i}function kh(){for(;ne!==null;)H0(ne)}function Uh(e,t){var l=ge;ge|=2;var a=k0(),n=U0();ze!==e||ce!==t?(Tu=null,zu=ft()+500,ja(e,t)):pa=ka(e,t);e:do try{if(xe!==0&&ne!==null){t=ne;var u=yt;t:switch(xe){case 1:xe=0,yt=null,za(e,t,u,1);break;case 2:case 9:if(Vf(u)){xe=0,yt=null,R0(t);break}t=function(){xe!==2&&xe!==9||ze!==e||(xe=7),Bt(e)},u.then(t,t);break e;case 3:xe=7;break e;case 4:xe=5;break e;case 7:Vf(u)?(xe=0,yt=null,R0(t)):(xe=0,yt=null,za(e,t,u,7));break;case 5:var i=null;switch(ne.tag){case 26:i=ne.memoizedState;case 5:case 27:var s=ne;if(i?Sd(i):s.stateNode.complete){xe=0,yt=null;var r=s.sibling;if(r!==null)ne=r;else{var g=s.return;g!==null?(ne=g,Mu(g)):ne=null}break t}}xe=0,yt=null,za(e,t,u,5);break;case 6:xe=0,yt=null,za(e,t,u,6);break;case 8:Vi(),ke=6;break e;default:throw Error(f(462))}}Hh();break}catch(N){D0(e,N)}while(!0);return Xt=Rl=null,j.H=a,j.A=n,ge=l,ne!==null?0:(ze=null,ce=0,Kn(),ke)}function Hh(){for(;ne!==null&&!ao();)H0(ne)}function H0(e){var t=u0(e.alternate,e,Pt);e.memoizedProps=e.pendingProps,t===null?Mu(e):ne=t}function R0(e){var t=e,l=t.alternate;switch(t.tag){case 15:case 0:t=Pr(l,t,t.pendingProps,t.type,void 0,ce);break;case 11:t=Pr(l,t,t.pendingProps,t.type.render,t.ref,ce);break;case 5:ii(t);default:i0(l,t),t=ne=Uf(t,Pt),t=u0(l,t,Pt)}e.memoizedProps=e.pendingProps,t===null?Mu(e):ne=t}function za(e,t,l,a){Xt=Rl=null,ii(t),ha=null,Fa=0;var n=t.return;try{if(jh(e,n,t,l,ce)){ke=1,gu(e,Nt(l,e.current)),ne=null;return}}catch(u){if(n!==null)throw ne=n,u;ke=1,gu(e,Nt(l,e.current)),ne=null;return}t.flags&32768?(fe||a===1?e=!0:pa||(ce&536870912)!==0?e=!1:(gl=e=!0,(a===2||a===9||a===3||a===6)&&(a=mt.current,a!==null&&a.tag===13&&(a.flags|=16384))),B0(t,e)):Mu(t)}function Mu(e){var t=e;do{if((t.flags&32768)!==0){B0(t,gl);return}e=t.return;var l=Eh(t.alternate,t,Pt);if(l!==null){ne=l;return}if(t=t.sibling,t!==null){ne=t;return}ne=t=e}while(t!==null);ke===0&&(ke=5)}function B0(e,t){do{var l=Ah(e.alternate,e);if(l!==null){l.flags&=32767,ne=l;return}if(l=e.return,l!==null&&(l.flags|=32768,l.subtreeFlags=0,l.deletions=null),!t&&(e=e.sibling,e!==null)){ne=e;return}ne=e=l}while(e!==null);ke=6,ne=null}function w0(e,t,l,a,n,u,i,s,r){e.cancelPendingCommit=null;do Ou();while(Le!==0);if((ge&6)!==0)throw Error(f(327));if(t!==null){if(t===e.current)throw Error(f(177));if(u=t.lanes|t.childLanes,u|=Uc,mo(e,l,u,i,s,r),e===ze&&(ne=ze=null,ce=0),Na=t,vl=e,el=l,Li=u,Xi=n,A0=a,(t.subtreeFlags&10256)!==0||(t.flags&10256)!==0?(e.callbackNode=null,e.callbackPriority=0,qh(Dn,function(){return X0(),null})):(e.callbackNode=null,e.callbackPriority=0),a=(t.flags&13878)!==0,(t.subtreeFlags&13878)!==0||a){a=j.T,j.T=null,n=C.p,C.p=2,i=ge,ge|=4;try{Mh(e,t,l)}finally{ge=i,C.p=n,j.T=a}}Le=1,q0(),G0(),Y0()}}function q0(){if(Le===1){Le=0;var e=vl,t=Na,l=(t.flags&13878)!==0;if((t.subtreeFlags&13878)!==0||l){l=j.T,j.T=null;var a=C.p;C.p=2;var n=ge;ge|=4;try{b0(t,e);var u=ns,i=Tf(e.containerInfo),s=u.focusedElem,r=u.selectionRange;if(i!==s&&s&&s.ownerDocument&&zf(s.ownerDocument.documentElement,s)){if(r!==null&&Oc(s)){var g=r.start,N=r.end;if(N===void 0&&(N=g),"selectionStart"in s)s.selectionStart=g,s.selectionEnd=Math.min(N,s.value.length);else{var E=s.ownerDocument||document,y=E&&E.defaultView||window;if(y.getSelection){var x=y.getSelection(),H=s.textContent.length,X=Math.min(r.start,H),Ne=r.end===void 0?X:Math.min(r.end,H);!x.extend&&X>Ne&&(i=Ne,Ne=X,X=i);var h=jf(s,X),d=jf(s,Ne);if(h&&d&&(x.rangeCount!==1||x.anchorNode!==h.node||x.anchorOffset!==h.offset||x.focusNode!==d.node||x.focusOffset!==d.offset)){var m=E.createRange();m.setStart(h.node,h.offset),x.removeAllRanges(),X>Ne?(x.addRange(m),x.extend(d.node,d.offset)):(m.setEnd(d.node,d.offset),x.addRange(m))}}}}for(E=[],x=s;x=x.parentNode;)x.nodeType===1&&E.push({element:x,left:x.scrollLeft,top:x.scrollTop});for(typeof s.focus=="function"&&s.focus(),s=0;s<E.length;s++){var T=E[s];T.element.scrollLeft=T.left,T.element.scrollTop=T.top}}Yu=!!as,ns=as=null}finally{ge=n,C.p=a,j.T=l}}e.current=t,Le=2}}function G0(){if(Le===2){Le=0;var e=vl,t=Na,l=(t.flags&8772)!==0;if((t.subtreeFlags&8772)!==0||l){l=j.T,j.T=null;var a=C.p;C.p=2;var n=ge;ge|=4;try{m0(e,t.alternate,t)}finally{ge=n,C.p=a,j.T=l}}Le=3}}function Y0(){if(Le===4||Le===3){Le=0,no();var e=vl,t=Na,l=el,a=A0;(t.subtreeFlags&10256)!==0||(t.flags&10256)!==0?Le=5:(Le=0,Na=vl=null,L0(e,e.pendingLanes));var n=e.pendingLanes;if(n===0&&(xl=null),rc(l),t=t.stateNode,rt&&typeof rt.onCommitFiberRoot=="function")try{rt.onCommitFiberRoot(Ca,t,void 0,(t.current.flags&128)===128)}catch{}if(a!==null){t=j.T,n=C.p,C.p=2,j.T=null;try{for(var u=e.onRecoverableError,i=0;i<a.length;i++){var s=a[i];u(s.value,{componentStack:s.stack})}}finally{j.T=t,C.p=n}}(el&3)!==0&&Ou(),Bt(e),n=e.pendingLanes,(l&261930)!==0&&(n&42)!==0?e===Qi?mn++:(mn=0,Qi=e):mn=0,gn(0)}}function L0(e,t){(e.pooledCacheLanes&=t)===0&&(t=e.pooledCache,t!=null&&(e.pooledCache=null,Ja(t)))}function Ou(){return q0(),G0(),Y0(),X0()}function X0(){if(Le!==5)return!1;var e=vl,t=Li;Li=0;var l=rc(el),a=j.T,n=C.p;try{C.p=32>l?32:l,j.T=null,l=Xi,Xi=null;var u=vl,i=el;if(Le=0,Na=vl=null,el=0,(ge&6)!==0)throw Error(f(331));var s=ge;if(ge|=4,z0(u.current),S0(u,u.current,i,l),ge=s,gn(0,!1),rt&&typeof rt.onPostCommitFiberRoot=="function")try{rt.onPostCommitFiberRoot(Ca,u)}catch{}return!0}finally{C.p=n,j.T=a,L0(e,t)}}function Q0(e,t,l){t=Nt(l,t),t=Ni(e.stateNode,t,2),e=dl(e,t,2),e!==null&&(Ua(e,2),Bt(e))}function ve(e,t,l){if(e.tag===3)Q0(e,e,l);else for(;t!==null;){if(t.tag===3){Q0(t,e,l);break}else if(t.tag===1){var a=t.stateNode;if(typeof t.type.getDerivedStateFromError=="function"||typeof a.componentDidCatch=="function"&&(xl===null||!xl.has(a))){e=Nt(l,e),l=Vr(2),a=dl(t,l,2),a!==null&&(Zr(l,a,t,e),Ua(a,2),Bt(a));break}}t=t.return}}function Ki(e,t,l){var a=e.pingCache;if(a===null){a=e.pingCache=new Dh;var n=new Set;a.set(t,n)}else n=a.get(t),n===void 0&&(n=new Set,a.set(t,n));n.has(l)||(qi=!0,n.add(l),e=Rh.bind(null,e,t,l),t.then(e,e))}function Rh(e,t,l){var a=e.pingCache;a!==null&&a.delete(t),e.pingedLanes|=e.suspendedLanes&l,e.warmLanes&=~l,ze===e&&(ce&l)===l&&(ke===4||ke===3&&(ce&62914560)===ce&&300>ft()-ju?(ge&2)===0&&ja(e,0):Gi|=l,Sa===ce&&(Sa=0)),Bt(e)}function V0(e,t){t===0&&(t=ws()),e=kl(e,t),e!==null&&(Ua(e,t),Bt(e))}function Bh(e){var t=e.memoizedState,l=0;t!==null&&(l=t.retryLane),V0(e,l)}function wh(e,t){var l=0;switch(e.tag){case 31:case 13:var a=e.stateNode,n=e.memoizedState;n!==null&&(l=n.retryLane);break;case 19:a=e.stateNode;break;case 22:a=e.stateNode._retryCache;break;default:throw Error(f(314))}a!==null&&a.delete(t),V0(e,l)}function qh(e,t){return cc(e,t)}var _u=null,Ta=null,Ji=!1,Du=!1,Wi=!1,pl=0;function Bt(e){e!==Ta&&e.next===null&&(Ta===null?_u=Ta=e:Ta=Ta.next=e),Du=!0,Ji||(Ji=!0,Yh())}function gn(e,t){if(!Wi&&Du){Wi=!0;do for(var l=!1,a=_u;a!==null;){if(e!==0){var n=a.pendingLanes;if(n===0)var u=0;else{var i=a.suspendedLanes,s=a.pingedLanes;u=(1<<31-dt(42|e)+1)-1,u&=n&~(i&~s),u=u&201326741?u&201326741|1:u?u|2:0}u!==0&&(l=!0,W0(a,u))}else u=ce,u=Hn(a,a===ze?u:0,a.cancelPendingCommit!==null||a.timeoutHandle!==-1),(u&3)===0||ka(a,u)||(l=!0,W0(a,u));a=a.next}while(l);Wi=!1}}function Gh(){Z0()}function Z0(){Du=Ji=!1;var e=0;pl!==0&&$h()&&(e=pl);for(var t=ft(),l=null,a=_u;a!==null;){var n=a.next,u=K0(a,t);u===0?(a.next=null,l===null?_u=n:l.next=n,n===null&&(Ta=l)):(l=a,(e!==0||(u&3)!==0)&&(Du=!0)),a=n}Le!==0&&Le!==5||gn(e),pl!==0&&(pl=0)}function K0(e,t){for(var l=e.suspendedLanes,a=e.pingedLanes,n=e.expirationTimes,u=e.pendingLanes&-62914561;0<u;){var i=31-dt(u),s=1<<i,r=n[i];r===-1?((s&l)===0||(s&a)!==0)&&(n[i]=ho(s,t)):r<=t&&(e.expiredLanes|=s),u&=~s}if(t=ze,l=ce,l=Hn(e,e===t?l:0,e.cancelPendingCommit!==null||e.timeoutHandle!==-1),a=e.callbackNode,l===0||e===t&&(xe===2||xe===9)||e.cancelPendingCommit!==null)return a!==null&&a!==null&&ic(a),e.callbackNode=null,e.callbackPriority=0;if((l&3)===0||ka(e,l)){if(t=l&-l,t===e.callbackPriority)return t;switch(a!==null&&ic(a),rc(l)){case 2:case 8:l=Rs;break;case 32:l=Dn;break;case 268435456:l=Bs;break;default:l=Dn}return a=J0.bind(null,e),l=cc(l,a),e.callbackPriority=t,e.callbackNode=l,t}return a!==null&&a!==null&&ic(a),e.callbackPriority=2,e.callbackNode=null,2}function J0(e,t){if(Le!==0&&Le!==5)return e.callbackNode=null,e.callbackPriority=0,null;var l=e.callbackNode;if(Ou()&&e.callbackNode!==l)return null;var a=ce;return a=Hn(e,e===ze?a:0,e.cancelPendingCommit!==null||e.timeoutHandle!==-1),a===0?null:(O0(e,a,t),K0(e,ft()),e.callbackNode!=null&&e.callbackNode===l?J0.bind(null,e):null)}function W0(e,t){if(Ou())return null;O0(e,t,!0)}function Yh(){Ph(function(){(ge&6)!==0?cc(Hs,Gh):Z0()})}function Fi(){if(pl===0){var e=ra;e===0&&(e=Cn,Cn<<=1,(Cn&261888)===0&&(Cn=256)),pl=e}return pl}function F0(e){return e==null||typeof e=="symbol"||typeof e=="boolean"?null:typeof e=="function"?e:qn(""+e)}function $0(e,t){var l=t.ownerDocument.createElement("input");return l.name=t.name,l.value=t.value,e.id&&l.setAttribute("form",e.id),t.parentNode.insertBefore(l,t),e=new FormData(e),l.parentNode.removeChild(l),e}function Lh(e,t,l,a,n){if(t==="submit"&&l&&l.stateNode===n){var u=F0((n[tt]||null).action),i=a.submitter;i&&(t=(t=i[tt]||null)?F0(t.formAction):i.getAttribute("formAction"),t!==null&&(u=t,i=null));var s=new Xn("action","action",null,a,n);e.push({event:s,listeners:[{instance:null,listener:function(){if(a.defaultPrevented){if(pl!==0){var r=i?$0(n,i):new FormData(n);yi(l,{pending:!0,data:r,method:n.method,action:u},null,r)}}else typeof u=="function"&&(s.preventDefault(),r=i?$0(n,i):new FormData(n),yi(l,{pending:!0,data:r,method:n.method,action:u},u,r))},currentTarget:n}]})}}for(var $i=0;$i<kc.length;$i++){var Ii=kc[$i],Xh=Ii.toLowerCase(),Qh=Ii[0].toUpperCase()+Ii.slice(1);Dt(Xh,"on"+Qh)}Dt(Mf,"onAnimationEnd"),Dt(Of,"onAnimationIteration"),Dt(_f,"onAnimationStart"),Dt("dblclick","onDoubleClick"),Dt("focusin","onFocus"),Dt("focusout","onBlur"),Dt(ch,"onTransitionRun"),Dt(ih,"onTransitionStart"),Dt(sh,"onTransitionCancel"),Dt(Df,"onTransitionEnd"),Fl("onMouseEnter",["mouseout","mouseover"]),Fl("onMouseLeave",["mouseout","mouseover"]),Fl("onPointerEnter",["pointerout","pointerover"]),Fl("onPointerLeave",["pointerout","pointerover"]),Ol("onChange","change click focusin focusout input keydown keyup selectionchange".split(" ")),Ol("onSelect","focusout contextmenu dragend focusin keydown keyup mousedown mouseup selectionchange".split(" ")),Ol("onBeforeInput",["compositionend","keypress","textInput","paste"]),Ol("onCompositionEnd","compositionend focusout keydown keypress keyup mousedown".split(" ")),Ol("onCompositionStart","compositionstart focusout keydown keypress keyup mousedown".split(" ")),Ol("onCompositionUpdate","compositionupdate focusout keydown keypress keyup mousedown".split(" "));var yn="abort canplay canplaythrough durationchange emptied encrypted ended error loadeddata loadedmetadata loadstart pause play playing progress ratechange resize seeked seeking stalled suspend timeupdate volumechange waiting".split(" "),Vh=new Set("beforetoggle cancel close invalid load scroll scrollend toggle".split(" ").concat(yn));function I0(e,t){t=(t&4)!==0;for(var l=0;l<e.length;l++){var a=e[l],n=a.event;a=a.listeners;e:{var u=void 0;if(t)for(var i=a.length-1;0<=i;i--){var s=a[i],r=s.instance,g=s.currentTarget;if(s=s.listener,r!==u&&n.isPropagationStopped())break e;u=s,n.currentTarget=g;try{u(n)}catch(N){Zn(N)}n.currentTarget=null,u=r}else for(i=0;i<a.length;i++){if(s=a[i],r=s.instance,g=s.currentTarget,s=s.listener,r!==u&&n.isPropagationStopped())break e;u=s,n.currentTarget=g;try{u(n)}catch(N){Zn(N)}n.currentTarget=null,u=r}}}}function ue(e,t){var l=t[dc];l===void 0&&(l=t[dc]=new Set);var a=e+"__bubble";l.has(a)||(P0(t,e,2,!1),l.add(a))}function Pi(e,t,l){var a=0;t&&(a|=4),P0(l,e,a,t)}var Cu="_reactListening"+Math.random().toString(36).slice(2);function es(e){if(!e[Cu]){e[Cu]=!0,Vs.forEach(function(l){l!=="selectionchange"&&(Vh.has(l)||Pi(l,!1,e),Pi(l,!0,e))});var t=e.nodeType===9?e:e.ownerDocument;t===null||t[Cu]||(t[Cu]=!0,Pi("selectionchange",!1,t))}}function P0(e,t,l,a){switch(Md(t)){case 2:var n=b1;break;case 8:n=p1;break;default:n=gs}l=n.bind(null,t,l,e),n=void 0,!pc||t!=="touchstart"&&t!=="touchmove"&&t!=="wheel"||(n=!0),a?n!==void 0?e.addEventListener(t,l,{capture:!0,passive:n}):e.addEventListener(t,l,!0):n!==void 0?e.addEventListener(t,l,{passive:n}):e.addEventListener(t,l,!1)}function ts(e,t,l,a,n){var u=a;if((t&1)===0&&(t&2)===0&&a!==null)e:for(;;){if(a===null)return;var i=a.tag;if(i===3||i===4){var s=a.stateNode.containerInfo;if(s===n)break;if(i===4)for(i=a.return;i!==null;){var r=i.tag;if((r===3||r===4)&&i.stateNode.containerInfo===n)return;i=i.return}for(;s!==null;){if(i=Kl(s),i===null)return;if(r=i.tag,r===5||r===6||r===26||r===27){a=u=i;continue e}s=s.parentNode}}a=a.return}af(function(){var g=u,N=vc(l),E=[];e:{var y=Cf.get(e);if(y!==void 0){var x=Xn,H=e;switch(e){case"keypress":if(Yn(l)===0)break e;case"keydown":case"keyup":x=wo;break;case"focusin":H="focus",x=zc;break;case"focusout":H="blur",x=zc;break;case"beforeblur":case"afterblur":x=zc;break;case"click":if(l.button===2)break e;case"auxclick":case"dblclick":case"mousedown":case"mousemove":case"mouseup":case"mouseout":case"mouseover":case"contextmenu":x=cf;break;case"drag":case"dragend":case"dragenter":case"dragexit":case"dragleave":case"dragover":case"dragstart":case"drop":x=Eo;break;case"touchcancel":case"touchend":case"touchmove":case"touchstart":x=Yo;break;case Mf:case Of:case _f:x=Oo;break;case Df:x=Xo;break;case"scroll":case"scrollend":x=zo;break;case"wheel":x=Vo;break;case"copy":case"cut":case"paste":x=Do;break;case"gotpointercapture":case"lostpointercapture":case"pointercancel":case"pointerdown":case"pointermove":case"pointerout":case"pointerover":case"pointerup":x=ff;break;case"toggle":case"beforetoggle":x=Ko}var X=(t&4)!==0,Ne=!X&&(e==="scroll"||e==="scrollend"),h=X?y!==null?y+"Capture":null:y;X=[];for(var d=g,m;d!==null;){var T=d;if(m=T.stateNode,T=T.tag,T!==5&&T!==26&&T!==27||m===null||h===null||(T=Ba(d,h),T!=null&&X.push(xn(d,T,m))),Ne)break;d=d.return}0<X.length&&(y=new x(y,H,null,l,N),E.push({event:y,listeners:X}))}}if((t&7)===0){e:{if(y=e==="mouseover"||e==="pointerover",x=e==="mouseout"||e==="pointerout",y&&l!==xc&&(H=l.relatedTarget||l.fromElement)&&(Kl(H)||H[Zl]))break e;if((x||y)&&(y=N.window===N?N:(y=N.ownerDocument)?y.defaultView||y.parentWindow:window,x?(H=l.relatedTarget||l.toElement,x=g,H=H?Kl(H):null,H!==null&&(Ne=D(H),X=H.tag,H!==Ne||X!==5&&X!==27&&X!==6)&&(H=null)):(x=null,H=g),x!==H)){if(X=cf,T="onMouseLeave",h="onMouseEnter",d="mouse",(e==="pointerout"||e==="pointerover")&&(X=ff,T="onPointerLeave",h="onPointerEnter",d="pointer"),Ne=x==null?y:Ra(x),m=H==null?y:Ra(H),y=new X(T,d+"leave",x,l,N),y.target=Ne,y.relatedTarget=m,T=null,Kl(N)===g&&(X=new X(h,d+"enter",H,l,N),X.target=m,X.relatedTarget=Ne,T=X),Ne=T,x&&H)t:{for(X=Zh,h=x,d=H,m=0,T=h;T;T=X(T))m++;T=0;for(var q=d;q;q=X(q))T++;for(;0<m-T;)h=X(h),m--;for(;0<T-m;)d=X(d),T--;for(;m--;){if(h===d||d!==null&&h===d.alternate){X=h;break t}h=X(h),d=X(d)}X=null}else X=null;x!==null&&ed(E,y,x,X,!1),H!==null&&Ne!==null&&ed(E,Ne,H,X,!0)}}e:{if(y=g?Ra(g):window,x=y.nodeName&&y.nodeName.toLowerCase(),x==="select"||x==="input"&&y.type==="file")var oe=xf;else if(gf(y))if(vf)oe=ah;else{oe=th;var B=eh}else x=y.nodeName,!x||x.toLowerCase()!=="input"||y.type!=="checkbox"&&y.type!=="radio"?g&&yc(g.elementType)&&(oe=xf):oe=lh;if(oe&&(oe=oe(e,g))){yf(E,oe,l,N);break e}B&&B(e,y,g),e==="focusout"&&g&&y.type==="number"&&g.memoizedProps.value!=null&&gc(y,"number",y.value)}switch(B=g?Ra(g):window,e){case"focusin":(gf(B)||B.contentEditable==="true")&&(la=B,_c=g,Va=null);break;case"focusout":Va=_c=la=null;break;case"mousedown":Dc=!0;break;case"contextmenu":case"mouseup":case"dragend":Dc=!1,Ef(E,l,N);break;case"selectionchange":if(uh)break;case"keydown":case"keyup":Ef(E,l,N)}var ee;if(Ec)e:{switch(e){case"compositionstart":var ie="onCompositionStart";break e;case"compositionend":ie="onCompositionEnd";break e;case"compositionupdate":ie="onCompositionUpdate";break e}ie=void 0}else ta?hf(e,l)&&(ie="onCompositionEnd"):e==="keydown"&&l.keyCode===229&&(ie="onCompositionStart");ie&&(rf&&l.locale!=="ko"&&(ta||ie!=="onCompositionStart"?ie==="onCompositionEnd"&&ta&&(ee=nf()):(nl=N,Sc="value"in nl?nl.value:nl.textContent,ta=!0)),B=ku(g,ie),0<B.length&&(ie=new sf(ie,e,null,l,N),E.push({event:ie,listeners:B}),ee?ie.data=ee:(ee=mf(l),ee!==null&&(ie.data=ee)))),(ee=Wo?Fo(e,l):$o(e,l))&&(ie=ku(g,"onBeforeInput"),0<ie.length&&(B=new sf("onBeforeInput","beforeinput",null,l,N),E.push({event:B,listeners:ie}),B.data=ee)),Lh(E,e,g,l,N)}I0(E,t)})}function xn(e,t,l){return{instance:e,listener:t,currentTarget:l}}function ku(e,t){for(var l=t+"Capture",a=[];e!==null;){var n=e,u=n.stateNode;if(n=n.tag,n!==5&&n!==26&&n!==27||u===null||(n=Ba(e,l),n!=null&&a.unshift(xn(e,n,u)),n=Ba(e,t),n!=null&&a.push(xn(e,n,u))),e.tag===3)return a;e=e.return}return[]}function Zh(e){if(e===null)return null;do e=e.return;while(e&&e.tag!==5&&e.tag!==27);return e||null}function ed(e,t,l,a,n){for(var u=t._reactName,i=[];l!==null&&l!==a;){var s=l,r=s.alternate,g=s.stateNode;if(s=s.tag,r!==null&&r===a)break;s!==5&&s!==26&&s!==27||g===null||(r=g,n?(g=Ba(l,u),g!=null&&i.unshift(xn(l,g,r))):n||(g=Ba(l,u),g!=null&&i.push(xn(l,g,r)))),l=l.return}i.length!==0&&e.push({event:t,listeners:i})}var Kh=/\r\n?/g,Jh=/\u0000|\uFFFD/g;function td(e){return(typeof e=="string"?e:""+e).replace(Kh,`
-`).replace(Jh,"")}function ld(e,t){return t=td(t),td(e)===t}function Se(e,t,l,a,n,u){switch(l){case"children":typeof a=="string"?t==="body"||t==="textarea"&&a===""||Il(e,a):(typeof a=="number"||typeof a=="bigint")&&t!=="body"&&Il(e,""+a);break;case"className":Bn(e,"class",a);break;case"tabIndex":Bn(e,"tabindex",a);break;case"dir":case"role":case"viewBox":case"width":case"height":Bn(e,l,a);break;case"style":tf(e,a,u);break;case"data":if(t!=="object"){Bn(e,"data",a);break}case"src":case"href":if(a===""&&(t!=="a"||l!=="href")){e.removeAttribute(l);break}if(a==null||typeof a=="function"||typeof a=="symbol"||typeof a=="boolean"){e.removeAttribute(l);break}a=qn(""+a),e.setAttribute(l,a);break;case"action":case"formAction":if(typeof a=="function"){e.setAttribute(l,"javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')");break}else typeof u=="function"&&(l==="formAction"?(t!=="input"&&Se(e,t,"name",n.name,n,null),Se(e,t,"formEncType",n.formEncType,n,null),Se(e,t,"formMethod",n.formMethod,n,null),Se(e,t,"formTarget",n.formTarget,n,null)):(Se(e,t,"encType",n.encType,n,null),Se(e,t,"method",n.method,n,null),Se(e,t,"target",n.target,n,null)));if(a==null||typeof a=="symbol"||typeof a=="boolean"){e.removeAttribute(l);break}a=qn(""+a),e.setAttribute(l,a);break;case"onClick":a!=null&&(e.onclick=qt);break;case"onScroll":a!=null&&ue("scroll",e);break;case"onScrollEnd":a!=null&&ue("scrollend",e);break;case"dangerouslySetInnerHTML":if(a!=null){if(typeof a!="object"||!("__html"in a))throw Error(f(61));if(l=a.__html,l!=null){if(n.children!=null)throw Error(f(60));e.innerHTML=l}}break;case"multiple":e.multiple=a&&typeof a!="function"&&typeof a!="symbol";break;case"muted":e.muted=a&&typeof a!="function"&&typeof a!="symbol";break;case"suppressContentEditableWarning":case"suppressHydrationWarning":case"defaultValue":case"defaultChecked":case"innerHTML":case"ref":break;case"autoFocus":break;case"xlinkHref":if(a==null||typeof a=="function"||typeof a=="boolean"||typeof a=="symbol"){e.removeAttribute("xlink:href");break}l=qn(""+a),e.setAttributeNS("http://www.w3.org/1999/xlink","xlink:href",l);break;case"contentEditable":case"spellCheck":case"draggable":case"value":case"autoReverse":case"externalResourcesRequired":case"focusable":case"preserveAlpha":a!=null&&typeof a!="function"&&typeof a!="symbol"?e.setAttribute(l,""+a):e.removeAttribute(l);break;case"inert":case"allowFullScreen":case"async":case"autoPlay":case"controls":case"default":case"defer":case"disabled":case"disablePictureInPicture":case"disableRemotePlayback":case"formNoValidate":case"hidden":case"loop":case"noModule":case"noValidate":case"open":case"playsInline":case"readOnly":case"required":case"reversed":case"scoped":case"seamless":case"itemScope":a&&typeof a!="function"&&typeof a!="symbol"?e.setAttribute(l,""):e.removeAttribute(l);break;case"capture":case"download":a===!0?e.setAttribute(l,""):a!==!1&&a!=null&&typeof a!="function"&&typeof a!="symbol"?e.setAttribute(l,a):e.removeAttribute(l);break;case"cols":case"rows":case"size":case"span":a!=null&&typeof a!="function"&&typeof a!="symbol"&&!isNaN(a)&&1<=a?e.setAttribute(l,a):e.removeAttribute(l);break;case"rowSpan":case"start":a==null||typeof a=="function"||typeof a=="symbol"||isNaN(a)?e.removeAttribute(l):e.setAttribute(l,a);break;case"popover":ue("beforetoggle",e),ue("toggle",e),Rn(e,"popover",a);break;case"xlinkActuate":wt(e,"http://www.w3.org/1999/xlink","xlink:actuate",a);break;case"xlinkArcrole":wt(e,"http://www.w3.org/1999/xlink","xlink:arcrole",a);break;case"xlinkRole":wt(e,"http://www.w3.org/1999/xlink","xlink:role",a);break;case"xlinkShow":wt(e,"http://www.w3.org/1999/xlink","xlink:show",a);break;case"xlinkTitle":wt(e,"http://www.w3.org/1999/xlink","xlink:title",a);break;case"xlinkType":wt(e,"http://www.w3.org/1999/xlink","xlink:type",a);break;case"xmlBase":wt(e,"http://www.w3.org/XML/1998/namespace","xml:base",a);break;case"xmlLang":wt(e,"http://www.w3.org/XML/1998/namespace","xml:lang",a);break;case"xmlSpace":wt(e,"http://www.w3.org/XML/1998/namespace","xml:space",a);break;case"is":Rn(e,"is",a);break;case"innerText":case"textContent":break;default:(!(2<l.length)||l[0]!=="o"&&l[0]!=="O"||l[1]!=="n"&&l[1]!=="N")&&(l=No.get(l)||l,Rn(e,l,a))}}function ls(e,t,l,a,n,u){switch(l){case"style":tf(e,a,u);break;case"dangerouslySetInnerHTML":if(a!=null){if(typeof a!="object"||!("__html"in a))throw Error(f(61));if(l=a.__html,l!=null){if(n.children!=null)throw Error(f(60));e.innerHTML=l}}break;case"children":typeof a=="string"?Il(e,a):(typeof a=="number"||typeof a=="bigint")&&Il(e,""+a);break;case"onScroll":a!=null&&ue("scroll",e);break;case"onScrollEnd":a!=null&&ue("scrollend",e);break;case"onClick":a!=null&&(e.onclick=qt);break;case"suppressContentEditableWarning":case"suppressHydrationWarning":case"innerHTML":case"ref":break;case"innerText":case"textContent":break;default:if(!Zs.hasOwnProperty(l))e:{if(l[0]==="o"&&l[1]==="n"&&(n=l.endsWith("Capture"),t=l.slice(2,n?l.length-7:void 0),u=e[tt]||null,u=u!=null?u[l]:null,typeof u=="function"&&e.removeEventListener(t,u,n),typeof a=="function")){typeof u!="function"&&u!==null&&(l in e?e[l]=null:e.hasAttribute(l)&&e.removeAttribute(l)),e.addEventListener(t,a,n);break e}l in e?e[l]=a:a===!0?e.setAttribute(l,""):Rn(e,l,a)}}}function We(e,t,l){switch(t){case"div":case"span":case"svg":case"path":case"a":case"g":case"p":case"li":break;case"img":ue("error",e),ue("load",e);var a=!1,n=!1,u;for(u in l)if(l.hasOwnProperty(u)){var i=l[u];if(i!=null)switch(u){case"src":a=!0;break;case"srcSet":n=!0;break;case"children":case"dangerouslySetInnerHTML":throw Error(f(137,t));default:Se(e,t,u,i,l,null)}}n&&Se(e,t,"srcSet",l.srcSet,l,null),a&&Se(e,t,"src",l.src,l,null);return;case"input":ue("invalid",e);var s=u=i=n=null,r=null,g=null;for(a in l)if(l.hasOwnProperty(a)){var N=l[a];if(N!=null)switch(a){case"name":n=N;break;case"type":i=N;break;case"checked":r=N;break;case"defaultChecked":g=N;break;case"value":u=N;break;case"defaultValue":s=N;break;case"children":case"dangerouslySetInnerHTML":if(N!=null)throw Error(f(137,t));break;default:Se(e,t,a,N,l,null)}}$s(e,u,s,r,g,i,n,!1);return;case"select":ue("invalid",e),a=i=u=null;for(n in l)if(l.hasOwnProperty(n)&&(s=l[n],s!=null))switch(n){case"value":u=s;break;case"defaultValue":i=s;break;case"multiple":a=s;default:Se(e,t,n,s,l,null)}t=u,l=i,e.multiple=!!a,t!=null?$l(e,!!a,t,!1):l!=null&&$l(e,!!a,l,!0);return;case"textarea":ue("invalid",e),u=n=a=null;for(i in l)if(l.hasOwnProperty(i)&&(s=l[i],s!=null))switch(i){case"value":a=s;break;case"defaultValue":n=s;break;case"children":u=s;break;case"dangerouslySetInnerHTML":if(s!=null)throw Error(f(91));break;default:Se(e,t,i,s,l,null)}Ps(e,a,n,u);return;case"option":for(r in l)if(l.hasOwnProperty(r)&&(a=l[r],a!=null))switch(r){case"selected":e.selected=a&&typeof a!="function"&&typeof a!="symbol";break;default:Se(e,t,r,a,l,null)}return;case"dialog":ue("beforetoggle",e),ue("toggle",e),ue("cancel",e),ue("close",e);break;case"iframe":case"object":ue("load",e);break;case"video":case"audio":for(a=0;a<yn.length;a++)ue(yn[a],e);break;case"image":ue("error",e),ue("load",e);break;case"details":ue("toggle",e);break;case"embed":case"source":case"link":ue("error",e),ue("load",e);case"area":case"base":case"br":case"col":case"hr":case"keygen":case"meta":case"param":case"track":case"wbr":case"menuitem":for(g in l)if(l.hasOwnProperty(g)&&(a=l[g],a!=null))switch(g){case"children":case"dangerouslySetInnerHTML":throw Error(f(137,t));default:Se(e,t,g,a,l,null)}return;default:if(yc(t)){for(N in l)l.hasOwnProperty(N)&&(a=l[N],a!==void 0&&ls(e,t,N,a,l,void 0));return}}for(s in l)l.hasOwnProperty(s)&&(a=l[s],a!=null&&Se(e,t,s,a,l,null))}function Wh(e,t,l,a){switch(t){case"div":case"span":case"svg":case"path":case"a":case"g":case"p":case"li":break;case"input":var n=null,u=null,i=null,s=null,r=null,g=null,N=null;for(x in l){var E=l[x];if(l.hasOwnProperty(x)&&E!=null)switch(x){case"checked":break;case"value":break;case"defaultValue":r=E;default:a.hasOwnProperty(x)||Se(e,t,x,null,a,E)}}for(var y in a){var x=a[y];if(E=l[y],a.hasOwnProperty(y)&&(x!=null||E!=null))switch(y){case"type":u=x;break;case"name":n=x;break;case"checked":g=x;break;case"defaultChecked":N=x;break;case"value":i=x;break;case"defaultValue":s=x;break;case"children":case"dangerouslySetInnerHTML":if(x!=null)throw Error(f(137,t));break;default:x!==E&&Se(e,t,y,x,a,E)}}mc(e,i,s,r,g,N,u,n);return;case"select":x=i=s=y=null;for(u in l)if(r=l[u],l.hasOwnProperty(u)&&r!=null)switch(u){case"value":break;case"multiple":x=r;default:a.hasOwnProperty(u)||Se(e,t,u,null,a,r)}for(n in a)if(u=a[n],r=l[n],a.hasOwnProperty(n)&&(u!=null||r!=null))switch(n){case"value":y=u;break;case"defaultValue":s=u;break;case"multiple":i=u;default:u!==r&&Se(e,t,n,u,a,r)}t=s,l=i,a=x,y!=null?$l(e,!!l,y,!1):!!a!=!!l&&(t!=null?$l(e,!!l,t,!0):$l(e,!!l,l?[]:"",!1));return;case"textarea":x=y=null;for(s in l)if(n=l[s],l.hasOwnProperty(s)&&n!=null&&!a.hasOwnProperty(s))switch(s){case"value":break;case"children":break;default:Se(e,t,s,null,a,n)}for(i in a)if(n=a[i],u=l[i],a.hasOwnProperty(i)&&(n!=null||u!=null))switch(i){case"value":y=n;break;case"defaultValue":x=n;break;case"children":break;case"dangerouslySetInnerHTML":if(n!=null)throw Error(f(91));break;default:n!==u&&Se(e,t,i,n,a,u)}Is(e,y,x);return;case"option":for(var H in l)if(y=l[H],l.hasOwnProperty(H)&&y!=null&&!a.hasOwnProperty(H))switch(H){case"selected":e.selected=!1;break;default:Se(e,t,H,null,a,y)}for(r in a)if(y=a[r],x=l[r],a.hasOwnProperty(r)&&y!==x&&(y!=null||x!=null))switch(r){case"selected":e.selected=y&&typeof y!="function"&&typeof y!="symbol";break;default:Se(e,t,r,y,a,x)}return;case"img":case"link":case"area":case"base":case"br":case"col":case"embed":case"hr":case"keygen":case"meta":case"param":case"source":case"track":case"wbr":case"menuitem":for(var X in l)y=l[X],l.hasOwnProperty(X)&&y!=null&&!a.hasOwnProperty(X)&&Se(e,t,X,null,a,y);for(g in a)if(y=a[g],x=l[g],a.hasOwnProperty(g)&&y!==x&&(y!=null||x!=null))switch(g){case"children":case"dangerouslySetInnerHTML":if(y!=null)throw Error(f(137,t));break;default:Se(e,t,g,y,a,x)}return;default:if(yc(t)){for(var Ne in l)y=l[Ne],l.hasOwnProperty(Ne)&&y!==void 0&&!a.hasOwnProperty(Ne)&&ls(e,t,Ne,void 0,a,y);for(N in a)y=a[N],x=l[N],!a.hasOwnProperty(N)||y===x||y===void 0&&x===void 0||ls(e,t,N,y,a,x);return}}for(var h in l)y=l[h],l.hasOwnProperty(h)&&y!=null&&!a.hasOwnProperty(h)&&Se(e,t,h,null,a,y);for(E in a)y=a[E],x=l[E],!a.hasOwnProperty(E)||y===x||y==null&&x==null||Se(e,t,E,y,a,x)}function ad(e){switch(e){case"css":case"script":case"font":case"img":case"image":case"input":case"link":return!0;default:return!1}}function Fh(){if(typeof performance.getEntriesByType=="function"){for(var e=0,t=0,l=performance.getEntriesByType("resource"),a=0;a<l.length;a++){var n=l[a],u=n.transferSize,i=n.initiatorType,s=n.duration;if(u&&s&&ad(i)){for(i=0,s=n.responseEnd,a+=1;a<l.length;a++){var r=l[a],g=r.startTime;if(g>s)break;var N=r.transferSize,E=r.initiatorType;N&&ad(E)&&(r=r.responseEnd,i+=N*(r<s?1:(s-g)/(r-g)))}if(--a,t+=8*(u+i)/(n.duration/1e3),e++,10<e)break}}if(0<e)return t/e/1e6}return navigator.connection&&(e=navigator.connection.downlink,typeof e=="number")?e:5}var as=null,ns=null;function Uu(e){return e.nodeType===9?e:e.ownerDocument}function nd(e){switch(e){case"http://www.w3.org/2000/svg":return 1;case"http://www.w3.org/1998/Math/MathML":return 2;default:return 0}}function ud(e,t){if(e===0)switch(t){case"svg":return 1;case"math":return 2;default:return 0}return e===1&&t==="foreignObject"?0:e}function us(e,t){return e==="textarea"||e==="noscript"||typeof t.children=="string"||typeof t.children=="number"||typeof t.children=="bigint"||typeof t.dangerouslySetInnerHTML=="object"&&t.dangerouslySetInnerHTML!==null&&t.dangerouslySetInnerHTML.__html!=null}var cs=null;function $h(){var e=window.event;return e&&e.type==="popstate"?e===cs?!1:(cs=e,!0):(cs=null,!1)}var cd=typeof setTimeout=="function"?setTimeout:void 0,Ih=typeof clearTimeout=="function"?clearTimeout:void 0,id=typeof Promise=="function"?Promise:void 0,Ph=typeof queueMicrotask=="function"?queueMicrotask:typeof id<"u"?function(e){return id.resolve(null).then(e).catch(e1)}:cd;function e1(e){setTimeout(function(){throw e})}function Sl(e){return e==="head"}function sd(e,t){var l=t,a=0;do{var n=l.nextSibling;if(e.removeChild(l),n&&n.nodeType===8)if(l=n.data,l==="/$"||l==="/&"){if(a===0){e.removeChild(n),Oa(t);return}a--}else if(l==="$"||l==="$?"||l==="$~"||l==="$!"||l==="&")a++;else if(l==="html")vn(e.ownerDocument.documentElement);else if(l==="head"){l=e.ownerDocument.head,vn(l);for(var u=l.firstChild;u;){var i=u.nextSibling,s=u.nodeName;u[Ha]||s==="SCRIPT"||s==="STYLE"||s==="LINK"&&u.rel.toLowerCase()==="stylesheet"||l.removeChild(u),u=i}}else l==="body"&&vn(e.ownerDocument.body);l=n}while(l);Oa(t)}function fd(e,t){var l=e;e=0;do{var a=l.nextSibling;if(l.nodeType===1?t?(l._stashedDisplay=l.style.display,l.style.display="none"):(l.style.display=l._stashedDisplay||"",l.getAttribute("style")===""&&l.removeAttribute("style")):l.nodeType===3&&(t?(l._stashedText=l.nodeValue,l.nodeValue=""):l.nodeValue=l._stashedText||""),a&&a.nodeType===8)if(l=a.data,l==="/$"){if(e===0)break;e--}else l!=="$"&&l!=="$?"&&l!=="$~"&&l!=="$!"||e++;l=a}while(l)}function is(e){var t=e.firstChild;for(t&&t.nodeType===10&&(t=t.nextSibling);t;){var l=t;switch(t=t.nextSibling,l.nodeName){case"HTML":case"HEAD":case"BODY":is(l),oc(l);continue;case"SCRIPT":case"STYLE":continue;case"LINK":if(l.rel.toLowerCase()==="stylesheet")continue}e.removeChild(l)}}function t1(e,t,l,a){for(;e.nodeType===1;){var n=l;if(e.nodeName.toLowerCase()!==t.toLowerCase()){if(!a&&(e.nodeName!=="INPUT"||e.type!=="hidden"))break}else if(a){if(!e[Ha])switch(t){case"meta":if(!e.hasAttribute("itemprop"))break;return e;case"link":if(u=e.getAttribute("rel"),u==="stylesheet"&&e.hasAttribute("data-precedence"))break;if(u!==n.rel||e.getAttribute("href")!==(n.href==null||n.href===""?null:n.href)||e.getAttribute("crossorigin")!==(n.crossOrigin==null?null:n.crossOrigin)||e.getAttribute("title")!==(n.title==null?null:n.title))break;return e;case"style":if(e.hasAttribute("data-precedence"))break;return e;case"script":if(u=e.getAttribute("src"),(u!==(n.src==null?null:n.src)||e.getAttribute("type")!==(n.type==null?null:n.type)||e.getAttribute("crossorigin")!==(n.crossOrigin==null?null:n.crossOrigin))&&u&&e.hasAttribute("async")&&!e.hasAttribute("itemprop"))break;return e;default:return e}}else if(t==="input"&&e.type==="hidden"){var u=n.name==null?null:""+n.name;if(n.type==="hidden"&&e.getAttribute("name")===u)return e}else return e;if(e=At(e.nextSibling),e===null)break}return null}function l1(e,t,l){if(t==="")return null;for(;e.nodeType!==3;)if((e.nodeType!==1||e.nodeName!=="INPUT"||e.type!=="hidden")&&!l||(e=At(e.nextSibling),e===null))return null;return e}function rd(e,t){for(;e.nodeType!==8;)if((e.nodeType!==1||e.nodeName!=="INPUT"||e.type!=="hidden")&&!t||(e=At(e.nextSibling),e===null))return null;return e}function ss(e){return e.data==="$?"||e.data==="$~"}function fs(e){return e.data==="$!"||e.data==="$?"&&e.ownerDocument.readyState!=="loading"}function a1(e,t){var l=e.ownerDocument;if(e.data==="$~")e._reactRetry=t;else if(e.data!=="$?"||l.readyState!=="loading")t();else{var a=function(){t(),l.removeEventListener("DOMContentLoaded",a)};l.addEventListener("DOMContentLoaded",a),e._reactRetry=a}}function At(e){for(;e!=null;e=e.nextSibling){var t=e.nodeType;if(t===1||t===3)break;if(t===8){if(t=e.data,t==="$"||t==="$!"||t==="$?"||t==="$~"||t==="&"||t==="F!"||t==="F")break;if(t==="/$"||t==="/&")return null}}return e}var rs=null;function dd(e){e=e.nextSibling;for(var t=0;e;){if(e.nodeType===8){var l=e.data;if(l==="/$"||l==="/&"){if(t===0)return At(e.nextSibling);t--}else l!=="$"&&l!=="$!"&&l!=="$?"&&l!=="$~"&&l!=="&"||t++}e=e.nextSibling}return null}function od(e){e=e.previousSibling;for(var t=0;e;){if(e.nodeType===8){var l=e.data;if(l==="$"||l==="$!"||l==="$?"||l==="$~"||l==="&"){if(t===0)return e;t--}else l!=="/$"&&l!=="/&"||t++}e=e.previousSibling}return null}function hd(e,t,l){switch(t=Uu(l),e){case"html":if(e=t.documentElement,!e)throw Error(f(452));return e;case"head":if(e=t.head,!e)throw Error(f(453));return e;case"body":if(e=t.body,!e)throw Error(f(454));return e;default:throw Error(f(451))}}function vn(e){for(var t=e.attributes;t.length;)e.removeAttributeNode(t[0]);oc(e)}var Mt=new Map,md=new Set;function Hu(e){return typeof e.getRootNode=="function"?e.getRootNode():e.nodeType===9?e:e.ownerDocument}var tl=C.d;C.d={f:n1,r:u1,D:c1,C:i1,L:s1,m:f1,X:d1,S:r1,M:o1};function n1(){var e=tl.f(),t=Eu();return e||t}function u1(e){var t=Jl(e);t!==null&&t.tag===5&&t.type==="form"?Dr(t):tl.r(e)}var Ea=typeof document>"u"?null:document;function gd(e,t,l){var a=Ea;if(a&&typeof t=="string"&&t){var n=pt(t);n='link[rel="'+e+'"][href="'+n+'"]',typeof l=="string"&&(n+='[crossorigin="'+l+'"]'),md.has(n)||(md.add(n),e={rel:e,crossOrigin:l,href:t},a.querySelector(n)===null&&(t=a.createElement("link"),We(t,"link",e),Xe(t),a.head.appendChild(t)))}}function c1(e){tl.D(e),gd("dns-prefetch",e,null)}function i1(e,t){tl.C(e,t),gd("preconnect",e,t)}function s1(e,t,l){tl.L(e,t,l);var a=Ea;if(a&&e&&t){var n='link[rel="preload"][as="'+pt(t)+'"]';t==="image"&&l&&l.imageSrcSet?(n+='[imagesrcset="'+pt(l.imageSrcSet)+'"]',typeof l.imageSizes=="string"&&(n+='[imagesizes="'+pt(l.imageSizes)+'"]')):n+='[href="'+pt(e)+'"]';var u=n;switch(t){case"style":u=Aa(e);break;case"script":u=Ma(e)}Mt.has(u)||(e=z({rel:"preload",href:t==="image"&&l&&l.imageSrcSet?void 0:e,as:t},l),Mt.set(u,e),a.querySelector(n)!==null||t==="style"&&a.querySelector(bn(u))||t==="script"&&a.querySelector(pn(u))||(t=a.createElement("link"),We(t,"link",e),Xe(t),a.head.appendChild(t)))}}function f1(e,t){tl.m(e,t);var l=Ea;if(l&&e){var a=t&&typeof t.as=="string"?t.as:"script",n='link[rel="modulepreload"][as="'+pt(a)+'"][href="'+pt(e)+'"]',u=n;switch(a){case"audioworklet":case"paintworklet":case"serviceworker":case"sharedworker":case"worker":case"script":u=Ma(e)}if(!Mt.has(u)&&(e=z({rel:"modulepreload",href:e},t),Mt.set(u,e),l.querySelector(n)===null)){switch(a){case"audioworklet":case"paintworklet":case"serviceworker":case"sharedworker":case"worker":case"script":if(l.querySelector(pn(u)))return}a=l.createElement("link"),We(a,"link",e),Xe(a),l.head.appendChild(a)}}}function r1(e,t,l){tl.S(e,t,l);var a=Ea;if(a&&e){var n=Wl(a).hoistableStyles,u=Aa(e);t=t||"default";var i=n.get(u);if(!i){var s={loading:0,preload:null};if(i=a.querySelector(bn(u)))s.loading=5;else{e=z({rel:"stylesheet",href:e,"data-precedence":t},l),(l=Mt.get(u))&&ds(e,l);var r=i=a.createElement("link");Xe(r),We(r,"link",e),r._p=new Promise(function(g,N){r.onload=g,r.onerror=N}),r.addEventListener("load",function(){s.loading|=1}),r.addEventListener("error",function(){s.loading|=2}),s.loading|=4,Ru(i,t,a)}i={type:"stylesheet",instance:i,count:1,state:s},n.set(u,i)}}}function d1(e,t){tl.X(e,t);var l=Ea;if(l&&e){var a=Wl(l).hoistableScripts,n=Ma(e),u=a.get(n);u||(u=l.querySelector(pn(n)),u||(e=z({src:e,async:!0},t),(t=Mt.get(n))&&os(e,t),u=l.createElement("script"),Xe(u),We(u,"link",e),l.head.appendChild(u)),u={type:"script",instance:u,count:1,state:null},a.set(n,u))}}function o1(e,t){tl.M(e,t);var l=Ea;if(l&&e){var a=Wl(l).hoistableScripts,n=Ma(e),u=a.get(n);u||(u=l.querySelector(pn(n)),u||(e=z({src:e,async:!0,type:"module"},t),(t=Mt.get(n))&&os(e,t),u=l.createElement("script"),Xe(u),We(u,"link",e),l.head.appendChild(u)),u={type:"script",instance:u,count:1,state:null},a.set(n,u))}}function yd(e,t,l,a){var n=(n=ae.current)?Hu(n):null;if(!n)throw Error(f(446));switch(e){case"meta":case"title":return null;case"style":return typeof l.precedence=="string"&&typeof l.href=="string"?(t=Aa(l.href),l=Wl(n).hoistableStyles,a=l.get(t),a||(a={type:"style",instance:null,count:0,state:null},l.set(t,a)),a):{type:"void",instance:null,count:0,state:null};case"link":if(l.rel==="stylesheet"&&typeof l.href=="string"&&typeof l.precedence=="string"){e=Aa(l.href);var u=Wl(n).hoistableStyles,i=u.get(e);if(i||(n=n.ownerDocument||n,i={type:"stylesheet",instance:null,count:0,state:{loading:0,preload:null}},u.set(e,i),(u=n.querySelector(bn(e)))&&!u._p&&(i.instance=u,i.state.loading=5),Mt.has(e)||(l={rel:"preload",as:"style",href:l.href,crossOrigin:l.crossOrigin,integrity:l.integrity,media:l.media,hrefLang:l.hrefLang,referrerPolicy:l.referrerPolicy},Mt.set(e,l),u||h1(n,e,l,i.state))),t&&a===null)throw Error(f(528,""));return i}if(t&&a!==null)throw Error(f(529,""));return null;case"script":return t=l.async,l=l.src,typeof l=="string"&&t&&typeof t!="function"&&typeof t!="symbol"?(t=Ma(l),l=Wl(n).hoistableScripts,a=l.get(t),a||(a={type:"script",instance:null,count:0,state:null},l.set(t,a)),a):{type:"void",instance:null,count:0,state:null};default:throw Error(f(444,e))}}function Aa(e){return'href="'+pt(e)+'"'}function bn(e){return'link[rel="stylesheet"]['+e+"]"}function xd(e){return z({},e,{"data-precedence":e.precedence,precedence:null})}function h1(e,t,l,a){e.querySelector('link[rel="preload"][as="style"]['+t+"]")?a.loading=1:(t=e.createElement("link"),a.preload=t,t.addEventListener("load",function(){return a.loading|=1}),t.addEventListener("error",function(){return a.loading|=2}),We(t,"link",l),Xe(t),e.head.appendChild(t))}function Ma(e){return'[src="'+pt(e)+'"]'}function pn(e){return"script[async]"+e}function vd(e,t,l){if(t.count++,t.instance===null)switch(t.type){case"style":var a=e.querySelector('style[data-href~="'+pt(l.href)+'"]');if(a)return t.instance=a,Xe(a),a;var n=z({},l,{"data-href":l.href,"data-precedence":l.precedence,href:null,precedence:null});return a=(e.ownerDocument||e).createElement("style"),Xe(a),We(a,"style",n),Ru(a,l.precedence,e),t.instance=a;case"stylesheet":n=Aa(l.href);var u=e.querySelector(bn(n));if(u)return t.state.loading|=4,t.instance=u,Xe(u),u;a=xd(l),(n=Mt.get(n))&&ds(a,n),u=(e.ownerDocument||e).createElement("link"),Xe(u);var i=u;return i._p=new Promise(function(s,r){i.onload=s,i.onerror=r}),We(u,"link",a),t.state.loading|=4,Ru(u,l.precedence,e),t.instance=u;case"script":return u=Ma(l.src),(n=e.querySelector(pn(u)))?(t.instance=n,Xe(n),n):(a=l,(n=Mt.get(u))&&(a=z({},l),os(a,n)),e=e.ownerDocument||e,n=e.createElement("script"),Xe(n),We(n,"link",a),e.head.appendChild(n),t.instance=n);case"void":return null;default:throw Error(f(443,t.type))}else t.type==="stylesheet"&&(t.state.loading&4)===0&&(a=t.instance,t.state.loading|=4,Ru(a,l.precedence,e));return t.instance}function Ru(e,t,l){for(var a=l.querySelectorAll('link[rel="stylesheet"][data-precedence],style[data-precedence]'),n=a.length?a[a.length-1]:null,u=n,i=0;i<a.length;i++){var s=a[i];if(s.dataset.precedence===t)u=s;else if(u!==n)break}u?u.parentNode.insertBefore(e,u.nextSibling):(t=l.nodeType===9?l.head:l,t.insertBefore(e,t.firstChild))}function ds(e,t){e.crossOrigin==null&&(e.crossOrigin=t.crossOrigin),e.referrerPolicy==null&&(e.referrerPolicy=t.referrerPolicy),e.title==null&&(e.title=t.title)}function os(e,t){e.crossOrigin==null&&(e.crossOrigin=t.crossOrigin),e.referrerPolicy==null&&(e.referrerPolicy=t.referrerPolicy),e.integrity==null&&(e.integrity=t.integrity)}var Bu=null;function bd(e,t,l){if(Bu===null){var a=new Map,n=Bu=new Map;n.set(l,a)}else n=Bu,a=n.get(l),a||(a=new Map,n.set(l,a));if(a.has(e))return a;for(a.set(e,null),l=l.getElementsByTagName(e),n=0;n<l.length;n++){var u=l[n];if(!(u[Ha]||u[Ve]||e==="link"&&u.getAttribute("rel")==="stylesheet")&&u.namespaceURI!=="http://www.w3.org/2000/svg"){var i=u.getAttribute(t)||"";i=e+i;var s=a.get(i);s?s.push(u):a.set(i,[u])}}return a}function pd(e,t,l){e=e.ownerDocument||e,e.head.insertBefore(l,t==="title"?e.querySelector("head > title"):null)}function m1(e,t,l){if(l===1||t.itemProp!=null)return!1;switch(e){case"meta":case"title":return!0;case"style":if(typeof t.precedence!="string"||typeof t.href!="string"||t.href==="")break;return!0;case"link":if(typeof t.rel!="string"||typeof t.href!="string"||t.href===""||t.onLoad||t.onError)break;switch(t.rel){case"stylesheet":return e=t.disabled,typeof t.precedence=="string"&&e==null;default:return!0}case"script":if(t.async&&typeof t.async!="function"&&typeof t.async!="symbol"&&!t.onLoad&&!t.onError&&t.src&&typeof t.src=="string")return!0}return!1}function Sd(e){return!(e.type==="stylesheet"&&(e.state.loading&3)===0)}function g1(e,t,l,a){if(l.type==="stylesheet"&&(typeof a.media!="string"||matchMedia(a.media).matches!==!1)&&(l.state.loading&4)===0){if(l.instance===null){var n=Aa(a.href),u=t.querySelector(bn(n));if(u){t=u._p,t!==null&&typeof t=="object"&&typeof t.then=="function"&&(e.count++,e=wu.bind(e),t.then(e,e)),l.state.loading|=4,l.instance=u,Xe(u);return}u=t.ownerDocument||t,a=xd(a),(n=Mt.get(n))&&ds(a,n),u=u.createElement("link"),Xe(u);var i=u;i._p=new Promise(function(s,r){i.onload=s,i.onerror=r}),We(u,"link",a),l.instance=u}e.stylesheets===null&&(e.stylesheets=new Map),e.stylesheets.set(l,t),(t=l.state.preload)&&(l.state.loading&3)===0&&(e.count++,l=wu.bind(e),t.addEventListener("load",l),t.addEventListener("error",l))}}var hs=0;function y1(e,t){return e.stylesheets&&e.count===0&&Gu(e,e.stylesheets),0<e.count||0<e.imgCount?function(l){var a=setTimeout(function(){if(e.stylesheets&&Gu(e,e.stylesheets),e.unsuspend){var u=e.unsuspend;e.unsuspend=null,u()}},6e4+t);0<e.imgBytes&&hs===0&&(hs=62500*Fh());var n=setTimeout(function(){if(e.waitingForImages=!1,e.count===0&&(e.stylesheets&&Gu(e,e.stylesheets),e.unsuspend)){var u=e.unsuspend;e.unsuspend=null,u()}},(e.imgBytes>hs?50:800)+t);return e.unsuspend=l,function(){e.unsuspend=null,clearTimeout(a),clearTimeout(n)}}:null}function wu(){if(this.count--,this.count===0&&(this.imgCount===0||!this.waitingForImages)){if(this.stylesheets)Gu(this,this.stylesheets);else if(this.unsuspend){var e=this.unsuspend;this.unsuspend=null,e()}}}var qu=null;function Gu(e,t){e.stylesheets=null,e.unsuspend!==null&&(e.count++,qu=new Map,t.forEach(x1,e),qu=null,wu.call(e))}function x1(e,t){if(!(t.state.loading&4)){var l=qu.get(e);if(l)var a=l.get(null);else{l=new Map,qu.set(e,l);for(var n=e.querySelectorAll("link[data-precedence],style[data-precedence]"),u=0;u<n.length;u++){var i=n[u];(i.nodeName==="LINK"||i.getAttribute("media")!=="not all")&&(l.set(i.dataset.precedence,i),a=i)}a&&l.set(null,a)}n=t.instance,i=n.getAttribute("data-precedence"),u=l.get(i)||a,u===a&&l.set(null,n),l.set(i,n),this.count++,a=wu.bind(this),n.addEventListener("load",a),n.addEventListener("error",a),u?u.parentNode.insertBefore(n,u.nextSibling):(e=e.nodeType===9?e.head:e,e.insertBefore(n,e.firstChild)),t.state.loading|=4}}var Sn={$$typeof:Z,Provider:null,Consumer:null,_currentValue:V,_currentValue2:V,_threadCount:0};function v1(e,t,l,a,n,u,i,s,r){this.tag=1,this.containerInfo=e,this.pingCache=this.current=this.pendingChildren=null,this.timeoutHandle=-1,this.callbackNode=this.next=this.pendingContext=this.context=this.cancelPendingCommit=null,this.callbackPriority=0,this.expirationTimes=sc(-1),this.entangledLanes=this.shellSuspendCounter=this.errorRecoveryDisabledLanes=this.expiredLanes=this.warmLanes=this.pingedLanes=this.suspendedLanes=this.pendingLanes=0,this.entanglements=sc(0),this.hiddenUpdates=sc(null),this.identifierPrefix=a,this.onUncaughtError=n,this.onCaughtError=u,this.onRecoverableError=i,this.pooledCache=null,this.pooledCacheLanes=0,this.formState=r,this.incompleteTransitions=new Map}function Nd(e,t,l,a,n,u,i,s,r,g,N,E){return e=new v1(e,t,l,i,r,g,N,E,s),t=1,u===!0&&(t|=24),u=ht(3,null,null,t),e.current=u,u.stateNode=e,t=Zc(),t.refCount++,e.pooledCache=t,t.refCount++,u.memoizedState={element:a,isDehydrated:l,cache:t},Fc(u),e}function jd(e){return e?(e=ua,e):ua}function zd(e,t,l,a,n,u){n=jd(n),a.context===null?a.context=n:a.pendingContext=n,a=rl(t),a.payload={element:l},u=u===void 0?null:u,u!==null&&(a.callback=u),l=dl(e,a,t),l!==null&&(it(l,e,t),Ia(l,e,t))}function Td(e,t){if(e=e.memoizedState,e!==null&&e.dehydrated!==null){var l=e.retryLane;e.retryLane=l!==0&&l<t?l:t}}function ms(e,t){Td(e,t),(e=e.alternate)&&Td(e,t)}function Ed(e){if(e.tag===13||e.tag===31){var t=kl(e,67108864);t!==null&&it(t,e,67108864),ms(e,67108864)}}function Ad(e){if(e.tag===13||e.tag===31){var t=vt();t=fc(t);var l=kl(e,t);l!==null&&it(l,e,t),ms(e,t)}}var Yu=!0;function b1(e,t,l,a){var n=j.T;j.T=null;var u=C.p;try{C.p=2,gs(e,t,l,a)}finally{C.p=u,j.T=n}}function p1(e,t,l,a){var n=j.T;j.T=null;var u=C.p;try{C.p=8,gs(e,t,l,a)}finally{C.p=u,j.T=n}}function gs(e,t,l,a){if(Yu){var n=ys(a);if(n===null)ts(e,t,a,Lu,l),Od(e,a);else if(N1(n,e,t,l,a))a.stopPropagation();else if(Od(e,a),t&4&&-1<S1.indexOf(e)){for(;n!==null;){var u=Jl(n);if(u!==null)switch(u.tag){case 3:if(u=u.stateNode,u.current.memoizedState.isDehydrated){var i=Ml(u.pendingLanes);if(i!==0){var s=u;for(s.pendingLanes|=2,s.entangledLanes|=2;i;){var r=1<<31-dt(i);s.entanglements[1]|=r,i&=~r}Bt(u),(ge&6)===0&&(zu=ft()+500,gn(0))}}break;case 31:case 13:s=kl(u,2),s!==null&&it(s,u,2),Eu(),ms(u,2)}if(u=ys(a),u===null&&ts(e,t,a,Lu,l),u===n)break;n=u}n!==null&&a.stopPropagation()}else ts(e,t,a,null,l)}}function ys(e){return e=vc(e),xs(e)}var Lu=null;function xs(e){if(Lu=null,e=Kl(e),e!==null){var t=D(e);if(t===null)e=null;else{var l=t.tag;if(l===13){if(e=U(t),e!==null)return e;e=null}else if(l===31){if(e=Y(t),e!==null)return e;e=null}else if(l===3){if(t.stateNode.current.memoizedState.isDehydrated)return t.tag===3?t.stateNode.containerInfo:null;e=null}else t!==e&&(e=null)}}return Lu=e,null}function Md(e){switch(e){case"beforetoggle":case"cancel":case"click":case"close":case"contextmenu":case"copy":case"cut":case"auxclick":case"dblclick":case"dragend":case"dragstart":case"drop":case"focusin":case"focusout":case"input":case"invalid":case"keydown":case"keypress":case"keyup":case"mousedown":case"mouseup":case"paste":case"pause":case"play":case"pointercancel":case"pointerdown":case"pointerup":case"ratechange":case"reset":case"resize":case"seeked":case"submit":case"toggle":case"touchcancel":case"touchend":case"touchstart":case"volumechange":case"change":case"selectionchange":case"textInput":case"compositionstart":case"compositionend":case"compositionupdate":case"beforeblur":case"afterblur":case"beforeinput":case"blur":case"fullscreenchange":case"focus":case"hashchange":case"popstate":case"select":case"selectstart":return 2;case"drag":case"dragenter":case"dragexit":case"dragleave":case"dragover":case"mousemove":case"mouseout":case"mouseover":case"pointermove":case"pointerout":case"pointerover":case"scroll":case"touchmove":case"wheel":case"mouseenter":case"mouseleave":case"pointerenter":case"pointerleave":return 8;case"message":switch(uo()){case Hs:return 2;case Rs:return 8;case Dn:case co:return 32;case Bs:return 268435456;default:return 32}default:return 32}}var vs=!1,Nl=null,jl=null,zl=null,Nn=new Map,jn=new Map,Tl=[],S1="mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput copy cut paste click change contextmenu reset".split(" ");function Od(e,t){switch(e){case"focusin":case"focusout":Nl=null;break;case"dragenter":case"dragleave":jl=null;break;case"mouseover":case"mouseout":zl=null;break;case"pointerover":case"pointerout":Nn.delete(t.pointerId);break;case"gotpointercapture":case"lostpointercapture":jn.delete(t.pointerId)}}function zn(e,t,l,a,n,u){return e===null||e.nativeEvent!==u?(e={blockedOn:t,domEventName:l,eventSystemFlags:a,nativeEvent:u,targetContainers:[n]},t!==null&&(t=Jl(t),t!==null&&Ed(t)),e):(e.eventSystemFlags|=a,t=e.targetContainers,n!==null&&t.indexOf(n)===-1&&t.push(n),e)}function N1(e,t,l,a,n){switch(t){case"focusin":return Nl=zn(Nl,e,t,l,a,n),!0;case"dragenter":return jl=zn(jl,e,t,l,a,n),!0;case"mouseover":return zl=zn(zl,e,t,l,a,n),!0;case"pointerover":var u=n.pointerId;return Nn.set(u,zn(Nn.get(u)||null,e,t,l,a,n)),!0;case"gotpointercapture":return u=n.pointerId,jn.set(u,zn(jn.get(u)||null,e,t,l,a,n)),!0}return!1}function _d(e){var t=Kl(e.target);if(t!==null){var l=D(t);if(l!==null){if(t=l.tag,t===13){if(t=U(l),t!==null){e.blockedOn=t,Xs(e.priority,function(){Ad(l)});return}}else if(t===31){if(t=Y(l),t!==null){e.blockedOn=t,Xs(e.priority,function(){Ad(l)});return}}else if(t===3&&l.stateNode.current.memoizedState.isDehydrated){e.blockedOn=l.tag===3?l.stateNode.containerInfo:null;return}}}e.blockedOn=null}function Xu(e){if(e.blockedOn!==null)return!1;for(var t=e.targetContainers;0<t.length;){var l=ys(e.nativeEvent);if(l===null){l=e.nativeEvent;var a=new l.constructor(l.type,l);xc=a,l.target.dispatchEvent(a),xc=null}else return t=Jl(l),t!==null&&Ed(t),e.blockedOn=l,!1;t.shift()}return!0}function Dd(e,t,l){Xu(e)&&l.delete(t)}function j1(){vs=!1,Nl!==null&&Xu(Nl)&&(Nl=null),jl!==null&&Xu(jl)&&(jl=null),zl!==null&&Xu(zl)&&(zl=null),Nn.forEach(Dd),jn.forEach(Dd)}function Qu(e,t){e.blockedOn===t&&(e.blockedOn=null,vs||(vs=!0,S.unstable_scheduleCallback(S.unstable_NormalPriority,j1)))}var Vu=null;function Cd(e){Vu!==e&&(Vu=e,S.unstable_scheduleCallback(S.unstable_NormalPriority,function(){Vu===e&&(Vu=null);for(var t=0;t<e.length;t+=3){var l=e[t],a=e[t+1],n=e[t+2];if(typeof a!="function"){if(xs(a||l)===null)continue;break}var u=Jl(l);u!==null&&(e.splice(t,3),t-=3,yi(u,{pending:!0,data:n,method:l.method,action:a},a,n))}}))}function Oa(e){function t(r){return Qu(r,e)}Nl!==null&&Qu(Nl,e),jl!==null&&Qu(jl,e),zl!==null&&Qu(zl,e),Nn.forEach(t),jn.forEach(t);for(var l=0;l<Tl.length;l++){var a=Tl[l];a.blockedOn===e&&(a.blockedOn=null)}for(;0<Tl.length&&(l=Tl[0],l.blockedOn===null);)_d(l),l.blockedOn===null&&Tl.shift();if(l=(e.ownerDocument||e).$$reactFormReplay,l!=null)for(a=0;a<l.length;a+=3){var n=l[a],u=l[a+1],i=n[tt]||null;if(typeof u=="function")i||Cd(l);else if(i){var s=null;if(u&&u.hasAttribute("formAction")){if(n=u,i=u[tt]||null)s=i.formAction;else if(xs(n)!==null)continue}else s=i.action;typeof s=="function"?l[a+1]=s:(l.splice(a,3),a-=3),Cd(l)}}}function kd(){function e(u){u.canIntercept&&u.info==="react-transition"&&u.intercept({handler:function(){return new Promise(function(i){return n=i})},focusReset:"manual",scroll:"manual"})}function t(){n!==null&&(n(),n=null),a||setTimeout(l,20)}function l(){if(!a&&!navigation.transition){var u=navigation.currentEntry;u&&u.url!=null&&navigation.navigate(u.url,{state:u.getState(),info:"react-transition",history:"replace"})}}if(typeof navigation=="object"){var a=!1,n=null;return navigation.addEventListener("navigate",e),navigation.addEventListener("navigatesuccess",t),navigation.addEventListener("navigateerror",t),setTimeout(l,100),function(){a=!0,navigation.removeEventListener("navigate",e),navigation.removeEventListener("navigatesuccess",t),navigation.removeEventListener("navigateerror",t),n!==null&&(n(),n=null)}}}function bs(e){this._internalRoot=e}Zu.prototype.render=bs.prototype.render=function(e){var t=this._internalRoot;if(t===null)throw Error(f(409));var l=t.current,a=vt();zd(l,a,e,t,null,null)},Zu.prototype.unmount=bs.prototype.unmount=function(){var e=this._internalRoot;if(e!==null){this._internalRoot=null;var t=e.containerInfo;zd(e.current,2,null,e,null,null),Eu(),t[Zl]=null}};function Zu(e){this._internalRoot=e}Zu.prototype.unstable_scheduleHydration=function(e){if(e){var t=Ls();e={blockedOn:null,target:e,priority:t};for(var l=0;l<Tl.length&&t!==0&&t<Tl[l].priority;l++);Tl.splice(l,0,e),l===0&&_d(e)}};var Ud=b.version;if(Ud!=="19.2.3")throw Error(f(527,Ud,"19.2.3"));C.findDOMNode=function(e){var t=e._reactInternals;if(t===void 0)throw typeof e.render=="function"?Error(f(188)):(e=Object.keys(e).join(","),Error(f(268,e)));return e=v(t),e=e!==null?_(e):null,e=e===null?null:e.stateNode,e};var z1={bundleType:0,version:"19.2.3",rendererPackageName:"react-dom",currentDispatcherRef:j,reconcilerVersion:"19.2.3"};if(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__<"u"){var Ku=__REACT_DEVTOOLS_GLOBAL_HOOK__;if(!Ku.isDisabled&&Ku.supportsFiber)try{Ca=Ku.inject(z1),rt=Ku}catch{}}return En.createRoot=function(e,t){if(!O(e))throw Error(f(299));var l=!1,a="",n=Yr,u=Lr,i=Xr;return t!=null&&(t.unstable_strictMode===!0&&(l=!0),t.identifierPrefix!==void 0&&(a=t.identifierPrefix),t.onUncaughtError!==void 0&&(n=t.onUncaughtError),t.onCaughtError!==void 0&&(u=t.onCaughtError),t.onRecoverableError!==void 0&&(i=t.onRecoverableError)),t=Nd(e,1,!1,null,null,l,a,null,n,u,i,kd),e[Zl]=t.current,es(e),new bs(t)},En.hydrateRoot=function(e,t,l){if(!O(e))throw Error(f(299));var a=!1,n="",u=Yr,i=Lr,s=Xr,r=null;return l!=null&&(l.unstable_strictMode===!0&&(a=!0),l.identifierPrefix!==void 0&&(n=l.identifierPrefix),l.onUncaughtError!==void 0&&(u=l.onUncaughtError),l.onCaughtError!==void 0&&(i=l.onCaughtError),l.onRecoverableError!==void 0&&(s=l.onRecoverableError),l.formState!==void 0&&(r=l.formState)),t=Nd(e,1,!0,t,l??null,a,n,r,u,i,s,kd),t.context=jd(null),l=t.current,a=vt(),a=fc(a),n=rl(a),n.callback=null,dl(l,n,a),l=a,t.current.lanes=l,Ua(t,l),Bt(t),e[Zl]=t.current,es(e),new Zu(t)},En.version="19.2.3",En}var Vd;function Q1(){if(Vd)return js.exports;Vd=1;function S(){if(!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__>"u"||typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE!="function"))try{__REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(S)}catch(b){console.error(b)}}return S(),js.exports=X1(),js.exports}var V1=Q1();const Z1=Jd(V1);var re=(S=>(S.ROLE_SELECTION="ROLE_SELECTION",S.AUTH="AUTH",S.DASHBOARD="DASHBOARD",S.OVERVIEW="OVERVIEW",S.WEIGHING="WEIGHING",S.FARMERS="FARMERS",S.VEHICLES="VEHICLES",S.HISTORY="HISTORY",S.SESSION_DETAIL="SESSION_DETAIL",S.INFO_CONFIG="INFO_CONFIG",S.SETTINGS="SETTINGS",S.BLUETOOTH="BLUETOOTH",S.UPGRADE="UPGRADE",S.SALES="SALES",S.SALES_DETAIL="SALES_DETAIL",S.CUSTOMERS="CUSTOMERS",S))(re||{});/**
+`).replace(Jh,"")}function ld(e,t){return t=td(t),td(e)===t}function Se(e,t,l,a,n,u){switch(l){case"children":typeof a=="string"?t==="body"||t==="textarea"&&a===""||Il(e,a):(typeof a=="number"||typeof a=="bigint")&&t!=="body"&&Il(e,""+a);break;case"className":Bn(e,"class",a);break;case"tabIndex":Bn(e,"tabindex",a);break;case"dir":case"role":case"viewBox":case"width":case"height":Bn(e,l,a);break;case"style":tf(e,a,u);break;case"data":if(t!=="object"){Bn(e,"data",a);break}case"src":case"href":if(a===""&&(t!=="a"||l!=="href")){e.removeAttribute(l);break}if(a==null||typeof a=="function"||typeof a=="symbol"||typeof a=="boolean"){e.removeAttribute(l);break}a=qn(""+a),e.setAttribute(l,a);break;case"action":case"formAction":if(typeof a=="function"){e.setAttribute(l,"javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')");break}else typeof u=="function"&&(l==="formAction"?(t!=="input"&&Se(e,t,"name",n.name,n,null),Se(e,t,"formEncType",n.formEncType,n,null),Se(e,t,"formMethod",n.formMethod,n,null),Se(e,t,"formTarget",n.formTarget,n,null)):(Se(e,t,"encType",n.encType,n,null),Se(e,t,"method",n.method,n,null),Se(e,t,"target",n.target,n,null)));if(a==null||typeof a=="symbol"||typeof a=="boolean"){e.removeAttribute(l);break}a=qn(""+a),e.setAttribute(l,a);break;case"onClick":a!=null&&(e.onclick=qt);break;case"onScroll":a!=null&&ue("scroll",e);break;case"onScrollEnd":a!=null&&ue("scrollend",e);break;case"dangerouslySetInnerHTML":if(a!=null){if(typeof a!="object"||!("__html"in a))throw Error(f(61));if(l=a.__html,l!=null){if(n.children!=null)throw Error(f(60));e.innerHTML=l}}break;case"multiple":e.multiple=a&&typeof a!="function"&&typeof a!="symbol";break;case"muted":e.muted=a&&typeof a!="function"&&typeof a!="symbol";break;case"suppressContentEditableWarning":case"suppressHydrationWarning":case"defaultValue":case"defaultChecked":case"innerHTML":case"ref":break;case"autoFocus":break;case"xlinkHref":if(a==null||typeof a=="function"||typeof a=="boolean"||typeof a=="symbol"){e.removeAttribute("xlink:href");break}l=qn(""+a),e.setAttributeNS("http://www.w3.org/1999/xlink","xlink:href",l);break;case"contentEditable":case"spellCheck":case"draggable":case"value":case"autoReverse":case"externalResourcesRequired":case"focusable":case"preserveAlpha":a!=null&&typeof a!="function"&&typeof a!="symbol"?e.setAttribute(l,""+a):e.removeAttribute(l);break;case"inert":case"allowFullScreen":case"async":case"autoPlay":case"controls":case"default":case"defer":case"disabled":case"disablePictureInPicture":case"disableRemotePlayback":case"formNoValidate":case"hidden":case"loop":case"noModule":case"noValidate":case"open":case"playsInline":case"readOnly":case"required":case"reversed":case"scoped":case"seamless":case"itemScope":a&&typeof a!="function"&&typeof a!="symbol"?e.setAttribute(l,""):e.removeAttribute(l);break;case"capture":case"download":a===!0?e.setAttribute(l,""):a!==!1&&a!=null&&typeof a!="function"&&typeof a!="symbol"?e.setAttribute(l,a):e.removeAttribute(l);break;case"cols":case"rows":case"size":case"span":a!=null&&typeof a!="function"&&typeof a!="symbol"&&!isNaN(a)&&1<=a?e.setAttribute(l,a):e.removeAttribute(l);break;case"rowSpan":case"start":a==null||typeof a=="function"||typeof a=="symbol"||isNaN(a)?e.removeAttribute(l):e.setAttribute(l,a);break;case"popover":ue("beforetoggle",e),ue("toggle",e),Rn(e,"popover",a);break;case"xlinkActuate":wt(e,"http://www.w3.org/1999/xlink","xlink:actuate",a);break;case"xlinkArcrole":wt(e,"http://www.w3.org/1999/xlink","xlink:arcrole",a);break;case"xlinkRole":wt(e,"http://www.w3.org/1999/xlink","xlink:role",a);break;case"xlinkShow":wt(e,"http://www.w3.org/1999/xlink","xlink:show",a);break;case"xlinkTitle":wt(e,"http://www.w3.org/1999/xlink","xlink:title",a);break;case"xlinkType":wt(e,"http://www.w3.org/1999/xlink","xlink:type",a);break;case"xmlBase":wt(e,"http://www.w3.org/XML/1998/namespace","xml:base",a);break;case"xmlLang":wt(e,"http://www.w3.org/XML/1998/namespace","xml:lang",a);break;case"xmlSpace":wt(e,"http://www.w3.org/XML/1998/namespace","xml:space",a);break;case"is":Rn(e,"is",a);break;case"innerText":case"textContent":break;default:(!(2<l.length)||l[0]!=="o"&&l[0]!=="O"||l[1]!=="n"&&l[1]!=="N")&&(l=No.get(l)||l,Rn(e,l,a))}}function ls(e,t,l,a,n,u){switch(l){case"style":tf(e,a,u);break;case"dangerouslySetInnerHTML":if(a!=null){if(typeof a!="object"||!("__html"in a))throw Error(f(61));if(l=a.__html,l!=null){if(n.children!=null)throw Error(f(60));e.innerHTML=l}}break;case"children":typeof a=="string"?Il(e,a):(typeof a=="number"||typeof a=="bigint")&&Il(e,""+a);break;case"onScroll":a!=null&&ue("scroll",e);break;case"onScrollEnd":a!=null&&ue("scrollend",e);break;case"onClick":a!=null&&(e.onclick=qt);break;case"suppressContentEditableWarning":case"suppressHydrationWarning":case"innerHTML":case"ref":break;case"innerText":case"textContent":break;default:if(!Zs.hasOwnProperty(l))e:{if(l[0]==="o"&&l[1]==="n"&&(n=l.endsWith("Capture"),t=l.slice(2,n?l.length-7:void 0),u=e[tt]||null,u=u!=null?u[l]:null,typeof u=="function"&&e.removeEventListener(t,u,n),typeof a=="function")){typeof u!="function"&&u!==null&&(l in e?e[l]=null:e.hasAttribute(l)&&e.removeAttribute(l)),e.addEventListener(t,a,n);break e}l in e?e[l]=a:a===!0?e.setAttribute(l,""):Rn(e,l,a)}}}function We(e,t,l){switch(t){case"div":case"span":case"svg":case"path":case"a":case"g":case"p":case"li":break;case"img":ue("error",e),ue("load",e);var a=!1,n=!1,u;for(u in l)if(l.hasOwnProperty(u)){var i=l[u];if(i!=null)switch(u){case"src":a=!0;break;case"srcSet":n=!0;break;case"children":case"dangerouslySetInnerHTML":throw Error(f(137,t));default:Se(e,t,u,i,l,null)}}n&&Se(e,t,"srcSet",l.srcSet,l,null),a&&Se(e,t,"src",l.src,l,null);return;case"input":ue("invalid",e);var s=u=i=n=null,r=null,g=null;for(a in l)if(l.hasOwnProperty(a)){var N=l[a];if(N!=null)switch(a){case"name":n=N;break;case"type":i=N;break;case"checked":r=N;break;case"defaultChecked":g=N;break;case"value":u=N;break;case"defaultValue":s=N;break;case"children":case"dangerouslySetInnerHTML":if(N!=null)throw Error(f(137,t));break;default:Se(e,t,a,N,l,null)}}$s(e,u,s,r,g,i,n,!1);return;case"select":ue("invalid",e),a=i=u=null;for(n in l)if(l.hasOwnProperty(n)&&(s=l[n],s!=null))switch(n){case"value":u=s;break;case"defaultValue":i=s;break;case"multiple":a=s;default:Se(e,t,n,s,l,null)}t=u,l=i,e.multiple=!!a,t!=null?$l(e,!!a,t,!1):l!=null&&$l(e,!!a,l,!0);return;case"textarea":ue("invalid",e),u=n=a=null;for(i in l)if(l.hasOwnProperty(i)&&(s=l[i],s!=null))switch(i){case"value":a=s;break;case"defaultValue":n=s;break;case"children":u=s;break;case"dangerouslySetInnerHTML":if(s!=null)throw Error(f(91));break;default:Se(e,t,i,s,l,null)}Ps(e,a,n,u);return;case"option":for(r in l)if(l.hasOwnProperty(r)&&(a=l[r],a!=null))switch(r){case"selected":e.selected=a&&typeof a!="function"&&typeof a!="symbol";break;default:Se(e,t,r,a,l,null)}return;case"dialog":ue("beforetoggle",e),ue("toggle",e),ue("cancel",e),ue("close",e);break;case"iframe":case"object":ue("load",e);break;case"video":case"audio":for(a=0;a<yn.length;a++)ue(yn[a],e);break;case"image":ue("error",e),ue("load",e);break;case"details":ue("toggle",e);break;case"embed":case"source":case"link":ue("error",e),ue("load",e);case"area":case"base":case"br":case"col":case"hr":case"keygen":case"meta":case"param":case"track":case"wbr":case"menuitem":for(g in l)if(l.hasOwnProperty(g)&&(a=l[g],a!=null))switch(g){case"children":case"dangerouslySetInnerHTML":throw Error(f(137,t));default:Se(e,t,g,a,l,null)}return;default:if(yc(t)){for(N in l)l.hasOwnProperty(N)&&(a=l[N],a!==void 0&&ls(e,t,N,a,l,void 0));return}}for(s in l)l.hasOwnProperty(s)&&(a=l[s],a!=null&&Se(e,t,s,a,l,null))}function Wh(e,t,l,a){switch(t){case"div":case"span":case"svg":case"path":case"a":case"g":case"p":case"li":break;case"input":var n=null,u=null,i=null,s=null,r=null,g=null,N=null;for(x in l){var E=l[x];if(l.hasOwnProperty(x)&&E!=null)switch(x){case"checked":break;case"value":break;case"defaultValue":r=E;default:a.hasOwnProperty(x)||Se(e,t,x,null,a,E)}}for(var y in a){var x=a[y];if(E=l[y],a.hasOwnProperty(y)&&(x!=null||E!=null))switch(y){case"type":u=x;break;case"name":n=x;break;case"checked":g=x;break;case"defaultChecked":N=x;break;case"value":i=x;break;case"defaultValue":s=x;break;case"children":case"dangerouslySetInnerHTML":if(x!=null)throw Error(f(137,t));break;default:x!==E&&Se(e,t,y,x,a,E)}}mc(e,i,s,r,g,N,u,n);return;case"select":x=i=s=y=null;for(u in l)if(r=l[u],l.hasOwnProperty(u)&&r!=null)switch(u){case"value":break;case"multiple":x=r;default:a.hasOwnProperty(u)||Se(e,t,u,null,a,r)}for(n in a)if(u=a[n],r=l[n],a.hasOwnProperty(n)&&(u!=null||r!=null))switch(n){case"value":y=u;break;case"defaultValue":s=u;break;case"multiple":i=u;default:u!==r&&Se(e,t,n,u,a,r)}t=s,l=i,a=x,y!=null?$l(e,!!l,y,!1):!!a!=!!l&&(t!=null?$l(e,!!l,t,!0):$l(e,!!l,l?[]:"",!1));return;case"textarea":x=y=null;for(s in l)if(n=l[s],l.hasOwnProperty(s)&&n!=null&&!a.hasOwnProperty(s))switch(s){case"value":break;case"children":break;default:Se(e,t,s,null,a,n)}for(i in a)if(n=a[i],u=l[i],a.hasOwnProperty(i)&&(n!=null||u!=null))switch(i){case"value":y=n;break;case"defaultValue":x=n;break;case"children":break;case"dangerouslySetInnerHTML":if(n!=null)throw Error(f(91));break;default:n!==u&&Se(e,t,i,n,a,u)}Is(e,y,x);return;case"option":for(var H in l)if(y=l[H],l.hasOwnProperty(H)&&y!=null&&!a.hasOwnProperty(H))switch(H){case"selected":e.selected=!1;break;default:Se(e,t,H,null,a,y)}for(r in a)if(y=a[r],x=l[r],a.hasOwnProperty(r)&&y!==x&&(y!=null||x!=null))switch(r){case"selected":e.selected=y&&typeof y!="function"&&typeof y!="symbol";break;default:Se(e,t,r,y,a,x)}return;case"img":case"link":case"area":case"base":case"br":case"col":case"embed":case"hr":case"keygen":case"meta":case"param":case"source":case"track":case"wbr":case"menuitem":for(var X in l)y=l[X],l.hasOwnProperty(X)&&y!=null&&!a.hasOwnProperty(X)&&Se(e,t,X,null,a,y);for(g in a)if(y=a[g],x=l[g],a.hasOwnProperty(g)&&y!==x&&(y!=null||x!=null))switch(g){case"children":case"dangerouslySetInnerHTML":if(y!=null)throw Error(f(137,t));break;default:Se(e,t,g,y,a,x)}return;default:if(yc(t)){for(var Ne in l)y=l[Ne],l.hasOwnProperty(Ne)&&y!==void 0&&!a.hasOwnProperty(Ne)&&ls(e,t,Ne,void 0,a,y);for(N in a)y=a[N],x=l[N],!a.hasOwnProperty(N)||y===x||y===void 0&&x===void 0||ls(e,t,N,y,a,x);return}}for(var h in l)y=l[h],l.hasOwnProperty(h)&&y!=null&&!a.hasOwnProperty(h)&&Se(e,t,h,null,a,y);for(E in a)y=a[E],x=l[E],!a.hasOwnProperty(E)||y===x||y==null&&x==null||Se(e,t,E,y,a,x)}function ad(e){switch(e){case"css":case"script":case"font":case"img":case"image":case"input":case"link":return!0;default:return!1}}function Fh(){if(typeof performance.getEntriesByType=="function"){for(var e=0,t=0,l=performance.getEntriesByType("resource"),a=0;a<l.length;a++){var n=l[a],u=n.transferSize,i=n.initiatorType,s=n.duration;if(u&&s&&ad(i)){for(i=0,s=n.responseEnd,a+=1;a<l.length;a++){var r=l[a],g=r.startTime;if(g>s)break;var N=r.transferSize,E=r.initiatorType;N&&ad(E)&&(r=r.responseEnd,i+=N*(r<s?1:(s-g)/(r-g)))}if(--a,t+=8*(u+i)/(n.duration/1e3),e++,10<e)break}}if(0<e)return t/e/1e6}return navigator.connection&&(e=navigator.connection.downlink,typeof e=="number")?e:5}var as=null,ns=null;function Uu(e){return e.nodeType===9?e:e.ownerDocument}function nd(e){switch(e){case"http://www.w3.org/2000/svg":return 1;case"http://www.w3.org/1998/Math/MathML":return 2;default:return 0}}function ud(e,t){if(e===0)switch(t){case"svg":return 1;case"math":return 2;default:return 0}return e===1&&t==="foreignObject"?0:e}function us(e,t){return e==="textarea"||e==="noscript"||typeof t.children=="string"||typeof t.children=="number"||typeof t.children=="bigint"||typeof t.dangerouslySetInnerHTML=="object"&&t.dangerouslySetInnerHTML!==null&&t.dangerouslySetInnerHTML.__html!=null}var cs=null;function $h(){var e=window.event;return e&&e.type==="popstate"?e===cs?!1:(cs=e,!0):(cs=null,!1)}var cd=typeof setTimeout=="function"?setTimeout:void 0,Ih=typeof clearTimeout=="function"?clearTimeout:void 0,id=typeof Promise=="function"?Promise:void 0,Ph=typeof queueMicrotask=="function"?queueMicrotask:typeof id<"u"?function(e){return id.resolve(null).then(e).catch(e1)}:cd;function e1(e){setTimeout(function(){throw e})}function Sl(e){return e==="head"}function sd(e,t){var l=t,a=0;do{var n=l.nextSibling;if(e.removeChild(l),n&&n.nodeType===8)if(l=n.data,l==="/$"||l==="/&"){if(a===0){e.removeChild(n),Oa(t);return}a--}else if(l==="$"||l==="$?"||l==="$~"||l==="$!"||l==="&")a++;else if(l==="html")vn(e.ownerDocument.documentElement);else if(l==="head"){l=e.ownerDocument.head,vn(l);for(var u=l.firstChild;u;){var i=u.nextSibling,s=u.nodeName;u[Ha]||s==="SCRIPT"||s==="STYLE"||s==="LINK"&&u.rel.toLowerCase()==="stylesheet"||l.removeChild(u),u=i}}else l==="body"&&vn(e.ownerDocument.body);l=n}while(l);Oa(t)}function fd(e,t){var l=e;e=0;do{var a=l.nextSibling;if(l.nodeType===1?t?(l._stashedDisplay=l.style.display,l.style.display="none"):(l.style.display=l._stashedDisplay||"",l.getAttribute("style")===""&&l.removeAttribute("style")):l.nodeType===3&&(t?(l._stashedText=l.nodeValue,l.nodeValue=""):l.nodeValue=l._stashedText||""),a&&a.nodeType===8)if(l=a.data,l==="/$"){if(e===0)break;e--}else l!=="$"&&l!=="$?"&&l!=="$~"&&l!=="$!"||e++;l=a}while(l)}function is(e){var t=e.firstChild;for(t&&t.nodeType===10&&(t=t.nextSibling);t;){var l=t;switch(t=t.nextSibling,l.nodeName){case"HTML":case"HEAD":case"BODY":is(l),oc(l);continue;case"SCRIPT":case"STYLE":continue;case"LINK":if(l.rel.toLowerCase()==="stylesheet")continue}e.removeChild(l)}}function t1(e,t,l,a){for(;e.nodeType===1;){var n=l;if(e.nodeName.toLowerCase()!==t.toLowerCase()){if(!a&&(e.nodeName!=="INPUT"||e.type!=="hidden"))break}else if(a){if(!e[Ha])switch(t){case"meta":if(!e.hasAttribute("itemprop"))break;return e;case"link":if(u=e.getAttribute("rel"),u==="stylesheet"&&e.hasAttribute("data-precedence"))break;if(u!==n.rel||e.getAttribute("href")!==(n.href==null||n.href===""?null:n.href)||e.getAttribute("crossorigin")!==(n.crossOrigin==null?null:n.crossOrigin)||e.getAttribute("title")!==(n.title==null?null:n.title))break;return e;case"style":if(e.hasAttribute("data-precedence"))break;return e;case"script":if(u=e.getAttribute("src"),(u!==(n.src==null?null:n.src)||e.getAttribute("type")!==(n.type==null?null:n.type)||e.getAttribute("crossorigin")!==(n.crossOrigin==null?null:n.crossOrigin))&&u&&e.hasAttribute("async")&&!e.hasAttribute("itemprop"))break;return e;default:return e}}else if(t==="input"&&e.type==="hidden"){var u=n.name==null?null:""+n.name;if(n.type==="hidden"&&e.getAttribute("name")===u)return e}else return e;if(e=At(e.nextSibling),e===null)break}return null}function l1(e,t,l){if(t==="")return null;for(;e.nodeType!==3;)if((e.nodeType!==1||e.nodeName!=="INPUT"||e.type!=="hidden")&&!l||(e=At(e.nextSibling),e===null))return null;return e}function rd(e,t){for(;e.nodeType!==8;)if((e.nodeType!==1||e.nodeName!=="INPUT"||e.type!=="hidden")&&!t||(e=At(e.nextSibling),e===null))return null;return e}function ss(e){return e.data==="$?"||e.data==="$~"}function fs(e){return e.data==="$!"||e.data==="$?"&&e.ownerDocument.readyState!=="loading"}function a1(e,t){var l=e.ownerDocument;if(e.data==="$~")e._reactRetry=t;else if(e.data!=="$?"||l.readyState!=="loading")t();else{var a=function(){t(),l.removeEventListener("DOMContentLoaded",a)};l.addEventListener("DOMContentLoaded",a),e._reactRetry=a}}function At(e){for(;e!=null;e=e.nextSibling){var t=e.nodeType;if(t===1||t===3)break;if(t===8){if(t=e.data,t==="$"||t==="$!"||t==="$?"||t==="$~"||t==="&"||t==="F!"||t==="F")break;if(t==="/$"||t==="/&")return null}}return e}var rs=null;function dd(e){e=e.nextSibling;for(var t=0;e;){if(e.nodeType===8){var l=e.data;if(l==="/$"||l==="/&"){if(t===0)return At(e.nextSibling);t--}else l!=="$"&&l!=="$!"&&l!=="$?"&&l!=="$~"&&l!=="&"||t++}e=e.nextSibling}return null}function od(e){e=e.previousSibling;for(var t=0;e;){if(e.nodeType===8){var l=e.data;if(l==="$"||l==="$!"||l==="$?"||l==="$~"||l==="&"){if(t===0)return e;t--}else l!=="/$"&&l!=="/&"||t++}e=e.previousSibling}return null}function hd(e,t,l){switch(t=Uu(l),e){case"html":if(e=t.documentElement,!e)throw Error(f(452));return e;case"head":if(e=t.head,!e)throw Error(f(453));return e;case"body":if(e=t.body,!e)throw Error(f(454));return e;default:throw Error(f(451))}}function vn(e){for(var t=e.attributes;t.length;)e.removeAttributeNode(t[0]);oc(e)}var Mt=new Map,md=new Set;function Hu(e){return typeof e.getRootNode=="function"?e.getRootNode():e.nodeType===9?e:e.ownerDocument}var tl=C.d;C.d={f:n1,r:u1,D:c1,C:i1,L:s1,m:f1,X:d1,S:r1,M:o1};function n1(){var e=tl.f(),t=Eu();return e||t}function u1(e){var t=Jl(e);t!==null&&t.tag===5&&t.type==="form"?Dr(t):tl.r(e)}var Ea=typeof document>"u"?null:document;function gd(e,t,l){var a=Ea;if(a&&typeof t=="string"&&t){var n=pt(t);n='link[rel="'+e+'"][href="'+n+'"]',typeof l=="string"&&(n+='[crossorigin="'+l+'"]'),md.has(n)||(md.add(n),e={rel:e,crossOrigin:l,href:t},a.querySelector(n)===null&&(t=a.createElement("link"),We(t,"link",e),Xe(t),a.head.appendChild(t)))}}function c1(e){tl.D(e),gd("dns-prefetch",e,null)}function i1(e,t){tl.C(e,t),gd("preconnect",e,t)}function s1(e,t,l){tl.L(e,t,l);var a=Ea;if(a&&e&&t){var n='link[rel="preload"][as="'+pt(t)+'"]';t==="image"&&l&&l.imageSrcSet?(n+='[imagesrcset="'+pt(l.imageSrcSet)+'"]',typeof l.imageSizes=="string"&&(n+='[imagesizes="'+pt(l.imageSizes)+'"]')):n+='[href="'+pt(e)+'"]';var u=n;switch(t){case"style":u=Aa(e);break;case"script":u=Ma(e)}Mt.has(u)||(e=z({rel:"preload",href:t==="image"&&l&&l.imageSrcSet?void 0:e,as:t},l),Mt.set(u,e),a.querySelector(n)!==null||t==="style"&&a.querySelector(bn(u))||t==="script"&&a.querySelector(pn(u))||(t=a.createElement("link"),We(t,"link",e),Xe(t),a.head.appendChild(t)))}}function f1(e,t){tl.m(e,t);var l=Ea;if(l&&e){var a=t&&typeof t.as=="string"?t.as:"script",n='link[rel="modulepreload"][as="'+pt(a)+'"][href="'+pt(e)+'"]',u=n;switch(a){case"audioworklet":case"paintworklet":case"serviceworker":case"sharedworker":case"worker":case"script":u=Ma(e)}if(!Mt.has(u)&&(e=z({rel:"modulepreload",href:e},t),Mt.set(u,e),l.querySelector(n)===null)){switch(a){case"audioworklet":case"paintworklet":case"serviceworker":case"sharedworker":case"worker":case"script":if(l.querySelector(pn(u)))return}a=l.createElement("link"),We(a,"link",e),Xe(a),l.head.appendChild(a)}}}function r1(e,t,l){tl.S(e,t,l);var a=Ea;if(a&&e){var n=Wl(a).hoistableStyles,u=Aa(e);t=t||"default";var i=n.get(u);if(!i){var s={loading:0,preload:null};if(i=a.querySelector(bn(u)))s.loading=5;else{e=z({rel:"stylesheet",href:e,"data-precedence":t},l),(l=Mt.get(u))&&ds(e,l);var r=i=a.createElement("link");Xe(r),We(r,"link",e),r._p=new Promise(function(g,N){r.onload=g,r.onerror=N}),r.addEventListener("load",function(){s.loading|=1}),r.addEventListener("error",function(){s.loading|=2}),s.loading|=4,Ru(i,t,a)}i={type:"stylesheet",instance:i,count:1,state:s},n.set(u,i)}}}function d1(e,t){tl.X(e,t);var l=Ea;if(l&&e){var a=Wl(l).hoistableScripts,n=Ma(e),u=a.get(n);u||(u=l.querySelector(pn(n)),u||(e=z({src:e,async:!0},t),(t=Mt.get(n))&&os(e,t),u=l.createElement("script"),Xe(u),We(u,"link",e),l.head.appendChild(u)),u={type:"script",instance:u,count:1,state:null},a.set(n,u))}}function o1(e,t){tl.M(e,t);var l=Ea;if(l&&e){var a=Wl(l).hoistableScripts,n=Ma(e),u=a.get(n);u||(u=l.querySelector(pn(n)),u||(e=z({src:e,async:!0,type:"module"},t),(t=Mt.get(n))&&os(e,t),u=l.createElement("script"),Xe(u),We(u,"link",e),l.head.appendChild(u)),u={type:"script",instance:u,count:1,state:null},a.set(n,u))}}function yd(e,t,l,a){var n=(n=ae.current)?Hu(n):null;if(!n)throw Error(f(446));switch(e){case"meta":case"title":return null;case"style":return typeof l.precedence=="string"&&typeof l.href=="string"?(t=Aa(l.href),l=Wl(n).hoistableStyles,a=l.get(t),a||(a={type:"style",instance:null,count:0,state:null},l.set(t,a)),a):{type:"void",instance:null,count:0,state:null};case"link":if(l.rel==="stylesheet"&&typeof l.href=="string"&&typeof l.precedence=="string"){e=Aa(l.href);var u=Wl(n).hoistableStyles,i=u.get(e);if(i||(n=n.ownerDocument||n,i={type:"stylesheet",instance:null,count:0,state:{loading:0,preload:null}},u.set(e,i),(u=n.querySelector(bn(e)))&&!u._p&&(i.instance=u,i.state.loading=5),Mt.has(e)||(l={rel:"preload",as:"style",href:l.href,crossOrigin:l.crossOrigin,integrity:l.integrity,media:l.media,hrefLang:l.hrefLang,referrerPolicy:l.referrerPolicy},Mt.set(e,l),u||h1(n,e,l,i.state))),t&&a===null)throw Error(f(528,""));return i}if(t&&a!==null)throw Error(f(529,""));return null;case"script":return t=l.async,l=l.src,typeof l=="string"&&t&&typeof t!="function"&&typeof t!="symbol"?(t=Ma(l),l=Wl(n).hoistableScripts,a=l.get(t),a||(a={type:"script",instance:null,count:0,state:null},l.set(t,a)),a):{type:"void",instance:null,count:0,state:null};default:throw Error(f(444,e))}}function Aa(e){return'href="'+pt(e)+'"'}function bn(e){return'link[rel="stylesheet"]['+e+"]"}function xd(e){return z({},e,{"data-precedence":e.precedence,precedence:null})}function h1(e,t,l,a){e.querySelector('link[rel="preload"][as="style"]['+t+"]")?a.loading=1:(t=e.createElement("link"),a.preload=t,t.addEventListener("load",function(){return a.loading|=1}),t.addEventListener("error",function(){return a.loading|=2}),We(t,"link",l),Xe(t),e.head.appendChild(t))}function Ma(e){return'[src="'+pt(e)+'"]'}function pn(e){return"script[async]"+e}function vd(e,t,l){if(t.count++,t.instance===null)switch(t.type){case"style":var a=e.querySelector('style[data-href~="'+pt(l.href)+'"]');if(a)return t.instance=a,Xe(a),a;var n=z({},l,{"data-href":l.href,"data-precedence":l.precedence,href:null,precedence:null});return a=(e.ownerDocument||e).createElement("style"),Xe(a),We(a,"style",n),Ru(a,l.precedence,e),t.instance=a;case"stylesheet":n=Aa(l.href);var u=e.querySelector(bn(n));if(u)return t.state.loading|=4,t.instance=u,Xe(u),u;a=xd(l),(n=Mt.get(n))&&ds(a,n),u=(e.ownerDocument||e).createElement("link"),Xe(u);var i=u;return i._p=new Promise(function(s,r){i.onload=s,i.onerror=r}),We(u,"link",a),t.state.loading|=4,Ru(u,l.precedence,e),t.instance=u;case"script":return u=Ma(l.src),(n=e.querySelector(pn(u)))?(t.instance=n,Xe(n),n):(a=l,(n=Mt.get(u))&&(a=z({},l),os(a,n)),e=e.ownerDocument||e,n=e.createElement("script"),Xe(n),We(n,"link",a),e.head.appendChild(n),t.instance=n);case"void":return null;default:throw Error(f(443,t.type))}else t.type==="stylesheet"&&(t.state.loading&4)===0&&(a=t.instance,t.state.loading|=4,Ru(a,l.precedence,e));return t.instance}function Ru(e,t,l){for(var a=l.querySelectorAll('link[rel="stylesheet"][data-precedence],style[data-precedence]'),n=a.length?a[a.length-1]:null,u=n,i=0;i<a.length;i++){var s=a[i];if(s.dataset.precedence===t)u=s;else if(u!==n)break}u?u.parentNode.insertBefore(e,u.nextSibling):(t=l.nodeType===9?l.head:l,t.insertBefore(e,t.firstChild))}function ds(e,t){e.crossOrigin==null&&(e.crossOrigin=t.crossOrigin),e.referrerPolicy==null&&(e.referrerPolicy=t.referrerPolicy),e.title==null&&(e.title=t.title)}function os(e,t){e.crossOrigin==null&&(e.crossOrigin=t.crossOrigin),e.referrerPolicy==null&&(e.referrerPolicy=t.referrerPolicy),e.integrity==null&&(e.integrity=t.integrity)}var Bu=null;function bd(e,t,l){if(Bu===null){var a=new Map,n=Bu=new Map;n.set(l,a)}else n=Bu,a=n.get(l),a||(a=new Map,n.set(l,a));if(a.has(e))return a;for(a.set(e,null),l=l.getElementsByTagName(e),n=0;n<l.length;n++){var u=l[n];if(!(u[Ha]||u[Ve]||e==="link"&&u.getAttribute("rel")==="stylesheet")&&u.namespaceURI!=="http://www.w3.org/2000/svg"){var i=u.getAttribute(t)||"";i=e+i;var s=a.get(i);s?s.push(u):a.set(i,[u])}}return a}function pd(e,t,l){e=e.ownerDocument||e,e.head.insertBefore(l,t==="title"?e.querySelector("head > title"):null)}function m1(e,t,l){if(l===1||t.itemProp!=null)return!1;switch(e){case"meta":case"title":return!0;case"style":if(typeof t.precedence!="string"||typeof t.href!="string"||t.href==="")break;return!0;case"link":if(typeof t.rel!="string"||typeof t.href!="string"||t.href===""||t.onLoad||t.onError)break;switch(t.rel){case"stylesheet":return e=t.disabled,typeof t.precedence=="string"&&e==null;default:return!0}case"script":if(t.async&&typeof t.async!="function"&&typeof t.async!="symbol"&&!t.onLoad&&!t.onError&&t.src&&typeof t.src=="string")return!0}return!1}function Sd(e){return!(e.type==="stylesheet"&&(e.state.loading&3)===0)}function g1(e,t,l,a){if(l.type==="stylesheet"&&(typeof a.media!="string"||matchMedia(a.media).matches!==!1)&&(l.state.loading&4)===0){if(l.instance===null){var n=Aa(a.href),u=t.querySelector(bn(n));if(u){t=u._p,t!==null&&typeof t=="object"&&typeof t.then=="function"&&(e.count++,e=wu.bind(e),t.then(e,e)),l.state.loading|=4,l.instance=u,Xe(u);return}u=t.ownerDocument||t,a=xd(a),(n=Mt.get(n))&&ds(a,n),u=u.createElement("link"),Xe(u);var i=u;i._p=new Promise(function(s,r){i.onload=s,i.onerror=r}),We(u,"link",a),l.instance=u}e.stylesheets===null&&(e.stylesheets=new Map),e.stylesheets.set(l,t),(t=l.state.preload)&&(l.state.loading&3)===0&&(e.count++,l=wu.bind(e),t.addEventListener("load",l),t.addEventListener("error",l))}}var hs=0;function y1(e,t){return e.stylesheets&&e.count===0&&Gu(e,e.stylesheets),0<e.count||0<e.imgCount?function(l){var a=setTimeout(function(){if(e.stylesheets&&Gu(e,e.stylesheets),e.unsuspend){var u=e.unsuspend;e.unsuspend=null,u()}},6e4+t);0<e.imgBytes&&hs===0&&(hs=62500*Fh());var n=setTimeout(function(){if(e.waitingForImages=!1,e.count===0&&(e.stylesheets&&Gu(e,e.stylesheets),e.unsuspend)){var u=e.unsuspend;e.unsuspend=null,u()}},(e.imgBytes>hs?50:800)+t);return e.unsuspend=l,function(){e.unsuspend=null,clearTimeout(a),clearTimeout(n)}}:null}function wu(){if(this.count--,this.count===0&&(this.imgCount===0||!this.waitingForImages)){if(this.stylesheets)Gu(this,this.stylesheets);else if(this.unsuspend){var e=this.unsuspend;this.unsuspend=null,e()}}}var qu=null;function Gu(e,t){e.stylesheets=null,e.unsuspend!==null&&(e.count++,qu=new Map,t.forEach(x1,e),qu=null,wu.call(e))}function x1(e,t){if(!(t.state.loading&4)){var l=qu.get(e);if(l)var a=l.get(null);else{l=new Map,qu.set(e,l);for(var n=e.querySelectorAll("link[data-precedence],style[data-precedence]"),u=0;u<n.length;u++){var i=n[u];(i.nodeName==="LINK"||i.getAttribute("media")!=="not all")&&(l.set(i.dataset.precedence,i),a=i)}a&&l.set(null,a)}n=t.instance,i=n.getAttribute("data-precedence"),u=l.get(i)||a,u===a&&l.set(null,n),l.set(i,n),this.count++,a=wu.bind(this),n.addEventListener("load",a),n.addEventListener("error",a),u?u.parentNode.insertBefore(n,u.nextSibling):(e=e.nodeType===9?e.head:e,e.insertBefore(n,e.firstChild)),t.state.loading|=4}}var Sn={$$typeof:Z,Provider:null,Consumer:null,_currentValue:V,_currentValue2:V,_threadCount:0};function v1(e,t,l,a,n,u,i,s,r){this.tag=1,this.containerInfo=e,this.pingCache=this.current=this.pendingChildren=null,this.timeoutHandle=-1,this.callbackNode=this.next=this.pendingContext=this.context=this.cancelPendingCommit=null,this.callbackPriority=0,this.expirationTimes=sc(-1),this.entangledLanes=this.shellSuspendCounter=this.errorRecoveryDisabledLanes=this.expiredLanes=this.warmLanes=this.pingedLanes=this.suspendedLanes=this.pendingLanes=0,this.entanglements=sc(0),this.hiddenUpdates=sc(null),this.identifierPrefix=a,this.onUncaughtError=n,this.onCaughtError=u,this.onRecoverableError=i,this.pooledCache=null,this.pooledCacheLanes=0,this.formState=r,this.incompleteTransitions=new Map}function Nd(e,t,l,a,n,u,i,s,r,g,N,E){return e=new v1(e,t,l,i,r,g,N,E,s),t=1,u===!0&&(t|=24),u=ht(3,null,null,t),e.current=u,u.stateNode=e,t=Zc(),t.refCount++,e.pooledCache=t,t.refCount++,u.memoizedState={element:a,isDehydrated:l,cache:t},Fc(u),e}function jd(e){return e?(e=ua,e):ua}function zd(e,t,l,a,n,u){n=jd(n),a.context===null?a.context=n:a.pendingContext=n,a=rl(t),a.payload={element:l},u=u===void 0?null:u,u!==null&&(a.callback=u),l=dl(e,a,t),l!==null&&(it(l,e,t),Ia(l,e,t))}function Td(e,t){if(e=e.memoizedState,e!==null&&e.dehydrated!==null){var l=e.retryLane;e.retryLane=l!==0&&l<t?l:t}}function ms(e,t){Td(e,t),(e=e.alternate)&&Td(e,t)}function Ed(e){if(e.tag===13||e.tag===31){var t=kl(e,67108864);t!==null&&it(t,e,67108864),ms(e,67108864)}}function Ad(e){if(e.tag===13||e.tag===31){var t=vt();t=fc(t);var l=kl(e,t);l!==null&&it(l,e,t),ms(e,t)}}var Yu=!0;function b1(e,t,l,a){var n=j.T;j.T=null;var u=C.p;try{C.p=2,gs(e,t,l,a)}finally{C.p=u,j.T=n}}function p1(e,t,l,a){var n=j.T;j.T=null;var u=C.p;try{C.p=8,gs(e,t,l,a)}finally{C.p=u,j.T=n}}function gs(e,t,l,a){if(Yu){var n=ys(a);if(n===null)ts(e,t,a,Lu,l),Od(e,a);else if(N1(n,e,t,l,a))a.stopPropagation();else if(Od(e,a),t&4&&-1<S1.indexOf(e)){for(;n!==null;){var u=Jl(n);if(u!==null)switch(u.tag){case 3:if(u=u.stateNode,u.current.memoizedState.isDehydrated){var i=Ml(u.pendingLanes);if(i!==0){var s=u;for(s.pendingLanes|=2,s.entangledLanes|=2;i;){var r=1<<31-dt(i);s.entanglements[1]|=r,i&=~r}Bt(u),(ge&6)===0&&(zu=ft()+500,gn(0))}}break;case 31:case 13:s=kl(u,2),s!==null&&it(s,u,2),Eu(),ms(u,2)}if(u=ys(a),u===null&&ts(e,t,a,Lu,l),u===n)break;n=u}n!==null&&a.stopPropagation()}else ts(e,t,a,null,l)}}function ys(e){return e=vc(e),xs(e)}var Lu=null;function xs(e){if(Lu=null,e=Kl(e),e!==null){var t=D(e);if(t===null)e=null;else{var l=t.tag;if(l===13){if(e=U(t),e!==null)return e;e=null}else if(l===31){if(e=Y(t),e!==null)return e;e=null}else if(l===3){if(t.stateNode.current.memoizedState.isDehydrated)return t.tag===3?t.stateNode.containerInfo:null;e=null}else t!==e&&(e=null)}}return Lu=e,null}function Md(e){switch(e){case"beforetoggle":case"cancel":case"click":case"close":case"contextmenu":case"copy":case"cut":case"auxclick":case"dblclick":case"dragend":case"dragstart":case"drop":case"focusin":case"focusout":case"input":case"invalid":case"keydown":case"keypress":case"keyup":case"mousedown":case"mouseup":case"paste":case"pause":case"play":case"pointercancel":case"pointerdown":case"pointerup":case"ratechange":case"reset":case"resize":case"seeked":case"submit":case"toggle":case"touchcancel":case"touchend":case"touchstart":case"volumechange":case"change":case"selectionchange":case"textInput":case"compositionstart":case"compositionend":case"compositionupdate":case"beforeblur":case"afterblur":case"beforeinput":case"blur":case"fullscreenchange":case"focus":case"hashchange":case"popstate":case"select":case"selectstart":return 2;case"drag":case"dragenter":case"dragexit":case"dragleave":case"dragover":case"mousemove":case"mouseout":case"mouseover":case"pointermove":case"pointerout":case"pointerover":case"scroll":case"touchmove":case"wheel":case"mouseenter":case"mouseleave":case"pointerenter":case"pointerleave":return 8;case"message":switch(uo()){case Hs:return 2;case Rs:return 8;case Dn:case co:return 32;case Bs:return 268435456;default:return 32}default:return 32}}var vs=!1,Nl=null,jl=null,zl=null,Nn=new Map,jn=new Map,Tl=[],S1="mousedown mouseup touchcancel touchend touchstart auxclick dblclick pointercancel pointerdown pointerup dragend dragstart drop compositionend compositionstart keydown keypress keyup input textInput copy cut paste click change contextmenu reset".split(" ");function Od(e,t){switch(e){case"focusin":case"focusout":Nl=null;break;case"dragenter":case"dragleave":jl=null;break;case"mouseover":case"mouseout":zl=null;break;case"pointerover":case"pointerout":Nn.delete(t.pointerId);break;case"gotpointercapture":case"lostpointercapture":jn.delete(t.pointerId)}}function zn(e,t,l,a,n,u){return e===null||e.nativeEvent!==u?(e={blockedOn:t,domEventName:l,eventSystemFlags:a,nativeEvent:u,targetContainers:[n]},t!==null&&(t=Jl(t),t!==null&&Ed(t)),e):(e.eventSystemFlags|=a,t=e.targetContainers,n!==null&&t.indexOf(n)===-1&&t.push(n),e)}function N1(e,t,l,a,n){switch(t){case"focusin":return Nl=zn(Nl,e,t,l,a,n),!0;case"dragenter":return jl=zn(jl,e,t,l,a,n),!0;case"mouseover":return zl=zn(zl,e,t,l,a,n),!0;case"pointerover":var u=n.pointerId;return Nn.set(u,zn(Nn.get(u)||null,e,t,l,a,n)),!0;case"gotpointercapture":return u=n.pointerId,jn.set(u,zn(jn.get(u)||null,e,t,l,a,n)),!0}return!1}function _d(e){var t=Kl(e.target);if(t!==null){var l=D(t);if(l!==null){if(t=l.tag,t===13){if(t=U(l),t!==null){e.blockedOn=t,Xs(e.priority,function(){Ad(l)});return}}else if(t===31){if(t=Y(l),t!==null){e.blockedOn=t,Xs(e.priority,function(){Ad(l)});return}}else if(t===3&&l.stateNode.current.memoizedState.isDehydrated){e.blockedOn=l.tag===3?l.stateNode.containerInfo:null;return}}}e.blockedOn=null}function Xu(e){if(e.blockedOn!==null)return!1;for(var t=e.targetContainers;0<t.length;){var l=ys(e.nativeEvent);if(l===null){l=e.nativeEvent;var a=new l.constructor(l.type,l);xc=a,l.target.dispatchEvent(a),xc=null}else return t=Jl(l),t!==null&&Ed(t),e.blockedOn=l,!1;t.shift()}return!0}function Dd(e,t,l){Xu(e)&&l.delete(t)}function j1(){vs=!1,Nl!==null&&Xu(Nl)&&(Nl=null),jl!==null&&Xu(jl)&&(jl=null),zl!==null&&Xu(zl)&&(zl=null),Nn.forEach(Dd),jn.forEach(Dd)}function Qu(e,t){e.blockedOn===t&&(e.blockedOn=null,vs||(vs=!0,S.unstable_scheduleCallback(S.unstable_NormalPriority,j1)))}var Vu=null;function Cd(e){Vu!==e&&(Vu=e,S.unstable_scheduleCallback(S.unstable_NormalPriority,function(){Vu===e&&(Vu=null);for(var t=0;t<e.length;t+=3){var l=e[t],a=e[t+1],n=e[t+2];if(typeof a!="function"){if(xs(a||l)===null)continue;break}var u=Jl(l);u!==null&&(e.splice(t,3),t-=3,yi(u,{pending:!0,data:n,method:l.method,action:a},a,n))}}))}function Oa(e){function t(r){return Qu(r,e)}Nl!==null&&Qu(Nl,e),jl!==null&&Qu(jl,e),zl!==null&&Qu(zl,e),Nn.forEach(t),jn.forEach(t);for(var l=0;l<Tl.length;l++){var a=Tl[l];a.blockedOn===e&&(a.blockedOn=null)}for(;0<Tl.length&&(l=Tl[0],l.blockedOn===null);)_d(l),l.blockedOn===null&&Tl.shift();if(l=(e.ownerDocument||e).$$reactFormReplay,l!=null)for(a=0;a<l.length;a+=3){var n=l[a],u=l[a+1],i=n[tt]||null;if(typeof u=="function")i||Cd(l);else if(i){var s=null;if(u&&u.hasAttribute("formAction")){if(n=u,i=u[tt]||null)s=i.formAction;else if(xs(n)!==null)continue}else s=i.action;typeof s=="function"?l[a+1]=s:(l.splice(a,3),a-=3),Cd(l)}}}function kd(){function e(u){u.canIntercept&&u.info==="react-transition"&&u.intercept({handler:function(){return new Promise(function(i){return n=i})},focusReset:"manual",scroll:"manual"})}function t(){n!==null&&(n(),n=null),a||setTimeout(l,20)}function l(){if(!a&&!navigation.transition){var u=navigation.currentEntry;u&&u.url!=null&&navigation.navigate(u.url,{state:u.getState(),info:"react-transition",history:"replace"})}}if(typeof navigation=="object"){var a=!1,n=null;return navigation.addEventListener("navigate",e),navigation.addEventListener("navigatesuccess",t),navigation.addEventListener("navigateerror",t),setTimeout(l,100),function(){a=!0,navigation.removeEventListener("navigate",e),navigation.removeEventListener("navigatesuccess",t),navigation.removeEventListener("navigateerror",t),n!==null&&(n(),n=null)}}}function bs(e){this._internalRoot=e}Zu.prototype.render=bs.prototype.render=function(e){var t=this._internalRoot;if(t===null)throw Error(f(409));var l=t.current,a=vt();zd(l,a,e,t,null,null)},Zu.prototype.unmount=bs.prototype.unmount=function(){var e=this._internalRoot;if(e!==null){this._internalRoot=null;var t=e.containerInfo;zd(e.current,2,null,e,null,null),Eu(),t[Zl]=null}};function Zu(e){this._internalRoot=e}Zu.prototype.unstable_scheduleHydration=function(e){if(e){var t=Ls();e={blockedOn:null,target:e,priority:t};for(var l=0;l<Tl.length&&t!==0&&t<Tl[l].priority;l++);Tl.splice(l,0,e),l===0&&_d(e)}};var Ud=b.version;if(Ud!=="19.2.3")throw Error(f(527,Ud,"19.2.3"));C.findDOMNode=function(e){var t=e._reactInternals;if(t===void 0)throw typeof e.render=="function"?Error(f(188)):(e=Object.keys(e).join(","),Error(f(268,e)));return e=v(t),e=e!==null?_(e):null,e=e===null?null:e.stateNode,e};var z1={bundleType:0,version:"19.2.3",rendererPackageName:"react-dom",currentDispatcherRef:j,reconcilerVersion:"19.2.3"};if(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__<"u"){var Ku=__REACT_DEVTOOLS_GLOBAL_HOOK__;if(!Ku.isDisabled&&Ku.supportsFiber)try{Ca=Ku.inject(z1),rt=Ku}catch{}}return En.createRoot=function(e,t){if(!O(e))throw Error(f(299));var l=!1,a="",n=Yr,u=Lr,i=Xr;return t!=null&&(t.unstable_strictMode===!0&&(l=!0),t.identifierPrefix!==void 0&&(a=t.identifierPrefix),t.onUncaughtError!==void 0&&(n=t.onUncaughtError),t.onCaughtError!==void 0&&(u=t.onCaughtError),t.onRecoverableError!==void 0&&(i=t.onRecoverableError)),t=Nd(e,1,!1,null,null,l,a,null,n,u,i,kd),e[Zl]=t.current,es(e),new bs(t)},En.hydrateRoot=function(e,t,l){if(!O(e))throw Error(f(299));var a=!1,n="",u=Yr,i=Lr,s=Xr,r=null;return l!=null&&(l.unstable_strictMode===!0&&(a=!0),l.identifierPrefix!==void 0&&(n=l.identifierPrefix),l.onUncaughtError!==void 0&&(u=l.onUncaughtError),l.onCaughtError!==void 0&&(i=l.onCaughtError),l.onRecoverableError!==void 0&&(s=l.onRecoverableError),l.formState!==void 0&&(r=l.formState)),t=Nd(e,1,!0,t,l??null,a,n,r,u,i,s,kd),t.context=jd(null),l=t.current,a=vt(),a=fc(a),n=rl(a),n.callback=null,dl(l,n,a),l=a,t.current.lanes=l,Ua(t,l),Bt(t),e[Zl]=t.current,es(e),new Zu(t)},En.version="19.2.3",En}var Vd;function Q1(){if(Vd)return js.exports;Vd=1;function S(){if(!(typeof __REACT_DEVTOOLS_GLOBAL_HOOK__>"u"||typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE!="function"))try{__REACT_DEVTOOLS_GLOBAL_HOOK__.checkDCE(S)}catch(b){console.error(b)}}return S(),js.exports=X1(),js.exports}var V1=Q1();const Z1=Jd(V1);var re=(S=>(S.ROLE_SELECTION="ROLE_SELECTION",S.AUTH="AUTH",S.DASHBOARD="DASHBOARD",S.OVERVIEW="OVERVIEW",S.WEIGHING="WEIGHING",S.FARMERS="FARMERS",S.VEHICLES="VEHICLES",S.HISTORY="HISTORY",S.SESSION_DETAIL="SESSION_DETAIL",S.INFO_CONFIG="INFO_CONFIG",S.SETTINGS="SETTINGS",S.BLUETOOTH="BLUETOOTH",S.UPGRADE="UPGRADE",S.SALES="SALES",S.SALES_DETAIL="SALES_DETAIL",S.CUSTOMERS="CUSTOMERS",S.WORKERS="WORKERS",S))(re||{});/**
  * @license lucide-react v0.462.0 - ISC
  *
  * This source code is licensed under the ISC license.
@@ -296,7 +296,7 @@ Error generating stack: `+a.message+`
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const Zd=K("Zap",[["path",{d:"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",key:"1xq2db"}]]),Tm=({children:S,activeRoute:b,setRoute:p,title:f,role:O,onLogout:D})=>{const[U,Y]=w.useState(!1);const touchRef=w.useRef({startX:0,startY:0});const A=b===re.DASHBOARD;const _=[{route:re.DASHBOARD,label:"Bàn làm việc",icon:c.jsx(sm,{size:22}),roles:["OWNER","FARMER"]},{route:re.OVERVIEW,label:"Tổng quan",icon:c.jsx(I1,{size:22}),roles:["OWNER","FARMER"]},{route:re.SALES,label:"Bán ra & Xuất tôm",icon:c.jsx(F1,{size:22}),roles:["OWNER","FARMER"]},{route:re.FINANCE,label:"Tài chính",icon:c.jsx(Ds,{size:22}),roles:["OWNER","FARMER"]},{route:re.CUSTOMERS,label:"Khách hàng",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},{route:re.FARMERS,label:"Danh sách ao tôm",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},/* Vehicles menu tab removed */{route:re.HISTORY,label:"Lịch sử thu mua",icon:c.jsx(Fd,{size:22}),roles:["OWNER","FARMER"]},{route:re.INFO_CONFIG,label:"Thiết lập thông tin",icon:c.jsx(im,{size:22}),roles:["OWNER","FARMER"]},{route:re.SETTINGS,label:"Cấu hình hệ thống",icon:c.jsx(ym,{size:22}),roles:["OWNER","FARMER"]}].filter(z=>z.roles.includes(O));return c.jsxs("div",{className:"flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden transition-colors relative",onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(!U&&touchRef.current.startX<35&&dx>45&&dy<80){Y(!0)}},children:[A&&c.jsxs("header",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] text-white p-4 flex items-center justify-between shadow-lg z-30 animate-in slide-in-from-top duration-300",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("button",{onClick:()=>Y(!0),className:"p-1.5 hover:bg-green-700 dark:hover:bg-green-900 rounded-xl active:scale-90 transition-all",children:c.jsx(dm,{size:28})}),c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shadow-sm"}),c.jsxs("div",{children:[c.jsx("h1",{className:"text-xl font-black uppercase tracking-tight",children:"Vua Tôm Càng Xanh"}),c.jsx("p",{className:"text-[10px] uppercase font-bold opacity-70 tracking-widest",children:f})]})]}),c.jsx("div",{className:"flex items-center gap-2",children:c.jsx("span",{className:"text-[10px] font-black bg-white/20 px-2 py-1 rounded uppercase",children:O==="OWNER"?"Chủ Vựa":"Nông Dân"})})]}),U&&c.jsx("div",{className:"fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-in fade-in duration-200",onClick:()=>Y(!1)}),c.jsxs("aside",{onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(dx<-40&&dy<120){Y(!1)}},className:`fixed top-0 left-0 h-full max-h-[100dvh] w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 transform transition-all duration-300 ease-in-out shadow-2xl flex flex-col overflow-hidden ${U?"translate-x-0":"-translate-x-full pointer-events-none"}`,children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-6 text-white relative shrink-0",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-14 h-14 object-contain rounded-2xl mb-3 shadow-md bg-white/10 p-1"}),c.jsx("h2",{className:"text-3xl font-black italic mb-1 uppercase tracking-tighter",children:"Tôm Càng Xanh Pro"}),c.jsx("p",{className:"text-xs opacity-70",children:"Quản lý thủy sản & nông sản hiện đại"}),c.jsx("button",{onClick:()=>Y(!1),className:"absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full active:scale-90 transition-all",children:c.jsx(_a,{size:24})})]}),c.jsxs("nav",{className:"p-4 space-y-2 mt-1 flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y pb-28",children:[_.map(z=>c.jsxs("button",{onClick:()=>{p(z.route);Y(!1)},className:`w-full flex items-center gap-4 p-4 rounded-2xl font-bold transition-all ${b===z.route?"bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-400 font-black shadow-sm":"text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700 active:scale-[0.98]"}`,children:[c.jsx("span",{className:b===z.route?"text-green-600 dark:text-green-400":"text-gray-400 dark:text-gray-500",children:z.icon}),z.label]},z.route)),c.jsx("div",{className:"pt-4 mt-4 border-t dark:border-gray-800",children:c.jsxs("button",{onClick:()=>{Y(!1);D()},className:"w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95 transition-all",children:[c.jsx(rm,{size:22})," Đăng xuất"]})})]})]}),c.jsx("main",{className:"flex-1 overflow-auto bg-gray-50 dark:bg-[#121212]",children:S})]})},Ot={SESSIONS:"annong_sessions",FARMERS:"annong_farmers",VEHICLES:"annong_vehicles",SETTINGS:"annong_settings",LOGS:"annong_logs",SALES:"annong_sales",BUYERS:"annong_buyers"},Em={apiKey:"AIzaSyD8GC7v21FaMvs8Wgrq3RXmeKnrrO2wpEo",authDomain:"appcan-2c24e.firebaseapp.com",projectId:"appcan-2c24e",storageBucket:"appcan-2c24e.firebasestorage.app",messagingSenderId:"633698227291",appId:"1:633698227291:web:b3cbc303311dd125c75b7e"},eo=E1(Em),Wu=null/* Disabled dead remote Firestore to eliminate backend timeout */,Pu=A1(eo);const sanitizeForFirestore = (val) => {
+ */const Zd=K("Zap",[["path",{d:"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",key:"1xq2db"}]]),Tm=({children:S,activeRoute:b,setRoute:p,title:f,role:O,onLogout:D})=>{const[U,Y]=w.useState(!1);const touchRef=w.useRef({startX:0,startY:0});const A=b===re.DASHBOARD;const _=[{route:re.DASHBOARD,label:"Bàn làm việc",icon:c.jsx(sm,{size:22}),roles:["OWNER","FARMER"]},{route:re.OVERVIEW,label:"Tổng quan",icon:c.jsx(I1,{size:22}),roles:["OWNER","FARMER"]},{route:re.SALES,label:"Bán ra & Xuất tôm",icon:c.jsx(F1,{size:22}),roles:["OWNER","FARMER"]},{route:re.FINANCE,label:"Tài chính",icon:c.jsx(Ds,{size:22}),roles:["OWNER","FARMER"]},{route:re.CUSTOMERS,label:"Khách hàng",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},{route:re.FARMERS,label:"Danh sách ao tôm",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},{route:re.WORKERS,label:"Công nhân",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},/* Vehicles menu tab removed */{route:re.HISTORY,label:"Lịch sử thu mua",icon:c.jsx(Fd,{size:22}),roles:["OWNER","FARMER"]},{route:re.INFO_CONFIG,label:"Thiết lập thông tin",icon:c.jsx(im,{size:22}),roles:["OWNER","FARMER"]},{route:re.SETTINGS,label:"Cấu hình hệ thống",icon:c.jsx(ym,{size:22}),roles:["OWNER","FARMER"]}].filter(z=>z.roles.includes(O));return c.jsxs("div",{className:"flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden transition-colors relative",onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(!U&&touchRef.current.startX<35&&dx>45&&dy<80){Y(!0)}},children:[A&&c.jsxs("header",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] text-white p-4 flex items-center justify-between shadow-lg z-30 animate-in slide-in-from-top duration-300",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("button",{onClick:()=>Y(!0),className:"p-1.5 hover:bg-green-700 dark:hover:bg-green-900 rounded-xl active:scale-90 transition-all",children:c.jsx(dm,{size:28})}),c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shadow-sm"}),c.jsxs("div",{children:[c.jsx("h1",{className:"text-xl font-black uppercase tracking-tight",children:"Vua Tôm Càng Xanh"}),c.jsx("p",{className:"text-[10px] uppercase font-bold opacity-70 tracking-widest",children:f})]})]}),c.jsx("div",{className:"flex items-center gap-2",children:c.jsx("span",{className:"text-[10px] font-black bg-white/20 px-2 py-1 rounded uppercase",children:O==="OWNER"?"Chủ Vựa":"Nông Dân"})})]}),U&&c.jsx("div",{className:"fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-in fade-in duration-200",onClick:()=>Y(!1)}),c.jsxs("aside",{onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(dx<-40&&dy<120){Y(!1)}},className:`fixed top-0 left-0 h-full max-h-[100dvh] w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 transform transition-all duration-300 ease-in-out shadow-2xl flex flex-col overflow-hidden ${U?"translate-x-0":"-translate-x-full pointer-events-none"}`,children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-6 text-white relative shrink-0",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-14 h-14 object-contain rounded-2xl mb-3 shadow-md bg-white/10 p-1"}),c.jsx("h2",{className:"text-3xl font-black italic mb-1 uppercase tracking-tighter",children:"Tôm Càng Xanh Pro"}),c.jsx("p",{className:"text-xs opacity-70",children:"Quản lý thủy sản & nông sản hiện đại"}),c.jsx("button",{onClick:()=>Y(!1),className:"absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full active:scale-90 transition-all",children:c.jsx(_a,{size:24})})]}),c.jsxs("nav",{className:"p-4 space-y-2 mt-1 flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y pb-28",children:[_.map(z=>c.jsxs("button",{onClick:()=>{p(z.route);Y(!1)},className:`w-full flex items-center gap-4 p-4 rounded-2xl font-bold transition-all ${b===z.route?"bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-400 font-black shadow-sm":"text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700 active:scale-[0.98]"}`,children:[c.jsx("span",{className:b===z.route?"text-green-600 dark:text-green-400":"text-gray-400 dark:text-gray-500",children:z.icon}),z.label]},z.route)),c.jsx("div",{className:"pt-4 mt-4 border-t dark:border-gray-800",children:c.jsxs("button",{onClick:()=>{Y(!1);D()},className:"w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95 transition-all",children:[c.jsx(rm,{size:22})," Đăng xuất"]})})]})]}),c.jsx("main",{className:"flex-1 overflow-auto bg-gray-50 dark:bg-[#121212]",children:S})]})},Ot={SESSIONS:"annong_sessions",FARMERS:"annong_farmers",VEHICLES:"annong_vehicles",SETTINGS:"annong_settings",LOGS:"annong_logs",SALES:"annong_sales",BUYERS:"annong_buyers"},Em={apiKey:"AIzaSyD8GC7v21FaMvs8Wgrq3RXmeKnrrO2wpEo",authDomain:"appcan-2c24e.firebaseapp.com",projectId:"appcan-2c24e",storageBucket:"appcan-2c24e.firebasestorage.app",messagingSenderId:"633698227291",appId:"1:633698227291:web:b3cbc303311dd125c75b7e"},eo=E1(Em),Wu=null/* Disabled dead remote Firestore to eliminate backend timeout */,Pu=A1(eo);const sanitizeForFirestore = (val) => {
   if (val === null || val === undefined || typeof val !== "object") {
     return val === undefined ? null : val;
   }
@@ -340,7 +340,7 @@ const deserializeFromFirestore = (val) => {
   return result;
 };
 
-class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0});if(p.billingHistory&&Array.isArray(p.billingHistory)){for(const O of p.billingHistory){O&&O.farmerPhone&&await this.pushToFarmerInbox(O);}}}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p));if(b===Ot.SETTINGS&&typeof document!=="undefined"){p&&p.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){console.warn("Storage save error",e)}emitAppDataUpdated_v4(b);const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(uidOverride){const f=this.getUser();const uid=uidOverride||(f&&f.uid);if(!uid||typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==uid)return;try{const p=this.getSessions(),dir=this.getFarmers(),veh=this.getVehicles();const sl=(this.getSales&&this.getSales())||JSON.parse(localStorage.getItem(Ot.SALES)||"[]");const fin=(this.getFinanceData&&this.getFinanceData())||JSON.parse(localStorage.getItem(Ot.FINANCE)||"null");const buy=(this.getBuyers&&this.getBuyers())||JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");const ctc=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");const prof=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");const D={user:f,lastUpdated:new Date().toISOString(),farmerDirectory:dir,transportation:{list:veh},billingHistory:p,config:this.getSettings(),sales:sl,finance:fin,buyers:buy,contracts:ctc,traderProfile:prof};Mn.syncToCloud(uid,D);}catch(err){console.warn("syncAllToCloud error:",err);}}static restoreFromCloud(Q){if(!Q||typeof Q!=="object")return;try{if(Array.isArray(Q.billingHistory)&&Q.billingHistory.length>0){const local=this.getSessions();const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.billingHistory.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SESSIONS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.farmerDirectory)&&Q.farmerDirectory.length>0){const local=this.getFarmers();const m=new Map();local.forEach(f=>f&&f.id&&m.set(f.id,f));Q.farmerDirectory.forEach(f=>f&&f.id&&m.set(f.id,f));localStorage.setItem(Ot.FARMERS,JSON.stringify(Array.from(m.values())));}if(Q.transportation&&Array.isArray(Q.transportation.list)&&Q.transportation.list.length>0){const local=this.getVehicles();const m=new Map();local.forEach(v=>v&&v.id&&m.set(v.id,v));Q.transportation.list.forEach(v=>v&&v.id&&m.set(v.id,v));localStorage.setItem(Ot.VEHICLES,JSON.stringify(Array.from(m.values())));}if(Q.config&&typeof Q.config==="object"){const cur=this.getSettings();localStorage.setItem(Ot.SETTINGS,JSON.stringify({...cur,...Q.config}));}if(Array.isArray(Q.sales)&&Q.sales.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.SALES)||"[]");}catch(e){}const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.sales.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SALES,JSON.stringify(Array.from(m.values())));}if(Q.finance&&typeof Q.finance==="object"){const localRaw=localStorage.getItem(Ot.FINANCE);if(!localRaw){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}else{try{const localFin=JSON.parse(localRaw);const sL=(localFin&&localFin.savedTrips)||[];const sC=(Q.finance&&Q.finance.savedTrips)||[];const tm=new Map();sL.forEach(t=>t&&t.id&&tm.set(t.id,t));sC.forEach(t=>t&&t.id&&tm.set(t.id,t));const mergedFin={...Q.finance,...localFin,savedTrips:Array.from(tm.values()),activeTrip:(localFin&&localFin.activeTrip)?localFin.activeTrip:Q.finance.activeTrip};localStorage.setItem(Ot.FINANCE,JSON.stringify(mergedFin));}catch(e){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}}}if(Array.isArray(Q.buyers)&&Q.buyers.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");}catch(e){}const m=new Map();local.forEach(b=>b&&b.id&&m.set(b.id,b));Q.buyers.forEach(b=>b&&b.id&&m.set(b.id,b));localStorage.setItem(Ot.BUYERS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.contracts)&&Q.contracts.length>0){let local=[];try{local=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");}catch(e){}const m=new Map();local.forEach(c=>c&&c.id&&m.set(c.id,c));Q.contracts.forEach(c=>c&&c.id&&m.set(c.id,c));localStorage.setItem("tom_electronic_contracts",JSON.stringify(Array.from(m.values())));}if(Q.traderProfile&&typeof Q.traderProfile==="object"){let cur={};try{cur=JSON.parse(localStorage.getItem("tom_trader_profile")||"{}");}catch(e){}const merged={...cur,...Q.traderProfile};localStorage.setItem("tom_trader_profile",JSON.stringify(merged));if(typeof window!=="undefined")window._cachedTraderProfile=merged;}}catch(err){console.warn("restoreFromCloud warning:",err);}}static async performCloudSync(){const u=this.getUser();if(!u||!u.uid)return{ok:false,message:"Chưa đăng nhập tài khoản Chủ Vựa"};try{const doc=await Mn.loadFromCloud(u.uid);if(doc){this.restoreFromCloud(doc);}this.syncAllToCloud(u.uid);try{const st=this.getSettings();if(typeof document!=="undefined"){st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){}if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("cloud_sync");}return{ok:true,message:"Đồng bộ đám mây thành công!"};}catch(err){return{ok:false,message:err&&err.message?err.message:"Lỗi đồng bộ"};}}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static syncActiveTripAfterSession(sessionId,isDelete){try{const raw=localStorage.getItem(Ot.FINANCE);if(!raw)return;const fin=JSON.parse(raw);if(!fin||!fin.activeTrip)return;const at=fin.activeTrip;if(isDelete){if(Array.isArray(at.selectedSessionIds)){at.selectedSessionIds=at.selectedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}}else{at.shrimpPurchaseAuto=true;if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.selectedSessionIds)&&sessionId&&!at.selectedSessionIds.includes(sessionId)){at.selectedSessionIds=[...at.selectedSessionIds,sessionId];}}localStorage.setItem(Ot.FINANCE,JSON.stringify(fin));}catch(e){}}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.syncActiveTripAfterSession(b,true);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return !1;const f=this.getSessions();f.unshift(b);this.syncActiveTripAfterSession(b&&b.id,false);this.save(Ot.SESSIONS,f);return !0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){let tpTare=1;try{const tp=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");if(tp&&tp.tarePer100Kg!==undefined&&tp.tarePer100Kg!=="")tpTare=Number(tp.tarePer100Kg);}catch(e){}const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,tarePer100Kg:tpTare,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
+class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0});if(p.billingHistory&&Array.isArray(p.billingHistory)){for(const O of p.billingHistory){O&&O.farmerPhone&&await this.pushToFarmerInbox(O);}}}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p));if(b===Ot.SETTINGS&&typeof document!=="undefined"){p&&p.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){console.warn("Storage save error",e)}emitAppDataUpdated_v4(b);const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(uidOverride){const f=this.getUser();const uid=uidOverride||(f&&f.uid);if(!uid||typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==uid)return;try{const p=this.getSessions(),dir=this.getFarmers(),veh=this.getVehicles();const sl=(this.getSales&&this.getSales())||JSON.parse(localStorage.getItem(Ot.SALES)||"[]");const fin=(this.getFinanceData&&this.getFinanceData())||JSON.parse(localStorage.getItem(Ot.FINANCE)||"null");const buy=(this.getBuyers&&this.getBuyers())||JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");const ctc=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");const prof=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");const wrk=(this.getWorkersData&&this.getWorkersData())||JSON.parse(localStorage.getItem(Ot.WORKERS)||"null");const D={user:f,lastUpdated:new Date().toISOString(),farmerDirectory:dir,transportation:{list:veh},billingHistory:p,config:this.getSettings(),sales:sl,finance:fin,buyers:buy,contracts:ctc,traderProfile:prof,workersData:wrk};Mn.syncToCloud(uid,D);}catch(err){console.warn("syncAllToCloud error:",err);}}static restoreFromCloud(Q){if(!Q||typeof Q!=="object")return;try{if(Array.isArray(Q.billingHistory)&&Q.billingHistory.length>0){const local=this.getSessions();const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.billingHistory.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SESSIONS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.farmerDirectory)&&Q.farmerDirectory.length>0){const local=this.getFarmers();const m=new Map();local.forEach(f=>f&&f.id&&m.set(f.id,f));Q.farmerDirectory.forEach(f=>f&&f.id&&m.set(f.id,f));localStorage.setItem(Ot.FARMERS,JSON.stringify(Array.from(m.values())));}if(Q.transportation&&Array.isArray(Q.transportation.list)&&Q.transportation.list.length>0){const local=this.getVehicles();const m=new Map();local.forEach(v=>v&&v.id&&m.set(v.id,v));Q.transportation.list.forEach(v=>v&&v.id&&m.set(v.id,v));localStorage.setItem(Ot.VEHICLES,JSON.stringify(Array.from(m.values())));}if(Q.config&&typeof Q.config==="object"){const cur=this.getSettings();localStorage.setItem(Ot.SETTINGS,JSON.stringify({...cur,...Q.config}));}if(Array.isArray(Q.sales)&&Q.sales.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.SALES)||"[]");}catch(e){}const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.sales.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SALES,JSON.stringify(Array.from(m.values())));}if(Q.finance&&typeof Q.finance==="object"){const localRaw=localStorage.getItem(Ot.FINANCE);if(!localRaw){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}else{try{const localFin=JSON.parse(localRaw);const sL=(localFin&&localFin.savedTrips)||[];const sC=(Q.finance&&Q.finance.savedTrips)||[];const tm=new Map();sL.forEach(t=>t&&t.id&&tm.set(t.id,t));sC.forEach(t=>t&&t.id&&tm.set(t.id,t));const mergedFin={...Q.finance,...localFin,savedTrips:Array.from(tm.values()),activeTrip:(localFin&&localFin.activeTrip)?localFin.activeTrip:Q.finance.activeTrip};localStorage.setItem(Ot.FINANCE,JSON.stringify(mergedFin));}catch(e){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}}}if(Array.isArray(Q.buyers)&&Q.buyers.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");}catch(e){}const m=new Map();local.forEach(b=>b&&b.id&&m.set(b.id,b));Q.buyers.forEach(b=>b&&b.id&&m.set(b.id,b));localStorage.setItem(Ot.BUYERS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.contracts)&&Q.contracts.length>0){let local=[];try{local=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");}catch(e){}const m=new Map();local.forEach(c=>c&&c.id&&m.set(c.id,c));Q.contracts.forEach(c=>c&&c.id&&m.set(c.id,c));localStorage.setItem("tom_electronic_contracts",JSON.stringify(Array.from(m.values())));}if(Q.traderProfile&&typeof Q.traderProfile==="object"){let cur={};try{cur=JSON.parse(localStorage.getItem("tom_trader_profile")||"{}");}catch(e){}const merged={...cur,...Q.traderProfile};localStorage.setItem("tom_trader_profile",JSON.stringify(merged));if(typeof window!=="undefined")window._cachedTraderProfile=merged;}if(Q.workersData&&typeof Q.workersData==="object"){let curW={workers:[],dispatches:[],attendance:{},advances:[],payrollPayments:[]};try{const rawW=localStorage.getItem(Ot.WORKERS);if(rawW)curW={...curW,...JSON.parse(rawW)};}catch(e){}const mergeById=(a,b)=>{const mp=new Map();(Array.isArray(a)?a:[]).forEach(x=>x&&x.id&&mp.set(x.id,x));(Array.isArray(b)?b:[]).forEach(x=>x&&x.id&&mp.set(x.id,x));return Array.from(mp.values());};const mergedW={workers:mergeById(curW.workers,Q.workersData.workers),dispatches:mergeById(curW.dispatches,Q.workersData.dispatches),attendance:{...(curW.attendance||{}),...(Q.workersData.attendance||{})},advances:mergeById(curW.advances,Q.workersData.advances),payrollPayments:mergeById(curW.payrollPayments,Q.workersData.payrollPayments)};localStorage.setItem(Ot.WORKERS,JSON.stringify(mergedW));}}catch(err){console.warn("restoreFromCloud warning:",err);}}static async performCloudSync(){const u=this.getUser();if(!u||!u.uid)return{ok:false,message:"Chưa đăng nhập tài khoản Chủ Vựa"};try{const doc=await Mn.loadFromCloud(u.uid);if(doc){this.restoreFromCloud(doc);}this.syncAllToCloud(u.uid);try{const st=this.getSettings();if(typeof document!=="undefined"){st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){}if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("cloud_sync");}return{ok:true,message:"Đồng bộ đám mây thành công!"};}catch(err){return{ok:false,message:err&&err.message?err.message:"Lỗi đồng bộ"};}}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static syncActiveTripAfterSession(sessionId,isDelete){try{const raw=localStorage.getItem(Ot.FINANCE);if(!raw)return;const fin=JSON.parse(raw);if(!fin||!fin.activeTrip)return;const at=fin.activeTrip;if(isDelete){if(Array.isArray(at.selectedSessionIds)){at.selectedSessionIds=at.selectedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}}else{at.shrimpPurchaseAuto=true;if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.selectedSessionIds)&&sessionId&&!at.selectedSessionIds.includes(sessionId)){at.selectedSessionIds=[...at.selectedSessionIds,sessionId];}}localStorage.setItem(Ot.FINANCE,JSON.stringify(fin));}catch(e){}}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.syncActiveTripAfterSession(b,true);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return !1;const f=this.getSessions();f.unshift(b);this.syncActiveTripAfterSession(b&&b.id,false);this.save(Ot.SESSIONS,f);return !0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){let tpTare=1;try{const tp=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");if(tp&&tp.tarePer100Kg!==undefined&&tp.tarePer100Kg!=="")tpTare=Number(tp.tarePer100Kg);}catch(e){}const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,tarePer100Kg:tpTare,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
   const [dashDate, setDashDate] = w.useState(() => getLocalYYYYMMDD_v4());
   const [dashSessions, setDashSessions] = w.useState(() => {
     try { return (me.getSessions && me.getSessions()) || []; } catch(e) { return []; }
@@ -352,12 +352,16 @@ class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static as
   const [dashFarmers, setDashFarmers] = w.useState(() => {
     try { return (me.getFarmers && me.getFarmers()) || []; } catch(e) { return []; }
   });
+  const [dashWorkersData, setDashWorkersData] = w.useState(() => {
+    try { return (me.getWorkersData && me.getWorkersData()) || { workers: [], dispatches: [] }; } catch(e) { return { workers: [], dispatches: [] }; }
+  });
   w.useEffect(() => {
     const syncDash = () => {
       try {
         setDashSessions((me.getSessions && me.getSessions()) || []);
         setDashSales((me.getSales && me.getSales()) || []);
         setDashFarmers((me.getFarmers && me.getFarmers()) || []);
+        if (me.getWorkersData) setDashWorkersData(me.getWorkersData());
         if (me.getFinanceSummary) setDashFinanceSummary(me.getFinanceSummary());
       } catch(e) {}
     };
@@ -403,7 +407,7 @@ class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static as
   const pendingDashPonds = Array.isArray(dashFarmers) ? dashFarmers.filter(f => f && !f.weighed && !f.isWeighed && f.status !== "WEIGHED") : [];
   const pendingDashYieldKg = pendingDashPonds.reduce((sum, f) => sum + (Number(f.estimatedYield) || 0), 0);
   const pendingDashGpsCount = pendingDashPonds.filter(f => f && ((f.coordinates && f.coordinates.lat != null) || (f.lat != null && f.lng != null))).length;
-const[p,f]=w.useState(!1),[O,D]=w.useState(!1),[dashToast,setDashToast]=w.useState(""),U=dashSessions,Y=me.isPremium(),A=U.length,v=10,_=!Y&&A>=8,z=()=>{D(!0),setTimeout(()=>{D(!1),f(!1),setDashToast("Cảm ơn bạn! Yêu cầu nâng cấp đã được ghi nhận.");setTimeout(()=>setDashToast(""),4000);},1200)},L=[{title:"Lưu trữ không giới hạn",desc:"Xóa bỏ giới hạn 10 phiếu cân.",icon:c.jsx(Zd,{size:18})},{title:"Xuất báo cáo Excel/PDF",desc:"Gửi phiếu chuyên nghiệp qua Zalo.",icon:c.jsx(xm,{size:18})},{title:"Phân tích tài chính",desc:"Báo cáo lợi nhuận vận chuyển & kho.",icon:c.jsx(I1,{size:18})},{title:"Đồng bộ Nông dân",desc:"Tự động đẩy dữ liệu cho đối tác.",icon:c.jsx(Os,{size:18})},{title:"Hỗ trợ ưu tiên 24/7",desc:"Đường dây nóng xử lý sự cố tức thì.",icon:c.jsx(Pd,{size:18})}];return c.jsxs("div",{className:"p-4 space-y-6 bg-gray-50 dark:bg-[#121212] h-full overflow-y-auto pb-20 transition-colors relative",children:[dashToast&&c.jsx("div",{className:"p-3 bg-emerald-600 text-white rounded-2xl text-xs font-black text-center shadow-lg",children:dashToast}),/* Premium banner removed */c.jsxs("div",{className:"bg-[#1e4ea1] rounded-[40px] p-6 text-white shadow-2xl relative overflow-hidden",children:[c.jsxs("h2",{className:"text-3xl font-black italic uppercase tracking-tighter mb-6",children:["Dữ liệu ",b==="OWNER"?"Vựa":"Cá nhân"]}),c.jsxs("div",{className:"grid grid-cols-2 gap-3 relative z-10",children:[c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Phiếu đã lưu"}),c.jsxs("span",{className:"text-2xl font-black tabular-nums",children:[A," ",null]})]}),c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Trạng thái"}),c.jsx("span",{className:"text-sm font-black uppercase flex items-center gap-1",children:"Không giới hạn"})]})]}),c.jsx(Sm,{size:140,className:"absolute -right-8 -bottom-8 opacity-10"})]}),_&&c.jsxs("div",{className:"bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 animate-bounce",children:[c.jsx(Nm,{size:20}),c.jsx("p",{className:"text-[11px] font-black uppercase leading-tight",children:"Sắp đạt giới hạn lưu trữ! Hãy nâng cấp để không gián đoạn công việc."})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("button",{onClick:()=>S(re.WEIGHING),className:"col-span-2 bg-[#2e7d32] p-6 rounded-[35px] shadow-xl flex items-center justify-between text-white active:scale-95 border-b-8 border-green-900",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center",children:c.jsx($u,{size:32})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none",children:"Bắt đầu cân"}),c.jsx("span",{className:"text-[9px] font-bold opacity-70 uppercase tracking-widest",children:"Ghi chép sản lượng tức thì"})]})]}),c.jsx(em,{})]}),c.jsxs("button",{onClick:()=>S(re.SALES),className:"col-span-2 relative overflow-hidden bg-gradient-to-r from-[#1e4ea1] via-[#1d4ed8] to-[#0284c7] hover:brightness-105 text-white p-5 sm:p-6 rounded-[32px] shadow-xl shadow-blue-900/30 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group",children:[c.jsxs("div",{className:"flex items-center gap-4 relative z-10",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 group-hover:bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-xs border border-white/30 shadow-inner transition-colors",children:c.jsx(F1,{size:32,className:"text-white drop-shadow"})}),c.jsxs("div",{className:"text-left space-y-1",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none tracking-tight",children:"Bán Ra & Xuất Tôm"}),c.jsx("span",{className:"px-2 py-0.5 bg-emerald-400 text-gray-950 font-black text-[9px] rounded-full uppercase tracking-wider shadow-xs animate-pulse",children:"Không trừ bì"})]}),c.jsx("span",{className:"text-[10px] font-bold opacity-90 uppercase tracking-wider block text-blue-100",children:"🏢 Xí nghiệp • 🛒 Bán lẻ • 🏪 Chợ thủy hải sản"})]})]}),c.jsxs("div",{className:"flex items-center gap-2 relative z-10",children:[c.jsx("span",{className:"hidden md:inline text-xs font-black uppercase bg-white/20 px-3 py-1.5 rounded-xl backdrop-blur-xs",children:"Vào Bán"}),c.jsx(em,{})]}),c.jsx("div",{className:"absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"})]}),c.jsxs("button",{onClick:()=>S(re.HISTORY),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center",children:c.jsx(Fd,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Lịch sử"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Xem lại phiếu cân"})]})]}),c.jsxs("button",{onClick:()=>S(re.FARMERS),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800 relative overflow-hidden",children:[c.jsxs("div",{className:"flex items-center justify-between w-full",children:[c.jsx("div",{className:"w-10 h-10 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center",children:c.jsx(Os,{size:20})}),pendingDashPonds.length>0&&c.jsxs("span",{className:"px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-lg text-[10px] font-black uppercase tabular-nums",children:[pendingDashPonds.length," ao"]})]}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Chủ Ao"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase block mt-1 leading-tight",children:pendingDashYieldKg>0?`${(pendingDashYieldKg/1000).toFixed(2)} tấn • ${pendingDashGpsCount} GPS`:"Ao tôm, GPS & HĐĐT"})]})]})]}),
+const[p,f]=w.useState(!1),[O,D]=w.useState(!1),[dashToast,setDashToast]=w.useState(""),U=dashSessions,Y=me.isPremium(),A=U.length,v=10,_=!Y&&A>=8,z=()=>{D(!0),setTimeout(()=>{D(!1),f(!1),setDashToast("Cảm ơn bạn! Yêu cầu nâng cấp đã được ghi nhận.");setTimeout(()=>setDashToast(""),4000);},1200)},L=[{title:"Lưu trữ không giới hạn",desc:"Xóa bỏ giới hạn 10 phiếu cân.",icon:c.jsx(Zd,{size:18})},{title:"Xuất báo cáo Excel/PDF",desc:"Gửi phiếu chuyên nghiệp qua Zalo.",icon:c.jsx(xm,{size:18})},{title:"Phân tích tài chính",desc:"Báo cáo lợi nhuận vận chuyển & kho.",icon:c.jsx(I1,{size:18})},{title:"Đồng bộ Nông dân",desc:"Tự động đẩy dữ liệu cho đối tác.",icon:c.jsx(Os,{size:18})},{title:"Hỗ trợ ưu tiên 24/7",desc:"Đường dây nóng xử lý sự cố tức thì.",icon:c.jsx(Pd,{size:18})}];return c.jsxs("div",{className:"p-4 space-y-6 bg-gray-50 dark:bg-[#121212] h-full overflow-y-auto pb-20 transition-colors relative",children:[dashToast&&c.jsx("div",{className:"p-3 bg-emerald-600 text-white rounded-2xl text-xs font-black text-center shadow-lg",children:dashToast}),/* Premium banner removed */c.jsxs("div",{className:"bg-[#1e4ea1] rounded-[40px] p-6 text-white shadow-2xl relative overflow-hidden",children:[c.jsxs("h2",{className:"text-3xl font-black italic uppercase tracking-tighter mb-6",children:["Dữ liệu ",b==="OWNER"?"Vựa":"Cá nhân"]}),c.jsxs("div",{className:"grid grid-cols-2 gap-3 relative z-10",children:[c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Phiếu đã lưu"}),c.jsxs("span",{className:"text-2xl font-black tabular-nums",children:[A," ",null]})]}),c.jsxs("div",{className:"bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10",children:[c.jsx("span",{className:"text-[10px] font-bold opacity-60 uppercase block mb-1",children:"Trạng thái"}),c.jsx("span",{className:"text-sm font-black uppercase flex items-center gap-1",children:"Không giới hạn"})]})]}),c.jsx(Sm,{size:140,className:"absolute -right-8 -bottom-8 opacity-10"})]}),_&&c.jsxs("div",{className:"bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 text-red-600 animate-bounce",children:[c.jsx(Nm,{size:20}),c.jsx("p",{className:"text-[11px] font-black uppercase leading-tight",children:"Sắp đạt giới hạn lưu trữ! Hãy nâng cấp để không gián đoạn công việc."})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("button",{onClick:()=>S(re.WEIGHING),className:"col-span-2 bg-[#2e7d32] p-6 rounded-[35px] shadow-xl flex items-center justify-between text-white active:scale-95 border-b-8 border-green-900",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center",children:c.jsx($u,{size:32})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none",children:"Bắt đầu cân"}),c.jsx("span",{className:"text-[9px] font-bold opacity-70 uppercase tracking-widest",children:"Ghi chép sản lượng tức thì"})]})]}),c.jsx(em,{})]}),c.jsxs("button",{onClick:()=>S(re.SALES),className:"col-span-2 relative overflow-hidden bg-gradient-to-r from-[#1e4ea1] via-[#1d4ed8] to-[#0284c7] hover:brightness-105 text-white p-5 sm:p-6 rounded-[32px] shadow-xl shadow-blue-900/30 border border-white/20 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer group",children:[c.jsxs("div",{className:"flex items-center gap-4 relative z-10",children:[c.jsx("div",{className:"w-14 h-14 bg-white/20 group-hover:bg-white/30 rounded-2xl flex items-center justify-center backdrop-blur-xs border border-white/30 shadow-inner transition-colors",children:c.jsx(F1,{size:32,className:"text-white drop-shadow"})}),c.jsxs("div",{className:"text-left space-y-1",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx("span",{className:"text-xl font-black uppercase italic block leading-none tracking-tight",children:"Bán Ra & Xuất Tôm"}),c.jsx("span",{className:"px-2 py-0.5 bg-emerald-400 text-gray-950 font-black text-[9px] rounded-full uppercase tracking-wider shadow-xs animate-pulse",children:"Không trừ bì"})]}),c.jsx("span",{className:"text-[10px] font-bold opacity-90 uppercase tracking-wider block text-blue-100",children:"🏢 Xí nghiệp • 🛒 Bán lẻ • 🏪 Chợ thủy hải sản"})]})]}),c.jsxs("div",{className:"flex items-center gap-2 relative z-10",children:[c.jsx("span",{className:"hidden md:inline text-xs font-black uppercase bg-white/20 px-3 py-1.5 rounded-xl backdrop-blur-xs",children:"Vào Bán"}),c.jsx(em,{})]}),c.jsx("div",{className:"absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"})]}),c.jsxs("button",{onClick:()=>S(re.HISTORY),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800",children:[c.jsx("div",{className:"w-10 h-10 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-2xl flex items-center justify-center",children:c.jsx(Fd,{size:20})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Lịch sử"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase",children:"Xem lại phiếu cân"})]})]}),c.jsxs("button",{onClick:()=>S(re.FARMERS),className:"bg-white p-5 rounded-[30px] shadow-md flex flex-col justify-between h-40 active:scale-95 border border-gray-100 dark:bg-gray-900 dark:border-gray-800 relative overflow-hidden",children:[c.jsxs("div",{className:"flex items-center justify-between w-full",children:[c.jsx("div",{className:"w-10 h-10 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center",children:c.jsx(Os,{size:20})}),pendingDashPonds.length>0&&c.jsxs("span",{className:"px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-lg text-[10px] font-black uppercase tabular-nums",children:[pendingDashPonds.length," ao"]})]}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tighter block leading-none",children:"Chủ Ao"}),c.jsx("span",{className:"text-[9px] font-bold text-gray-400 uppercase block mt-1 leading-tight",children:pendingDashYieldKg>0?`${(pendingDashYieldKg/1000).toFixed(2)} tấn • ${pendingDashGpsCount} GPS`:"Ao tôm, GPS & HĐĐT"})]})]}),c.jsxs("button",{onClick:()=>S(re.WORKERS),className:"col-span-2 bg-white dark:bg-gray-900 p-4 sm:p-5 rounded-[30px] shadow-md flex items-center justify-between active:scale-[0.98] transition-all border border-gray-100 dark:border-gray-800 cursor-pointer",children:[c.jsxs("div",{className:"flex items-center gap-3.5",children:[c.jsx("div",{className:"w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-2xl flex items-center justify-center shrink-0",children:c.jsx(Os,{size:24})}),c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"text-lg font-black uppercase text-gray-800 dark:text-gray-100 tracking-tight block leading-none",children:"Công Nhân & Điều Động"}),c.jsx("span",{className:"text-[11px] font-bold text-gray-500 dark:text-gray-400 block mt-1 tabular-nums",children:`${(dashWorkersData.workers||[]).length} nhân công • ${(dashWorkersData.dispatches||[]).filter(d=>d&&d.status!=="DONE").length} lệnh đi ao • Chấm công & lương`})]})]}),c.jsx(em,{className:"text-gray-400 shrink-0"})]})]}),
       // BẢNG CÂN ĐỐI THU MUA & XUẤT TÔM
       c.jsxs("div", {
         className: "bg-white dark:bg-gray-900 rounded-[35px] p-5 border border-gray-200 dark:border-gray-800 shadow-lg space-y-4 mt-2",
@@ -6641,6 +6645,7 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract, onShare, onShar
   const [showShareModal, setShowShareModal] = w.useState(false);
   const [showSigningModal, setShowSigningModal] = w.useState(false);
   const [viewingMap, setViewingMap] = w.useState(false);
+  const [showContractGpsPicker, setShowContractGpsPicker] = w.useState(false);
   const [justSignedNotice, setJustSignedNotice] = w.useState(false);
   const [isEditingTerms, setIsEditingTerms] = w.useState(false);
   const [toastMsg, setToastMsg] = w.useState("");
@@ -7102,15 +7107,47 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract, onShare, onShar
                         className: "text-[11px] text-amber-800 dark:text-amber-300 print:text-black",
                         children: [c.jsx("strong", { children: "Đường vào ao: " }), cData.pondAccessNote]
                       }),
-                      pondCoords && pondCoords.lat && pondCoords.lng && c.jsxs("div", {
-                        className: "pt-1 flex items-center justify-between text-xs text-blue-700 bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700 print:hidden",
+                      c.jsxs("div", {
+                        className: "pt-1.5 mt-1 flex flex-wrap items-center justify-between gap-2 text-xs bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-blue-200 dark:border-blue-800/60 print:hidden",
                         children: [
-                          c.jsxs("span", { children: ["Tọa độ GPS ao: ", Number(pondCoords.lat).toFixed(5) + ", " + Number(pondCoords.lng).toFixed(5)] }),
-                          c.jsxs("button", {
-                            type: "button",
-                            onClick: () => setViewingMap(true),
-                            className: "text-[11px] font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer",
-                            children: [c.jsx(MapIcon, { size: 12 }), "Xem bản đồ ao"]
+                          pondCoords && pondCoords.lat && pondCoords.lng ? c.jsxs("div", {
+                            className: "flex flex-wrap items-center gap-1.5 text-blue-700 dark:text-blue-300",
+                            children: [
+                              c.jsx("span", { className: "font-black", children: "📍 GPS bờ ao:" }),
+                              c.jsx("span", { className: "font-mono font-bold tabular-nums", children: `${Number(pondCoords.lat).toFixed(6)}, ${Number(pondCoords.lng).toFixed(6)}` }),
+                              pondCoords.accuracy && c.jsxs("span", {
+                                className: "px-1.5 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 rounded text-[10px] font-black tabular-nums",
+                                children: ["±", Math.round(Number(pondCoords.accuracy)), "m"]
+                              })
+                            ]
+                          }) : c.jsx("span", { className: "text-[11px] font-bold text-amber-700 dark:text-amber-300", children: "⚠️ Chưa ghim vị trí ao trên bản đồ" }),
+                          c.jsxs("div", {
+                            className: "flex flex-wrap items-center gap-1.5 ml-auto",
+                            children: [
+                              pondCoords && pondCoords.lat && pondCoords.lng && c.jsxs(c.Fragment, {
+                                children: [
+                                  c.jsxs("button", {
+                                    type: "button",
+                                    onClick: () => setViewingMap(true),
+                                    className: "px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer",
+                                    children: [c.jsx(MapIcon, { size: 12 }), "Xem"]
+                                  }),
+                                  c.jsxs("a", {
+                                    href: `https://www.google.com/maps/dir/?api=1&destination=${pondCoords.lat},${pondCoords.lng}`,
+                                    target: "_blank",
+                                    rel: "noopener noreferrer",
+                                    className: "px-2 py-1 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 rounded-lg text-[11px] font-black",
+                                    children: ["Maps ↗"]
+                                  })
+                                ]
+                              }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => setShowContractGpsPicker(true),
+                                className: "px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-black flex items-center gap-1 cursor-pointer shadow-xs",
+                                children: pondCoords && pondCoords.lat && pondCoords.lng ? "🛰️ Sửa ghim GPS" : "🛰️ Ghim vị trí ao"
+                              })
+                            ]
                           })
                         ]
                       })
@@ -7291,6 +7328,58 @@ const Xm_ContractModal = ({ contract, onClose, onUpdateContract, onShare, onShar
             estimatedYield: estYieldVal,
             onShareWorker: onShareWorkers ? () => { setViewingMap(false); onShareWorkers(cData); } : null,
             onClose: () => setViewingMap(false)
+          }),
+          showContractGpsPicker && c.jsx(Xm_LocationPickerModal, {
+            farmer: {
+              id: cData.pondId || cData.farmerId || cData.id,
+              name: cData.farmer?.fullName || cData.farmerName || "Chủ ao",
+              address: cData.farmer?.address || cData.farmerAddress || "",
+              estimatedYield: estYieldVal,
+              lat: pondCoords?.lat || null,
+              lng: pondCoords?.lng || null,
+              gpsAccuracy: pondCoords?.accuracy || null,
+              accessNote: cData.pondAccessNote || ""
+            },
+            onClose: () => setShowContractGpsPicker(false),
+            onSaveLocation: (nLat, nLng, extra = {}) => {
+              const accVal = extra?.accuracy !== undefined ? extra.accuracy : (pondCoords?.accuracy || null);
+              const nextNote = extra?.accessNote !== undefined ? extra.accessNote : (cData.pondAccessNote || "");
+              const updated = {
+                ...cData,
+                pondLocation: { lat: nLat, lng: nLng, accuracy: accVal },
+                pondAccessNote: nextNote,
+                farmer: {
+                  ...(cData.farmer || {}),
+                  coordinates: { lat: nLat, lng: nLng, accuracy: accVal }
+                }
+              };
+              saveContract(updated);
+              try {
+                if (typeof me !== "undefined" && me.getFarmers) {
+                  const fl = me.getFarmers();
+                  let matchedAny = false;
+                  const nextFl = fl.map(fItem => {
+                    if (fItem && (fItem.id === cData.farmerId || fItem.id === cData.pondId || fItem.contractId === cData.id)) {
+                      matchedAny = true;
+                      return {
+                        ...fItem,
+                        lat: nLat,
+                        lng: nLng,
+                        gpsAccuracy: accVal !== null ? accVal : fItem.gpsAccuracy,
+                        accessNote: nextNote
+                      };
+                    }
+                    return fItem;
+                  });
+                  if (matchedAny) me.save(Ot.FARMERS, nextFl);
+                }
+              } catch (e) {}
+              setCData(updated);
+              if (onUpdateContract) onUpdateContract(updated);
+              setShowContractGpsPicker(false);
+              setToastMsg(`✓ Đã ghim chính xác vị trí ao (${nLat}, ${nLng}) & đồng bộ Chủ Ao!`);
+              setTimeout(() => setToastMsg(""), 3500);
+            }
           }),
           isEditingTerms && c.jsxs("div", {
             className: "fixed inset-0 z-[210] flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200 overflow-y-auto",
@@ -7798,7 +7887,8 @@ const Xm_TraderConfig = ({ setRoute }) => {
         sales: typeof me !== "undefined" && typeof me.getSales === "function" ? me.getSales() : [],
         buyers: typeof me !== "undefined" && typeof me.getBuyers === "function" ? me.getBuyers() : [],
         finance: typeof me !== "undefined" && typeof me.getFinanceData === "function" ? me.getFinanceData() : null,
-        vehicles: typeof me !== "undefined" && typeof me.getVehicles === "function" ? me.getVehicles() : []
+        vehicles: typeof me !== "undefined" && typeof me.getVehicles === "function" ? me.getVehicles() : [],
+        workersData: typeof me !== "undefined" && typeof me.getWorkersData === "function" ? me.getWorkersData() : null
       };
       const jsonStr = JSON.stringify(fullBackup, null, 2);
       const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
@@ -7872,6 +7962,9 @@ const Xm_TraderConfig = ({ setRoute }) => {
         }
         if (parsed.finance && typeof parsed.finance === "object" && typeof me !== "undefined" && typeof me.saveFinanceData === "function") {
           me.saveFinanceData(parsed.finance);
+        }
+        if (parsed.workersData && typeof parsed.workersData === "object" && typeof me !== "undefined" && typeof me.saveWorkersData === "function") {
+          me.saveWorkersData(parsed.workersData);
         }
         if (parsed.settings && typeof document !== "undefined") {
           parsed.settings.darkMode ? document.documentElement.classList.add("dark") : document.documentElement.classList.remove("dark");
@@ -8849,14 +8942,605 @@ const Xm_TraderConfig = ({ setRoute }) => {
 const Km = PinIcon;
 const Xm_ElectronicContractModal = Xm_ContractModal;
 
+// ==================== BẢN ĐỒ VỆ TINH & CHẤM GHIM AO TÔM TƯƠNG TÁC CHÍNH XÁC CAO ====================
+const Xm_InteractivePondMapPicker = ({
+  lat,
+  lng,
+  accuracy,
+  accessNote,
+  onChangeCoords,
+  onChangeAccessNote,
+  compact = false
+}) => {
+  const DEFAULT_LAT = 9.1768;
+  const DEFAULT_LNG = 105.1524;
+  const parseValidNum = (v) => {
+    if (v === "" || v === null || v === undefined) return null;
+    const n = Number(v);
+    return !isNaN(n) && isFinite(n) ? n : null;
+  };
+  const pinLat = parseValidNum(lat);
+  const pinLng = parseValidNum(lng);
+  const hasValidPin = pinLat !== null && pinLng !== null && pinLat >= -90 && pinLat <= 90 && pinLng >= -180 && pinLng <= 180 && (pinLat !== 0 || pinLng !== 0);
+
+  const [viewLat, setViewLat] = w.useState(() => (hasValidPin ? pinLat : DEFAULT_LAT));
+  const [viewLng, setViewLng] = w.useState(() => (hasValidPin ? pinLng : DEFAULT_LNG));
+  const [zoom, setZoom] = w.useState(compact ? 17 : 18);
+  const [layer, setLayer] = w.useState("SAT"); // "SAT" | "OSM"
+  const [gpsSampling, setGpsSampling] = w.useState(false);
+  const [gpsStatus, setGpsStatus] = w.useState("");
+  const [gpsErr, setGpsErr] = w.useState("");
+  const [pasteInput, setPasteInput] = w.useState("");
+  const [searchQuery, setSearchQuery] = w.useState("");
+  const [searchingPlace, setSearchingPlace] = w.useState(false);
+  const [searchResults, setSearchResults] = w.useState([]);
+  const [dragDelta, setDragDelta] = w.useState({ x: 0, y: 0 });
+  const viewportRef = w.useRef(null);
+  const dragStateRef = w.useRef({ active: false, startX: 0, startY: 0, moved: 0, pointerId: null });
+  const watchIdRef = w.useRef(null);
+  const gpsTimerRef = w.useRef(null);
+
+  w.useEffect(() => {
+    if (hasValidPin && !dragStateRef.current.active) {
+      setViewLat(pinLat);
+      setViewLng(pinLng);
+    }
+  }, [pinLat, pinLng]);
+
+  w.useEffect(() => {
+    return () => {
+      if (watchIdRef.current !== null && typeof navigator !== "undefined" && navigator.geolocation) {
+        try { navigator.geolocation.clearWatch(watchIdRef.current); } catch (e) {}
+      }
+      if (gpsTimerRef.current) clearTimeout(gpsTimerRef.current);
+    };
+  }, []);
+
+  // Web Mercator projection helpers (256px tiles)
+  const TILE_SIZE = 256;
+  const latLngToWorld = (lt, lg, z) => {
+    const scale = TILE_SIZE * Math.pow(2, z);
+    const siny = Math.min(Math.max(Math.sin((lt * Math.PI) / 180), -0.9999), 0.9999);
+    const wx = ((lg + 180) / 360) * scale;
+    const wy = (0.5 - Math.log((1 + siny) / (1 - siny)) / (4 * Math.PI)) * scale;
+    return { wx, wy, scale };
+  };
+  const worldToLatLng = (wx, wy, z) => {
+    const scale = TILE_SIZE * Math.pow(2, z);
+    const wrappedX = ((wx % scale) + scale) % scale;
+    const clampedY = Math.min(Math.max(wy, 0), scale);
+    const lg = (wrappedX / scale) * 360 - 180;
+    const n = Math.PI - (2 * Math.PI * clampedY) / scale;
+    const lt = (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+    return { lat: Number(lt.toFixed(6)), lng: Number(lg.toFixed(6)) };
+  };
+
+  const stopGpsWatch = () => {
+    if (watchIdRef.current !== null && typeof navigator !== "undefined" && navigator.geolocation) {
+      try { navigator.geolocation.clearWatch(watchIdRef.current); } catch (e) {}
+      watchIdRef.current = null;
+    }
+    if (gpsTimerRef.current) {
+      clearTimeout(gpsTimerRef.current);
+      gpsTimerRef.current = null;
+    }
+    setGpsSampling(false);
+  };
+
+  const handleHighPrecisionGps = () => {
+    setGpsErr("");
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setGpsErr("Thiết bị không hỗ trợ GPS. Vui lòng tìm tên xã/ấp hoặc chạm trực tiếp lên bản đồ vệ tinh để ghim ao.");
+      return;
+    }
+    stopGpsWatch();
+    setGpsSampling(true);
+    setGpsStatus("Đang thu tín hiệu vệ tinh nhiều mẫu để đạt độ chính xác cao nhất...");
+    let bestPos = null;
+    const applySample = (pos, isFinal = false) => {
+      const nLat = Number(pos.coords.latitude.toFixed(6));
+      const nLng = Number(pos.coords.longitude.toFixed(6));
+      const acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
+      setViewLat(nLat);
+      setViewLng(nLng);
+      if (zoom < 17) setZoom(18);
+      if (onChangeCoords) onChangeCoords(nLat, nLng, acc);
+      if (acc !== null && acc <= 10) {
+        setGpsStatus(`✓ Đã chốt GPS siêu chính xác (${nLat}, ${nLng}) • Sai số ±${acc}m`);
+      } else if (acc !== null && acc <= 30) {
+        setGpsStatus(`✓ Đã lấy GPS tốt (${nLat}, ${nLng}) • ±${acc}m (có thể kéo nhẹ ghim vào đúng bờ ao)`);
+      } else {
+        setGpsStatus(`${isFinal ? "✓ Đã khóa" : "Đang lọc mẫu"}: ${nLat}, ${nLng}${acc ? ` (±${acc}m)` : ""} • Hãy bấm trực tiếp lên ao trên ảnh vệ tinh để chuẩn hơn`);
+      }
+    };
+
+    try {
+      const wid = navigator.geolocation.watchPosition(
+        (pos) => {
+          const acc = pos.coords.accuracy || 9999;
+          if (!bestPos || acc <= (bestPos.coords.accuracy || 9999)) {
+            bestPos = pos;
+            applySample(pos, acc <= 8);
+          }
+          if (acc <= 8) {
+            stopGpsWatch();
+          }
+        },
+        (err) => {
+          if (!bestPos) {
+            stopGpsWatch();
+            setGpsErr("Không thể đọc GPS: " + (err?.message || "Hãy bật Vị trí/Location hoặc chạm lên bản đồ để ghim tay."));
+          }
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+      );
+      watchIdRef.current = wid;
+      gpsTimerRef.current = setTimeout(() => {
+        if (bestPos) applySample(bestPos, true);
+        stopGpsWatch();
+      }, 8000);
+    } catch (e) {
+      stopGpsWatch();
+      setGpsErr("Lỗi khởi tạo GPS. Vui lòng chạm lên bản đồ hoặc dán link Google Maps.");
+    }
+  };
+
+  const handleParsePaste = (val) => {
+    setPasteInput(val);
+    setGpsErr("");
+    if (!val || !val.trim()) return;
+    const parsed = typeof parseGpsInput_v4 === "function" ? parseGpsInput_v4(val) : null;
+    if (parsed) {
+      stopGpsWatch();
+      setViewLat(parsed.lat);
+      setViewLng(parsed.lng);
+      setZoom(18);
+      if (onChangeCoords) onChangeCoords(parsed.lat, parsed.lng, null);
+      setGpsStatus(`✓ Đã nhận diện & ghim trên bản đồ: ${parsed.lat}, ${parsed.lng}`);
+    }
+  };
+
+  const handleSearchPlace = async () => {
+    const q = searchQuery.trim();
+    if (!q) return;
+    setSearchingPlace(true);
+    setGpsErr("");
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&countrycodes=vn&limit=5&q=${encodeURIComponent(q)}`;
+      const res = await fetch(url, { headers: { Accept: "application/json" } });
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        setSearchResults(data);
+      } else {
+        setSearchResults([]);
+        setGpsErr("Không tìm thấy địa danh. Thử nhập ngắn hơn (Vd: Năm Căn Cà Mau, Đầm Dơi...).");
+      }
+    } catch (e) {
+      setGpsErr("Chưa kết nối được tìm kiếm bản đồ. Bạn có thể kéo bản đồ hoặc dán link Google Maps.");
+    } finally {
+      setSearchingPlace(false);
+    }
+  };
+
+  const handleNudge = (dLat, dLng) => {
+    const baseLat = hasValidPin ? pinLat : viewLat;
+    const baseLng = hasValidPin ? pinLng : viewLng;
+    const nextLat = Number((baseLat + dLat).toFixed(6));
+    const nextLng = Number((baseLng + dLng).toFixed(6));
+    setViewLat(nextLat);
+    setViewLng(nextLng);
+    if (onChangeCoords) onChangeCoords(nextLat, nextLng, null);
+    setGpsStatus(`✓ Đã tinh chỉnh ghim: ${nextLat}, ${nextLng}`);
+  };
+
+  // Compute tile grid around (viewLat, viewLng) + dragDelta
+  const { wx: centerWx, wy: centerWy } = latLngToWorld(viewLat, viewLng, zoom);
+  const effCenterWx = centerWx - dragDelta.x;
+  const effCenterWy = centerWy - dragDelta.y;
+  const maxTileIdx = Math.pow(2, zoom);
+  const centerTileX = Math.floor(effCenterWx / TILE_SIZE);
+  const centerTileY = Math.floor(effCenterWy / TILE_SIZE);
+  const offsetXInTile = effCenterWx - centerTileX * TILE_SIZE;
+  const offsetYInTile = effCenterWy - centerTileY * TILE_SIZE;
+
+  const tiles = [];
+  for (let dy = -2; dy <= 2; dy++) {
+    for (let dx = -2; dx <= 2; dx++) {
+      const ty = centerTileY + dy;
+      if (ty < 0 || ty >= maxTileIdx) continue;
+      const tx = ((centerTileX + dx) % maxTileIdx + maxTileIdx) % maxTileIdx;
+      const src = layer === "SAT"
+        ? `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${ty}/${tx}`
+        : `https://tile.openstreetmap.org/${zoom}/${ty}/${tx}.png`;
+      tiles.push({
+        key: `${layer}_${zoom}_${tx}_${ty}_${dx}_${dy}`,
+        src,
+        dx,
+        dy
+      });
+    }
+  }
+
+  let pinOffsetPx = null;
+  if (hasValidPin) {
+    const pWorld = latLngToWorld(pinLat, pinLng, zoom);
+    pinOffsetPx = {
+      x: pWorld.wx - effCenterWx,
+      y: pWorld.wy - effCenterWy
+    };
+  }
+
+  const handlePointerDown = (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    e.currentTarget.setPointerCapture && e.currentTarget.setPointerCapture(e.pointerId);
+    dragStateRef.current = {
+      active: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      moved: 0,
+      pointerId: e.pointerId
+    };
+  };
+
+  const handlePointerMove = (e) => {
+    if (!dragStateRef.current.active) return;
+    const dx = e.clientX - dragStateRef.current.startX;
+    const dy = e.clientY - dragStateRef.current.startY;
+    dragStateRef.current.moved = Math.max(dragStateRef.current.moved, Math.hypot(dx, dy));
+    setDragDelta({ x: dx, y: dy });
+  };
+
+  const handlePointerUp = (e) => {
+    if (!dragStateRef.current.active) return;
+    const dx = e.clientX - dragStateRef.current.startX;
+    const dy = e.clientY - dragStateRef.current.startY;
+    const totalMoved = Math.max(dragStateRef.current.moved, Math.hypot(dx, dy));
+    dragStateRef.current.active = false;
+    setDragDelta({ x: 0, y: 0 });
+
+    if (totalMoved < 7 && viewportRef.current) {
+      // Tap/Click to drop exact pin!
+      const rect = viewportRef.current.getBoundingClientRect();
+      const clickOffsetX = e.clientX - (rect.left + rect.width / 2);
+      const clickOffsetY = e.clientY - (rect.top + rect.height / 2);
+      const target = worldToLatLng(centerWx + clickOffsetX, centerWy + clickOffsetY, zoom);
+      stopGpsWatch();
+      setViewLat(target.lat);
+      setViewLng(target.lng);
+      if (onChangeCoords) onChangeCoords(target.lat, target.lng, null);
+      setGpsStatus(`✓ Đã chấm ghim trực tiếp lên ao: ${target.lat}, ${target.lng}`);
+      setGpsErr("");
+    } else {
+      // Pan finished: shift view center
+      const newCenter = worldToLatLng(centerWx - dx, centerWy - dy, zoom);
+      setViewLat(newCenter.lat);
+      setViewLng(newCenter.lng);
+    }
+  };
+
+  const googleMapsUrl = hasValidPin ? `https://www.google.com/maps/dir/?api=1&destination=${pinLat},${pinLng}` : "";
+
+  return c.jsxs("div", {
+    className: "space-y-2.5",
+    children: [
+      // Action row: Precision GPS + Clear
+      c.jsxs("div", {
+        className: "flex flex-wrap items-center gap-2",
+        children: [
+          c.jsxs("button", {
+            type: "button",
+            onClick: gpsSampling ? stopGpsWatch : handleHighPrecisionGps,
+            className: `flex-1 min-w-[200px] py-2.5 px-3 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-[0.98] transition-all ${
+              gpsSampling
+                ? "bg-amber-600 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`,
+            children: [
+              c.jsx(PinIcon, { size: 15 }),
+              gpsSampling ? "Đang dò vệ tinh (±m)... Bấm dừng" : "📍 Lấy GPS Chính Xác Tại Bờ Ao"
+            ]
+          }),
+          hasValidPin && c.jsx("button", {
+            type: "button",
+            onClick: () => {
+              stopGpsWatch();
+              setGpsStatus("");
+              if (onChangeCoords) onChangeCoords(null, null, null);
+            },
+            className: "px-3 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 font-bold text-xs cursor-pointer",
+            children: "Xóa ghim"
+          })
+        ]
+      }),
+
+      // Search & Paste row
+      c.jsxs("div", {
+        className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
+        children: [
+          c.jsxs("div", {
+            className: "flex gap-1",
+            children: [
+              c.jsx("input", {
+                type: "text",
+                value: searchQuery,
+                onChange: (e) => setSearchQuery(e.target.value),
+                onKeyDown: (e) => { if (e.key === "Enter") { e.preventDefault(); handleSearchPlace(); } },
+                placeholder: "Tìm xã, ấp, cầu (Vd: Đầm Dơi)...",
+                className: "flex-1 min-w-0 p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold outline-none focus:border-blue-500"
+              }),
+              c.jsx("button", {
+                type: "button",
+                onClick: handleSearchPlace,
+                disabled: searchingPlace,
+                className: "px-3 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-xl text-xs font-bold cursor-pointer shrink-0",
+                children: searchingPlace ? "..." : "Tìm"
+              })
+            ]
+          }),
+          c.jsx("input", {
+            type: "text",
+            value: pasteInput,
+            onChange: (e) => handleParsePaste(e.target.value),
+            placeholder: "Dán link Google Maps / 9.1768, 105.1523",
+            className: "w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold outline-none focus:border-blue-500"
+          })
+        ]
+      }),
+
+      searchResults.length > 0 && c.jsx("div", {
+        className: "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl divide-y divide-slate-100 dark:divide-slate-700 max-h-36 overflow-y-auto shadow-md",
+        children: searchResults.map((item, idx) => c.jsxs("button", {
+          type: "button",
+          onClick: () => {
+            const nLat = Number(Number(item.lat).toFixed(6));
+            const nLng = Number(Number(item.lon).toFixed(6));
+            setViewLat(nLat);
+            setViewLng(nLng);
+            setZoom(16);
+            setSearchResults([]);
+            setGpsStatus(`Đã đưa bản đồ đến: ${item.display_name.split(",").slice(0, 2).join(",")}. Hãy phóng to và chạm vào đúng ao tôm để ghim.`);
+          },
+          className: "w-full text-left px-3 py-2 text-xs hover:bg-blue-50 dark:hover:bg-slate-700/60 cursor-pointer flex items-center justify-between gap-2",
+          children: [
+            c.jsx("span", { className: "truncate font-semibold text-slate-700 dark:text-slate-200", children: item.display_name }),
+            c.jsx("span", { className: "text-[10px] font-black text-blue-600 shrink-0", children: "Đi tới →" })
+          ]
+        }, item.place_id || idx))
+      }),
+
+      // Interactive Tile Map Container (Satellite + OSM)
+      c.jsxs("div", {
+        className: "rounded-2xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-900 shadow-inner",
+        children: [
+          c.jsxs("div", {
+            className: "px-2.5 py-1.5 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-1.5 text-[11px]",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-1",
+                children: [
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => setLayer("SAT"),
+                    className: `px-2.5 py-1 rounded-lg font-bold cursor-pointer ${layer === "SAT" ? "bg-emerald-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"}`,
+                    children: "🛰️ Vệ tinh ao tôm"
+                  }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => setLayer("OSM"),
+                    className: `px-2.5 py-1 rounded-lg font-bold cursor-pointer ${layer === "OSM" ? "bg-emerald-600 text-white" : "bg-slate-800 text-slate-300 hover:bg-slate-700"}`,
+                    children: "🗺️ Bản đồ đường"
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex items-center gap-1",
+                children: [
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => setZoom(z => Math.max(13, z - 1)),
+                    className: "w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-black cursor-pointer",
+                    children: "−"
+                  }),
+                  c.jsxs("span", { className: "px-1.5 font-mono font-bold text-slate-300 tabular-nums", children: ["Z", zoom] }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => setZoom(z => Math.min(19, z + 1)),
+                    className: "w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-black cursor-pointer",
+                    children: "+"
+                  }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => {
+                      const cLat = Number(viewLat.toFixed(6));
+                      const cLng = Number(viewLng.toFixed(6));
+                      if (onChangeCoords) onChangeCoords(cLat, cLng, null);
+                      setGpsStatus(`✓ Đã ghim đúng tâm bản đồ (${cLat}, ${cLng})`);
+                    },
+                    className: "px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-black cursor-pointer",
+                    children: "🎯 Ghim tâm"
+                  })
+                ]
+              })
+            ]
+          }),
+
+          // Tile Canvas
+          c.jsxs("div", {
+            ref: viewportRef,
+            onPointerDown: handlePointerDown,
+            onPointerMove: handlePointerMove,
+            onPointerUp: handlePointerUp,
+            onPointerCancel: handlePointerUp,
+            className: `relative w-full overflow-hidden select-none touch-none cursor-crosshair bg-slate-800 ${compact ? "h-48 sm:h-56" : "h-60 sm:h-72"}`,
+            children: [
+              // Tile container centered on viewport center
+              c.jsx("div", {
+                className: "absolute left-1/2 top-1/2 pointer-events-none",
+                children: tiles.map(t => c.jsx("img", {
+                  src: t.src,
+                  alt: "",
+                  draggable: false,
+                  loading: "eager",
+                  style: {
+                    position: "absolute",
+                    width: TILE_SIZE + "px",
+                    height: TILE_SIZE + "px",
+                    left: (t.dx * TILE_SIZE - offsetXInTile) + "px",
+                    top: (t.dy * TILE_SIZE - offsetYInTile) + "px",
+                    maxWidth: "none"
+                  }
+                }, t.key))
+              }),
+
+              // Center Crosshair guide
+              c.jsxs("div", {
+                className: "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-65",
+                children: [
+                  c.jsx("div", { className: "w-6 h-0.5 bg-yellow-300 shadow" }),
+                  c.jsx("div", { className: "w-0.5 h-6 bg-yellow-300 shadow -mt-[13px] mx-auto" })
+                ]
+              }),
+
+              // Active Pond Pin Marker
+              pinOffsetPx && c.jsxs("div", {
+                className: "absolute left-1/2 top-1/2 pointer-events-none z-20",
+                style: { transform: `translate(${pinOffsetPx.x}px, ${pinOffsetPx.y}px)` },
+                children: [
+                  c.jsx("div", {
+                    className: "-translate-x-1/2 -translate-y-full flex flex-col items-center drop-shadow-lg",
+                    children: [
+                      c.jsx("div", {
+                        className: "px-2 py-0.5 bg-rose-600 text-white text-[10px] font-black rounded-md whitespace-nowrap shadow-md mb-0.5 border border-white/80",
+                        children: "📍 VỊ TRÍ AO"
+                      }),
+                      c.jsx("svg", {
+                        width: 28,
+                        height: 34,
+                        viewBox: "0 0 28 34",
+                        fill: "none",
+                        children: [
+                          c.jsx("path", { d: "M14 0C6.27 0 0 6.27 0 14c0 9.6 14 20 14 20s14-10.4 14-20C28 6.27 21.73 0 14 0z", fill: "#e11d48", stroke: "#ffffff", strokeWidth: 2 }),
+                          c.jsx("circle", { cx: 14, cy: 13, r: 5, fill: "#ffffff" })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }),
+
+              // Instruction watermark
+              c.jsx("div", {
+                className: "absolute bottom-1.5 left-2 right-2 flex items-center justify-between pointer-events-none",
+                children: [
+                  c.jsx("span", {
+                    className: "px-2 py-0.5 bg-black/70 text-white rounded-md text-[10px] font-bold backdrop-blur-xs",
+                    children: "Chạm để đặt ghim • Kéo để di chuyển bản đồ"
+                  }),
+                  accuracy && c.jsxs("span", {
+                    className: `px-2 py-0.5 rounded-md text-[10px] font-black tabular-nums ${Number(accuracy) <= 15 ? "bg-emerald-600 text-white" : Number(accuracy) <= 40 ? "bg-amber-500 text-slate-950" : "bg-rose-600 text-white"}`,
+                    children: ["±", Math.round(Number(accuracy)), "m"]
+                  })
+                ]
+              })
+            ]
+          }),
+
+          // Footer Bar: Coordinates + 5m Nudge Pad + External Verify Link
+          c.jsxs("div", {
+            className: "p-2.5 bg-slate-50 dark:bg-slate-800/90 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 dark:border-slate-700 text-[11px]",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-1",
+                children: [
+                  c.jsx("span", { className: "text-[10px] font-bold text-slate-500 mr-1", children: "Dịch ghim ±5m:" }),
+                  c.jsx("button", { type: "button", onClick: () => handleNudge(0.000045, 0), title: "Lên Bắc 5m", className: "px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md font-bold cursor-pointer", children: "↑" }),
+                  c.jsx("button", { type: "button", onClick: () => handleNudge(-0.000045, 0), title: "Xuống Nam 5m", className: "px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md font-bold cursor-pointer", children: "↓" }),
+                  c.jsx("button", { type: "button", onClick: () => handleNudge(0, -0.000045), title: "Sang Trái 5m", className: "px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md font-bold cursor-pointer", children: "←" }),
+                  c.jsx("button", { type: "button", onClick: () => handleNudge(0, 0.000045), title: "Sang Phải 5m", className: "px-2 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md font-bold cursor-pointer", children: "→" })
+                ]
+              }),
+              hasValidPin ? c.jsxs("a", {
+                href: googleMapsUrl,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                className: "text-blue-700 dark:text-blue-400 font-black hover:underline flex items-center gap-1",
+                children: [c.jsx(MapIcon, { size: 12 }), "Kiểm tra trên Google Maps"]
+              }) : c.jsx("span", { className: "text-amber-600 dark:text-amber-400 font-bold", children: "Chạm lên ao để ghim vị trí" })
+            ]
+          })
+        ]
+      }),
+
+      // Manual Coordinates
+      c.jsxs("div", {
+        className: "grid grid-cols-2 gap-2",
+        children: [
+          c.jsxs("div", {
+            children: [
+              c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-0.5 uppercase", children: "Vĩ độ (Latitude)" }),
+              c.jsx("input", {
+                type: "number",
+                step: "any",
+                value: lat === null || lat === undefined ? "" : lat,
+                onChange: (e) => {
+                  const val = e.target.value;
+                  if (onChangeCoords) onChangeCoords(val === "" ? "" : val, lng === null || lng === undefined ? "" : lng, null);
+                },
+                placeholder: "9.176823",
+                className: "w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold tabular-nums outline-none"
+              })
+            ]
+          }),
+          c.jsxs("div", {
+            children: [
+              c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-0.5 uppercase", children: "Kinh độ (Longitude)" }),
+              c.jsx("input", {
+                type: "number",
+                step: "any",
+                value: lng === null || lng === undefined ? "" : lng,
+                onChange: (e) => {
+                  const val = e.target.value;
+                  if (onChangeCoords) onChangeCoords(lat === null || lat === undefined ? "" : lat, val === "" ? "" : val, null);
+                },
+                placeholder: "105.152341",
+                className: "w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold tabular-nums outline-none"
+              })
+            ]
+          })
+        ]
+      }),
+
+      typeof onChangeAccessNote === "function" && c.jsxs("div", {
+        children: [
+          c.jsx("label", { className: "text-[10px] font-bold text-slate-500 uppercase block mb-0.5", children: "Ghi chú đường vào ao / điểm ghe xe đậu (gửi công nhân):" }),
+          c.jsx("input", {
+            type: "text",
+            value: accessNote || "",
+            onChange: (e) => onChangeAccessNote(e.target.value),
+            placeholder: "Vd: Qua cầu sắt rẽ trái 300m, bờ ao số 2 gần cống Bà Đen...",
+            className: "w-full p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold outline-none focus:border-emerald-500"
+          })
+        ]
+      }),
+
+      gpsStatus && c.jsx("div", {
+        className: "p-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-[11px] font-bold text-emerald-700 dark:text-emerald-300",
+        children: gpsStatus
+      }),
+
+      gpsErr && c.jsx("div", {
+        className: "p-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-xl text-[11px] font-bold text-rose-700 dark:text-rose-300",
+        children: gpsErr
+      })
+    ]
+  });
+};
+
 const Xm_LocationPickerModal = ({ farmer, onClose, onSaveLocation }) => {
   const [lat, setLat] = w.useState(farmer?.lat ? String(farmer.lat) : "");
   const [lng, setLng] = w.useState(farmer?.lng ? String(farmer.lng) : "");
   const [accuracy, setAccuracy] = w.useState(farmer?.gpsAccuracy || null);
   const [accessNote, setAccessNote] = w.useState(farmer?.accessNote || "");
-  const [pasteInput, setPasteInput] = w.useState("");
-  const [loading, setLoading] = w.useState(false);
-  const [statusMsg, setStatusMsg] = w.useState("");
   const [errorMsg, setErrorMsg] = w.useState("");
 
   w.useEffect(() => {
@@ -8866,62 +9550,19 @@ const Xm_LocationPickerModal = ({ farmer, onClose, onSaveLocation }) => {
       setAccuracy(farmer.gpsAccuracy || null);
       setAccessNote(farmer.accessNote || "");
       setErrorMsg("");
-      setStatusMsg("");
     }
-  }, [farmer?.id]);
+  }, [farmer?.id, farmer?.lat, farmer?.lng]);
 
   if (!farmer) return null;
 
   const numLat = parseFloat(lat);
   const numLng = parseFloat(lng);
   const hasValidCoords = !isNaN(numLat) && !isNaN(numLng) && numLat >= -90 && numLat <= 90 && numLng >= -180 && numLng <= 180 && (numLat !== 0 || numLng !== 0);
-  const googleMapsUrl = hasValidCoords ? `https://www.google.com/maps/dir/?api=1&destination=${numLat},${numLng}` : "";
-  const osmEmbedUrl = hasValidCoords ? `https://www.openstreetmap.org/export/embed.html?bbox=${numLng - 0.008}%2C${numLat - 0.008}%2C${numLng + 0.008}%2C${numLat + 0.008}&layer=mapnik&marker=${numLat}%2C${numLng}` : "";
-
-  const handleGetGPS = () => {
-    setErrorMsg("");
-    setStatusMsg("");
-    if (typeof navigator !== "undefined" && navigator.geolocation) {
-      setLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const newLat = pos.coords.latitude.toFixed(6);
-          const newLng = pos.coords.longitude.toFixed(6);
-          const acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
-          setLat(newLat);
-          setLng(newLng);
-          setAccuracy(acc);
-          setLoading(false);
-          setStatusMsg(`✓ Đã chốt tọa độ GPS (${newLat}, ${newLng})${acc ? ` • Sai số ±${acc}m` : ""}`);
-        },
-        (err) => {
-          setLoading(false);
-          setErrorMsg("Không thể tự lấy GPS: " + (err?.message || "Vui lòng bật Định vị / GPS hoặc dán link Google Maps bên dưới."));
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-      );
-    } else {
-      setErrorMsg("Trình duyệt chưa hỗ trợ GPS tự động. Vui lòng dán link Google Maps hoặc nhập tọa độ thủ công.");
-    }
-  };
-
-  const handleParsePaste = (val) => {
-    setPasteInput(val);
-    setErrorMsg("");
-    if (!val || !val.trim()) return;
-    const parsed = typeof parseGpsInput_v4 === "function" ? parseGpsInput_v4(val) : null;
-    if (parsed) {
-      setLat(String(parsed.lat));
-      setLng(String(parsed.lng));
-      setAccuracy(null);
-      setStatusMsg(`✓ Đã tách tọa độ từ dữ liệu dán: ${parsed.lat}, ${parsed.lng}`);
-    }
-  };
 
   const handleConfirmSave = () => {
     setErrorMsg("");
     if (!hasValidCoords) {
-      setErrorMsg("Vui lòng bấm Lấy Tọa Độ GPS, dán link Google Maps, hoặc nhập Vĩ độ / Kinh độ hợp lệ!");
+      setErrorMsg("Vui lòng chạm lên bản đồ để ghim ao, bấm Lấy GPS, hoặc dán tọa độ / link Google Maps hợp lệ!");
       return;
     }
     onSaveLocation(Number(numLat.toFixed(6)), Number(numLng.toFixed(6)), {
@@ -8931,11 +9572,12 @@ const Xm_LocationPickerModal = ({ farmer, onClose, onSaveLocation }) => {
   };
 
   return c.jsxs("div", {
-    className: "fixed inset-0 z-[130] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto",
+    className: "fixed inset-0 z-[240] flex items-center justify-center p-2.5 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto",
     children: [
       c.jsx("div", { className: "fixed inset-0", onClick: onClose }),
       c.jsxs("div", {
-        className: "relative bg-white dark:bg-gray-900 rounded-[28px] max-w-lg w-full p-5 shadow-2xl border border-gray-100 dark:border-gray-800 z-10 font-roboto space-y-3.5 my-auto max-h-[92vh] overflow-y-auto",
+        onClick: (e) => e.stopPropagation(),
+        className: "relative bg-white dark:bg-gray-900 rounded-[28px] max-w-xl w-full p-4 sm:p-5 shadow-2xl border border-gray-100 dark:border-gray-800 z-10 font-roboto space-y-3 my-auto max-h-[94vh] overflow-y-auto",
         children: [
           c.jsxs("div", {
             className: "flex items-center justify-between border-b pb-3 dark:border-gray-800",
@@ -8946,129 +9588,45 @@ const Xm_LocationPickerModal = ({ farmer, onClose, onSaveLocation }) => {
                   c.jsx(PinIcon, { size: 22 }),
                   c.jsxs("div", {
                     children: [
-                      c.jsx("h3", { className: "font-black uppercase text-sm sm:text-base leading-tight", children: "Định Vị & Đánh Dấu Ao Tôm GPS" }),
-                      c.jsx("p", { className: "text-[11px] text-gray-500 font-semibold", children: "Chấm tọa độ tại bờ ao hoặc dán link Google Maps" })
+                      c.jsx("h3", { className: "font-black uppercase text-sm sm:text-base leading-tight", children: "Ghim Tọa Độ Ao Chính Xác (Vệ Tinh)" }),
+                      c.jsx("p", { className: "text-[11px] text-gray-500 font-semibold", children: "Chạm đúng ô ao trên ảnh vệ tinh hoặc lấy GPS tại bờ ao" })
                     ]
                   })
                 ]
               }),
-              c.jsx("button", { type: "button", onClick: onClose, className: "p-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 font-bold cursor-pointer", children: "✕" })
+              c.jsx("button", { type: "button", onClick: onClose, className: "p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-500 font-bold cursor-pointer", children: "✕" })
             ]
           }),
 
           c.jsxs("div", {
-            className: "bg-green-50 dark:bg-green-950/30 p-3 rounded-2xl border border-green-200 dark:border-green-800/50 text-xs flex items-center justify-between gap-2",
+            className: "bg-emerald-50 dark:bg-emerald-950/30 p-3 rounded-2xl border border-emerald-200 dark:border-emerald-800/50 text-xs flex items-center justify-between gap-2",
             children: [
               c.jsxs("div", {
                 className: "min-w-0",
                 children: [
-                  c.jsx("p", { className: "font-black text-green-900 dark:text-green-200 uppercase truncate", children: farmer?.name || "Chủ ao" }),
+                  c.jsx("p", { className: "font-black text-emerald-900 dark:text-emerald-200 uppercase truncate", children: farmer?.name || "Chủ ao" }),
                   c.jsx("p", { className: "text-gray-600 dark:text-gray-400 text-[11px] truncate", children: farmer?.address || "Chưa có địa chỉ" })
                 ]
               }),
               Number(farmer?.estimatedYield || 0) > 0 && c.jsxs("span", {
-                className: "shrink-0 px-2.5 py-1 bg-teal-600 text-white rounded-xl font-black text-[11px]",
-                children: ["🦐 ~", Number(farmer.estimatedYield).toLocaleString(), " kg"]
+                className: "shrink-0 px-2.5 py-1 bg-teal-600 text-white rounded-xl font-black text-[11px] tabular-nums",
+                children: ["~", Number(farmer.estimatedYield).toLocaleString(), " kg"]
               })
             ]
           }),
 
-          c.jsxs("button", {
-            type: "button",
-            onClick: handleGetGPS,
-            disabled: loading,
-            className: "w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl font-black text-xs uppercase flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer",
-            children: [c.jsx(PinIcon, { size: 17 }), loading ? "Đang dò vệ tinh GPS chính xác cao..." : "📍 Lấy Tọa Độ GPS Ngay Tại Bờ Ao"]
-          }),
-
-          c.jsxs("div", {
-            className: "space-y-1",
-            children: [
-              c.jsx("label", { className: "text-[10px] font-black text-gray-500 uppercase block", children: "Hoặc dán Link Google Maps / Tọa độ (9.1768, 105.1523):" }),
-              c.jsx("input", {
-                type: "text",
-                value: pasteInput,
-                onChange: (e) => handleParsePaste(e.target.value),
-                placeholder: "Dán link maps.google.com/... hoặc 9.176823, 105.152341",
-                className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold outline-none focus:border-blue-500"
-              })
-            ]
-          }),
-
-          c.jsxs("div", {
-            className: "grid grid-cols-2 gap-2",
-            children: [
-              c.jsxs("div", {
-                children: [
-                  c.jsx("label", { className: "text-[10px] font-bold text-gray-400 block mb-1 uppercase", children: "Vĩ độ (Latitude)" }),
-                  c.jsx("input", {
-                    type: "number",
-                    step: "any",
-                    value: lat,
-                    onChange: e => { setLat(e.target.value); setAccuracy(null); },
-                    placeholder: "Vd: 9.176823",
-                    className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-mono font-bold outline-none"
-                  })
-                ]
-              }),
-              c.jsxs("div", {
-                children: [
-                  c.jsx("label", { className: "text-[10px] font-bold text-gray-400 block mb-1 uppercase", children: "Kinh độ (Longitude)" }),
-                  c.jsx("input", {
-                    type: "number",
-                    step: "any",
-                    value: lng,
-                    onChange: e => { setLng(e.target.value); setAccuracy(null); },
-                    placeholder: "Vd: 105.152341",
-                    className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-mono font-bold outline-none"
-                  })
-                ]
-              })
-            ]
-          }),
-
-          c.jsxs("div", {
-            className: "space-y-1",
-            children: [
-              c.jsx("label", { className: "text-[10px] font-black text-gray-500 uppercase block", children: "Ghi chú đường vào ao (Cho ghe / xe / nhân công):" }),
-              c.jsx("input", {
-                type: "text",
-                value: accessNote,
-                onChange: (e) => setAccessNote(e.target.value),
-                placeholder: "Vd: Qua cầu sắt rẽ trái 300m, ghe đậu cống Bà Đen...",
-                className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-semibold outline-none focus:border-green-500"
-              })
-            ]
-          }),
-
-          hasValidCoords && c.jsxs("div", {
-            className: "rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 space-y-0",
-            children: [
-              c.jsx("iframe", {
-                title: "Xem trước vị trí ao",
-                src: osmEmbedUrl,
-                className: "w-full h-44 border-0",
-                loading: "lazy"
-              }),
-              c.jsxs("div", {
-                className: "px-3 py-2 bg-gray-50 dark:bg-gray-800 flex items-center justify-between text-[11px]",
-                children: [
-                  c.jsxs("span", { className: "font-mono font-bold text-emerald-700 dark:text-emerald-400", children: [numLat.toFixed(5), ", ", numLng.toFixed(5), accuracy ? ` (±${accuracy}m)` : ""] }),
-                  c.jsxs("a", {
-                    href: googleMapsUrl,
-                    target: "_blank",
-                    rel: "noopener noreferrer",
-                    className: "text-blue-600 dark:text-blue-400 font-black hover:underline flex items-center gap-1",
-                    children: [c.jsx(MapIcon, { size: 12 }), "Kiểm tra Google Maps"]
-                  })
-                ]
-              })
-            ]
-          }),
-
-          statusMsg && c.jsx("div", {
-            className: "p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-bold text-emerald-700 dark:text-emerald-300 text-center",
-            children: statusMsg
+          c.jsx(Xm_InteractivePondMapPicker, {
+            lat,
+            lng,
+            accuracy,
+            accessNote,
+            onChangeCoords: (nLat, nLng, acc) => {
+              setLat(nLat === null || nLat === undefined ? "" : String(nLat));
+              setLng(nLng === null || nLng === undefined ? "" : String(nLng));
+              setAccuracy(acc || null);
+              setErrorMsg("");
+            },
+            onChangeAccessNote: (val) => setAccessNote(val)
           }),
 
           errorMsg && c.jsx("div", {
@@ -9089,7 +9647,7 @@ const Xm_LocationPickerModal = ({ farmer, onClose, onSaveLocation }) => {
                 type: "button",
                 onClick: handleConfirmSave,
                 className: "flex-[2] py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black text-xs uppercase shadow-md active:scale-95 cursor-pointer",
-                children: "💾 Lưu Tọa Độ & Ghi Chú"
+                children: "💾 Lưu Ghim Tọa Độ Ao"
               })
             ]
           })
@@ -9125,6 +9683,10 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
   const [workerRole, setWorkerRole] = w.useState("HARVEST");
   const [workerName, setWorkerName] = w.useState("");
   const [workerPhone, setWorkerPhone] = w.useState("");
+  const [selectedWorkerIds, setSelectedWorkerIds] = w.useState([]);
+  const [rosterWorkers, setRosterWorkers] = w.useState(() => {
+    try { return (me.getWorkersData && me.getWorkersData().workers) || []; } catch (e) { return []; }
+  });
   const [activeTab, setActiveTab] = w.useState("MESSAGE"); // "MESSAGE" | "QR"
   const [customNote, setCustomNote] = w.useState("");
   const [accessNote, setAccessNote] = w.useState(pond?.accessNote || contract?.pondAccessNote || "");
@@ -9132,7 +9694,9 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
   const [selectedTools, setSelectedTools] = w.useState(WORKER_ROLE_PRESETS_V4[0].defaultTools);
   const [gpsLat, setGpsLat] = w.useState(Number(pond?.lat || contract?.pondLocation?.lat || contract?.farmer?.coordinates?.lat || 0) || null);
   const [gpsLng, setGpsLng] = w.useState(Number(pond?.lng || contract?.pondLocation?.lng || contract?.farmer?.coordinates?.lng || 0) || null);
+  const [gpsAccuracy, setGpsAccuracy] = w.useState(pond?.gpsAccuracy || contract?.pondLocation?.accuracy || null);
   const [gettingGps, setGettingGps] = w.useState(false);
+  const [showInlineMapPicker, setShowInlineMapPicker] = w.useState(false);
   const [toastMsg, setToastMsg] = w.useState("");
   const [showUniversalZalo, setShowUniversalZalo] = w.useState(false);
   const [editedMsg, setEditedMsg] = w.useState("");
@@ -9143,6 +9707,8 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
     setAssemblyTime(pond?.weighingTime || contract?.weighingTime || "05:00");
     setGpsLat(Number(pond?.lat || contract?.pondLocation?.lat || contract?.farmer?.coordinates?.lat || 0) || null);
     setGpsLng(Number(pond?.lng || contract?.pondLocation?.lng || contract?.farmer?.coordinates?.lng || 0) || null);
+    setGpsAccuracy(pond?.gpsAccuracy || contract?.pondLocation?.accuracy || null);
+    try { if (me.getWorkersData) setRosterWorkers(me.getWorkersData().workers || []); } catch (e) {}
     setIsCustomEdited(false);
     setToastMsg("");
   }, [pond?.id, contract?.id]);
@@ -9156,7 +9722,7 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
   const estYield = Number(pond?.estimatedYield || contract?.estimatedYield || 0);
   const sizeCount = pond?.shrimpSizeCount || contract?.shrimpSizeCount || "";
   const pondArea = pond?.area || contract?.pondArea || "";
-  const weighingDate = pond?.weighingDate || contract?.weighingDate || "Theo lịch hẹn";
+  const weighingDate = pond?.weighingDate || contract?.weighingDate || getLocalYYYYMMDD_v4();
   const traderProf = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {};
   const traderName = contract?.trader?.fullName || traderProf.fullName || "Cơ sở Thu Mua Tôm";
   const traderPhone = contract?.trader?.phone || traderProf.phone || "";
@@ -9207,6 +9773,46 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
     setIsCustomEdited(false);
   };
 
+  const handlePickSavedWorker = (wk) => {
+    setWorkerName(wk.name || "");
+    setWorkerPhone(wk.phone || "");
+    if (wk.role && WORKER_ROLE_PRESETS_V4.some(r => r.id === wk.role)) {
+      const rObj = WORKER_ROLE_PRESETS_V4.find(r => r.id === wk.role);
+      setWorkerRole(rObj.id);
+      setSelectedTools(rObj.defaultTools);
+    }
+    setSelectedWorkerIds(prev => prev.includes(wk.id) ? prev : [...prev, wk.id]);
+    setIsCustomEdited(false);
+  };
+
+  const logDispatchToWorkers = () => {
+    if (typeof me === "undefined" || typeof me.addWorkerDispatch !== "function") return;
+    const matchedIds = selectedWorkerIds.length > 0
+      ? selectedWorkerIds
+      : rosterWorkers.filter(wItem => wItem && ((workerPhone && wItem.phone === workerPhone) || (workerName && wItem.name === workerName))).map(wItem => wItem.id);
+    me.addWorkerDispatch({
+      id: `dsp_${pond?.id || contract?.id || "pond"}_${weighingDate}_${workerRole}`,
+      pondId: pond?.id || contract?.pondId || contract?.farmerId || "",
+      contractId: contract?.id || pond?.contractId || "",
+      pondName: farmerName,
+      farmerPhone,
+      address: pondAddress,
+      accessNote: accessNote.trim(),
+      lat: gpsLat ? Number(gpsLat) : null,
+      lng: gpsLng ? Number(gpsLng) : null,
+      weighingDate,
+      weighingTime: assemblyTime,
+      estimatedYield: estYield,
+      workerRole,
+      workerIds: matchedIds,
+      workerNameSummary: workerName.trim() || roleObj.roleTitle,
+      workerPhone: workerPhone.trim(),
+      tools: selectedTools,
+      note: customNote.trim(),
+      status: "ACTIVE"
+    });
+  };
+
   const toggleTool = (tool) => {
     setIsCustomEdited(false);
     setSelectedTools(prev => prev.includes(tool) ? prev.filter(x => x !== tool) : [...prev, tool]);
@@ -9225,19 +9831,20 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
         const acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
         setGpsLat(nLat);
         setGpsLng(nLng);
+        setGpsAccuracy(acc);
         setIsCustomEdited(false);
         setGettingGps(false);
         if (typeof onUpdatePondGps === "function") {
           onUpdatePondGps(nLat, nLng, { accuracy: acc, accessNote });
         }
-        setToastMsg(`✓ Đã lấy & lưu tọa độ GPS (${nLat}, ${nLng})!`);
+        setToastMsg(`✓ Đã lấy & lưu tọa độ GPS (${nLat}, ${nLng})${acc ? ` ±${acc}m` : ""}!`);
         setTimeout(() => setToastMsg(""), 3500);
       },
       (err) => {
         setGettingGps(false);
-        setToastMsg("Không thể lấy GPS: " + (err?.message || "Hãy bật định vị"));
+        setToastMsg("Không thể lấy GPS: " + (err?.message || "Hãy bật định vị hoặc bấm Ghim bản đồ"));
       },
-      { enableHighAccuracy: true, timeout: 12000 }
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
     );
   };
 
@@ -9245,13 +9852,15 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
 
   const handleOpenZaloWorker = () => {
     copyToClipboardRobust(finalMessage);
-    setToastMsg("✓ Đã sao chép lệnh & link chỉ đường! Chọn mở Zalo bên dưới:");
+    logDispatchToWorkers();
+    setToastMsg("✓ Đã lưu lệnh điều động & sao chép link chỉ đường! Chọn mở Zalo bên dưới:");
     setTimeout(() => setToastMsg(""), 3500);
     setShowUniversalZalo(true);
   };
 
   const handleSendSmsWorker = () => {
     copyToClipboardRobust(finalMessage);
+    logDispatchToWorkers();
     const link = document.createElement("a");
     link.href = `sms:${cleanWorkerPhone}?body=${encodeURIComponent(finalMessage)}`;
     document.body.appendChild(link);
@@ -9260,6 +9869,7 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
   };
 
   const handleNativeShareWorker = () => {
+    logDispatchToWorkers();
     if (navigator.share) {
       navigator.share({
         title: `Vị trí ao ${farmerName} - ${roleObj.roleTitle}`,
@@ -9268,7 +9878,7 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
       }).catch(() => {});
     } else {
       copyToClipboardRobust(finalMessage);
-      setToastMsg("✓ Đã sao chép tin nhắn điều động nhân công!");
+      setToastMsg("✓ Đã lưu lịch điều động & sao chép tin nhắn!");
       setTimeout(() => setToastMsg(""), 3000);
     }
   };
@@ -9296,7 +9906,7 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
                   }),
                   c.jsxs("div", {
                     children: [
-                      c.jsx("h3", { className: "font-black text-sm sm:text-base uppercase tracking-tight", children: "Chia Sẻ Vị Trí Ao Cho Nhân Công" }),
+                      c.jsx("h3", { className: "font-black text-sm sm:text-base uppercase tracking-tight", children: "Điều Động & Gửi Vị Trí Ao Cho Công Nhân" }),
                       c.jsxs("p", { className: "text-xs text-amber-100 font-semibold", children: ["Ao: ", farmerName, estYield > 0 ? ` • ~${estYield.toLocaleString()} kg` : ""] })
                     ]
                   })
@@ -9327,29 +9937,43 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
           c.jsxs("div", {
             className: "p-4 space-y-3.5 overflow-y-auto",
             children: [
-              // GPS Status Banner
+              // GPS Status Banner + Map Pinning Button
               c.jsxs("div", {
                 className: `p-3 rounded-2xl border flex flex-wrap items-center justify-between gap-2 text-xs ${hasGps ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200" : "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200"}`,
                 children: [
                   c.jsxs("div", {
-                    className: "flex items-center gap-2 min-w-0",
+                    className: "flex items-center gap-2 min-w-0 flex-1",
                     children: [
                       c.jsx(PinIcon, { size: 17, className: hasGps ? "text-emerald-600 shrink-0" : "text-amber-600 shrink-0" }),
                       c.jsxs("div", {
                         className: "min-w-0",
                         children: [
-                          c.jsx("p", { className: "font-black truncate", children: hasGps ? `Đã có GPS: ${Number(gpsLat).toFixed(5)}, ${Number(gpsLng).toFixed(5)}` : "Ao này chưa có tọa độ GPS chính xác" }),
+                          c.jsx("p", {
+                            className: "font-black truncate tabular-nums",
+                            children: hasGps ? `GPS ao: ${Number(gpsLat).toFixed(6)}, ${Number(gpsLng).toFixed(6)}${gpsAccuracy ? ` (±${Math.round(gpsAccuracy)}m)` : ""}` : "Ao này chưa có ghim GPS chính xác"
+                          }),
                           c.jsx("p", { className: "text-[11px] opacity-80 truncate", children: pondAddress })
                         ]
                       })
                     ]
                   }),
-                  c.jsx("button", {
-                    type: "button",
-                    onClick: handleQuickCaptureGps,
-                    disabled: gettingGps,
-                    className: "px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-current rounded-xl font-black text-[11px] cursor-pointer shrink-0",
-                    children: gettingGps ? "Đang dò..." : (hasGps ? "🔄 Cập nhật GPS" : "📍 Chấm GPS ngay")
+                  c.jsxs("div", {
+                    className: "flex items-center gap-1.5 shrink-0",
+                    children: [
+                      c.jsx("button", {
+                        type: "button",
+                        onClick: () => setShowInlineMapPicker(true),
+                        className: "px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-[11px] cursor-pointer",
+                        children: hasGps ? "🛰️ Chỉnh ghim" : "🛰️ Ghim trên bản đồ"
+                      }),
+                      c.jsx("button", {
+                        type: "button",
+                        onClick: handleQuickCaptureGps,
+                        disabled: gettingGps,
+                        className: "px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-current rounded-xl font-black text-[11px] cursor-pointer",
+                        children: gettingGps ? "Đang dò..." : "📍 Lấy GPS"
+                      })
+                    ]
                   })
                 ]
               }),
@@ -9357,6 +9981,26 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
               activeTab === "MESSAGE" ? c.jsxs("div", {
                 className: "space-y-3",
                 children: [
+                  // Saved Workers Roster Quick-pick
+                  rosterWorkers.length > 0 && c.jsxs("div", {
+                    className: "space-y-1",
+                    children: [
+                      c.jsx("label", { className: "text-[10px] font-black text-slate-500 uppercase block", children: "Chọn nhanh từ sổ Công Nhân:" }),
+                      c.jsx("div", {
+                        className: "flex flex-wrap gap-1.5",
+                        children: rosterWorkers.slice(0, 12).map(wk => {
+                          const isPicked = selectedWorkerIds.includes(wk.id) || (workerName && workerName === wk.name);
+                          return c.jsxs("button", {
+                            type: "button",
+                            onClick: () => handlePickSavedWorker(wk),
+                            className: `px-2.5 py-1.5 rounded-xl text-[11px] font-bold border cursor-pointer transition-all ${isPicked ? "bg-amber-600 text-white border-amber-600" : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-amber-400"}`,
+                            children: [wk.name, wk.phone ? ` (${wk.phone})` : ""]
+                          }, wk.id);
+                        })
+                      })
+                    ]
+                  }),
+
                   // Role presets
                   c.jsxs("div", {
                     className: "space-y-1.5",
@@ -9508,11 +10152,12 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
                         type: "button",
                         onClick: () => {
                           copyToClipboardRobust(finalMessage);
-                          setToastMsg("✓ Đã sao chép đầy đủ tin nhắn & link bản đồ!");
+                          logDispatchToWorkers();
+                          setToastMsg("✓ Đã lưu lệnh điều động & sao chép đầy đủ tin nhắn!");
                           setTimeout(() => setToastMsg(""), 2500);
                         },
                         className: "py-3 px-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 rounded-xl font-bold text-xs flex items-center justify-center gap-1 cursor-pointer",
-                        children: [c.jsx(CopyIcon, { size: 14 }), "Chép Tin"]
+                        children: [c.jsx(CopyIcon, { size: 14 }), "Chép & Lưu"]
                       }),
                       cleanWorkerPhone ? c.jsxs("button", {
                         type: "button",
@@ -9575,6 +10220,32 @@ const Xm_WorkerShareModal = ({ pond, contract, onUpdatePondGps, onClose }) => {
           })
           ]
         })
+      }),
+      showInlineMapPicker && c.jsx(Xm_LocationPickerModal, {
+        farmer: {
+          id: pond?.id || contract?.pondId || contract?.farmerId || "temp_pond",
+          name: farmerName,
+          address: pondAddress,
+          estimatedYield: estYield,
+          lat: gpsLat,
+          lng: gpsLng,
+          gpsAccuracy,
+          accessNote
+        },
+        onClose: () => setShowInlineMapPicker(false),
+        onSaveLocation: (nLat, nLng, extra) => {
+          setGpsLat(nLat);
+          setGpsLng(nLng);
+          setGpsAccuracy(extra?.accuracy || null);
+          if (extra?.accessNote !== undefined) setAccessNote(extra.accessNote);
+          setIsCustomEdited(false);
+          setShowInlineMapPicker(false);
+          if (typeof onUpdatePondGps === "function") {
+            onUpdatePondGps(nLat, nLng, extra);
+          }
+          setToastMsg(`✓ Đã ghim tọa độ ao chính xác (${nLat}, ${nLng})!`);
+          setTimeout(() => setToastMsg(""), 3500);
+        }
       }),
       showUniversalZalo && c.jsx(Xm_UniversalZaloModal, {
         title: `Gửi Vị Trí Ao ${farmerName} Cho Nhân Công`,
@@ -10001,7 +10672,11 @@ const Cm = ({ setRoute: S }) => {
     estimatedYield: "",
     shrimpSizeCount: "",
     tareSpec: "Trừ hao ráo nước chuẩn 1kg/thùng cân",
-    rejectionSpec: getStandardSpecsString()
+    rejectionSpec: getStandardSpecsString(),
+    lat: null,
+    lng: null,
+    gpsAccuracy: null,
+    accessNote: ""
   }));
 
   const getDaysDiff = (dateStr) => {
@@ -10167,11 +10842,18 @@ const Cm = ({ setRoute: S }) => {
 
   const buildContractPayload = ({ pondObj, contractId, overrides = {} }) => {
     const traderProf = typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {};
-    const latNum = pondObj.lat ? Number(pondObj.lat) : null;
-    const lngNum = pondObj.lng ? Number(pondObj.lng) : null;
+    const latRaw = (overrides.lat !== undefined && overrides.lat !== null && overrides.lat !== "") ? overrides.lat : pondObj.lat;
+    const lngRaw = (overrides.lng !== undefined && overrides.lng !== null && overrides.lng !== "") ? overrides.lng : pondObj.lng;
+    const latNum = latRaw ? Number(latRaw) : null;
+    const lngNum = lngRaw ? Number(lngRaw) : null;
+    const accMeter = overrides.gpsAccuracy !== undefined ? overrides.gpsAccuracy : (pondObj.gpsAccuracy || null);
+    const accNoteVal = overrides.accessNote !== undefined ? overrides.accessNote : (pondObj.accessNote || "");
     const priceNum = Number(overrides.agreedPrice ?? pondObj.defaultPrice ?? pondObj.traderPrice) || 160000;
     const depositNum = Number(overrides.depositMoney ?? pondObj.defaultDeposit ?? 0) || 0;
     const estYieldNum = Number(overrides.estimatedYield ?? pondObj.estimatedYield ?? 0) || 0;
+    const coordsObj = (latNum && lngNum && !isNaN(latNum) && !isNaN(lngNum))
+      ? { lat: Number(latNum.toFixed(6)), lng: Number(lngNum.toFixed(6)), ...(accMeter ? { accuracy: accMeter } : {}) }
+      : null;
     return {
       id: contractId,
       pondId: pondObj.id,
@@ -10192,7 +10874,7 @@ const Cm = ({ setRoute: S }) => {
       estimatedYield: estYieldNum,
       shrimpSizeCount: overrides.shrimpSizeCount || pondObj.shrimpSizeCount || "",
       pondArea: pondObj.area || "",
-      pondAccessNote: pondObj.accessNote || "",
+      pondAccessNote: accNoteVal,
       agreedPrice: priceNum,
       unitPrice: priceNum,
       weighingDate: overrides.weighingDate || pondObj.weighingDate || getLocalYYYYMMDD_v4(),
@@ -10211,7 +10893,7 @@ const Cm = ({ setRoute: S }) => {
         phone: overrides.farmerPhone || pondObj.phone || "",
         address: overrides.farmerAddress || pondObj.address || "",
         idCard: pondObj.idCard || "",
-        coordinates: (latNum && lngNum) ? { lat: latNum, lng: lngNum } : null,
+        coordinates: coordsObj,
         agreed: false
       },
       trader: {
@@ -10221,7 +10903,7 @@ const Cm = ({ setRoute: S }) => {
         idCard: traderProf.idCard || "",
         agreed: true
       },
-      pondLocation: (latNum && lngNum) ? { lat: latNum, lng: lngNum } : null
+      pondLocation: coordsObj
     };
   };
 
@@ -10309,6 +10991,11 @@ const Cm = ({ setRoute: S }) => {
     }
     let targetFarmer = newContractForm.selectedFarmerId ? b.find(x => x.id === newContractForm.selectedFarmerId) : null;
     const genId = "HDTCX-" + (1e9 + Math.floor(Math.random() * 9e8));
+    const pinLat = newContractForm.lat && !isNaN(Number(newContractForm.lat)) ? Number(Number(newContractForm.lat).toFixed(6)) : null;
+    const pinLng = newContractForm.lng && !isNaN(Number(newContractForm.lng)) ? Number(Number(newContractForm.lng).toFixed(6)) : null;
+    const pinNote = (newContractForm.accessNote || "").trim();
+    const pinAcc = newContractForm.gpsAccuracy || null;
+
     if (!targetFarmer) {
       const newFid = Date.now().toString();
       targetFarmer = {
@@ -10316,6 +11003,10 @@ const Cm = ({ setRoute: S }) => {
         name: newContractForm.farmerName.trim(),
         phone: newContractForm.farmerPhone.trim(),
         address: newContractForm.farmerAddress.trim(),
+        lat: pinLat,
+        lng: pinLng,
+        gpsAccuracy: pinAcc,
+        accessNote: pinNote,
         defaultPrice: Number(newContractForm.agreedPrice) || 160000,
         defaultDeposit: Number(newContractForm.depositMoney) || 0,
         shrimpType: newContractForm.shrimpType,
@@ -10332,7 +11023,16 @@ const Cm = ({ setRoute: S }) => {
       me.addFarmer(targetFarmer);
       p(me.getFarmers());
     } else {
-      const nextF = b.map(x => x.id === targetFarmer.id ? { ...x, contractId: genId } : x);
+      const updatedTarget = {
+        ...targetFarmer,
+        contractId: genId,
+        lat: (pinLat && pinLng) ? pinLat : targetFarmer.lat,
+        lng: (pinLat && pinLng) ? pinLng : targetFarmer.lng,
+        gpsAccuracy: pinAcc !== null ? pinAcc : targetFarmer.gpsAccuracy,
+        accessNote: pinNote || targetFarmer.accessNote || ""
+      };
+      targetFarmer = updatedTarget;
+      const nextF = b.map(x => x.id === targetFarmer.id ? updatedTarget : x);
       p(nextF);
       me.save(Ot.FARMERS, nextF);
     }
@@ -10352,14 +11052,18 @@ const Cm = ({ setRoute: S }) => {
         estimatedYield: newContractForm.estimatedYield,
         shrimpSizeCount: newContractForm.shrimpSizeCount,
         tareSpec: newContractForm.tareSpec,
-        rejectionSpec: newContractForm.rejectionSpec
+        rejectionSpec: newContractForm.rejectionSpec,
+        lat: pinLat ?? targetFarmer.lat ?? null,
+        lng: pinLng ?? targetFarmer.lng ?? null,
+        gpsAccuracy: pinAcc ?? targetFarmer.gpsAccuracy ?? null,
+        accessNote: pinNote || targetFarmer.accessNote || ""
       }
     });
     if (typeof saveContract === "function") saveContract(createdC);
     if (typeof getContracts === "function") setContractsList(getContracts());
     setShowCreateContractModal(false);
     setSelectedContractForView(createdC);
-    showToast(`✓ Đã tạo Hợp đồng điện tử #${genId} thành công!`);
+    showToast(`✓ Đã tạo Hợp đồng điện tử #${genId} & ghim vị trí ao thành công!`);
   };
 
   // Sync Pond GPS + AccessNote updates to both Farmer list and Linked Contract
@@ -10800,18 +11504,18 @@ const Cm = ({ setRoute: S }) => {
                     ]
                   }),
 
-                  // SECTION MỚI: ĐÁNH DẤU TỌA ĐỘ GPS & ĐƯỜNG VÀO AO
+                  // SECTION MỚI: ĐÁNH DẤU TỌA ĐỘ GPS & ĐƯỜNG VÀO AO BẰNG BẢN ĐỒ VỆ TINH
                   c.jsxs("div", {
                     className: "sm:col-span-2 p-4 bg-blue-50/60 dark:bg-blue-950/20 rounded-2xl border border-blue-200 dark:border-blue-800/50 space-y-2.5",
                     children: [
                       c.jsxs("div", {
                         className: "flex flex-wrap items-center justify-between gap-2",
                         children: [
-                          c.jsx("label", { className: "text-xs font-black text-blue-900 dark:text-blue-300 uppercase flex items-center gap-1.5", children: [c.jsx(PinIcon, { size: 15 }), "Đánh Dấu Tọa Độ GPS Bờ Ao"] }),
+                          c.jsxs("label", { className: "text-xs font-black text-blue-900 dark:text-blue-300 uppercase flex items-center gap-1.5", children: [c.jsx(PinIcon, { size: 15 }), "Ghim Tọa Độ Bờ Ao Chính Xác (Vệ Tinh & GPS)"] }),
                           v.lat && v.lng ? c.jsxs("div", {
                             className: "flex items-center gap-2",
                             children: [
-                              c.jsxs("span", { className: "px-2 py-0.5 bg-emerald-600 text-white rounded-lg font-mono text-[10px] font-bold", children: [Number(v.lat).toFixed(5), ", ", Number(v.lng).toFixed(5)] }),
+                              c.jsxs("span", { className: "px-2 py-0.5 bg-emerald-600 text-white rounded-lg font-mono text-[10px] font-bold tabular-nums", children: [Number(v.lat).toFixed(6), ", ", Number(v.lng).toFixed(6)] }),
                               c.jsx("button", {
                                 type: "button",
                                 onClick: () => _({ ...v, lat: null, lng: null, gpsAccuracy: null }),
@@ -10819,34 +11523,17 @@ const Cm = ({ setRoute: S }) => {
                                 children: "Xóa GPS"
                               })
                             ]
-                          }) : c.jsx("span", { className: "text-[10px] font-bold text-gray-400", children: "Chưa gắn tọa độ" })
+                          }) : c.jsx("span", { className: "text-[10px] font-bold text-gray-500", children: "Chưa gắn tọa độ ao" })
                         ]
                       }),
-                      c.jsxs("div", {
-                        className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
-                        children: [
-                          c.jsxs("button", {
-                            type: "button",
-                            onClick: handleGetFormGPS,
-                            disabled: formGettingGps,
-                            className: "py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs uppercase flex items-center justify-center gap-1.5 shadow-sm cursor-pointer active:scale-95",
-                            children: [c.jsx(PinIcon, { size: 15 }), formGettingGps ? "Đang dò vệ tinh GPS..." : "📍 Lấy Tọa Độ GPS Tại Chỗ"]
-                          }),
-                          c.jsx("input", {
-                            type: "text",
-                            value: formGpsPaste,
-                            onChange: (e) => handleFormGpsPaste(e.target.value),
-                            placeholder: "Hoặc dán link Google Maps / 9.1768, 105.1523",
-                            className: "w-full p-2.5 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-xl text-xs font-bold outline-none"
-                          })
-                        ]
-                      }),
-                      c.jsx("input", {
-                        type: "text",
-                        value: v.accessNote,
-                        onChange: (e) => _({ ...v, accessNote: e.target.value }),
-                        placeholder: "Ghi chú đường vào ao cho ghe / xe / nhân công (Vd: Qua cầu sắt rẽ phải 300m)...",
-                        className: "w-full p-2.5 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-xl text-xs font-semibold outline-none"
+                      c.jsx(Xm_InteractivePondMapPicker, {
+                        compact: true,
+                        lat: v.lat,
+                        lng: v.lng,
+                        accuracy: v.gpsAccuracy,
+                        accessNote: v.accessNote,
+                        onChangeCoords: (nLat, nLng, acc) => _(prev => ({ ...prev, lat: nLat, lng: nLng, gpsAccuracy: acc || null })),
+                        onChangeAccessNote: (val) => _(prev => ({ ...prev, accessNote: val }))
                       })
                     ]
                   }),
@@ -11167,7 +11854,11 @@ const Cm = ({ setRoute: S }) => {
                         estimatedYield: firstPond?.estimatedYield ? String(firstPond.estimatedYield) : "",
                         shrimpSizeCount: firstPond?.shrimpSizeCount || "",
                         tareSpec: firstPond?.tareSpec || "Trừ hao ráo nước chuẩn 1kg/thùng cân",
-                        rejectionSpec: firstPond?.rejectionSpec || getStandardSpecsString()
+                        rejectionSpec: firstPond?.rejectionSpec || getStandardSpecsString(),
+                        lat: firstPond?.lat ?? null,
+                        lng: firstPond?.lng ?? null,
+                        gpsAccuracy: firstPond?.gpsAccuracy ?? null,
+                        accessNote: firstPond?.accessNote || ""
                       });
                       setShowCreateContractModal(true);
                     },
@@ -11748,11 +12439,11 @@ const Cm = ({ setRoute: S }) => {
 
       // Standalone Create Electronic Contract Modal
       showCreateContractModal && c.jsxs("div", {
-        className: "fixed inset-0 z-[140] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto",
+        className: "fixed inset-0 z-[140] flex items-center justify-center p-2.5 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto",
         children: [
           c.jsx("div", { className: "fixed inset-0", onClick: () => setShowCreateContractModal(false) }),
           c.jsxs("div", {
-            className: "relative bg-white dark:bg-gray-900 rounded-[28px] max-w-lg w-full p-5 shadow-2xl border border-emerald-200 dark:border-emerald-800 z-10 space-y-3.5 my-auto max-h-[90vh] overflow-y-auto",
+            className: "relative bg-white dark:bg-gray-900 rounded-[28px] max-w-xl w-full p-4 sm:p-5 shadow-2xl border border-emerald-200 dark:border-emerald-800 z-10 space-y-3.5 my-auto max-h-[92vh] overflow-y-auto",
             children: [
               c.jsxs("div", {
                 className: "flex items-center justify-between border-b pb-3 dark:border-gray-800",
@@ -11760,7 +12451,7 @@ const Cm = ({ setRoute: S }) => {
                   c.jsxs("div", {
                     children: [
                       c.jsx("h3", { className: "font-black text-base uppercase text-emerald-800 dark:text-emerald-300", children: "📄 Tạo Hợp Đồng Điện Tử Mới" }),
-                      c.jsx("p", { className: "text-[11px] text-gray-500 font-bold", children: "Chọn từ danh sách ao sẵn có hoặc nhập mới" })
+                      c.jsx("p", { className: "text-[11px] text-gray-500 font-bold", children: "Điền điều khoản & ghim đúng vị trí ao trên bản đồ để điều công nhân" })
                     ]
                   }),
                   c.jsx("button", { type: "button", onClick: () => setShowCreateContractModal(false), className: "p-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-pointer", children: c.jsx(_a, { size: 18 }) })
@@ -11792,10 +12483,24 @@ const Cm = ({ setRoute: S }) => {
                               estimatedYield: matched.estimatedYield ? String(matched.estimatedYield) : "",
                               shrimpSizeCount: matched.shrimpSizeCount || "",
                               tareSpec: matched.tareSpec || prev.tareSpec,
-                              rejectionSpec: matched.rejectionSpec || prev.rejectionSpec
+                              rejectionSpec: matched.rejectionSpec || prev.rejectionSpec,
+                              lat: matched.lat ?? null,
+                              lng: matched.lng ?? null,
+                              gpsAccuracy: matched.gpsAccuracy ?? null,
+                              accessNote: matched.accessNote || ""
                             }));
                           } else {
-                            setNewContractForm(prev => ({ ...prev, selectedFarmerId: "", farmerName: "", farmerPhone: "", farmerAddress: "" }));
+                            setNewContractForm(prev => ({
+                              ...prev,
+                              selectedFarmerId: "",
+                              farmerName: "",
+                              farmerPhone: "",
+                              farmerAddress: "",
+                              lat: null,
+                              lng: null,
+                              gpsAccuracy: null,
+                              accessNote: ""
+                            }));
                           }
                         },
                         className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-bold outline-none",
@@ -11858,6 +12563,32 @@ const Cm = ({ setRoute: S }) => {
                       c.jsx("label", { className: "font-bold text-gray-500 block mb-1", children: "Loại tôm thu mua" }),
                       c.jsx("input", { type: "text", value: newContractForm.shrimpType, onChange: e => setNewContractForm({ ...newContractForm, shrimpType: e.target.value }), className: "w-full p-2.5 bg-gray-50 dark:bg-gray-800 border rounded-xl font-bold" })
                     ]
+                  }),
+                  c.jsxs("div", {
+                    className: "p-3 bg-blue-50/70 dark:bg-blue-950/25 rounded-2xl border border-blue-200 dark:border-blue-800/60 space-y-2",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex items-center justify-between gap-2",
+                        children: [
+                          c.jsx("span", { className: "font-black text-blue-900 dark:text-blue-300 uppercase text-[11px]", children: "📍 Ghim Tọa Độ Bờ Ao Chính Xác (Gửi Công Nhân)" }),
+                          newContractForm.lat && newContractForm.lng && c.jsxs("button", {
+                            type: "button",
+                            onClick: () => setNewContractForm(prev => ({ ...prev, lat: null, lng: null, gpsAccuracy: null })),
+                            className: "text-[10px] font-bold text-rose-600 hover:underline cursor-pointer",
+                            children: ["Xóa ghim (", Number(newContractForm.lat).toFixed(4), ", ", Number(newContractForm.lng).toFixed(4), ")"]
+                          })
+                        ]
+                      }),
+                      c.jsx(Xm_InteractivePondMapPicker, {
+                        compact: true,
+                        lat: newContractForm.lat,
+                        lng: newContractForm.lng,
+                        accuracy: newContractForm.gpsAccuracy,
+                        accessNote: newContractForm.accessNote,
+                        onChangeCoords: (nLat, nLng, acc) => setNewContractForm(prev => ({ ...prev, lat: nLat, lng: nLng, gpsAccuracy: acc || null })),
+                        onChangeAccessNote: (val) => setNewContractForm(prev => ({ ...prev, accessNote: val }))
+                      })
+                    ]
                   })
                 ]
               }),
@@ -11865,7 +12596,7 @@ const Cm = ({ setRoute: S }) => {
                 className: "flex gap-2 pt-2",
                 children: [
                   c.jsx("button", { type: "button", onClick: () => setShowCreateContractModal(false), className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
-                  c.jsx("button", { type: "button", onClick: handleCreateStandaloneContract, className: "flex-[2] py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase shadow-md cursor-pointer", children: "✓ Tạo Hợp Đồng Điện Tử" })
+                  c.jsx("button", { type: "button", onClick: handleCreateStandaloneContract, className: "flex-[2] py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase shadow-md cursor-pointer", children: "✓ Tạo Hợp Đồng & Lưu Ghim Ao" })
                 ]
               })
             ]
@@ -11967,13 +12698,103 @@ const Cm = ({ setRoute: S }) => {
     ]
   });
 };;
-const km=({setRoute:S})=>{const[b,p]=w.useState([]),[f,O]=w.useState([]),[D,U]=w.useState(!1),Y=me.isPremium(),A=w.useMemo(()=>{const v=me.getSessions();return b.map(_=>{const z=v.filter(se=>se.vehicleId===_.id),L=z.reduce((se,Oe)=>se+Oe.totalNet,0),te=z.reduce((se,Oe)=>se+Oe.totalMoney,0),Q=L/1e3*(_.costPerTrip||2e5);return{id:_.id,weight:L,revenue:te,cost:Q}})},[b]);return w.useEffect(()=>{p(me.getVehicles()),O(me.getFarmers())},[]),c.jsxs("div",{className:"flex flex-col h-full bg-[#f4f7f6] font-roboto",children:[c.jsxs("div",{className:"p-4 bg-[#1e4ea1] text-white flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-2 bg-white/10 rounded-xl",children:c.jsx(On,{})}),c.jsx("h2",{className:"text-xl font-black uppercase italic tracking-tighter",children:"Đội Ghe / Xe"})]}),c.jsx("button",{onClick:()=>U(!D),className:"bg-yellow-400 text-blue-900 w-10 h-10 rounded-full flex items-center justify-center",children:D?c.jsx(_a,{}):c.jsx(As,{})})]}),c.jsxs("div",{className:"p-4 space-y-4 overflow-auto pb-24",children:[Y&&c.jsxs("div",{className:"bg-white p-6 rounded-[35px] shadow-sm border border-blue-100",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-4",children:[c.jsx(Ds,{size:18,className:"text-blue-600"}),c.jsx("span",{className:"text-[11px] font-black uppercase italic text-gray-500",children:"Báo cáo lợi nhuận vận chuyển (Ước tính)"})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("div",{className:"bg-blue-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-blue-400 uppercase block",children:"Tổng Sản Lượng"}),c.jsxs("span",{className:"text-xl font-black text-blue-900",children:[A.reduce((v,_)=>v+_.weight,0).toLocaleString()," kg"]})]}),c.jsxs("div",{className:"bg-green-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-green-400 uppercase block",children:"Ước tính phí ghe"}),c.jsxs("span",{className:"text-xl font-black text-green-900",children:[A.reduce((v,_)=>v+_.cost,0).toLocaleString(),"đ"]})]})]})]}),b.map(v=>{const _=A.find(z=>z.id===v.id);return c.jsx("div",{className:"bg-white rounded-[35px] shadow-sm border border-gray-100 overflow-hidden",children:c.jsxs("div",{className:"p-6",children:[c.jsx("div",{className:"flex justify-between items-start mb-4",children:c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center",children:c.jsx(tc,{size:24})}),c.jsxs("div",{children:[c.jsx("h3",{className:"text-lg font-black uppercase text-gray-800 leading-none",children:v.name}),c.jsxs("p",{className:"text-[9px] font-bold text-gray-400 uppercase mt-1",children:["Tải trọng: ",v.capacity," Tấn"]})]})]})}),Y&&c.jsxs("div",{className:"mt-4 pt-4 border-t border-gray-50 flex justify-between items-center",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx(nm,{size:14,className:"text-green-600"}),c.jsxs("span",{className:"text-xs font-black text-gray-700",children:["Hiệu suất: ",_==null?void 0:_.weight.toLocaleString()," kg"]})]}),c.jsx("button",{className:"text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-3 py-1 rounded-full",children:"Xem chi phí"})]})]})},v.id)})]})]})},Um=({setRoute:S,role:b})=>{const[p,f]=w.useState(me.getSettings()),[O,D]=w.useState(!1),U=_=>{f(_),me.save(Ot.SETTINGS,_);try{const prof=getTraderProfileV3();if(_&&_.tarePer100Kg!==undefined&&Number(prof.tarePer100Kg)!==Number(_.tarePer100Kg)){saveTraderProfileV3({...prof,tarePer100Kg:Number(_.tarePer100Kg),tareRatioValue:Number(_.tarePer100Kg)})}}catch(e){}_.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark"),D(!0),setTimeout(()=>D(!1),2e3)};w.useEffect(()=>{const s=()=>f(me.getSettings());window.addEventListener("app-data-updated",s);window.addEventListener("cloud_data_synced",s);return()=>{window.removeEventListener("app-data-updated",s);window.removeEventListener("cloud_data_synced",s)};},[]),Y=({icon:_,title:z})=>c.jsxs("div",{className:"bg-[#f8f9fa] dark:bg-gray-800 p-4 flex items-center gap-3 border-b border-gray-100 dark:border-gray-700",children:[c.jsx("div",{className:"text-green-600 dark:text-green-400",children:_}),c.jsx("span",{className:"font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter text-sm italic",children:z})]}),A=({label:_,desc:z,value:L,onChange:te})=>c.jsxs("div",{className:"p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 active:bg-gray-50 dark:active:bg-gray-800 transition-colors",children:[c.jsxs("div",{className:"flex-1",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),z&&c.jsx("div",{className:"text-[10px] font-bold text-gray-400 dark:text-gray-500 leading-tight mt-0.5 pr-4 uppercase italic",children:z})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:L,onChange:Q=>te(Q.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-green-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]}),v=({label:_,options:z,value:L,onSelect:te})=>c.jsxs("div",{className:"p-4 space-y-3 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),c.jsx("div",{className:"grid grid-cols-3 gap-2",children:z.map(Q=>c.jsx("button",{onClick:()=>te(Q.val),className:`py-2 px-1 rounded-xl border-2 transition-all font-black uppercase text-[9px] ${L===Q.val?"border-green-600 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 shadow-md":"border-gray-50 dark:border-gray-800 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500"}`,children:Q.label},Q.val))})]});return c.jsxs("div",{className:"flex flex-col h-full bg-[#f2f2f2] dark:bg-[#121212] font-roboto",children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-5 text-white flex items-center justify-between shadow-xl sticky top-0 z-50",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-1 hover:bg-white/10 rounded-lg",children:c.jsx(_a,{size:28})}),c.jsxs("span",{className:"text-2xl font-black uppercase italic tracking-tighter",children:["Cấu Hình ",b==="OWNER"?"Vựa Thu Mua":"Nông Dân"]})]}),O&&c.jsxs("div",{className:"bg-white/20 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1",children:[c.jsx(P1,{size:12})," Đã Lưu"]})]}),c.jsxs("div",{className:"flex-1 overflow-auto pb-32",children:[c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(om,{size:18}),title:"Giao diện hệ thống"}),c.jsx(A,{label:"Chế độ tối (Dark Mode)",desc:"Sử dụng giao diện màu tối để bảo vệ mắt và tiết kiệm pin",value:p.darkMode,onChange:_=>U({...p,darkMode:_})})]}),b==="FARMER"&&c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(am,{size:18}),title:"Dọn dẹp bộ nhớ"}),c.jsxs("div",{className:"p-4 space-y-4",children:[c.jsxs("div",{className:"flex justify-between items-center",children:[c.jsx("span",{className:"text-xs font-black uppercase text-gray-600 dark:text-gray-400 italic",children:"Tự xóa phiếu sau:"}),c.jsxs("span",{className:"text-lg font-black text-red-600 dark:text-red-400 italic",children:[p.autoDeleteDays," Ngày"]})]}),c.jsx("input",{type:"range",min:"7",max:"180",step:"1",value:p.autoDeleteDays,onChange:_=>U({...p,autoDeleteDays:parseInt(_.target.value)}),className:"w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-600 dark:accent-red-400"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase italic",children:"(*) Giúp app hoạt động mượt mà hơn. Dữ liệu trên Cloud vẫn được giữ nếu bạn không xóa thủ công."})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(An,{size:18}),title:"Thiết Bị Bluetooth"}),c.jsxs("button",{onClick:()=>S(re.BLUETOOTH),className:"w-full p-4 flex items-center justify-between bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border-b border-gray-100 dark:border-gray-800",children:[c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"font-black text-blue-900 dark:text-blue-300 uppercase text-sm italic",children:"Cài đặt Cân & Máy in"}),c.jsx("p",{className:"text-[10px] font-bold text-blue-400 dark:text-blue-500 uppercase leading-tight mt-1",children:"Kết nối cân điện tử BLE và Máy in nhiệt"})]}),c.jsx(An,{className:"text-blue-600 dark:text-blue-400"})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(vm,{size:18}),title:"An Toàn Dữ Liệu"}),c.jsx(A,{label:"Khóa thông số khi cân",desc:"Ngăn chạm nhầm thay đổi giá/cọc khi đang nhập số",value:p.lockParamsDuringWeighing,onChange:_=>U({...p,lockParamsDuringWeighing:_})}),c.jsx(A,{label:"Tự động lưu nháp",desc:"Bảo vệ dữ liệu khi tắt app đột ngột",value:p.autoSaveDraft,onChange:_=>U({...p,autoSaveDraft:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(Ds,{size:18}),title:"Quy Trình & Tính Toán"}),c.jsx(v,{label:"Quy cách trừ bì tôm mặc định",options:[{label:"Không trừ bì (0%)",val:0},{label:"100kg - 1kg (1% Chuẩn)",val:1},{label:"100kg - 1.5kg (1.5%)",val:1.5},{label:"100kg - 2kg (2%)",val:2},{label:"100kg - 3kg (3%)",val:3},{label:"100kg - 4kg (4%)",val:4}],value:parseNumericSetting_v4(p.tarePer100Kg,1),onSelect:_=>U({...p,tarePer100Kg:Number(_)})}),c.jsx(v,{label:"Làm tròn tiền thanh toán",options:[{label:"Không",val:"none"},{label:"Đến 500đ",val:"500"},{label:"Đến 1.000đ",val:"1000"}],value:p.currencyRounding,onSelect:_=>U({...p,currencyRounding:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(jm,{size:18}),title:"Giọng Nói & Âm Thanh"}),c.jsx(A,{label:"Đọc số khi nhập",value:p.useVoice,onChange:_=>U({...p,useVoice:_})}),c.jsx(v,{label:"Tốc độ đọc số",options:[{label:"Nhanh",val:"nhanh"},{label:"Vừa",val:"vừa"},{label:"Chậm",val:"chậm"}],value:p.voiceSpeed,onSelect:_=>U({...p,voiceSpeed:_})}),c.jsx(A,{label:"Báo đủ 5 mã cân",desc:"Rung và Chuông",value:p.soundOn5,onChange:_=>U({...p,soundOn5:_})})]})]}),c.jsx("div",{className:"fixed bottom-0 w-full p-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t dark:border-gray-800 flex gap-4 shadow-2xl z-50",children:c.jsxs("button",{onClick:()=>S(re.DASHBOARD),className:"flex-1 bg-green-700 dark:bg-green-800 text-white p-5 rounded-[25px] font-black uppercase shadow-xl border-b-8 border-green-900 dark:border-black flex items-center justify-center gap-3 active:translate-y-2 active:border-b-0 transition-all",children:[c.jsx(ec,{size:24})," Xác Nhận Cấu Hình"]})})]})},Hm=({onSelect:S})=>{const[b,p]=w.useState(!1),[loginErr,setLoginErr]=w.useState(""),f=Pu.currentUser,O=async()=>{setLoginErr(""),p(!0);try{await Mn.loginWithGoogle();S("OWNER");}catch(err){setLoginErr("Đăng nhập thất bại. Vui lòng thử lại!")}p(!1)};w.useEffect(()=>{if(f){S("OWNER");}},[f]);return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center p-6 text-white",children:[c.jsxs("div",{className:"mb-10 text-center",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Tôm Càng Xanh Logo",className:"w-24 h-24 mx-auto mb-4 object-contain rounded-3xl shadow-xl bg-white/10 p-1.5"}),c.jsx("h1",{className:"text-4xl font-black italic tracking-tighter uppercase",children:"Tôm Càng Xanh"}),c.jsx("p",{className:"text-xs font-bold opacity-60 uppercase mt-2",children:"Nền tảng quản lý thông minh Tôm Càng Xanh"})]}),f?c.jsxs("div",{className:"flex flex-col items-center gap-3 animate-in zoom-in-95",children:[c.jsx("div",{className:"w-10 h-10 border-4 border-yellow-300 border-t-transparent rounded-full animate-spin mb-2"}),c.jsxs("p",{className:"font-black uppercase tracking-wider text-yellow-300 text-sm",children:["Đang vào vai trò Chủ Vựa: ",f.displayName||""]})]}):c.jsxs("div",{className:"w-full max-w-sm space-y-4",children:[loginErr&&c.jsx("div",{className:"p-3 bg-red-600/90 text-white rounded-2xl text-xs font-bold text-center shadow-lg",children:loginErr}),c.jsxs("button",{onClick:O,disabled:b,className:"w-full bg-white text-gray-800 p-6 rounded-[30px] font-black uppercase flex items-center justify-center gap-3 shadow-2xl active:scale-95 transition-all hover:bg-yellow-50 cursor-pointer",children:[c.jsx(fm,{size:24,className:"text-red-500"}),b?"Đang kết nối...":"Đăng nhập với Google"]}),c.jsx("p",{className:"text-center text-[10px] opacity-50 px-6 uppercase font-bold",children:"Mặc định tài khoản Chủ Vựa & Dữ liệu đồng bộ an toàn"})]}),c.jsxs("div",{className:"mt-12 flex items-center gap-2 opacity-40 font-bold text-[10px] uppercase",children:[c.jsx(Pd,{size:14})," Bảo mật bởi Firebase Google"]})]})},Rm=({setRoute:S})=>{const[b,p]=w.useState("scale"),[f,O]=w.useState(me.getSettings()),[D,U]=w.useState(!1),[Y,A]=w.useState(0),[btSavedNotice,setBtSavedNotice]=w.useState(!1);w.useEffect(()=>{let z;return D&&(A(0),z=setInterval(()=>{A(L=>L+1)},1e3)),()=>clearInterval(z)},[D]);const v=()=>{me.save(Ot.SETTINGS,f);setBtSavedNotice(!0);setTimeout(()=>setBtSavedNotice(!1),2500);},_=({label:z,desc:L,value:te,onToggle:Q})=>c.jsxs("div",{className:"flex items-start justify-between py-4 border-b border-gray-100 px-2",children:[c.jsxs("div",{className:"flex-1 pr-4",children:[c.jsx("h4",{className:"font-black text-gray-800 text-sm uppercase tracking-tight",children:z}),c.jsx("p",{className:"text-[10px] text-gray-500 font-bold leading-tight mt-0.5",children:L})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:te,onChange:se=>Q(se.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]});return c.jsxs("div",{className:"flex flex-col h-full bg-white font-roboto select-none",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"bg-white p-1 rounded-lg text-[#e91e63]",children:c.jsx(_a,{size:24,strokeWidth:3})}),c.jsx("span",{className:"text-xl font-black text-white uppercase italic tracking-tighter",children:"Bluetooth"})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:f.enableBluetooth,onChange:z=>O({...f,enableBluetooth:z.target.checked}),className:"sr-only peer"}),c.jsx("div",{className:"w-14 h-7 bg-white/20 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:after:translate-x-full shadow-lg border border-white/10"})]})]}),c.jsxs("div",{className:"flex bg-white border-b border-gray-200",children:[c.jsxs("button",{onClick:()=>p("scale"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="scale"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx($u,{size:24,className:b==="scale"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="scale"?"text-green-800":"text-gray-600"}`,children:"Cân điện tử"})]}),c.jsxs("button",{onClick:()=>p("printer"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="printer"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx(Ms,{size:24,className:b==="printer"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="printer"?"text-green-800":"text-gray-600"}`,children:"In nhiệt"})]})]}),c.jsx("div",{className:"flex-1 overflow-auto p-4 space-y-6",children:b==="scale"?c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với Cân điện tử Bluetooth loại BLE"}),c.jsx(_,{label:"Tắt/Mở Cân điện tử",desc:"Nếu không muốn sử dụng cân điện tử hãy tắt nó",value:f.enableScale,onToggle:z=>O({...f,enableScale:z})}),c.jsx(_,{label:"Nhập thủ công",desc:"Hiện một hộp thoại nhỏ để xem mã cân điện tử",value:f.manualScaleInput,onToggle:z=>O({...f,manualScaleInput:z})}),c.jsxs("div",{className:"mt-8",children:[c.jsx("h3",{className:"text-red-600 font-black uppercase text-lg italic mb-1",children:"Cân điện tử đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm kết nối Cân điện tử Bluetooth"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx($u,{size:32,className:"text-red-500"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Bấm vào tên Cân điện tử để đảo khối lượng hiển thị."})]}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsxs("div",{className:"text-center",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-base italic leading-none",children:"Số lần kiểm tra khớp số"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-500 mt-1 uppercase leading-tight",children:"Chức năng lọc nhiễu dữ liệu cân, chỉ sử dụng cho Cân điện tử BLE"})]}),c.jsxs("div",{className:"px-4",children:[c.jsx("input",{type:"range",min:"0",max:"10",step:"1",value:f.scaleMatchSteps,onChange:z=>O({...f,scaleMatchSteps:parseInt(z.target.value)}),className:"w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsx("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-400 px-1",children:[0,1,2,3,4,5,6,7,8,9,10].map(z=>c.jsx("span",{children:z},z))})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Tăng số lần khớp số sẽ làm giảm tốc độ hiện số của Cân điện tử."}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Nếu nhận thấy tốc độ mã cân chậm hãy giảm nó lại"})]})]})]}):c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với máy in nhiệt Bluetooth"}),c.jsx(_,{label:"Tắt/Mở Máy in nhiệt",desc:"Nếu không muốn sử dụng máy in nhiệt hãy tắt nó",value:f.enablePrinter,onToggle:z=>O({...f,enablePrinter:z})}),c.jsx(_,{label:"Bluetooth Classic",desc:"Nếu không in được bằng cách thông thường, hãy bật nó lên",value:f.printerClassicMode,onToggle:z=>O({...f,printerClassicMode:z})}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsx("h3",{className:"text-center font-black text-lg text-gray-800 italic uppercase",children:"Khổ giấy máy in"}),c.jsxs("div",{className:"px-6",children:[c.jsx("input",{type:"range",min:"58",max:"80",step:"22",value:f.paperSize,onChange:z=>O({...f,paperSize:parseInt(z.target.value)}),className:"w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsxs("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-500 px-1 uppercase italic",children:[c.jsx("span",{children:"58mm"}),c.jsx("span",{children:"80mm"})]})]})]}),c.jsxs("div",{className:"mt-10",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-lg italic mb-1",children:"Máy in đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm Máy in"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx(Ms,{size:32,className:"text-green-600"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Hãy bấm vào (+) để chọn máy in nhiệt muốn kết nối."})]})]})}),c.jsx("div",{className:"p-4 bg-gray-100/50 border-t border-gray-200",children:c.jsxs("div",{className:"bg-gray-200 p-4 rounded-[25px] shadow-inner space-y-3",children:[c.jsxs("div",{className:"flex justify-between items-center px-1",children:[c.jsx("span",{className:"font-black text-blue-900 uppercase italic text-base tracking-tighter",children:"Cài đặt khác"}),c.jsxs("div",{className:"flex items-center gap-2",children:[btSavedNotice&&c.jsx("span",{className:"text-[11px] font-black text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full",children:"✓ Đã lưu!"}),c.jsxs("button",{onClick:v,className:"bg-yellow-400 text-blue-900 px-5 py-1.5 rounded-full font-black text-sm uppercase flex items-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer",children:[c.jsx(ec,{size:16})," Lưu"]})]})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("label",{className:"text-[10px] font-black text-gray-600 uppercase italic ml-2",children:"Tên hoá đơn"}),c.jsx("input",{value:f.invoiceName,onChange:z=>O({...f,invoiceName:z.target.value}),className:"w-full p-4 bg-white rounded-2xl font-black text-lg outline-none border-none shadow-sm placeholder:text-gray-300",placeholder:"TÔM CÀNG XANH"})]})]})}),D&&c.jsxs("div",{className:"fixed inset-0 z-[100] flex flex-col bg-white animate-in slide-in-from-bottom duration-300",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-lg",children:[c.jsx("div",{className:"flex items-center gap-2",children:c.jsxs("button",{onClick:()=>U(!1),className:"bg-white px-4 py-2 rounded-full text-[#e91e63] font-black uppercase text-sm flex items-center gap-2 shadow-md active:scale-95 transition-all border border-[#e91e63]/20",children:[c.jsx(_a,{size:18,strokeWidth:3})," Thoát"]})}),c.jsxs("button",{className:"bg-yellow-400 text-blue-900 px-6 py-2 rounded-full font-black uppercase text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-all",children:[c.jsx(An,{size:18})," Tìm Blue"]})]}),c.jsx("div",{className:"bg-gray-100 py-3 text-center border-b border-gray-200",children:c.jsx("h3",{className:"font-black text-lg uppercase tracking-tight text-gray-800",children:"Thiết bị Bluetooth (L1)"})}),c.jsxs("div",{className:"flex-1 overflow-auto p-4",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-6",children:[c.jsxs("p",{className:"text-red-500 font-bold text-sm",children:["Thời gian tìm: ",Y," giây"]}),c.jsx(gm,{size:14,className:"text-red-500 animate-spin"})]}),c.jsx("div",{className:"space-y-4",children:[{name:"[TV] Samsung 7 Series (65)",addr:"8C:79:F5:B7:87:4B"}].map((z,L)=>c.jsxs("div",{className:"flex items-center justify-between p-4 bg-white border-b border-gray-100 last:border-0 group active:bg-blue-50 transition-colors",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"text-gray-400 group-active:text-blue-500",children:c.jsx(An,{size:24})}),c.jsxs("div",{children:[c.jsx("h4",{className:"font-black text-gray-800 text-base leading-tight",children:z.name}),c.jsx("p",{className:"text-[10px] font-bold text-gray-400 uppercase tracking-widest",children:z.addr})]})]}),c.jsxs("button",{className:"bg-gray-100 text-gray-800 px-6 py-2.5 rounded-full font-black uppercase text-xs flex items-center gap-2 shadow-sm border border-gray-200 active:bg-blue-600 active:text-white transition-all",children:[c.jsx(An,{size:14})," Kết nối"]})]},L))})]})]})]})};
+const km=({setRoute:S})=>{const[b,p]=w.useState([]),[f,O]=w.useState([]),[D,U]=w.useState(!1),Y=me.isPremium(),A=w.useMemo(()=>{const v=me.getSessions();return b.map(_=>{const z=v.filter(se=>se.vehicleId===_.id),L=z.reduce((se,Oe)=>se+Oe.totalNet,0),te=z.reduce((se,Oe)=>se+Oe.totalMoney,0),Q=L/1e3*(_.costPerTrip||2e5);return{id:_.id,weight:L,revenue:te,cost:Q}})},[b]);return w.useEffect(()=>{p(me.getVehicles()),O(me.getFarmers())},[]),c.jsxs("div",{className:"flex flex-col h-full bg-[#f4f7f6] font-roboto",children:[c.jsxs("div",{className:"p-4 bg-[#1e4ea1] text-white flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-2 bg-white/10 rounded-xl",children:c.jsx(On,{})}),c.jsx("h2",{className:"text-xl font-black uppercase italic tracking-tighter",children:"Đội Ghe / Xe"})]}),c.jsx("button",{onClick:()=>U(!D),className:"bg-yellow-400 text-blue-900 w-10 h-10 rounded-full flex items-center justify-center",children:D?c.jsx(_a,{}):c.jsx(As,{})})]}),c.jsxs("div",{className:"p-4 space-y-4 overflow-auto pb-24",children:[Y&&c.jsxs("div",{className:"bg-white p-6 rounded-[35px] shadow-sm border border-blue-100",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-4",children:[c.jsx(Ds,{size:18,className:"text-blue-600"}),c.jsx("span",{className:"text-[11px] font-black uppercase italic text-gray-500",children:"Báo cáo lợi nhuận vận chuyển (Ước tính)"})]}),c.jsxs("div",{className:"grid grid-cols-2 gap-4",children:[c.jsxs("div",{className:"bg-blue-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-blue-400 uppercase block",children:"Tổng Sản Lượng"}),c.jsxs("span",{className:"text-xl font-black text-blue-900",children:[A.reduce((v,_)=>v+_.weight,0).toLocaleString()," kg"]})]}),c.jsxs("div",{className:"bg-green-50 p-4 rounded-2xl",children:[c.jsx("span",{className:"text-[9px] font-bold text-green-400 uppercase block",children:"Ước tính phí ghe"}),c.jsxs("span",{className:"text-xl font-black text-green-900",children:[A.reduce((v,_)=>v+_.cost,0).toLocaleString(),"đ"]})]})]})]}),b.map(v=>{const _=A.find(z=>z.id===v.id);return c.jsx("div",{className:"bg-white rounded-[35px] shadow-sm border border-gray-100 overflow-hidden",children:c.jsxs("div",{className:"p-6",children:[c.jsx("div",{className:"flex justify-between items-start mb-4",children:c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center",children:c.jsx(tc,{size:24})}),c.jsxs("div",{children:[c.jsx("h3",{className:"text-lg font-black uppercase text-gray-800 leading-none",children:v.name}),c.jsxs("p",{className:"text-[9px] font-bold text-gray-400 uppercase mt-1",children:["Tải trọng: ",v.capacity," Tấn"]})]})]})}),Y&&c.jsxs("div",{className:"mt-4 pt-4 border-t border-gray-50 flex justify-between items-center",children:[c.jsxs("div",{className:"flex items-center gap-2",children:[c.jsx(nm,{size:14,className:"text-green-600"}),c.jsxs("span",{className:"text-xs font-black text-gray-700",children:["Hiệu suất: ",_==null?void 0:_.weight.toLocaleString()," kg"]})]}),c.jsx("button",{className:"text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-3 py-1 rounded-full",children:"Xem chi phí"})]})]})},v.id)})]})]})},Um=({setRoute:S,role:b})=>{const[p,f]=w.useState(me.getSettings()),[O,D]=w.useState(!1),U=_=>{f(_),me.save(Ot.SETTINGS,_);try{const prof=getTraderProfileV3();if(_&&_.tarePer100Kg!==undefined&&Number(prof.tarePer100Kg)!==Number(_.tarePer100Kg)){saveTraderProfileV3({...prof,tarePer100Kg:Number(_.tarePer100Kg),tareRatioValue:Number(_.tarePer100Kg)})}}catch(e){}_.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark"),D(!0),setTimeout(()=>D(!1),2e3)};w.useEffect(()=>{const s=()=>f(me.getSettings());window.addEventListener("app-data-updated",s);window.addEventListener("cloud_data_synced",s);return()=>{window.removeEventListener("app-data-updated",s);window.removeEventListener("cloud_data_synced",s)};},[]);const Y=({icon:_,title:z})=>c.jsxs("div",{className:"bg-[#f8f9fa] dark:bg-gray-800 p-4 flex items-center gap-3 border-b border-gray-100 dark:border-gray-700",children:[c.jsx("div",{className:"text-green-600 dark:text-green-400",children:_}),c.jsx("span",{className:"font-black text-gray-800 dark:text-gray-100 uppercase tracking-tighter text-sm italic",children:z})]}),A=({label:_,desc:z,value:L,onChange:te})=>c.jsxs("div",{className:"p-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900 active:bg-gray-50 dark:active:bg-gray-800 transition-colors",children:[c.jsxs("div",{className:"flex-1",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),z&&c.jsx("div",{className:"text-[10px] font-bold text-gray-400 dark:text-gray-500 leading-tight mt-0.5 pr-4 uppercase italic",children:z})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:L,onChange:Q=>te(Q.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-green-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]}),v=({label:_,options:z,value:L,onSelect:te})=>c.jsxs("div",{className:"p-4 space-y-3 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900",children:[c.jsx("div",{className:"font-black text-gray-700 dark:text-gray-200 uppercase text-xs tracking-tight",children:_}),c.jsx("div",{className:"grid grid-cols-3 gap-2",children:z.map(Q=>c.jsx("button",{onClick:()=>te(Q.val),className:`py-2 px-1 rounded-xl border-2 transition-all font-black uppercase text-[9px] ${L===Q.val?"border-green-600 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 shadow-md":"border-gray-50 dark:border-gray-800 bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500"}`,children:Q.label},Q.val))})]});return c.jsxs("div",{className:"flex flex-col h-full bg-[#f2f2f2] dark:bg-[#121212] font-roboto",children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-5 text-white flex items-center justify-between shadow-xl sticky top-0 z-50",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"p-1 hover:bg-white/10 rounded-lg",children:c.jsx(_a,{size:28})}),c.jsxs("span",{className:"text-2xl font-black uppercase italic tracking-tighter",children:["Cấu Hình ",b==="OWNER"?"Vựa Thu Mua":"Nông Dân"]})]}),O&&c.jsxs("div",{className:"bg-white/20 px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1",children:[c.jsx(P1,{size:12})," Đã Lưu"]})]}),c.jsxs("div",{className:"flex-1 overflow-auto pb-32",children:[c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(om,{size:18}),title:"Giao diện hệ thống"}),c.jsx(A,{label:"Chế độ tối (Dark Mode)",desc:"Sử dụng giao diện màu tối để bảo vệ mắt và tiết kiệm pin",value:p.darkMode,onChange:_=>U({...p,darkMode:_})})]}),b==="FARMER"&&c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(am,{size:18}),title:"Dọn dẹp bộ nhớ"}),c.jsxs("div",{className:"p-4 space-y-4",children:[c.jsxs("div",{className:"flex justify-between items-center",children:[c.jsx("span",{className:"text-xs font-black uppercase text-gray-600 dark:text-gray-400 italic",children:"Tự xóa phiếu sau:"}),c.jsxs("span",{className:"text-lg font-black text-red-600 dark:text-red-400 italic",children:[p.autoDeleteDays," Ngày"]})]}),c.jsx("input",{type:"range",min:"7",max:"180",step:"1",value:p.autoDeleteDays,onChange:_=>U({...p,autoDeleteDays:parseInt(_.target.value)}),className:"w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-600 dark:accent-red-400"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase italic",children:"(*) Giúp app hoạt động mượt mà hơn. Dữ liệu trên Cloud vẫn được giữ nếu bạn không xóa thủ công."})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(An,{size:18}),title:"Thiết Bị Bluetooth"}),c.jsxs("button",{onClick:()=>S(re.BLUETOOTH),className:"w-full p-4 flex items-center justify-between bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border-b border-gray-100 dark:border-gray-800",children:[c.jsxs("div",{className:"text-left",children:[c.jsx("span",{className:"font-black text-blue-900 dark:text-blue-300 uppercase text-sm italic",children:"Cài đặt Cân & Máy in"}),c.jsx("p",{className:"text-[10px] font-bold text-blue-400 dark:text-blue-500 uppercase leading-tight mt-1",children:"Kết nối cân điện tử BLE và Máy in nhiệt"})]}),c.jsx(An,{className:"text-blue-600 dark:text-blue-400"})]})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(vm,{size:18}),title:"An Toàn Dữ Liệu"}),c.jsx(A,{label:"Khóa thông số khi cân",desc:"Ngăn chạm nhầm thay đổi giá/cọc khi đang nhập số",value:p.lockParamsDuringWeighing,onChange:_=>U({...p,lockParamsDuringWeighing:_})}),c.jsx(A,{label:"Tự động lưu nháp",desc:"Bảo vệ dữ liệu khi tắt app đột ngột",value:p.autoSaveDraft,onChange:_=>U({...p,autoSaveDraft:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(Ds,{size:18}),title:"Quy Trình & Tính Toán"}),c.jsx(v,{label:"Quy cách trừ bì tôm mặc định",options:[{label:"Không trừ bì (0%)",val:0},{label:"100kg - 1kg (1% Chuẩn)",val:1},{label:"100kg - 1.5kg (1.5%)",val:1.5},{label:"100kg - 2kg (2%)",val:2},{label:"100kg - 3kg (3%)",val:3},{label:"100kg - 4kg (4%)",val:4}],value:parseNumericSetting_v4(p.tarePer100Kg,1),onSelect:_=>U({...p,tarePer100Kg:Number(_)})}),c.jsx(v,{label:"Làm tròn tiền thanh toán",options:[{label:"Không",val:"none"},{label:"Đến 500đ",val:"500"},{label:"Đến 1.000đ",val:"1000"}],value:p.currencyRounding,onSelect:_=>U({...p,currencyRounding:_})})]}),c.jsxs("div",{className:"m-4 bg-white dark:bg-gray-900 rounded-[25px] border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm",children:[c.jsx(Y,{icon:c.jsx(jm,{size:18}),title:"Giọng Nói & Âm Thanh"}),c.jsx(A,{label:"Đọc số khi nhập",value:p.useVoice,onChange:_=>U({...p,useVoice:_})}),c.jsx(v,{label:"Tốc độ đọc số",options:[{label:"Nhanh",val:"nhanh"},{label:"Vừa",val:"vừa"},{label:"Chậm",val:"chậm"}],value:p.voiceSpeed,onSelect:_=>U({...p,voiceSpeed:_})}),c.jsx(A,{label:"Báo đủ 5 mã cân",desc:"Rung và Chuông",value:p.soundOn5,onChange:_=>U({...p,soundOn5:_})})]})]}),c.jsx("div",{className:"fixed bottom-0 w-full p-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t dark:border-gray-800 flex gap-4 shadow-2xl z-50",children:c.jsxs("button",{onClick:()=>S(re.DASHBOARD),className:"flex-1 bg-green-700 dark:bg-green-800 text-white p-5 rounded-[25px] font-black uppercase shadow-xl border-b-8 border-green-900 dark:border-black flex items-center justify-center gap-3 active:translate-y-2 active:border-b-0 transition-all",children:[c.jsx(ec,{size:24})," Xác Nhận Cấu Hình"]})})]})},Hm=({onSelect:S})=>{const[b,p]=w.useState(!1),[loginErr,setLoginErr]=w.useState(""),f=Pu.currentUser,O=async()=>{setLoginErr(""),p(!0);try{await Mn.loginWithGoogle();S("OWNER");}catch(err){setLoginErr("Đăng nhập thất bại. Vui lòng thử lại!")}p(!1)};w.useEffect(()=>{if(f){S("OWNER");}},[f]);return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center p-6 text-white",children:[c.jsxs("div",{className:"mb-10 text-center",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Tôm Càng Xanh Logo",className:"w-24 h-24 mx-auto mb-4 object-contain rounded-3xl shadow-xl bg-white/10 p-1.5"}),c.jsx("h1",{className:"text-4xl font-black italic tracking-tighter uppercase",children:"Tôm Càng Xanh"}),c.jsx("p",{className:"text-xs font-bold opacity-60 uppercase mt-2",children:"Nền tảng quản lý thông minh Tôm Càng Xanh"})]}),f?c.jsxs("div",{className:"flex flex-col items-center gap-3 animate-in zoom-in-95",children:[c.jsx("div",{className:"w-10 h-10 border-4 border-yellow-300 border-t-transparent rounded-full animate-spin mb-2"}),c.jsxs("p",{className:"font-black uppercase tracking-wider text-yellow-300 text-sm",children:["Đang vào vai trò Chủ Vựa: ",f.displayName||""]})]}):c.jsxs("div",{className:"w-full max-w-sm space-y-4",children:[loginErr&&c.jsx("div",{className:"p-3 bg-red-600/90 text-white rounded-2xl text-xs font-bold text-center shadow-lg",children:loginErr}),c.jsxs("button",{onClick:O,disabled:b,className:"w-full bg-white text-gray-800 p-6 rounded-[30px] font-black uppercase flex items-center justify-center gap-3 shadow-2xl active:scale-95 transition-all hover:bg-yellow-50 cursor-pointer",children:[c.jsx(fm,{size:24,className:"text-red-500"}),b?"Đang kết nối...":"Đăng nhập với Google"]}),c.jsx("p",{className:"text-center text-[10px] opacity-50 px-6 uppercase font-bold",children:"Mặc định tài khoản Chủ Vựa & Dữ liệu đồng bộ an toàn"})]}),c.jsxs("div",{className:"mt-12 flex items-center gap-2 opacity-40 font-bold text-[10px] uppercase",children:[c.jsx(Pd,{size:14})," Bảo mật bởi Firebase Google"]})]})},Rm=({setRoute:S})=>{const[b,p]=w.useState("scale"),[f,O]=w.useState(me.getSettings()),[D,U]=w.useState(!1),[Y,A]=w.useState(0),[btSavedNotice,setBtSavedNotice]=w.useState(!1);w.useEffect(()=>{let z;return D&&(A(0),z=setInterval(()=>{A(L=>L+1)},1e3)),()=>clearInterval(z)},[D]);const v=()=>{me.save(Ot.SETTINGS,f);setBtSavedNotice(!0);setTimeout(()=>setBtSavedNotice(!1),2500);},_=({label:z,desc:L,value:te,onToggle:Q})=>c.jsxs("div",{className:"flex items-start justify-between py-4 border-b border-gray-100 px-2",children:[c.jsxs("div",{className:"flex-1 pr-4",children:[c.jsx("h4",{className:"font-black text-gray-800 text-sm uppercase tracking-tight",children:z}),c.jsx("p",{className:"text-[10px] text-gray-500 font-bold leading-tight mt-0.5",children:L})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:te,onChange:se=>Q(se.target.checked),className:"sr-only peer"}),c.jsx("div",{className:"w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"})]})]});return c.jsxs("div",{className:"flex flex-col h-full bg-white font-roboto select-none",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-md",children:[c.jsxs("div",{className:"flex items-center gap-3",children:[c.jsx("button",{onClick:()=>S(re.DASHBOARD),className:"bg-white p-1 rounded-lg text-[#e91e63]",children:c.jsx(_a,{size:24,strokeWidth:3})}),c.jsx("span",{className:"text-xl font-black text-white uppercase italic tracking-tighter",children:"Bluetooth"})]}),c.jsxs("label",{className:"relative inline-flex items-center cursor-pointer",children:[c.jsx("input",{type:"checkbox",checked:f.enableBluetooth,onChange:z=>O({...f,enableBluetooth:z.target.checked}),className:"sr-only peer"}),c.jsx("div",{className:"w-14 h-7 bg-white/20 rounded-full peer peer-checked:bg-black after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:after:translate-x-full shadow-lg border border-white/10"})]})]}),c.jsxs("div",{className:"flex bg-white border-b border-gray-200",children:[c.jsxs("button",{onClick:()=>p("scale"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="scale"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx($u,{size:24,className:b==="scale"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="scale"?"text-green-800":"text-gray-600"}`,children:"Cân điện tử"})]}),c.jsxs("button",{onClick:()=>p("printer"),className:`flex-1 py-4 flex flex-col items-center gap-1 transition-all ${b==="printer"?"border-b-4 border-green-600":"opacity-40"}`,children:[c.jsx(Ms,{size:24,className:b==="printer"?"text-green-600":"text-gray-500"}),c.jsx("span",{className:`text-xs font-black uppercase tracking-tighter ${b==="printer"?"text-green-800":"text-gray-600"}`,children:"In nhiệt"})]})]}),c.jsx("div",{className:"flex-1 overflow-auto p-4 space-y-6",children:b==="scale"?c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với Cân điện tử Bluetooth loại BLE"}),c.jsx(_,{label:"Tắt/Mở Cân điện tử",desc:"Nếu không muốn sử dụng cân điện tử hãy tắt nó",value:f.enableScale,onToggle:z=>O({...f,enableScale:z})}),c.jsx(_,{label:"Nhập thủ công",desc:"Hiện một hộp thoại nhỏ để xem mã cân điện tử",value:f.manualScaleInput,onToggle:z=>O({...f,manualScaleInput:z})}),c.jsxs("div",{className:"mt-8",children:[c.jsx("h3",{className:"text-red-600 font-black uppercase text-lg italic mb-1",children:"Cân điện tử đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm kết nối Cân điện tử Bluetooth"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx($u,{size:32,className:"text-red-500"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Bấm vào tên Cân điện tử để đảo khối lượng hiển thị."})]}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsxs("div",{className:"text-center",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-base italic leading-none",children:"Số lần kiểm tra khớp số"}),c.jsx("p",{className:"text-[9px] font-bold text-gray-500 mt-1 uppercase leading-tight",children:"Chức năng lọc nhiễu dữ liệu cân, chỉ sử dụng cho Cân điện tử BLE"})]}),c.jsxs("div",{className:"px-4",children:[c.jsx("input",{type:"range",min:"0",max:"10",step:"1",value:f.scaleMatchSteps,onChange:z=>O({...f,scaleMatchSteps:parseInt(z.target.value)}),className:"w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsx("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-400 px-1",children:[0,1,2,3,4,5,6,7,8,9,10].map(z=>c.jsx("span",{children:z},z))})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Tăng số lần khớp số sẽ làm giảm tốc độ hiện số của Cân điện tử."}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic",children:"(*) Nếu nhận thấy tốc độ mã cân chậm hãy giảm nó lại"})]})]})]}):c.jsxs("div",{className:"animate-in fade-in duration-300",children:[c.jsx("p",{className:"text-center text-[11px] font-bold text-gray-500 italic mb-4",children:"Chức năng kết nối với máy in nhiệt Bluetooth"}),c.jsx(_,{label:"Tắt/Mở Máy in nhiệt",desc:"Nếu không muốn sử dụng máy in nhiệt hãy tắt nó",value:f.enablePrinter,onToggle:z=>O({...f,enablePrinter:z})}),c.jsx(_,{label:"Bluetooth Classic",desc:"Nếu không in được bằng cách thông thường, hãy bật nó lên",value:f.printerClassicMode,onToggle:z=>O({...f,printerClassicMode:z})}),c.jsxs("div",{className:"mt-8 space-y-4",children:[c.jsx("h3",{className:"text-center font-black text-lg text-gray-800 italic uppercase",children:"Khổ giấy máy in"}),c.jsxs("div",{className:"px-6",children:[c.jsx("input",{type:"range",min:"58",max:"80",step:"22",value:f.paperSize,onChange:z=>O({...f,paperSize:parseInt(z.target.value)}),className:"w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"}),c.jsxs("div",{className:"flex justify-between mt-2 text-[10px] font-black text-gray-500 px-1 uppercase italic",children:[c.jsx("span",{children:"58mm"}),c.jsx("span",{children:"80mm"})]})]})]}),c.jsxs("div",{className:"mt-10",children:[c.jsx("h3",{className:"text-green-700 font-black uppercase text-lg italic mb-1",children:"Máy in đã kết nối"}),c.jsx("p",{className:"text-[11px] font-bold text-gray-400 mb-4",children:"Bấm vào dấu (+) để thêm Máy in"}),c.jsxs("div",{className:"flex items-center justify-between bg-gray-50 p-6 rounded-2xl border border-gray-100 shadow-sm",children:[c.jsx(Ms,{size:32,className:"text-green-600"}),c.jsxs("div",{className:"flex gap-2",children:[c.jsx("button",{onClick:()=>U(!0),className:"w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(As,{size:24})}),c.jsx("button",{className:"w-12 h-12 bg-red-500 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all",children:c.jsx(Iu,{size:24})})]})]}),c.jsx("p",{className:"text-[10px] font-bold text-gray-500 italic mt-3",children:"(*) Hãy bấm vào (+) để chọn máy in nhiệt muốn kết nối."})]})]})}),c.jsx("div",{className:"p-4 bg-gray-100/50 border-t border-gray-200",children:c.jsxs("div",{className:"bg-gray-200 p-4 rounded-[25px] shadow-inner space-y-3",children:[c.jsxs("div",{className:"flex justify-between items-center px-1",children:[c.jsx("span",{className:"font-black text-blue-900 uppercase italic text-base tracking-tighter",children:"Cài đặt khác"}),c.jsxs("div",{className:"flex items-center gap-2",children:[btSavedNotice&&c.jsx("span",{className:"text-[11px] font-black text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full",children:"✓ Đã lưu!"}),c.jsxs("button",{onClick:v,className:"bg-yellow-400 text-blue-900 px-5 py-1.5 rounded-full font-black text-sm uppercase flex items-center gap-2 shadow-md active:scale-95 transition-all cursor-pointer",children:[c.jsx(ec,{size:16})," Lưu"]})]})]}),c.jsxs("div",{className:"space-y-1",children:[c.jsx("label",{className:"text-[10px] font-black text-gray-600 uppercase italic ml-2",children:"Tên hoá đơn"}),c.jsx("input",{value:f.invoiceName,onChange:z=>O({...f,invoiceName:z.target.value}),className:"w-full p-4 bg-white rounded-2xl font-black text-lg outline-none border-none shadow-sm placeholder:text-gray-300",placeholder:"TÔM CÀNG XANH"})]})]})}),D&&c.jsxs("div",{className:"fixed inset-0 z-[100] flex flex-col bg-white animate-in slide-in-from-bottom duration-300",children:[c.jsxs("div",{className:"bg-[#e91e63] p-4 flex items-center justify-between shadow-lg",children:[c.jsx("div",{className:"flex items-center gap-2",children:c.jsxs("button",{onClick:()=>U(!1),className:"bg-white px-4 py-2 rounded-full text-[#e91e63] font-black uppercase text-sm flex items-center gap-2 shadow-md active:scale-95 transition-all border border-[#e91e63]/20",children:[c.jsx(_a,{size:18,strokeWidth:3})," Thoát"]})}),c.jsxs("button",{className:"bg-yellow-400 text-blue-900 px-6 py-2 rounded-full font-black uppercase text-sm flex items-center gap-2 shadow-lg active:scale-95 transition-all",children:[c.jsx(An,{size:18})," Tìm Blue"]})]}),c.jsx("div",{className:"bg-gray-100 py-3 text-center border-b border-gray-200",children:c.jsx("h3",{className:"font-black text-lg uppercase tracking-tight text-gray-800",children:"Thiết bị Bluetooth (L1)"})}),c.jsxs("div",{className:"flex-1 overflow-auto p-4",children:[c.jsxs("div",{className:"flex items-center gap-2 mb-6",children:[c.jsxs("p",{className:"text-red-500 font-bold text-sm",children:["Thời gian tìm: ",Y," giây"]}),c.jsx(gm,{size:14,className:"text-red-500 animate-spin"})]}),c.jsx("div",{className:"space-y-4",children:[{name:"[TV] Samsung 7 Series (65)",addr:"8C:79:F5:B7:87:4B"}].map((z,L)=>c.jsxs("div",{className:"flex items-center justify-between p-4 bg-white border-b border-gray-100 last:border-0 group active:bg-blue-50 transition-colors",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("div",{className:"text-gray-400 group-active:text-blue-500",children:c.jsx(An,{size:24})}),c.jsxs("div",{children:[c.jsx("h4",{className:"font-black text-gray-800 text-base leading-tight",children:z.name}),c.jsx("p",{className:"text-[10px] font-bold text-gray-400 uppercase tracking-widest",children:z.addr})]})]}),c.jsxs("button",{className:"bg-gray-100 text-gray-800 px-6 py-2.5 rounded-full font-black uppercase text-xs flex items-center gap-2 shadow-sm border border-gray-200 active:bg-blue-600 active:text-white transition-all",children:[c.jsx(An,{size:14})," Kết nối"]})]},L))})]})]})]})};
 
 
 
 // ==================== SALES FEATURE EXTENSION (3 TARGET GROUPS & NO TARE) ====================
 Ot.SALES = "annong_sales_v2";Ot.FINANCE = "annong_finance_v1";
 Ot.BUYERS = "annong_buyers_v2";
+Ot.WORKERS = "annong_workers_v1";
+
+// Extend me storage for Workers Roster, Dispatch, Attendance & Payroll
+me.getWorkersData = function() {
+  const empty = { workers: [], dispatches: [], attendance: {}, advances: [], payrollPayments: [] };
+  try {
+    const raw = localStorage.getItem(Ot.WORKERS);
+    if (!raw) return empty;
+    const p = JSON.parse(raw);
+    if (!p || typeof p !== "object") return empty;
+    return {
+      workers: Array.isArray(p.workers) ? p.workers : [],
+      dispatches: Array.isArray(p.dispatches) ? p.dispatches : [],
+      attendance: p.attendance && typeof p.attendance === "object" ? p.attendance : {},
+      advances: Array.isArray(p.advances) ? p.advances : [],
+      payrollPayments: Array.isArray(p.payrollPayments) ? p.payrollPayments : []
+    };
+  } catch(e) {
+    return empty;
+  }
+};
+
+me.saveWorkersData = function(data) {
+  try {
+    const safe = {
+      workers: Array.isArray(data?.workers) ? data.workers : [],
+      dispatches: Array.isArray(data?.dispatches) ? data.dispatches : [],
+      attendance: data?.attendance && typeof data.attendance === "object" ? data.attendance : {},
+      advances: Array.isArray(data?.advances) ? data.advances : [],
+      payrollPayments: Array.isArray(data?.payrollPayments) ? data.payrollPayments : []
+    };
+    localStorage.setItem(Ot.WORKERS, JSON.stringify(safe));
+    emitAppDataUpdated_v4(Ot.WORKERS);
+    if (typeof me !== "undefined" && me.syncAllToCloud) me.syncAllToCloud();
+  } catch(e) {
+    console.warn("Save workers data error", e);
+  }
+};
+
+me.addWorkerDispatch = function(dispatchItem) {
+  if (!dispatchItem) return null;
+  const cur = me.getWorkersData();
+  const id = dispatchItem.id || ("dsp_" + Date.now());
+  const nextItem = { ...dispatchItem, id, updatedAt: new Date().toISOString() };
+  const idx = cur.dispatches.findIndex(d => d && d.id === id);
+  const nextDispatches = [...cur.dispatches];
+  if (idx >= 0) nextDispatches[idx] = nextItem;
+  else nextDispatches.unshift(nextItem);
+  me.saveWorkersData({ ...cur, dispatches: nextDispatches });
+  return nextItem;
+};
+
+me.recordWorkerExpenseToFinance = function({ id, category, amount, person, note, date }) {
+  const numAmount = Number(amount || 0);
+  if (!numAmount || numAmount <= 0 || typeof me.getFinanceData !== "function" || typeof me.saveFinanceData !== "function") return null;
+  try {
+    const fin = me.getFinanceData();
+    const at = fin.activeTrip || {};
+    const expList = Array.isArray(at.expenses) ? [...at.expenses] : [];
+    const txId = id || ("fin_wrk_" + Date.now());
+    const txObj = {
+      id: txId,
+      type: "EXPENSE",
+      category: category || "Tiền nhân công kéo / lựa tôm",
+      amount: numAmount,
+      person: person || "",
+      note: note || "",
+      date: date || getLocalYYYYMMDD_v4(),
+      sourceType: "WORKERS"
+    };
+    const idx = expList.findIndex(x => x && x.id === txId);
+    if (idx >= 0) expList[idx] = txObj;
+    else expList.unshift(txObj);
+    me.saveFinanceData({ ...fin, activeTrip: { ...at, expenses: expList } });
+    return txObj;
+  } catch(e) {
+    console.warn("recordWorkerExpenseToFinance error", e);
+    return null;
+  }
+};
+
+me.removeWorkerExpenseFromFinance = function(txId) {
+  if (!txId || typeof me.getFinanceData !== "function" || typeof me.saveFinanceData !== "function") return;
+  try {
+    const fin = me.getFinanceData();
+    const at = fin.activeTrip || {};
+    const expList = Array.isArray(at.expenses) ? at.expenses.filter(x => x && x.id !== txId) : [];
+    me.saveFinanceData({ ...fin, activeTrip: { ...at, expenses: expList } });
+  } catch(e) {}
+};
 
 // Extend me storage
 me.getSales = function() {
@@ -18251,7 +19072,2148 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
     ]
   });
 };
-const BmMainApp=()=>{const[S,b]=w.useState(()=>{const u=me.getUser();if(u)u.role="OWNER";return u;}),[p,f]=w.useState(!0),[O,D]=w.useState(()=>me.getUser()?re.DASHBOARD:re.AUTH),[U,Y]=w.useState(null);w.useEffect(()=>{const applyTheme=()=>{try{const st=me.getSettings();st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}catch(e){}};applyTheme();window.addEventListener("app-data-updated",applyTheme);window.addEventListener("cloud_data_synced",applyTheme);const _=D1(Pu,async z=>{var L,te;if(z){const Q=await Mn.loadFromCloud(z.uid);if(Q){me.restoreFromCloud(Q);applyTheme();if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("login_cloud_restore");}}const se=(Q==null?void 0:Q.user)||{uid:z.uid,phoneNumber:z.phoneNumber||"",displayName:z.displayName||"Người dùng",photoURL:z.photoURL||"",role:"OWNER",subscriptionStatus:((te=Q==null?void 0:Q.user)==null?void 0:te.subscriptionStatus)||"FREE",createdAt:new Date().toISOString()};se.role="OWNER";me.setUser(se);me.syncAllToCloud(z.uid);b(se);D(re.DASHBOARD)}else me.setUser(null),b(null),D(re.AUTH);f(!1)});return()=>{_();window.removeEventListener("app-data-updated",applyTheme);window.removeEventListener("cloud_data_synced",applyTheme);}},[]);const A=_=>{if(S){const z={...S,role:"OWNER"};me.setUser(z),b(z),D(re.DASHBOARD)}};if(p)return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center text-white",children:[c.jsx("div",{className:"w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"}),c.jsx("p",{className:"font-black uppercase italic text-sm",children:"Đang bảo mật kết nối..."})]});if(!S||O===re.AUTH)return c.jsx(Hm,{onSelect:A});const v=()=>{const _={setRoute:D,role:S.role};switch(O){case re.DASHBOARD:return c.jsx(Kd,{..._});case re.OVERVIEW:return c.jsx(Xm_OverviewTab,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.WEIGHING:return c.jsx(Om,{..._});case re.HISTORY:return c.jsx(_m,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.SESSION_DETAIL:return c.jsx(Dm,{..._,sessionId:U||""});case re.SALES:return c.jsx(Xm_SalesScreen,{..._,onViewDetail:z=>{Y(z);D(re.SALES_DETAIL);}});case re.FINANCE:return c.jsx(Xm_FinanceScreen,{..._});case re.CUSTOMERS:return c.jsx(Xm_CustomersScreen,{..._,onSelectForSale:z=>{D(re.SALES);}});case re.SALES_DETAIL:return c.jsx(Xm_SaleDetailScreen,{..._,sale:(typeof U==="object"?U:(me.getSales().find(s=>s.id===(typeof U==="string"?U:U?.id))||null)),onBack:()=>D(re.SALES)});case re.FARMERS:return c.jsx(Cm,{..._});case re.VEHICLES:return c.jsx(km,{..._});case re.INFO_CONFIG:return c.jsx(Xm_TraderConfig,{..._});case re.SETTINGS:return c.jsx(Um,{..._});case re.BLUETOOTH:return c.jsx(Rm,{..._});default:return c.jsx(Kd,{..._})}};return c.jsx(Tm,{activeRoute:O,setRoute:D,title:"Tôm Càng Xanh",role:S.role,onLogout:async()=>{await Mn.logout()},children:v()})},
+
+// ==================== TAB QUẢN LÝ CÔNG NHÂN (NHÂN SỰ • ĐIỀU ĐỘNG AO GPS • CHẤM CÔNG • TÍNH LƯƠNG) ====================
+const WORKER_STATUS_META = {
+  AVAILABLE: { label: "Sẵn sàng", cls: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800" },
+  ON_JOB: { label: "Đang đi ao", cls: "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800" },
+  OFF: { label: "Nghỉ phép", cls: "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700" }
+};
+const WORKER_ROLE_META = {
+  HARVEST: { label: "Đội gạt tôm / Kéo lưới", short: "Gạt tôm", cls: "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-800" },
+  BOAT: { label: "Tài xế ghe / Xe oxy", short: "Ghe / Xe", cls: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800" },
+  CARRY: { label: "Đội cân & Bốc xếp", short: "Cân & Bốc", cls: "bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/40 dark:text-teal-300 dark:border-teal-800" }
+};
+const PAY_TYPE_LABELS = {
+  DAY: "Theo ngày công",
+  HOUR: "Theo giờ",
+  KG: "Khoán theo kg tôm",
+  TRIP: "Khoán theo chuyến"
+};
+const PAY_UNIT_SUFFIX = {
+  DAY: "đ/ngày",
+  HOUR: "đ/giờ",
+  KG: "đ/kg",
+  TRIP: "đ/chuyến"
+};
+const DISPATCH_STATUS_META = {
+  SCHEDULED: { label: "Chờ xuất phát", cls: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800" },
+  ON_SITE: { label: "Đang gạt tại ao", cls: "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800" },
+  DONE: { label: "Hoàn tất", cls: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800" }
+};
+
+const Xm_WorkersScreen = ({ setRoute }) => {
+  const todayStr = typeof getLocalYYYYMMDD_v4 === "function" ? getLocalYYYYMMDD_v4() : new Date().toISOString().slice(0, 10);
+  const [subTab, setSubTab] = w.useState("ROSTER"); // ROSTER | DISPATCH | ATTENDANCE | PAYROLL
+  const [workersData, setWorkersData] = w.useState(() => me.getWorkersData());
+  const [ponds, setPonds] = w.useState(() => (me.getFarmers ? me.getFarmers() : []));
+  const [contracts, setContracts] = w.useState(() => (typeof getContracts === "function" ? getContracts() : []));
+
+  // Filters & search
+  const [searchQ, setSearchQ] = w.useState("");
+  const [roleFilter, setRoleFilter] = w.useState("ALL");
+  const [dispatchFilter, setDispatchFilter] = w.useState("ACTIVE"); // ACTIVE | DONE | ALL
+
+  // Toast & In-app Confirm Modal
+  const [toast, setToast] = w.useState(null);
+  const [confirmDlg, setConfirmDlg] = w.useState(null);
+
+  // Add/Edit Worker Modal
+  const [workerModalOpen, setWorkerModalOpen] = w.useState(false);
+  const [editingWorkerId, setEditingWorkerId] = w.useState(null);
+  const [workerForm, setWorkerForm] = w.useState({
+    name: "",
+    phone: "",
+    role: "HARVEST",
+    payType: "DAY",
+    baseRate: "350000",
+    overtimeRate: "50000",
+    status: "AVAILABLE",
+    note: ""
+  });
+
+  // Add/Edit Dispatch Modal
+  const [dispatchModalOpen, setDispatchModalOpen] = w.useState(false);
+  const [editingDispatchId, setEditingDispatchId] = w.useState(null);
+  const [dispatchForm, setDispatchForm] = w.useState({
+    pondId: "",
+    contractId: "",
+    pondName: "",
+    farmerPhone: "",
+    pondAddress: "",
+    estimatedYield: "",
+    roleId: "HARVEST",
+    scheduledDate: todayStr,
+    assemblyTime: "05:30",
+    lat: null,
+    lng: null,
+    gpsAccuracy: null,
+    accessNote: "",
+    customNote: "",
+    tools: ["Lưới kéo ao & chài", "Rổ/Thau nhựa đựng tôm", "Cân điện tử & sổ ghi", "Áo mưa & đèn pin"],
+    workerIds: [],
+    status: "SCHEDULED"
+  });
+  const [dispatchGpsPickerOpen, setDispatchGpsPickerOpen] = w.useState(false);
+  const [inlineGpsDispatch, setInlineGpsDispatch] = w.useState(null);
+
+  // Zalo share modal
+  const [zaloShare, setZaloShare] = w.useState(null); // { title, content, initialPhone, shareUrl }
+
+  // Attendance date
+  const [attDate, setAttDate] = w.useState(todayStr);
+
+  // Payroll period & finance modals
+  const [periodMode, setPeriodMode] = w.useState("THIS_MONTH"); // THIS_MONTH | PREV_MONTH | THIS_WEEK | CUSTOM
+  const [customStart, setCustomStart] = w.useState(todayStr.slice(0, 8) + "01");
+  const [customEnd, setCustomEnd] = w.useState(todayStr);
+  const [txModal, setTxModal] = w.useState(null); // { type: "ADVANCE" | "PAY", workerId, amount, date, note, syncFinance: true }
+
+  const notify = (msg, type = "ok") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3200);
+  };
+
+  const refreshAll = () => {
+    setWorkersData(me.getWorkersData());
+    if (me.getFarmers) setPonds(me.getFarmers());
+    if (typeof getContracts === "function") setContracts(getContracts());
+  };
+
+  w.useEffect(() => {
+    const onSync = () => refreshAll();
+    window.addEventListener("app-data-updated", onSync);
+    window.addEventListener("cloud_data_synced", onSync);
+    return () => {
+      window.removeEventListener("app-data-updated", onSync);
+      window.removeEventListener("cloud_data_synced", onSync);
+    };
+  }, []);
+
+  const persistWorkersData = (next) => {
+    setWorkersData(next);
+    me.saveWorkersData(next);
+  };
+
+  // Compute pay of one attendance entry
+  const computeEntryPay = (entry, worker) => {
+    if (!entry || !worker) return 0;
+    const rate = Number(worker.baseRate || 0);
+    const otRate = Number(worker.overtimeRate || 0);
+    const otPay = Number(entry.otHours || 0) * otRate;
+    const bonus = Number(entry.bonus || 0);
+    let basePay = 0;
+    if (worker.payType === "DAY") {
+      basePay = Number(entry.units || 0) * rate;
+    } else if (worker.payType === "HOUR") {
+      basePay = Number(entry.units || 0) * rate;
+    } else if (worker.payType === "KG") {
+      basePay = Number(entry.kg || 0) * rate;
+    } else if (worker.payType === "TRIP") {
+      basePay = Number(entry.trips || 0) * rate;
+    }
+    return Math.round(basePay + otPay + bonus);
+  };
+
+  // Resolve date range for Payroll
+  const periodRange = w.useMemo(() => {
+    const now = new Date();
+    const fmt = (dt) => {
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth() + 1).padStart(2, "0");
+      const d = String(dt.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    };
+    if (periodMode === "THIS_MONTH") {
+      const start = `${todayStr.slice(0, 7)}-01`;
+      return { start, end: todayStr };
+    }
+    if (periodMode === "PREV_MONTH") {
+      const firstPrev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastPrev = new Date(now.getFullYear(), now.getMonth(), 0);
+      return { start: fmt(firstPrev), end: fmt(lastPrev) };
+    }
+    if (periodMode === "THIS_WEEK") {
+      const startDt = new Date(now.getTime() - 6 * 86400000);
+      return { start: fmt(startDt), end: todayStr };
+    }
+    return {
+      start: customStart || "2000-01-01",
+      end: customEnd || todayStr
+    };
+  }, [periodMode, customStart, customEnd, todayStr]);
+
+  // Payroll summary calculation
+  const payrollRows = w.useMemo(() => {
+    const { start, end } = periodRange;
+    const inRange = (dStr) => !!dStr && dStr >= start && dStr <= end;
+    const attMap = workersData.attendance || {};
+
+    return workersData.workers.map(wk => {
+      let totalUnits = 0;
+      let totalOtHours = 0;
+      let totalKg = 0;
+      let totalTrips = 0;
+      let totalBonus = 0;
+      let grossEarned = 0;
+      let daysWorkedCount = 0;
+
+      Object.keys(attMap).forEach(dateKey => {
+        if (!inRange(dateKey)) return;
+        const entry = attMap[dateKey]?.[wk.id];
+        if (!entry) return;
+        const pay = computeEntryPay(entry, wk);
+        const hasActivity = Number(entry.units || 0) > 0 || Number(entry.kg || 0) > 0 || Number(entry.trips || 0) > 0 || Number(entry.otHours || 0) > 0 || Number(entry.bonus || 0) > 0;
+        if (hasActivity) daysWorkedCount += 1;
+        totalUnits += Number(entry.units || 0);
+        totalOtHours += Number(entry.otHours || 0);
+        totalKg += Number(entry.kg || 0);
+        totalTrips += Number(entry.trips || 0);
+        totalBonus += Number(entry.bonus || 0);
+        grossEarned += pay;
+      });
+
+      const workerAdvances = workersData.advances.filter(a => a && a.workerId === wk.id && inRange(a.date));
+      const totalAdvance = workerAdvances.reduce((s, a) => s + Number(a.amount || 0), 0);
+
+      const workerPaid = workersData.payrollPayments.filter(p => p && p.workerId === wk.id && inRange(p.date));
+      const totalPaid = workerPaid.reduce((s, p) => s + Number(p.amount || 0), 0);
+
+      const netDue = grossEarned - totalAdvance - totalPaid;
+      return {
+        worker: wk,
+        daysWorkedCount,
+        totalUnits,
+        totalOtHours,
+        totalKg,
+        totalTrips,
+        totalBonus,
+        grossEarned,
+        totalAdvance,
+        totalPaid,
+        netDue
+      };
+    });
+  }, [workersData, periodRange]);
+
+  const payrollTotals = w.useMemo(() => {
+    return payrollRows.reduce((acc, r) => ({
+      gross: acc.gross + r.grossEarned,
+      advance: acc.advance + r.totalAdvance,
+      paid: acc.paid + r.totalPaid,
+      net: acc.net + r.netDue
+    }), { gross: 0, advance: 0, paid: 0, net: 0 });
+  }, [payrollRows]);
+
+  const todayStats = w.useMemo(() => {
+    const dayObj = (workersData.attendance && workersData.attendance[todayStr]) || {};
+    let activeCount = 0;
+    let totalPay = 0;
+    workersData.workers.forEach(wk => {
+      const entry = dayObj[wk.id];
+      if (!entry) return;
+      const pay = computeEntryPay(entry, wk);
+      if (pay > 0 || Number(entry.units || 0) > 0 || Number(entry.kg || 0) > 0 || Number(entry.trips || 0) > 0) {
+        activeCount += 1;
+        totalPay += pay;
+      }
+    });
+    return { activeCount, totalPay };
+  }, [workersData, todayStr]);
+
+  // Combined Pond + Contract picker options for Dispatch
+  const pondOptions = w.useMemo(() => {
+    const list = [];
+    const seenIds = new Set();
+    ponds.forEach(pd => {
+      if (!pd) return;
+      const linkedC = contracts.find(ct => ct && (ct.farmerId === pd.id || ct.pondId === pd.id || (pd.contractId && ct.id === pd.contractId))) || null;
+      seenIds.add(pd.id);
+      list.push({
+        pondId: pd.id,
+        contractId: linkedC?.id || pd.contractId || "",
+        pondName: pd.name || linkedC?.farmer?.fullName || "Chủ ao",
+        farmerPhone: pd.phone || linkedC?.farmer?.phone || "",
+        pondAddress: pd.address || linkedC?.farmer?.address || "",
+        estimatedYield: Number(pd.estimatedYield || linkedC?.estimatedYield || 0) || "",
+        weighingDate: pd.weighingDate || linkedC?.weighingDate || todayStr,
+        weighingTime: pd.weighingTime || linkedC?.weighingTime || "05:30",
+        lat: pd.lat || linkedC?.pondLocation?.lat || linkedC?.farmer?.coordinates?.lat || null,
+        lng: pd.lng || linkedC?.pondLocation?.lng || linkedC?.farmer?.coordinates?.lng || null,
+        gpsAccuracy: pd.gpsAccuracy || linkedC?.pondLocation?.accuracy || null,
+        accessNote: pd.accessNote || linkedC?.pondAccessNote || "",
+        isSigned: !!(linkedC && (linkedC.status === "SIGNED_LEGAL" || linkedC.farmerSigned))
+      });
+    });
+    contracts.forEach(ct => {
+      if (!ct) return;
+      const pid = ct.pondId || ct.farmerId || "";
+      if (pid && seenIds.has(pid)) return;
+      list.push({
+        pondId: pid,
+        contractId: ct.id,
+        pondName: ct.farmer?.fullName || ct.farmerName || "Hợp đồng",
+        farmerPhone: ct.farmer?.phone || ct.farmerPhone || "",
+        pondAddress: ct.farmer?.address || ct.farmerAddress || "",
+        estimatedYield: Number(ct.estimatedYield || 0) || "",
+        weighingDate: ct.weighingDate || todayStr,
+        weighingTime: ct.weighingTime || "05:30",
+        lat: ct.pondLocation?.lat || ct.farmer?.coordinates?.lat || null,
+        lng: ct.pondLocation?.lng || ct.farmer?.coordinates?.lng || null,
+        gpsAccuracy: ct.pondLocation?.accuracy || null,
+        accessNote: ct.pondAccessNote || "",
+        isSigned: ct.status === "SIGNED_LEGAL" || !!ct.farmerSigned
+      });
+    });
+    return list;
+  }, [ponds, contracts, todayStr]);
+
+  // Sync updated pond GPS across Dispatch + Ot.FARMERS + Linked Contract
+  const syncPondLocationEverywhere = ({ pondId, contractId, lat, lng, accuracy, accessNote }) => {
+    try {
+      if (pondId && me.getFarmers) {
+        const curFarmers = me.getFarmers();
+        let touched = false;
+        const nextFarmers = curFarmers.map(f => {
+          if (f && (f.id === pondId || (contractId && f.contractId === contractId))) {
+            touched = true;
+            return {
+              ...f,
+              lat,
+              lng,
+              gpsAccuracy: accuracy !== undefined ? accuracy : f.gpsAccuracy,
+              accessNote: accessNote !== undefined ? accessNote : f.accessNote
+            };
+          }
+          return f;
+        });
+        if (touched) me.save(Ot.FARMERS, nextFarmers);
+      }
+      if (typeof getContracts === "function" && typeof saveContract === "function") {
+        const allC = getContracts();
+        allC.forEach(ct => {
+          if (ct && ((contractId && ct.id === contractId) || (pondId && (ct.pondId === pondId || ct.farmerId === pondId)))) {
+            saveContract({
+              ...ct,
+              pondLocation: { lat, lng, ...(accuracy ? { accuracy } : {}) },
+              pondAccessNote: accessNote !== undefined ? accessNote : (ct.pondAccessNote || ""),
+              farmer: {
+                ...(ct.farmer || {}),
+                coordinates: { lat, lng, ...(accuracy ? { accuracy } : {}) }
+              }
+            });
+          }
+        });
+      }
+      refreshAll();
+    } catch (e) {}
+  };
+
+  // ==================== HANDLERS: WORKER ROSTER ====================
+  const openAddWorker = () => {
+    setEditingWorkerId(null);
+    setWorkerForm({
+      name: "",
+      phone: "",
+      role: "HARVEST",
+      payType: "DAY",
+      baseRate: "350000",
+      overtimeRate: "50000",
+      status: "AVAILABLE",
+      note: ""
+    });
+    setWorkerModalOpen(true);
+  };
+
+  const openEditWorker = (wk) => {
+    setEditingWorkerId(wk.id);
+    setWorkerForm({
+      name: wk.name || "",
+      phone: wk.phone || "",
+      role: wk.role || "HARVEST",
+      payType: wk.payType || "DAY",
+      baseRate: String(wk.baseRate ?? 350000),
+      overtimeRate: String(wk.overtimeRate ?? 50000),
+      status: wk.status || "AVAILABLE",
+      note: wk.note || ""
+    });
+    setWorkerModalOpen(true);
+  };
+
+  const handleSaveWorker = () => {
+    if (!workerForm.name.trim()) {
+      notify("Vui lòng nhập họ tên nhân công!", "error");
+      return;
+    }
+    const wkObj = {
+      id: editingWorkerId || ("wrk_" + Date.now()),
+      name: workerForm.name.trim(),
+      phone: workerForm.phone.trim(),
+      role: workerForm.role,
+      payType: workerForm.payType,
+      baseRate: Number(workerForm.baseRate) || 0,
+      overtimeRate: Number(workerForm.overtimeRate) || 0,
+      status: workerForm.status,
+      note: workerForm.note.trim(),
+      updatedAt: new Date().toISOString()
+    };
+    const nextList = editingWorkerId
+      ? workersData.workers.map(wItem => wItem.id === editingWorkerId ? wkObj : wItem)
+      : [wkObj, ...workersData.workers];
+    persistWorkersData({ ...workersData, workers: nextList });
+    setWorkerModalOpen(false);
+    notify(editingWorkerId ? `✓ Đã cập nhật thông tin "${wkObj.name}"` : `✓ Đã thêm công nhân "${wkObj.name}"`);
+  };
+
+  const handleToggleWorkerStatus = (wkId) => {
+    const order = ["AVAILABLE", "ON_JOB", "OFF"];
+    const nextList = workersData.workers.map(wItem => {
+      if (wItem.id !== wkId) return wItem;
+      const curIdx = order.indexOf(wItem.status || "AVAILABLE");
+      const nextSt = order[(curIdx + 1) % order.length];
+      return { ...wItem, status: nextSt };
+    });
+    persistWorkersData({ ...workersData, workers: nextList });
+  };
+
+  const requestDeleteWorker = (wk) => {
+    setConfirmDlg({
+      title: "Xoá nhân công?",
+      msg: `Xoá "${wk.name}" khỏi danh sách nhân sự? Các bản ghi chấm công và tạm ứng cũ vẫn được giữ an toàn.`,
+      danger: true,
+      confirmText: "Xoá nhân công",
+      onConfirm: () => {
+        persistWorkersData({
+          ...workersData,
+          workers: workersData.workers.filter(x => x.id !== wk.id)
+        });
+        notify(`✓ Đã xoá "${wk.name}" khỏi danh sách.`);
+      }
+    });
+  };
+
+  // ==================== HANDLERS: DISPATCH ====================
+  const openCreateDispatch = (presetWorkerId = null) => {
+    const firstOpt = pondOptions[0] || null;
+    setEditingDispatchId(null);
+    setDispatchForm({
+      pondId: firstOpt?.pondId || "",
+      contractId: firstOpt?.contractId || "",
+      pondName: firstOpt?.pondName || "",
+      farmerPhone: firstOpt?.farmerPhone || "",
+      pondAddress: firstOpt?.pondAddress || "",
+      estimatedYield: firstOpt?.estimatedYield ? String(firstOpt.estimatedYield) : "",
+      roleId: "HARVEST",
+      scheduledDate: firstOpt?.weighingDate || todayStr,
+      assemblyTime: firstOpt?.weighingTime || "05:30",
+      lat: firstOpt?.lat || null,
+      lng: firstOpt?.lng || null,
+      gpsAccuracy: firstOpt?.gpsAccuracy || null,
+      accessNote: firstOpt?.accessNote || "",
+      customNote: "",
+      tools: ["Lưới kéo ao & chài", "Rổ/Thau nhựa đựng tôm", "Cân điện tử & sổ ghi", "Áo mưa & đèn pin"],
+      workerIds: presetWorkerId ? [presetWorkerId] : [],
+      status: "SCHEDULED"
+    });
+    setDispatchModalOpen(true);
+  };
+
+  const openEditDispatch = (dsp) => {
+    setEditingDispatchId(dsp.id);
+    setDispatchForm({
+      pondId: dsp.pondId || "",
+      contractId: dsp.contractId || "",
+      pondName: dsp.pondName || "",
+      farmerPhone: dsp.farmerPhone || "",
+      pondAddress: dsp.pondAddress || "",
+      estimatedYield: dsp.estimatedYield ? String(dsp.estimatedYield) : "",
+      roleId: dsp.roleId || "HARVEST",
+      scheduledDate: dsp.scheduledDate || todayStr,
+      assemblyTime: dsp.assemblyTime || "05:30",
+      lat: dsp.lat || null,
+      lng: dsp.lng || null,
+      gpsAccuracy: dsp.gpsAccuracy || null,
+      accessNote: dsp.accessNote || "",
+      customNote: dsp.customNote || "",
+      tools: Array.isArray(dsp.tools) ? dsp.tools : [],
+      workerIds: Array.isArray(dsp.workerIds) ? dsp.workerIds : [],
+      status: dsp.status || "SCHEDULED"
+    });
+    setDispatchModalOpen(true);
+  };
+
+  const handleSelectPondForDispatch = (optKey) => {
+    const matched = pondOptions.find(o => `${o.pondId}::${o.contractId}` === optKey);
+    if (!matched) {
+      setDispatchForm(prev => ({
+        ...prev,
+        pondId: "",
+        contractId: "",
+        pondName: "",
+        farmerPhone: "",
+        pondAddress: "",
+        estimatedYield: "",
+        lat: null,
+        lng: null,
+        gpsAccuracy: null,
+        accessNote: ""
+      }));
+      return;
+    }
+    setDispatchForm(prev => ({
+      ...prev,
+      pondId: matched.pondId,
+      contractId: matched.contractId,
+      pondName: matched.pondName,
+      farmerPhone: matched.farmerPhone,
+      pondAddress: matched.pondAddress,
+      estimatedYield: matched.estimatedYield ? String(matched.estimatedYield) : "",
+      scheduledDate: matched.weighingDate || prev.scheduledDate,
+      assemblyTime: matched.weighingTime || prev.assemblyTime,
+      lat: matched.lat || null,
+      lng: matched.lng || null,
+      gpsAccuracy: matched.gpsAccuracy || null,
+      accessNote: matched.accessNote || ""
+    }));
+  };
+
+  const handleSaveDispatch = () => {
+    if (!dispatchForm.pondName.trim()) {
+      notify("Vui lòng chọn ao tôm hoặc nhập tên ao!", "error");
+      return;
+    }
+    const roleMeta = (typeof WORKER_ROLE_PRESETS_V4 !== "undefined" ? WORKER_ROLE_PRESETS_V4 : []).find(r => r.id === dispatchForm.roleId);
+    const assignedWorkers = workersData.workers.filter(wk => dispatchForm.workerIds.includes(wk.id));
+    const item = {
+      id: editingDispatchId || ("dsp_" + Date.now()),
+      pondId: dispatchForm.pondId || "",
+      contractId: dispatchForm.contractId || "",
+      pondName: dispatchForm.pondName.trim(),
+      farmerPhone: dispatchForm.farmerPhone.trim(),
+      pondAddress: dispatchForm.pondAddress.trim(),
+      estimatedYield: Number(dispatchForm.estimatedYield) || 0,
+      roleId: dispatchForm.roleId,
+      roleTitle: roleMeta ? roleMeta.roleTitle : "ĐỘI GẠT TÔM",
+      scheduledDate: dispatchForm.scheduledDate || todayStr,
+      assemblyTime: dispatchForm.assemblyTime || "05:30",
+      lat: dispatchForm.lat ? Number(dispatchForm.lat) : null,
+      lng: dispatchForm.lng ? Number(dispatchForm.lng) : null,
+      gpsAccuracy: dispatchForm.gpsAccuracy || null,
+      accessNote: dispatchForm.accessNote.trim(),
+      customNote: dispatchForm.customNote.trim(),
+      tools: dispatchForm.tools,
+      workerIds: dispatchForm.workerIds,
+      workerNames: assignedWorkers.map(wk => wk.name),
+      workerPhone: assignedWorkers[0]?.phone || "",
+      status: dispatchForm.status || "SCHEDULED",
+      updatedAt: new Date().toISOString()
+    };
+
+    const nextDispatches = editingDispatchId
+      ? workersData.dispatches.map(d => d.id === editingDispatchId ? item : d)
+      : [item, ...workersData.dispatches];
+
+    // If ON_SITE, mark assigned workers ON_JOB; if DONE, release back to AVAILABLE
+    let nextWorkers = workersData.workers;
+    if (dispatchForm.workerIds.length > 0 && (item.status === "ON_SITE" || item.status === "DONE")) {
+      nextWorkers = workersData.workers.map(wk => {
+        if (!dispatchForm.workerIds.includes(wk.id)) return wk;
+        return { ...wk, status: item.status === "ON_SITE" ? "ON_JOB" : "AVAILABLE" };
+      });
+    }
+
+    persistWorkersData({ ...workersData, dispatches: nextDispatches, workers: nextWorkers });
+    if (item.lat && item.lng && (item.pondId || item.contractId)) {
+      syncPondLocationEverywhere({
+        pondId: item.pondId,
+        contractId: item.contractId,
+        lat: item.lat,
+        lng: item.lng,
+        accuracy: item.gpsAccuracy,
+        accessNote: item.accessNote
+      });
+    }
+    setDispatchModalOpen(false);
+    setSubTab("DISPATCH");
+    notify(editingDispatchId ? `✓ Đã cập nhật lịch điều động ao "${item.pondName}"` : `✓ Đã tạo lệnh điều động đến ao "${item.pondName}"!`);
+  };
+
+  const handleCycleDispatchStatus = (dsp) => {
+    const order = ["SCHEDULED", "ON_SITE", "DONE"];
+    const nextSt = order[(order.indexOf(dsp.status || "SCHEDULED") + 1) % order.length];
+    const nextDispatches = workersData.dispatches.map(d => d.id === dsp.id ? { ...d, status: nextSt, updatedAt: new Date().toISOString() } : d);
+    let nextWorkers = workersData.workers;
+    if (Array.isArray(dsp.workerIds) && dsp.workerIds.length > 0) {
+      nextWorkers = workersData.workers.map(wk => {
+        if (!dsp.workerIds.includes(wk.id)) return wk;
+        if (nextSt === "ON_SITE") return { ...wk, status: "ON_JOB" };
+        if (nextSt === "DONE") return { ...wk, status: "AVAILABLE" };
+        return wk;
+      });
+    }
+    persistWorkersData({ ...workersData, dispatches: nextDispatches, workers: nextWorkers });
+    notify(`✓ Chuyển trạng thái ao "${dsp.pondName}" sang: ${DISPATCH_STATUS_META[nextSt]?.label}`);
+  };
+
+  const handleSendDispatchZalo = (dsp) => {
+    const hasGps = !!(dsp.lat && dsp.lng);
+    const mapsUrl = hasGps
+      ? `https://www.google.com/maps/dir/?api=1&destination=${dsp.lat},${dsp.lng}`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dsp.pondAddress || dsp.pondName)}`;
+    const crewIds = Array.isArray(dsp.workerIds) ? dsp.workerIds : [];
+    const crewObjs = workersData.workers.filter(wk => crewIds.includes(wk.id));
+    const crewText = crewObjs.length > 0
+      ? crewObjs.map(wk => `${wk.name}${wk.phone ? ` (${wk.phone})` : ""}`).join(", ")
+      : (Array.isArray(dsp.workerNames) && dsp.workerNames.length > 0 ? dsp.workerNames.join(", ") : "Đội nhân công cơ sở");
+
+    const lines = [
+      `📍 LỆNH ĐIỀU ĐỘNG ${dsp.roleTitle || "ĐỘI GẠT TÔM"}`,
+      `• Chủ ao: ${dsp.pondName}${dsp.farmerPhone ? ` (${dsp.farmerPhone})` : ""}`,
+      `• Thời gian tập trung: ${dsp.assemblyTime || "05:30"} ngày ${dsp.scheduledDate || todayStr}`,
+      Number(dsp.estimatedYield || 0) > 0 ? `• Ước lượng: ~${Number(dsp.estimatedYield).toLocaleString()} kg` : "",
+      `• Tổ phân công: ${crewText}`,
+      dsp.pondAddress ? `• Địa chỉ: ${dsp.pondAddress}` : "",
+      hasGps ? `• Tọa độ GPS ao: ${Number(dsp.lat).toFixed(6)}, ${Number(dsp.lng).toFixed(6)}${dsp.gpsAccuracy ? ` (±${Math.round(dsp.gpsAccuracy)}m)` : ""}` : "⚠️ Chưa ghim GPS ao — vui lòng ghim trước khi đi!",
+      dsp.accessNote ? `• Đường vào / Điểm đậu: ${dsp.accessNote}` : "",
+      Array.isArray(dsp.tools) && dsp.tools.length > 0 ? `• Dụng cụ mang theo: ${dsp.tools.join(", ")}` : "",
+      dsp.customNote ? `• Lưu ý thêm: ${dsp.customNote}` : "",
+      "",
+      `🗺️ BẤM MỞ CHỈ ĐƯỜNG GOOGLE MAPS ĐẾN BỜ AO:`,
+      mapsUrl
+    ].filter(Boolean);
+
+    setZaloShare({
+      title: `Điều Động ${dsp.pondName}`,
+      content: lines.join("\n"),
+      initialPhone: crewObjs[0]?.phone || dsp.workerPhone || "",
+      shareUrl: mapsUrl
+    });
+  };
+
+  const handleQuickAttendFromDispatch = (dsp) => {
+    const targetDate = dsp.scheduledDate || todayStr;
+    const crewIds = Array.isArray(dsp.workerIds) ? dsp.workerIds : [];
+    if (crewIds.length === 0) {
+      notify("Lệnh điều động này chưa chọn công nhân nào trong tổ!", "error");
+      return;
+    }
+    const curAtt = { ...(workersData.attendance || {}) };
+    const dayObj = { ...(curAtt[targetDate] || {}) };
+    let addedCount = 0;
+    crewIds.forEach(wId => {
+      const wk = workersData.workers.find(x => x.id === wId);
+      if (!wk) return;
+      const existing = dayObj[wId];
+      if (!existing || (!existing.units && !existing.kg && !existing.trips)) {
+        dayObj[wId] = {
+          units: wk.payType === "DAY" ? 1 : (wk.payType === "HOUR" ? 8 : 0),
+          otHours: existing?.otHours || 0,
+          kg: wk.payType === "KG" ? (Number(dsp.estimatedYield || 0) || existing?.kg || 0) : (existing?.kg || 0),
+          trips: wk.payType === "TRIP" ? 1 : (existing?.trips || 0),
+          bonus: existing?.bonus || 0,
+          note: `Ao ${dsp.pondName}`
+        };
+        addedCount += 1;
+      }
+    });
+    curAtt[targetDate] = dayObj;
+    persistWorkersData({ ...workersData, attendance: curAtt });
+    setAttDate(targetDate);
+    setSubTab("ATTENDANCE");
+    notify(`✓ Đã chấm công tự động cho ${addedCount || crewIds.length} người tại ao "${dsp.pondName}"!`);
+  };
+
+  // ==================== HANDLERS: ATTENDANCE ====================
+  const updateWorkerAttendance = (workerId, patch) => {
+    const curAtt = { ...(workersData.attendance || {}) };
+    const dayObj = { ...(curAtt[attDate] || {}) };
+    const prevEntry = dayObj[workerId] || { units: 0, otHours: 0, kg: 0, trips: 0, bonus: 0, note: "" };
+    dayObj[workerId] = { ...prevEntry, ...patch };
+    curAtt[attDate] = dayObj;
+    persistWorkersData({ ...workersData, attendance: curAtt });
+  };
+
+  const handleImportDayDispatchesToAttendance = () => {
+    const dayDispatches = workersData.dispatches.filter(d => d && d.scheduledDate === attDate && Array.isArray(d.workerIds) && d.workerIds.length > 0);
+    if (dayDispatches.length === 0) {
+      notify(`Không có lịch điều động nào phân công thợ vào ngày ${attDate}.`, "error");
+      return;
+    }
+    const curAtt = { ...(workersData.attendance || {}) };
+    const dayObj = { ...(curAtt[attDate] || {}) };
+    let count = 0;
+    dayDispatches.forEach(dsp => {
+      dsp.workerIds.forEach(wId => {
+        const wk = workersData.workers.find(x => x.id === wId);
+        if (!wk) return;
+        const ex = dayObj[wId];
+        if (!ex || (!ex.units && !ex.kg && !ex.trips)) {
+          dayObj[wId] = {
+            units: wk.payType === "DAY" ? 1 : (wk.payType === "HOUR" ? 8 : 0),
+            otHours: ex?.otHours || 0,
+            kg: wk.payType === "KG" ? (Number(dsp.estimatedYield || 0) || 0) : (ex?.kg || 0),
+            trips: wk.payType === "TRIP" ? 1 : (ex?.trips || 0),
+            bonus: ex?.bonus || 0,
+            note: `Ao ${dsp.pondName}`
+          };
+          count += 1;
+        }
+      });
+    });
+    curAtt[attDate] = dayObj;
+    persistWorkersData({ ...workersData, attendance: curAtt });
+    notify(`✓ Đã lấy công từ ${dayDispatches.length} lịch điều động (${count} lượt thợ mới)!`);
+  };
+
+  // ==================== HANDLERS: PAYROLL & ADVANCES ====================
+  const openTxModal = (type, workerId = "", presetAmount = "") => {
+    const targetId = workerId || (workersData.workers[0]?.id || "");
+    if (!targetId) {
+      notify("Vui lòng thêm nhân công trước khi ghi tạm ứng / trả lương!", "error");
+      return;
+    }
+    setTxModal({
+      type,
+      workerId: targetId,
+      amount: presetAmount ? String(Math.max(0, Math.round(Number(presetAmount)))) : "",
+      date: todayStr,
+      note: type === "ADVANCE" ? "Tạm ứng tiền công" : `Thanh toán lương (${periodRange.start} → ${periodRange.end})`,
+      syncFinance: true
+    });
+  };
+
+  const handleSaveWorkerTx = () => {
+    if (!txModal) return;
+    const amt = Number(txModal.amount || 0);
+    if (!amt || amt <= 0) {
+      notify("Vui lòng nhập số tiền hợp lệ (> 0)!", "error");
+      return;
+    }
+    const wk = workersData.workers.find(x => x.id === txModal.workerId);
+    const wkName = wk ? wk.name : "Công nhân";
+    const txId = (txModal.type === "ADVANCE" ? "adv_" : "pay_") + Date.now();
+    let financeTxId = null;
+
+    if (txModal.syncFinance && typeof me.recordWorkerExpenseToFinance === "function") {
+      const finTx = me.recordWorkerExpenseToFinance({
+        id: "fin_" + txId,
+        category: "Tiền nhân công kéo / lựa tôm",
+        amount: amt,
+        person: wkName,
+        note: `${txModal.type === "ADVANCE" ? "[Tạm ứng]" : "[Trả lương]"} ${wkName}${txModal.note ? ` - ${txModal.note}` : ""}`,
+        date: txModal.date || todayStr
+      });
+      if (finTx) financeTxId = finTx.id;
+    }
+
+    const record = {
+      id: txId,
+      workerId: txModal.workerId,
+      workerName: wkName,
+      amount: amt,
+      date: txModal.date || todayStr,
+      note: (txModal.note || "").trim(),
+      financeTxId,
+      createdAt: new Date().toISOString()
+    };
+
+    if (txModal.type === "ADVANCE") {
+      persistWorkersData({ ...workersData, advances: [record, ...workersData.advances] });
+      notify(`✓ Đã ghi tạm ứng ${amt.toLocaleString()}đ cho ${wkName}${financeTxId ? " & tự động vào Tài chính" : ""}!`);
+    } else {
+      persistWorkersData({ ...workersData, payrollPayments: [record, ...workersData.payrollPayments] });
+      notify(`✓ Đã trả lương ${amt.toLocaleString()}đ cho ${wkName}${financeTxId ? " & tự động vào Tài chính" : ""}!`);
+    }
+    setTxModal(null);
+  };
+
+  const handleDeleteWorkerTx = (txType, item) => {
+    setConfirmDlg({
+      title: txType === "ADVANCE" ? "Xoá khoản tạm ứng?" : "Xoá phiếu trả lương?",
+      msg: `Xoá giao dịch ${Number(item.amount || 0).toLocaleString()}đ của ${item.workerName || "nhân công"}?${item.financeTxId ? " Khoản chi tương ứng trong Tài chính cũng sẽ được gỡ bỏ." : ""}`,
+      danger: true,
+      confirmText: "Xoá giao dịch",
+      onConfirm: () => {
+        if (item.financeTxId && typeof me.removeWorkerExpenseFromFinance === "function") {
+          me.removeWorkerExpenseFromFinance(item.financeTxId);
+        }
+        if (txType === "ADVANCE") {
+          persistWorkersData({ ...workersData, advances: workersData.advances.filter(x => x.id !== item.id) });
+        } else {
+          persistWorkersData({ ...workersData, payrollPayments: workersData.payrollPayments.filter(x => x.id !== item.id) });
+        }
+        notify("✓ Đã xoá giao dịch & đồng bộ lại Tài chính!");
+      }
+    });
+  };
+
+  const handleSendPayslipZalo = (row) => {
+    const wk = row.worker;
+    const msg = [
+      `💵 PHIẾU LƯƠNG NHÂN CÔNG`,
+      `• Họ tên: ${wk.name}${wk.phone ? ` (${wk.phone})` : ""}`,
+      `• Tổ: ${WORKER_ROLE_META[wk.role]?.label || "Nhân công"}`,
+      `• Kỳ lương: ${periodRange.start} đến ${periodRange.end}`,
+      `• Số ngày có mặt: ${row.daysWorkedCount} ngày` +
+        (wk.payType === "KG" ? ` • Sản lượng: ${row.totalKg.toLocaleString()} kg` : wk.payType === "TRIP" ? ` • Số chuyến: ${row.totalTrips}` : ` • Tổng công/giờ: ${row.totalUnits}`),
+      row.totalOtHours > 0 ? `• Tăng ca: ${row.totalOtHours} giờ` : "",
+      row.totalBonus > 0 ? `• Thưởng / Phụ cấp: ${row.totalBonus.toLocaleString()} đ` : "",
+      `• Tổng lương phát sinh: ${row.grossEarned.toLocaleString()} đ`,
+      `• Đã tạm ứng: -${row.totalAdvance.toLocaleString()} đ`,
+      `• Đã thanh toán trước: -${row.totalPaid.toLocaleString()} đ`,
+      `👉 CÒN PHẢI NHẬN: ${row.netDue.toLocaleString()} đ`
+    ].filter(Boolean).join("\n");
+    setZaloShare({
+      title: `Phiếu Lương ${wk.name}`,
+      content: msg,
+      initialPhone: wk.phone || "",
+      shareUrl: ""
+    });
+  };
+
+  // Filtered views
+  const filteredWorkers = w.useMemo(() => {
+    const q = searchQ.trim().toLowerCase();
+    return workersData.workers.filter(wk => {
+      if (roleFilter !== "ALL" && wk.role !== roleFilter) return false;
+      if (!q) return true;
+      return (wk.name || "").toLowerCase().includes(q) || (wk.phone || "").includes(q) || (wk.note || "").toLowerCase().includes(q);
+    });
+  }, [workersData.workers, roleFilter, searchQ]);
+
+  const filteredDispatches = w.useMemo(() => {
+    const q = searchQ.trim().toLowerCase();
+    return workersData.dispatches.filter(d => {
+      if (dispatchFilter === "ACTIVE" && d.status === "DONE") return false;
+      if (dispatchFilter === "DONE" && d.status !== "DONE") return false;
+      if (!q) return true;
+      return (d.pondName || "").toLowerCase().includes(q) || (d.pondAddress || "").toLowerCase().includes(q) || (Array.isArray(d.workerNames) && d.workerNames.join(" ").toLowerCase().includes(q));
+    });
+  }, [workersData.dispatches, dispatchFilter, searchQ]);
+
+  const activeDispatchesCount = workersData.dispatches.filter(d => d && d.status !== "DONE").length;
+
+  const shiftAttDate = (deltaDays) => {
+    const dt = new Date(attDate || todayStr);
+    dt.setDate(dt.getDate() + deltaDays);
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, "0");
+    const d = String(dt.getDate()).padStart(2, "0");
+    setAttDate(`${y}-${m}-${d}`);
+  };
+
+  const ledgerTransactions = w.useMemo(() => {
+    const { start, end } = periodRange;
+    const inRange = (dStr) => !!dStr && dStr >= start && dStr <= end;
+    const advs = workersData.advances.filter(x => x && inRange(x.date)).map(x => ({ ...x, txKind: "ADVANCE" }));
+    const pays = workersData.payrollPayments.filter(x => x && inRange(x.date)).map(x => ({ ...x, txKind: "PAY" }));
+    return [...advs, ...pays].sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.createdAt || "").localeCompare(a.createdAt || ""));
+  }, [workersData.advances, workersData.payrollPayments, periodRange]);
+
+  return c.jsxs("div", {
+    className: "flex flex-col h-full bg-slate-50 dark:bg-[#121212] font-sans select-none",
+    children: [
+      // Header Bar
+      c.jsxs("header", {
+        className: "bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex flex-wrap items-center justify-between gap-2 sticky top-0 z-30",
+        children: [
+          c.jsxs("div", {
+            className: "flex items-center gap-3",
+            children: [
+              c.jsx("button", {
+                type: "button",
+                onClick: () => setRoute(re.DASHBOARD),
+                className: "p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl cursor-pointer transition-colors",
+                children: c.jsx(On, { size: 20 })
+              }),
+              c.jsxs("div", {
+                children: [
+                  c.jsx("h2", { className: "text-base sm:text-lg font-black uppercase tracking-tight text-slate-900 dark:text-white leading-tight", children: "Quản Lý Nhân Công" }),
+                  c.jsx("p", { className: "text-[11px] font-semibold text-slate-500 dark:text-slate-400", children: "Điều động ao GPS • Chấm công ngày • Tạm ứng & Tính lương" })
+                ]
+              })
+            ]
+          }),
+          c.jsxs("div", {
+            className: "flex items-center gap-2",
+            children: [
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => openCreateDispatch(),
+                className: "px-3 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95",
+                children: [c.jsx(tc, { size: 15 }), "Điều động ao"]
+              }),
+              c.jsxs("button", {
+                type: "button",
+                onClick: openAddWorker,
+                className: "px-3 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95",
+                children: [c.jsx(As, { size: 15 }), "Thêm thợ"]
+              })
+            ]
+          })
+        ]
+      }),
+
+      // Main Scrollable Workspace
+      c.jsxs("div", {
+        className: "flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 pb-24 max-w-6xl w-full mx-auto",
+        children: [
+          // 4 KPI Summary Cards
+          c.jsxs("div", {
+            className: "grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3",
+            children: [
+              c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+                children: [
+                  c.jsx("span", { className: "text-[10px] font-bold uppercase text-slate-400 block", children: "Tổng nhân sự" }),
+                  c.jsxs("div", { className: "text-xl font-black text-slate-900 dark:text-white mt-0.5 tabular-nums", children: [workersData.workers.length, " người"] }),
+                  c.jsxs("span", { className: "text-[11px] font-semibold text-emerald-600 dark:text-emerald-400", children: [workersData.workers.filter(x => x.status === "AVAILABLE").length, " sẵn sàng • ", workersData.workers.filter(x => x.status === "ON_JOB").length, " đang đi ao"] })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+                children: [
+                  c.jsx("span", { className: "text-[10px] font-bold uppercase text-slate-400 block", children: "Lệnh điều động" }),
+                  c.jsxs("div", { className: "text-xl font-black text-orange-600 dark:text-orange-400 mt-0.5 tabular-nums", children: [activeDispatchesCount, " lịch chờ/đang chạy"] }),
+                  c.jsxs("span", { className: "text-[11px] font-semibold text-slate-500", children: ["Tổng ", workersData.dispatches.length, " lượt điều ao"] })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+                children: [
+                  c.jsx("span", { className: "text-[10px] font-bold uppercase text-slate-400 block", children: "Chấm công hôm nay" }),
+                  c.jsxs("div", { className: "text-xl font-black text-blue-700 dark:text-blue-400 mt-0.5 tabular-nums", children: [todayStats.activeCount, " người làm"] }),
+                  c.jsxs("span", { className: "text-[11px] font-bold text-slate-500 tabular-nums", children: ["Ước tính ", todayStats.totalPay.toLocaleString(), " đ"] })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+                children: [
+                  c.jsx("span", { className: "text-[10px] font-bold uppercase text-slate-400 block", children: "Còn phải trả kỳ này" }),
+                  c.jsxs("div", { className: `text-xl font-black mt-0.5 tabular-nums ${payrollTotals.net > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`, children: [payrollTotals.net.toLocaleString(), " đ"] }),
+                  c.jsxs("span", { className: "text-[11px] font-semibold text-slate-500 tabular-nums", children: ["Đã ứng/trả ", (payrollTotals.advance + payrollTotals.paid).toLocaleString(), " đ"] })
+                ]
+              })
+            ]
+          }),
+
+          // 4 Sub-Tab Switcher
+          c.jsxs("div", {
+            className: "grid grid-cols-4 gap-1.5 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+            children: [
+              { id: "ROSTER", label: "Nhân sự", count: workersData.workers.length },
+              { id: "DISPATCH", label: "Điều động", count: activeDispatchesCount },
+              { id: "ATTENDANCE", label: "Chấm công", count: todayStats.activeCount },
+              { id: "PAYROLL", label: "Tính lương", count: null }
+            ].map(tab => {
+              const active = subTab === tab.id;
+              return c.jsxs("button", {
+                type: "button",
+                onClick: () => setSubTab(tab.id),
+                className: `py-2.5 px-2 rounded-xl text-xs font-black uppercase transition-all cursor-pointer flex items-center justify-center gap-1.5 ${active ? "bg-emerald-700 text-white shadow-sm" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}`,
+                children: [
+                  c.jsx("span", { className: "truncate", children: tab.label }),
+                  tab.count !== null && c.jsx("span", {
+                    className: `px-1.5 py-0.5 rounded-md text-[10px] tabular-nums ${active ? "bg-white/20 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+                    children: tab.count
+                  })
+                ]
+              }, tab.id);
+            })
+          }),
+
+          // ==================== SUB-TAB 1: NHÂN SỰ ====================
+          subTab === "ROSTER" && c.jsxs("div", {
+            className: "space-y-3",
+            children: [
+              c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-2",
+                children: [
+                  c.jsx("input", {
+                    type: "text",
+                    value: searchQ,
+                    onChange: (e) => setSearchQ(e.target.value),
+                    placeholder: "Tìm tên công nhân, SĐT, ghi chú...",
+                    className: "flex-1 min-w-[180px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold outline-none focus:border-emerald-500"
+                  }),
+                  c.jsxs("div", {
+                    className: "flex flex-wrap gap-1.5",
+                    children: [
+                      { id: "ALL", label: "Tất cả" },
+                      { id: "HARVEST", label: "Gạt tôm" },
+                      { id: "BOAT", label: "Ghe / Xe" },
+                      { id: "CARRY", label: "Cân & Bốc" }
+                    ].map(fBtn => c.jsx("button", {
+                      type: "button",
+                      onClick: () => setRoleFilter(fBtn.id),
+                      className: `px-3 py-2 rounded-xl text-[11px] font-black uppercase border cursor-pointer ${roleFilter === fBtn.id ? "bg-slate-900 dark:bg-emerald-600 text-white border-slate-900 dark:border-emerald-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                      children: fBtn.label
+                    }, fBtn.id))
+                  })
+                ]
+              }),
+
+              filteredWorkers.length === 0 ? c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-10 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-3",
+                children: [
+                  c.jsx(Os, { size: 42, className: "mx-auto text-slate-300 dark:text-slate-600" }),
+                  c.jsx("p", { className: "text-sm font-black uppercase text-slate-500", children: workersData.workers.length === 0 ? "Chưa có nhân công nào trong danh sách" : "Không tìm thấy công nhân phù hợp" }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: openAddWorker,
+                    className: "px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
+                    children: "+ Thêm công nhân đầu tiên"
+                  })
+                ]
+              }) : c.jsx("div", {
+                className: "grid grid-cols-1 md:grid-cols-2 gap-3",
+                children: filteredWorkers.map(wk => {
+                  const stMeta = WORKER_STATUS_META[wk.status || "AVAILABLE"] || WORKER_STATUS_META.AVAILABLE;
+                  const rlMeta = WORKER_ROLE_META[wk.role || "HARVEST"] || WORKER_ROLE_META.HARVEST;
+                  const pRow = payrollRows.find(r => r.worker.id === wk.id);
+                  return c.jsxs("div", {
+                    className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex items-start justify-between gap-2",
+                        children: [
+                          c.jsxs("div", {
+                            className: "min-w-0",
+                            children: [
+                              c.jsxs("div", {
+                                className: "flex flex-wrap items-center gap-1.5",
+                                children: [
+                                  c.jsx("h3", { className: "font-black text-base text-slate-900 dark:text-white uppercase", children: wk.name }),
+                                  c.jsx("span", { className: `px-2 py-0.5 rounded-lg text-[10px] font-black border ${rlMeta.cls}`, children: rlMeta.short })
+                                ]
+                              }),
+                              c.jsxs("div", {
+                                className: "flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400 font-semibold",
+                                children: [
+                                  wk.phone ? c.jsxs("a", {
+                                    href: `tel:${wk.phone}`,
+                                    className: "inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold hover:underline",
+                                    children: [c.jsx(hm, { size: 12 }), wk.phone]
+                                  }) : c.jsx("span", { children: "Chưa có SĐT" }),
+                                  wk.note && c.jsxs("span", { className: "truncate max-w-[200px]", children: ["• ", wk.note] })
+                                ]
+                              })
+                            ]
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => handleToggleWorkerStatus(wk.id),
+                            title: "Bấm đổi trạng thái",
+                            className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase border cursor-pointer shrink-0 ${stMeta.cls}`,
+                            children: stMeta.label
+                          })
+                        ]
+                      }),
+
+                      c.jsxs("div", {
+                        className: "grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/70 p-2.5 rounded-xl text-xs",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("span", { className: "text-[10px] text-slate-400 uppercase block font-bold", children: "Đơn giá công" }),
+                              c.jsxs("span", { className: "font-black text-slate-800 dark:text-slate-100 tabular-nums", children: [Number(wk.baseRate || 0).toLocaleString(), " ", PAY_UNIT_SUFFIX[wk.payType || "DAY"]] })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("span", { className: "text-[10px] text-slate-400 uppercase block font-bold", children: "Tăng ca" }),
+                              c.jsxs("span", { className: "font-black text-blue-700 dark:text-blue-400 tabular-nums", children: [Number(wk.overtimeRate || 0).toLocaleString(), " đ/h"] })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("span", { className: "text-[10px] text-slate-400 uppercase block font-bold", children: "Còn phải trả" }),
+                              c.jsxs("span", { className: `font-black tabular-nums ${(pRow?.netDue || 0) > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`, children: [(pRow?.netDue || 0).toLocaleString(), " đ"] })
+                            ]
+                          })
+                        ]
+                      }),
+
+                      c.jsxs("div", {
+                        className: "flex flex-wrap items-center justify-between gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800",
+                        children: [
+                          c.jsxs("div", {
+                            className: "flex flex-wrap gap-1.5",
+                            children: [
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => openCreateDispatch(wk.id),
+                                className: "px-2.5 py-1.5 bg-orange-50 hover:bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                                children: "📍 Điều ao"
+                              }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => { setSubTab("ATTENDANCE"); },
+                                className: "px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                                children: "⏰ Chấm công"
+                              }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => openTxModal("ADVANCE", wk.id),
+                                className: "px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                                children: "💸 Ứng lương"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            className: "flex items-center gap-1 ml-auto",
+                            children: [
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => openEditWorker(wk),
+                                className: "px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-[11px] cursor-pointer",
+                                children: "✏️ Sửa"
+                              }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => requestDeleteWorker(wk),
+                                className: "p-2 text-slate-400 hover:text-rose-600 rounded-xl cursor-pointer",
+                                title: "Xóa nhân công",
+                                children: c.jsx(Iu, { size: 15 })
+                              })
+                            ]
+                          })
+                        ]
+                      })
+                    ]
+                  }, wk.id);
+                })
+              })
+            ]
+          }),
+
+          // ==================== SUB-TAB 2: SẮP XẾP & ĐIỀU ĐỘNG AO GPS ====================
+          subTab === "DISPATCH" && c.jsxs("div", {
+            className: "space-y-3",
+            children: [
+              c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex flex-wrap gap-1.5",
+                    children: [
+                      { id: "ACTIVE", label: `Đang chờ / chạy (${activeDispatchesCount})` },
+                      { id: "DONE", label: "Đã hoàn tất" },
+                      { id: "ALL", label: "Tất cả" }
+                    ].map(fBtn => c.jsx("button", {
+                      type: "button",
+                      onClick: () => setDispatchFilter(fBtn.id),
+                      className: `px-3 py-2 rounded-xl text-[11px] font-black uppercase border cursor-pointer ${dispatchFilter === fBtn.id ? "bg-orange-600 text-white border-orange-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                      children: fBtn.label
+                    }, fBtn.id))
+                  }),
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: () => openCreateDispatch(),
+                    className: "px-3.5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer",
+                    children: [c.jsx(As, { size: 15 }), "Tạo lệnh điều động"]
+                  })
+                ]
+              }),
+
+              filteredDispatches.length === 0 ? c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-10 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-3",
+                children: [
+                  c.jsx(tc, { size: 42, className: "mx-auto text-slate-300 dark:text-slate-600" }),
+                  c.jsx("p", { className: "text-sm font-black uppercase text-slate-500", children: "Chưa có lệnh điều động nhân công nào" }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => openCreateDispatch(),
+                    className: "px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
+                    children: "+ Sắp xếp tổ đi gạt tôm"
+                  })
+                ]
+              }) : c.jsx("div", {
+                className: "space-y-3",
+                children: filteredDispatches.map(dsp => {
+                  const hasGps = !!(dsp.lat && dsp.lng);
+                  const mapsUrl = hasGps ? `https://www.google.com/maps/dir/?api=1&destination=${dsp.lat},${dsp.lng}` : null;
+                  const dspSt = DISPATCH_STATUS_META[dsp.status || "SCHEDULED"] || DISPATCH_STATUS_META.SCHEDULED;
+                  const crewList = Array.isArray(dsp.workerIds) && dsp.workerIds.length > 0
+                    ? workersData.workers.filter(wk => dsp.workerIds.includes(wk.id))
+                    : [];
+
+                  return c.jsxs("div", {
+                    className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex flex-wrap items-start justify-between gap-2",
+                        children: [
+                          c.jsxs("div", {
+                            className: "min-w-0",
+                            children: [
+                              c.jsxs("div", {
+                                className: "flex flex-wrap items-center gap-1.5",
+                                children: [
+                                  c.jsx("h3", { className: "font-black text-base text-slate-900 dark:text-white uppercase", children: dsp.pondName || "Ao thu hoạch" }),
+                                  dsp.contractId && c.jsxs("span", { className: "px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-md font-mono text-[10px] font-black", children: ["#", dsp.contractId] }),
+                                  c.jsx("span", { className: "px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md text-[10px] font-bold", children: dsp.roleTitle || "ĐỘI GẠT TÔM" })
+                                ]
+                              }),
+                              c.jsxs("p", {
+                                className: "text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5",
+                                children: [
+                                  "📅 ", dsp.scheduledDate || todayStr, " lúc ", dsp.assemblyTime || "05:30",
+                                  Number(dsp.estimatedYield || 0) > 0 ? ` • ~${Number(dsp.estimatedYield).toLocaleString()} kg` : "",
+                                  dsp.pondAddress ? ` • ${dsp.pondAddress}` : ""
+                                ]
+                              })
+                            ]
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => handleCycleDispatchStatus(dsp),
+                            title: "Bấm chuyển trạng thái",
+                            className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase border cursor-pointer shrink-0 ${dspSt.cls}`,
+                            children: dspSt.label
+                          })
+                        ]
+                      }),
+
+                      // GPS Bar inside Dispatch card
+                      c.jsxs("div", {
+                        className: "flex flex-wrap items-center justify-between gap-2 bg-slate-50 dark:bg-slate-800/70 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs",
+                        children: [
+                          hasGps ? c.jsxs("div", {
+                            className: "flex flex-wrap items-center gap-1.5",
+                            children: [
+                              c.jsx("span", { className: "font-black text-blue-700 dark:text-blue-300", children: "📍 Tọa độ bờ ao:" }),
+                              c.jsx("span", { className: "font-mono font-bold tabular-nums text-slate-800 dark:text-slate-100", children: `${Number(dsp.lat).toFixed(6)}, ${Number(dsp.lng).toFixed(6)}` }),
+                              dsp.gpsAccuracy && c.jsxs("span", { className: "px-1.5 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 rounded text-[10px] font-black tabular-nums", children: ["±", Math.round(Number(dsp.gpsAccuracy)), "m"] })
+                            ]
+                          }) : c.jsx("span", { className: "font-bold text-amber-700 dark:text-amber-300", children: "⚠️ Chưa ghim tọa độ GPS ao — hãy ghim để thợ đi đúng bờ ao" }),
+                          c.jsxs("div", {
+                            className: "flex items-center gap-1.5 ml-auto",
+                            children: [
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => setInlineGpsDispatch(dsp),
+                                className: "px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-black cursor-pointer",
+                                children: hasGps ? "🛰️ Sửa ghim GPS" : "🛰️ Ghim GPS ao"
+                              }),
+                              mapsUrl && c.jsxs("a", {
+                                href: mapsUrl,
+                                target: "_blank",
+                                rel: "noopener noreferrer",
+                                className: "px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-black",
+                                children: ["Maps ↗"]
+                              })
+                            ]
+                          })
+                        ]
+                      }),
+
+                      // Assigned crew & access note
+                      c.jsxs("div", {
+                        className: "space-y-1.5 text-xs",
+                        children: [
+                          c.jsxs("div", {
+                            className: "flex flex-wrap items-center gap-1.5",
+                            children: [
+                              c.jsx("span", { className: "text-[11px] font-bold text-slate-500", children: "Nhân công phân công:" }),
+                              crewList.length > 0 ? crewList.map(wk => c.jsxs("span", {
+                                className: "px-2 py-0.5 bg-orange-50 dark:bg-orange-950/40 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-800 rounded-lg text-[11px] font-bold",
+                                children: [wk.name, wk.phone ? ` (${wk.phone})` : ""]
+                              }, wk.id)) : (Array.isArray(dsp.workerNames) && dsp.workerNames.length > 0 ? dsp.workerNames.map((nm, i) => c.jsx("span", {
+                                className: "px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-bold",
+                                children: nm
+                              }, i)) : c.jsx("span", { className: "text-[11px] italic text-slate-400", children: "Chưa chọn cụ thể trong tổ" }))
+                            ]
+                          }),
+                          dsp.accessNote && c.jsxs("p", { className: "text-[11px] text-amber-800 dark:text-amber-300 font-semibold", children: ["🛣️ Đường vào ao: ", dsp.accessNote] }),
+                          Array.isArray(dsp.tools) && dsp.tools.length > 0 && c.jsxs("p", { className: "text-[11px] text-slate-500 dark:text-slate-400", children: ["🧰 Dụng cụ: ", dsp.tools.join(", ")] })
+                        ]
+                      }),
+
+                      // Dispatch Card Actions
+                      c.jsxs("div", {
+                        className: "flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800",
+                        children: [
+                          c.jsxs("div", {
+                            className: "flex flex-wrap items-center gap-1.5",
+                            children: [
+                              c.jsxs("button", {
+                                type: "button",
+                                onClick: () => handleSendDispatchZalo(dsp),
+                                className: "px-3 py-2 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-[11px] uppercase flex items-center gap-1.5 cursor-pointer shadow-xs",
+                                children: [c.jsx(ZaloIcon, { size: 14 }), "Gửi Zalo GPS cho thợ"]
+                              }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => handleQuickAttendFromDispatch(dsp),
+                                className: "px-3 py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                                children: "⚡ Chấm công tổ này"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            className: "flex items-center gap-1 ml-auto",
+                            children: [
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => openEditDispatch(dsp),
+                                className: "px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-[11px] cursor-pointer",
+                                children: "✏️ Sửa"
+                              }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => setConfirmDlg({
+                                  title: "Xoá lệnh điều động?",
+                                  msg: `Xoá lịch điều động ao "${dsp.pondName}"?`,
+                                  danger: true,
+                                  confirmText: "Xoá lịch",
+                                  onConfirm: () => {
+                                    persistWorkersData({ ...workersData, dispatches: workersData.dispatches.filter(x => x.id !== dsp.id) });
+                                    notify("✓ Đã xoá lệnh điều động.");
+                                  }
+                                }),
+                                className: "p-2 text-slate-400 hover:text-rose-600 rounded-xl cursor-pointer",
+                                children: c.jsx(Iu, { size: 15 })
+                              })
+                            ]
+                          })
+                        ]
+                      })
+                    ]
+                  }, dsp.id);
+                })
+              })
+            ]
+          }),
+
+          // ==================== SUB-TAB 3: CHẤM CÔNG HÀNG NGÀY ====================
+          subTab === "ATTENDANCE" && c.jsxs("div", {
+            className: "space-y-3",
+            children: [
+              c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex items-center gap-1.5",
+                    children: [
+                      c.jsx("button", { type: "button", onClick: () => shiftAttDate(-1), className: "px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded-xl font-black text-xs cursor-pointer", children: "←" }),
+                      c.jsx("input", {
+                        type: "date",
+                        value: attDate,
+                        onChange: (e) => setAttDate(e.target.value),
+                        className: "p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black text-xs outline-none"
+                      }),
+                      c.jsx("button", { type: "button", onClick: () => shiftAttDate(1), className: "px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded-xl font-black text-xs cursor-pointer", children: "→" }),
+                      c.jsx("button", { type: "button", onClick: () => setAttDate(todayStr), className: "px-2.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 rounded-xl font-black text-[11px] cursor-pointer", children: "Hôm nay" })
+                    ]
+                  }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: handleImportDayDispatchesToAttendance,
+                    className: "px-3.5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer shadow-xs",
+                    children: "⚡ Lấy từ lịch điều động ngày này"
+                  })
+                ]
+              }),
+
+              workersData.workers.length === 0 ? c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-10 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-3",
+                children: [
+                  c.jsx("p", { className: "text-sm font-black uppercase text-slate-500", children: "Chưa có nhân công để chấm công" }),
+                  c.jsx("button", { type: "button", onClick: openAddWorker, className: "px-4 py-2.5 bg-emerald-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "+ Thêm công nhân" })
+                ]
+              }) : c.jsx("div", {
+                className: "space-y-2.5",
+                children: workersData.workers.map(wk => {
+                  const entry = (workersData.attendance && workersData.attendance[attDate] && workersData.attendance[attDate][wk.id]) || { units: 0, otHours: 0, kg: 0, trips: 0, bonus: 0, note: "" };
+                  const dayPay = computeEntryPay(entry, wk);
+
+                  return c.jsxs("div", {
+                    className: `bg-white dark:bg-slate-900 p-4 rounded-2xl border transition-colors space-y-3 ${dayPay > 0 ? "border-emerald-300 dark:border-emerald-800" : "border-slate-200 dark:border-slate-800"}`,
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex flex-wrap items-center justify-between gap-2",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsxs("div", {
+                                className: "flex items-center gap-2",
+                                children: [
+                                  c.jsx("h4", { className: "font-black text-sm text-slate-900 dark:text-white uppercase", children: wk.name }),
+                                  c.jsx("span", { className: "text-[10px] font-bold text-slate-400 uppercase", children: PAY_TYPE_LABELS[wk.payType || "DAY"] })
+                                ]
+                              }),
+                              c.jsxs("p", { className: "text-[11px] font-semibold text-slate-500 tabular-nums", children: ["Đơn giá: ", Number(wk.baseRate || 0).toLocaleString(), " ", PAY_UNIT_SUFFIX[wk.payType || "DAY"], " • TC: ", Number(wk.overtimeRate || 0).toLocaleString(), "đ/h"] })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            className: "text-right",
+                            children: [
+                              c.jsx("span", { className: "text-[10px] text-slate-400 uppercase font-bold block", children: "Lương ngày" }),
+                              c.jsxs("span", { className: `text-base font-black tabular-nums ${dayPay > 0 ? "text-emerald-700 dark:text-emerald-400" : "text-slate-400"}`, children: [dayPay.toLocaleString(), " đ"] })
+                            ]
+                          })
+                        ]
+                      }),
+
+                      // Units / Kg / Trips Control by payType
+                      c.jsxs("div", {
+                        className: "grid grid-cols-1 sm:grid-cols-12 gap-2 items-end text-xs",
+                        children: [
+                          c.jsxs("div", {
+                            className: "sm:col-span-5",
+                            children: [
+                              wk.payType === "DAY" && c.jsxs("div", {
+                                className: "flex gap-1.5",
+                                children: [
+                                  { val: 1, label: "✓ Đủ 1 công", cls: "bg-emerald-600 text-white border-emerald-600" },
+                                  { val: 0.5, label: "½ Nửa công", cls: "bg-amber-500 text-slate-950 border-amber-500" },
+                                  { val: 0, label: "Nghỉ", cls: "bg-slate-700 text-white border-slate-700" }
+                                ].map(btn => {
+                                  const active = Number(entry.units || 0) === btn.val;
+                                  return c.jsx("button", {
+                                    type: "button",
+                                    onClick: () => updateWorkerAttendance(wk.id, { units: btn.val }),
+                                    className: `flex-1 py-2.5 px-2 rounded-xl font-black text-[11px] border cursor-pointer ${active ? btn.cls : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                                    children: btn.label
+                                  }, btn.val);
+                                })
+                              }),
+                              wk.payType === "HOUR" && c.jsxs("div", {
+                                children: [
+                                  c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Số giờ làm" }),
+                                  c.jsxs("div", {
+                                    className: "flex items-center gap-1",
+                                    children: [
+                                      c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { units: Math.max(0, Number(entry.units || 0) - 1) }), className: "px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "-" }),
+                                      c.jsx("input", { type: "number", step: "0.5", value: entry.units ?? 0, onChange: (e) => updateWorkerAttendance(wk.id, { units: Math.max(0, Number(e.target.value) || 0) }), className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-black tabular-nums" }),
+                                      c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { units: Number(entry.units || 0) + 1 }), className: "px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "+" })
+                                    ]
+                                  })
+                                ]
+                              }),
+                              wk.payType === "KG" && c.jsxs("div", {
+                                children: [
+                                  c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Sản lượng kéo/lựa (kg)" }),
+                                  c.jsx("input", { type: "number", value: entry.kg ?? 0, onChange: (e) => updateWorkerAttendance(wk.id, { kg: Math.max(0, Number(e.target.value) || 0) }), className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums" })
+                                ]
+                              }),
+                              wk.payType === "TRIP" && c.jsxs("div", {
+                                children: [
+                                  c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Số chuyến ghe / xe" }),
+                                  c.jsxs("div", {
+                                    className: "flex items-center gap-1",
+                                    children: [
+                                      c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { trips: Math.max(0, Number(entry.trips || 0) - 1) }), className: "px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "-" }),
+                                      c.jsx("input", { type: "number", value: entry.trips ?? 0, onChange: (e) => updateWorkerAttendance(wk.id, { trips: Math.max(0, Number(e.target.value) || 0) }), className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-black tabular-nums" }),
+                                      c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { trips: Number(entry.trips || 0) + 1 }), className: "px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "+" })
+                                    ]
+                                  })
+                                ]
+                              })
+                            ]
+                          }),
+
+                          c.jsxs("div", {
+                            className: "sm:col-span-2",
+                            children: [
+                              c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Tăng ca (giờ)" }),
+                              c.jsx("input", {
+                                type: "number",
+                                step: "0.5",
+                                value: entry.otHours ?? 0,
+                                onChange: (e) => updateWorkerAttendance(wk.id, { otHours: Math.max(0, Number(e.target.value) || 0) }),
+                                className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums"
+                              })
+                            ]
+                          }),
+
+                          c.jsxs("div", {
+                            className: "sm:col-span-2",
+                            children: [
+                              c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Thưởng/Cơm (đ)" }),
+                              c.jsx("input", {
+                                type: "number",
+                                value: entry.bonus ?? 0,
+                                onChange: (e) => updateWorkerAttendance(wk.id, { bonus: Number(e.target.value) || 0 }),
+                                className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums"
+                              })
+                            ]
+                          }),
+
+                          c.jsxs("div", {
+                            className: "sm:col-span-3",
+                            children: [
+                              c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Ao làm / Ghi chú" }),
+                              c.jsx("input", {
+                                type: "text",
+                                value: entry.note || "",
+                                onChange: (e) => updateWorkerAttendance(wk.id, { note: e.target.value }),
+                                placeholder: "Vd: Ao chú Bảy...",
+                                className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold"
+                              })
+                            ]
+                          })
+                        ]
+                      })
+                    ]
+                  }, wk.id);
+                })
+              })
+            ]
+          }),
+
+          // ==================== SUB-TAB 4: TÍNH LƯƠNG & TẠM ỨNG ====================
+          subTab === "PAYROLL" && c.jsxs("div", {
+            className: "space-y-3",
+            children: [
+              // Period Picker & Quick Advance / Pay actions
+              c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex flex-wrap items-center justify-between gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex flex-wrap gap-1.5",
+                        children: [
+                          { id: "THIS_MONTH", label: "Tháng này" },
+                          { id: "PREV_MONTH", label: "Tháng trước" },
+                          { id: "THIS_WEEK", label: "7 ngày qua" },
+                          { id: "CUSTOM", label: "Tùy chọn" }
+                        ].map(pm => c.jsx("button", {
+                          type: "button",
+                          onClick: () => setPeriodMode(pm.id),
+                          className: `px-3 py-2 rounded-xl text-[11px] font-black uppercase border cursor-pointer ${periodMode === pm.id ? "bg-slate-900 dark:bg-emerald-600 text-white border-slate-900 dark:border-emerald-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                          children: pm.label
+                        }, pm.id))
+                      }),
+                      c.jsxs("div", {
+                        className: "flex gap-1.5",
+                        children: [
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => openTxModal("ADVANCE"),
+                            className: "px-3 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl font-black text-xs uppercase cursor-pointer",
+                            children: "+ Ghi Tạm Ứng"
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => openTxModal("PAY"),
+                            className: "px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
+                            children: "✓ Thanh Toán Lương"
+                          })
+                        ]
+                      })
+                    ]
+                  }),
+                  periodMode === "CUSTOM" && c.jsxs("div", {
+                    className: "flex flex-wrap items-center gap-2 text-xs pt-1",
+                    children: [
+                      c.jsx("span", { className: "font-bold text-slate-500", children: "Từ:" }),
+                      c.jsx("input", { type: "date", value: customStart, onChange: e => setCustomStart(e.target.value), className: "p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" }),
+                      c.jsx("span", { className: "font-bold text-slate-500", children: "Đến:" }),
+                      c.jsx("input", { type: "date", value: customEnd, onChange: e => setCustomEnd(e.target.value), className: "p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs",
+                    children: [
+                      c.jsxs("div", { className: "p-2.5 bg-slate-50 dark:bg-slate-800 rounded-xl", children: [c.jsx("span", { className: "text-[10px] font-bold text-slate-400 block uppercase", children: "Tổng lương kỳ" }), c.jsxs("span", { className: "font-black text-slate-900 dark:text-white text-sm tabular-nums", children: [payrollTotals.gross.toLocaleString(), " đ"] })] }),
+                      c.jsxs("div", { className: "p-2.5 bg-amber-50 dark:bg-amber-950/30 rounded-xl", children: [c.jsx("span", { className: "text-[10px] font-bold text-amber-600 block uppercase", children: "Đã tạm ứng" }), c.jsxs("span", { className: "font-black text-amber-800 dark:text-amber-300 text-sm tabular-nums", children: [payrollTotals.advance.toLocaleString(), " đ"] })] }),
+                      c.jsxs("div", { className: "p-2.5 bg-blue-50 dark:bg-blue-950/30 rounded-xl", children: [c.jsx("span", { className: "text-[10px] font-bold text-blue-600 block uppercase", children: "Đã thanh toán" }), c.jsxs("span", { className: "font-black text-blue-800 dark:text-blue-300 text-sm tabular-nums", children: [payrollTotals.paid.toLocaleString(), " đ"] })] }),
+                      c.jsxs("div", { className: "p-2.5 bg-rose-50 dark:bg-rose-950/30 rounded-xl", children: [c.jsx("span", { className: "text-[10px] font-bold text-rose-600 block uppercase", children: "Còn phải trả" }), c.jsxs("span", { className: "font-black text-rose-700 dark:text-rose-300 text-sm tabular-nums", children: [payrollTotals.net.toLocaleString(), " đ"] })] })
+                    ]
+                  })
+                ]
+              }),
+
+              // Worker Payroll Cards
+              payrollRows.length === 0 ? c.jsx("div", {
+                className: "bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs font-bold text-slate-500",
+                children: "Chưa có nhân công nào để tính lương."
+              }) : c.jsx("div", {
+                className: "space-y-2.5",
+                children: payrollRows.map(row => {
+                  const wk = row.worker;
+                  return c.jsxs("div", {
+                    className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2.5",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex flex-wrap items-center justify-between gap-2",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("h4", { className: "font-black text-sm uppercase text-slate-900 dark:text-white", children: wk.name }),
+                              c.jsxs("p", {
+                                className: "text-[11px] font-semibold text-slate-500 tabular-nums",
+                                children: [
+                                  row.daysWorkedCount, " ngày có mặt",
+                                  wk.payType === "KG" ? ` • ${row.totalKg.toLocaleString()} kg` : wk.payType === "TRIP" ? ` • ${row.totalTrips} chuyến` : ` • ${row.totalUnits} ${wk.payType === "HOUR" ? "giờ" : "công"}`,
+                                  row.totalOtHours > 0 ? ` • TC ${row.totalOtHours}h` : ""
+                                ]
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            className: "text-right",
+                            children: [
+                              c.jsx("span", { className: "text-[10px] font-bold text-slate-400 uppercase block", children: "Còn phải trả" }),
+                              c.jsxs("span", { className: `text-base font-black tabular-nums ${row.netDue > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`, children: [row.netDue.toLocaleString(), " đ"] })
+                            ]
+                          })
+                        ]
+                      }),
+
+                      c.jsxs("div", {
+                        className: "grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/70 p-2.5 rounded-xl text-xs tabular-nums",
+                        children: [
+                          c.jsxs("div", { children: [c.jsx("span", { className: "text-[10px] text-slate-400 block font-bold uppercase", children: "Lương làm được" }), c.jsxs("span", { className: "font-black text-slate-800 dark:text-slate-100", children: [row.grossEarned.toLocaleString(), " đ"] })] }),
+                          c.jsxs("div", { children: [c.jsx("span", { className: "text-[10px] text-slate-400 block font-bold uppercase", children: "Tạm ứng" }), c.jsxs("span", { className: "font-black text-amber-700 dark:text-amber-400", children: [row.totalAdvance.toLocaleString(), " đ"] })] }),
+                          c.jsxs("div", { children: [c.jsx("span", { className: "text-[10px] text-slate-400 block font-bold uppercase", children: "Đã trả" }), c.jsxs("span", { className: "font-black text-blue-700 dark:text-blue-400", children: [row.totalPaid.toLocaleString(), " đ"] })] })
+                        ]
+                      }),
+
+                      c.jsxs("div", {
+                        className: "flex flex-wrap items-center gap-1.5 pt-1",
+                        children: [
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => openTxModal("ADVANCE", wk.id),
+                            className: "px-3 py-1.5 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-xl font-black text-[11px] cursor-pointer",
+                            children: "💸 Ứng tiền"
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => openTxModal("PAY", wk.id, row.netDue > 0 ? row.netDue : ""),
+                            className: "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-[11px] cursor-pointer",
+                            children: "✓ Trả lương"
+                          }),
+                          c.jsxs("button", {
+                            type: "button",
+                            onClick: () => handleSendPayslipZalo(row),
+                            className: "px-3 py-1.5 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-[11px] flex items-center gap-1 cursor-pointer ml-auto",
+                            children: [c.jsx(ZaloIcon, { size: 13 }), "Gửi phiếu lương"]
+                          })
+                        ]
+                      })
+                    ]
+                  }, wk.id);
+                })
+              }),
+
+              // Ledger of Advances & Payroll Payments
+              ledgerTransactions.length > 0 && c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5",
+                children: [
+                  c.jsx("h4", { className: "text-xs font-black uppercase text-slate-700 dark:text-slate-200", children: "Lịch sử Tạm ứng & Chi trả lương trong kỳ (Tự động đồng bộ Tài chính)" }),
+                  c.jsx("div", {
+                    className: "divide-y divide-slate-100 dark:divide-slate-800",
+                    children: ledgerTransactions.map(item => c.jsxs("div", {
+                      className: "py-2.5 flex items-center justify-between gap-2 text-xs",
+                      children: [
+                        c.jsxs("div", {
+                          className: "min-w-0",
+                          children: [
+                            c.jsxs("div", {
+                              className: "flex items-center gap-1.5",
+                              children: [
+                                c.jsx("span", { className: `px-2 py-0.5 rounded text-[10px] font-black uppercase ${item.txKind === "ADVANCE" ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300" : "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"}`, children: item.txKind === "ADVANCE" ? "Tạm ứng" : "Trả lương" }),
+                                c.jsx("span", { className: "font-black text-slate-900 dark:text-white", children: item.workerName || "Nhân công" }),
+                                item.financeTxId && c.jsx("span", { className: "text-[10px] font-bold text-emerald-600 dark:text-emerald-400", children: "• Đã vào Tài chính" })
+                              ]
+                            }),
+                            c.jsxs("p", { className: "text-[11px] text-slate-500 truncate mt-0.5", children: [item.date, item.note ? ` • ${item.note}` : ""] })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "flex items-center gap-2 shrink-0",
+                          children: [
+                            c.jsxs("span", { className: "font-black text-rose-600 dark:text-rose-400 tabular-nums", children: ["-", Number(item.amount || 0).toLocaleString(), " đ"] }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleDeleteWorkerTx(item.txKind, item),
+                              className: "p-1.5 text-slate-400 hover:text-rose-600 cursor-pointer",
+                              title: "Xoá giao dịch",
+                              children: c.jsx(Iu, { size: 14 })
+                            })
+                          ]
+                        })
+                      ]
+                    }, item.id))
+                  })
+                ]
+              })
+            ]
+          })
+        ]
+      }),
+
+      // ==================== MODAL: THÊM / SỬA CÔNG NHÂN ====================
+      workerModalOpen && c.jsxs("div", {
+        className: "fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm overflow-y-auto",
+        children: [
+          c.jsx("div", { className: "fixed inset-0", onClick: () => setWorkerModalOpen(false) }),
+          c.jsxs("div", {
+            onClick: e => e.stopPropagation(),
+            className: "relative bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-200 dark:border-slate-800 z-10 space-y-3.5 my-auto",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3",
+                children: [
+                  c.jsx("h3", { className: "font-black text-base uppercase text-slate-900 dark:text-white", children: editingWorkerId ? "✏️ Sửa Thông Tin Công Nhân" : "➕ Thêm Công Nhân Mới" }),
+                  c.jsx("button", { type: "button", onClick: () => setWorkerModalOpen(false), className: "p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-pointer", children: c.jsx(_a, { size: 18 }) })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "space-y-2.5 text-xs",
+                children: [
+                  c.jsxs("div", {
+                    className: "grid grid-cols-2 gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Họ và tên (*)" }),
+                          c.jsx("input", { type: "text", value: workerForm.name, onChange: e => setWorkerForm({ ...workerForm, name: e.target.value }), placeholder: "Vd: Anh Ba Tèo", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Số điện thoại (Zalo)" }),
+                          c.jsx("input", { type: "tel", value: workerForm.phone, onChange: e => setWorkerForm({ ...workerForm, phone: e.target.value }), placeholder: "09xx...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none" })
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "grid grid-cols-2 gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Tổ chuyên môn" }),
+                          c.jsxs("select", {
+                            value: workerForm.role,
+                            onChange: e => setWorkerForm({ ...workerForm, role: e.target.value }),
+                            className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none",
+                            children: [
+                              c.jsx("option", { value: "HARVEST", children: "Đội gạt tôm / Kéo lưới" }),
+                              c.jsx("option", { value: "BOAT", children: "Tài xế ghe / Xe oxy" }),
+                              c.jsx("option", { value: "CARRY", children: "Đội cân & Bốc xếp" })
+                            ]
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Cách tính công" }),
+                          c.jsxs("select", {
+                            value: workerForm.payType,
+                            onChange: e => setWorkerForm({ ...workerForm, payType: e.target.value }),
+                            className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none",
+                            children: [
+                              c.jsx("option", { value: "DAY", children: "Theo ngày công" }),
+                              c.jsx("option", { value: "HOUR", children: "Theo giờ" }),
+                              c.jsx("option", { value: "KG", children: "Khoán theo kg" }),
+                              c.jsx("option", { value: "TRIP", children: "Khoán theo chuyến" })
+                            ]
+                          })
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "grid grid-cols-2 gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsxs("label", { className: "font-bold text-slate-500 block mb-1", children: ["Đơn giá (", PAY_UNIT_SUFFIX[workerForm.payType || "DAY"], ")"] }),
+                          c.jsx("input", { type: "number", value: workerForm.baseRate, onChange: e => setWorkerForm({ ...workerForm, baseRate: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums outline-none" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Đơn giá tăng ca (đ/giờ)" }),
+                          c.jsx("input", { type: "number", value: workerForm.overtimeRate, onChange: e => setWorkerForm({ ...workerForm, overtimeRate: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums outline-none" })
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Ghi chú / Tay nghề" }),
+                      c.jsx("input", { type: "text", value: workerForm.note, onChange: e => setWorkerForm({ ...workerForm, note: e.target.value }), placeholder: "Vd: Kéo lưới giỏi, có xe máy...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold outline-none" })
+                    ]
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex gap-2 pt-2",
+                children: [
+                  c.jsx("button", { type: "button", onClick: () => setWorkerModalOpen(false), className: "flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                  c.jsx("button", { type: "button", onClick: handleSaveWorker, className: "flex-[2] py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "💾 Lưu Nhân Công" })
+                ]
+              })
+            ]
+          })
+        ]
+      }),
+
+      // ==================== MODAL: TẠO / SỬA LỆNH ĐIỀU ĐỘNG AO ====================
+      dispatchModalOpen && c.jsxs("div", {
+        className: "fixed inset-0 z-[200] flex items-center justify-center p-2.5 sm:p-4 bg-black/70 backdrop-blur-sm overflow-y-auto",
+        children: [
+          c.jsx("div", { className: "fixed inset-0", onClick: () => setDispatchModalOpen(false) }),
+          c.jsxs("div", {
+            onClick: e => e.stopPropagation(),
+            className: "relative bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-4 sm:p-5 shadow-2xl border border-orange-200 dark:border-orange-900/50 z-10 space-y-3 my-auto max-h-[92vh] overflow-y-auto",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3",
+                children: [
+                  c.jsx("h3", { className: "font-black text-base uppercase text-orange-700 dark:text-orange-400", children: editingDispatchId ? "✏️ Sửa Lệnh Điều Động Ao" : "🚚 Tạo Lệnh Điều Động Nhân Công" }),
+                  c.jsx("button", { type: "button", onClick: () => setDispatchModalOpen(false), className: "p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-pointer", children: c.jsx(_a, { size: 18 }) })
+                ]
+              }),
+
+              c.jsxs("div", {
+                className: "space-y-2.5 text-xs",
+                children: [
+                  pondOptions.length > 0 && c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Chọn Ao Tôm / Hợp Đồng Đã Ghim:" }),
+                      c.jsxs("select", {
+                        value: `${dispatchForm.pondId}::${dispatchForm.contractId}`,
+                        onChange: (e) => handleSelectPondForDispatch(e.target.value),
+                        className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none",
+                        children: [
+                          c.jsx("option", { value: "::", children: "-- Nhập ao tùy chỉnh --" }),
+                          pondOptions.map((opt, idx) => c.jsx("option", {
+                            value: `${opt.pondId}::${opt.contractId}`,
+                            children: `${opt.pondName}${opt.lat && opt.lng ? " ✓GPS" : " (Chưa GPS)"}${opt.estimatedYield ? ` • ~${Number(opt.estimatedYield).toLocaleString()}kg` : ""}`
+                          }, idx))
+                        ]
+                      })
+                    ]
+                  }),
+
+                  c.jsxs("div", {
+                    className: "grid grid-cols-2 gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Tên chủ ao / Địa điểm (*)" }),
+                          c.jsx("input", { type: "text", value: dispatchForm.pondName, onChange: e => setDispatchForm({ ...dispatchForm, pondName: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Tổ công việc" }),
+                          c.jsxs("select", {
+                            value: dispatchForm.roleId,
+                            onChange: e => {
+                              const rid = e.target.value;
+                              const pObj = (typeof WORKER_ROLE_PRESETS_V4 !== "undefined" ? WORKER_ROLE_PRESETS_V4 : []).find(x => x.id === rid);
+                              setDispatchForm(prev => ({ ...prev, roleId: rid, tools: pObj ? pObj.defaultTools : prev.tools }));
+                            },
+                            className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold",
+                            children: [
+                              c.jsx("option", { value: "HARVEST", children: "Đội gạt tôm / Kéo lưới" }),
+                              c.jsx("option", { value: "BOAT", children: "Tài xế ghe / Xe oxy" }),
+                              c.jsx("option", { value: "CARRY", children: "Đội cân & Bốc xếp" })
+                            ]
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Ngày thu hoạch" }),
+                          c.jsx("input", { type: "date", value: dispatchForm.scheduledDate, onChange: e => setDispatchForm({ ...dispatchForm, scheduledDate: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Giờ tập trung" }),
+                          c.jsx("input", { type: "time", value: dispatchForm.assemblyTime, onChange: e => setDispatchForm({ ...dispatchForm, assemblyTime: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
+                        ]
+                      })
+                    ]
+                  }),
+
+                  // GPS Pin Box inside Dispatch Modal
+                  c.jsxs("div", {
+                    className: "p-3 bg-blue-50/70 dark:bg-blue-950/30 rounded-2xl border border-blue-200 dark:border-blue-800 flex flex-wrap items-center justify-between gap-2",
+                    children: [
+                      dispatchForm.lat && dispatchForm.lng ? c.jsxs("div", {
+                        children: [
+                          c.jsx("span", { className: "text-[10px] font-black uppercase text-blue-800 dark:text-blue-300 block", children: "📍 Tọa độ bờ ao đã ghim:" }),
+                          c.jsx("span", { className: "font-mono font-bold tabular-nums text-slate-900 dark:text-white", children: `${Number(dispatchForm.lat).toFixed(6)}, ${Number(dispatchForm.lng).toFixed(6)}` })
+                        ]
+                      }) : c.jsx("span", { className: "font-bold text-amber-700 dark:text-amber-300", children: "⚠️ Chưa có tọa độ GPS ao — hãy ghim ngay!" }),
+                      c.jsx("button", {
+                        type: "button",
+                        onClick: () => setDispatchGpsPickerOpen(true),
+                        className: "px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                        children: dispatchForm.lat && dispatchForm.lng ? "🛰️ Chỉnh ghim bản đồ" : "🛰️ Ghim vị trí trên bản đồ"
+                      })
+                    ]
+                  }),
+
+                  // Multi-select Workers in crew
+                  c.jsxs("div", {
+                    className: "space-y-1.5",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex items-center justify-between",
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 uppercase text-[11px]", children: "Chọn công nhân trong tổ:" }),
+                          c.jsxs("span", { className: "text-[11px] font-black text-orange-600", children: ["Đã chọn ", dispatchForm.workerIds.length, " người"] })
+                        ]
+                      }),
+                      workersData.workers.length === 0 ? c.jsx("p", {
+                        className: "text-[11px] text-slate-400 italic",
+                        children: "Chưa có nhân công nào trong danh sách. Bạn vẫn có thể lưu lệnh điều động trước."
+                      }) : c.jsx("div", {
+                        className: "flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-2 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700",
+                        children: workersData.workers.map(wk => {
+                          const picked = dispatchForm.workerIds.includes(wk.id);
+                          return c.jsx("button", {
+                            type: "button",
+                            onClick: () => setDispatchForm(prev => ({
+                              ...prev,
+                              workerIds: picked ? prev.workerIds.filter(id => id !== wk.id) : [...prev.workerIds, wk.id]
+                            })),
+                            className: `px-2.5 py-1.5 rounded-xl text-[11px] font-bold border cursor-pointer ${picked ? "bg-orange-600 text-white border-orange-600" : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                            children: `${picked ? "✓ " : ""}${wk.name} (${WORKER_ROLE_META[wk.role || "HARVEST"]?.short || ""})`
+                          }, wk.id);
+                        })
+                      })
+                    ]
+                  }),
+
+                  c.jsxs("div", {
+                    className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Chỉ dẫn đường vào ao" }),
+                          c.jsx("input", { type: "text", value: dispatchForm.accessNote, onChange: e => setDispatchForm({ ...dispatchForm, accessNote: e.target.value }), placeholder: "Vd: Qua cầu sắt rẽ phải...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Dặn dò tổ gạt tôm" }),
+                          c.jsx("input", { type: "text", value: dispatchForm.customNote, onChange: e => setDispatchForm({ ...dispatchForm, customNote: e.target.value }), placeholder: "Vd: Mang thêm 2 bình oxy...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold" })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }),
+
+              c.jsxs("div", {
+                className: "flex gap-2 pt-2",
+                children: [
+                  c.jsx("button", { type: "button", onClick: () => setDispatchModalOpen(false), className: "flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                  c.jsx("button", { type: "button", onClick: handleSaveDispatch, className: "flex-[2] py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "💾 Lưu Lệnh Điều Động" })
+                ]
+              })
+            ]
+          })
+        ]
+      }),
+
+      // ==================== MODAL: TẠM ỨNG / TRẢ LƯƠNG ====================
+      txModal && c.jsxs("div", {
+        className: "fixed inset-0 z-[210] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm",
+        children: [
+          c.jsx("div", { className: "fixed inset-0", onClick: () => setTxModal(null) }),
+          c.jsxs("div", {
+            onClick: e => e.stopPropagation(),
+            className: "relative bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-5 shadow-2xl border border-slate-200 dark:border-slate-800 z-10 space-y-3.5",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3",
+                children: [
+                  c.jsx("h3", { className: "font-black text-base uppercase text-slate-900 dark:text-white", children: txModal.type === "ADVANCE" ? "💸 Ghi Khoản Tạm Ứng" : "✓ Thanh Toán Lương Nhân Công" }),
+                  c.jsx("button", { type: "button", onClick: () => setTxModal(null), className: "p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 cursor-pointer", children: c.jsx(_a, { size: 18 }) })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "space-y-2.5 text-xs",
+                children: [
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Nhân công" }),
+                      c.jsx("select", {
+                        value: txModal.workerId,
+                        onChange: e => setTxModal({ ...txModal, workerId: e.target.value }),
+                        className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold",
+                        children: workersData.workers.map(wk => c.jsx("option", { value: wk.id, children: `${wk.name}${wk.phone ? ` (${wk.phone})` : ""}` }, wk.id))
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "grid grid-cols-2 gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Số tiền (VNĐ)" }),
+                          c.jsx("input", { type: "number", value: txModal.amount, onChange: e => setTxModal({ ...txModal, amount: e.target.value }), placeholder: "500000", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums" })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Ngày chi" }),
+                          c.jsx("input", { type: "date", value: txModal.date, onChange: e => setTxModal({ ...txModal, date: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Ghi chú" }),
+                      c.jsx("input", { type: "text", value: txModal.note, onChange: e => setTxModal({ ...txModal, note: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold" })
+                    ]
+                  }),
+                  c.jsxs("label", {
+                    className: "flex items-center gap-2 p-2.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl cursor-pointer",
+                    children: [
+                      c.jsx("input", {
+                        type: "checkbox",
+                        checked: !!txModal.syncFinance,
+                        onChange: e => setTxModal({ ...txModal, syncFinance: e.target.checked }),
+                        className: "w-4 h-4 accent-emerald-600"
+                      }),
+                      c.jsx("span", { className: "font-bold text-emerald-800 dark:text-emerald-300", children: "Tự động ghi khoản Chi nhân công vào tab Tài chính" })
+                    ]
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex gap-2 pt-1",
+                children: [
+                  c.jsx("button", { type: "button", onClick: () => setTxModal(null), className: "flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                  c.jsx("button", { type: "button", onClick: handleSaveWorkerTx, className: "flex-[2] py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "💾 Xác Nhận Chi" })
+                ]
+              })
+            ]
+          })
+        ]
+      }),
+
+      // GPS Picker inside Dispatch Form Modal
+      dispatchGpsPickerOpen && c.jsx(Xm_LocationPickerModal, {
+        farmer: {
+          id: dispatchForm.pondId || "dispatch_form_pond",
+          name: dispatchForm.pondName || "Ao thu hoạch",
+          address: dispatchForm.pondAddress || "",
+          estimatedYield: dispatchForm.estimatedYield || "",
+          lat: dispatchForm.lat,
+          lng: dispatchForm.lng,
+          gpsAccuracy: dispatchForm.gpsAccuracy,
+          accessNote: dispatchForm.accessNote
+        },
+        onClose: () => setDispatchGpsPickerOpen(false),
+        onSaveLocation: (nLat, nLng, extra = {}) => {
+          setDispatchForm(prev => ({
+            ...prev,
+            lat: nLat,
+            lng: nLng,
+            gpsAccuracy: extra?.accuracy ?? prev.gpsAccuracy,
+            accessNote: extra?.accessNote !== undefined ? extra.accessNote : prev.accessNote
+          }));
+          setDispatchGpsPickerOpen(false);
+          notify(`✓ Đã ghim GPS ao (${nLat}, ${nLng})!`);
+        }
+      }),
+
+      // Inline GPS Picker directly from a Dispatch Card
+      inlineGpsDispatch && c.jsx(Xm_LocationPickerModal, {
+        farmer: {
+          id: inlineGpsDispatch.pondId || inlineGpsDispatch.id,
+          name: inlineGpsDispatch.pondName || "Ao thu hoạch",
+          address: inlineGpsDispatch.pondAddress || "",
+          estimatedYield: inlineGpsDispatch.estimatedYield || "",
+          lat: inlineGpsDispatch.lat,
+          lng: inlineGpsDispatch.lng,
+          gpsAccuracy: inlineGpsDispatch.gpsAccuracy,
+          accessNote: inlineGpsDispatch.accessNote || ""
+        },
+        onClose: () => setInlineGpsDispatch(null),
+        onSaveLocation: (nLat, nLng, extra = {}) => {
+          const nextAcc = extra?.accuracy ?? inlineGpsDispatch.gpsAccuracy ?? null;
+          const nextNote = extra?.accessNote !== undefined ? extra.accessNote : (inlineGpsDispatch.accessNote || "");
+          const nextDispatches = workersData.dispatches.map(d => d.id === inlineGpsDispatch.id ? {
+            ...d,
+            lat: nLat,
+            lng: nLng,
+            gpsAccuracy: nextAcc,
+            accessNote: nextNote,
+            updatedAt: new Date().toISOString()
+          } : d);
+          persistWorkersData({ ...workersData, dispatches: nextDispatches });
+          syncPondLocationEverywhere({
+            pondId: inlineGpsDispatch.pondId,
+            contractId: inlineGpsDispatch.contractId,
+            lat: nLat,
+            lng: nLng,
+            accuracy: nextAcc,
+            accessNote: nextNote
+          });
+          setInlineGpsDispatch(null);
+          notify(`✓ Đã cập nhật ghim GPS ao "${inlineGpsDispatch.pondName}" & đồng bộ Hợp đồng/Chủ ao!`);
+        }
+      }),
+
+      // Universal Zalo Share Modal
+      zaloShare && c.jsx(Xm_UniversalZaloModal, {
+        title: zaloShare.title,
+        content: zaloShare.content,
+        initialPhone: zaloShare.initialPhone,
+        shareUrl: zaloShare.shareUrl,
+        onClose: () => setZaloShare(null)
+      }),
+
+      // In-App Confirm Delete Modal
+      confirmDlg && c.jsx("div", {
+        className: "fixed inset-0 z-[250] bg-black/65 backdrop-blur-xs flex items-center justify-center p-4",
+        onClick: () => setConfirmDlg(null),
+        children: c.jsxs("div", {
+          onClick: e => e.stopPropagation(),
+          className: "bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4",
+          children: [
+            c.jsx("h3", { className: "font-black text-base uppercase text-slate-900 dark:text-white", children: confirmDlg.title }),
+            c.jsx("p", { className: "text-xs font-semibold text-slate-600 dark:text-slate-300 leading-relaxed", children: confirmDlg.msg }),
+            c.jsxs("div", {
+              className: "flex gap-2 justify-end pt-1",
+              children: [
+                c.jsx("button", { type: "button", onClick: () => setConfirmDlg(null), className: "px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => {
+                    const fn = confirmDlg.onConfirm;
+                    setConfirmDlg(null);
+                    if (fn) fn();
+                  },
+                  className: `px-4 py-2 text-white rounded-xl font-black text-xs cursor-pointer ${confirmDlg.danger ? "bg-rose-600 hover:bg-rose-700" : "bg-emerald-600 hover:bg-emerald-700"}`,
+                  children: confirmDlg.confirmText || "Xác nhận"
+                })
+              ]
+            })
+          ]
+        })
+      }),
+
+      // Non-blocking Toast Banner
+      toast && c.jsx("div", {
+        className: `fixed top-16 right-3 left-3 sm:left-auto sm:max-w-md z-[260] p-3.5 rounded-2xl shadow-2xl text-xs font-black text-white ${toast.type === "error" ? "bg-rose-600" : "bg-emerald-700"}`,
+        children: toast.msg
+      })
+    ]
+  });
+};
+
+const BmMainApp=()=>{const[S,b]=w.useState(()=>{const u=me.getUser();if(u)u.role="OWNER";return u;}),[p,f]=w.useState(!0),[O,D]=w.useState(()=>me.getUser()?re.DASHBOARD:re.AUTH),[U,Y]=w.useState(null);w.useEffect(()=>{const applyTheme=()=>{try{const st=me.getSettings();st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}catch(e){}};applyTheme();window.addEventListener("app-data-updated",applyTheme);window.addEventListener("cloud_data_synced",applyTheme);const _=D1(Pu,async z=>{var L,te;if(z){const Q=await Mn.loadFromCloud(z.uid);if(Q){me.restoreFromCloud(Q);applyTheme();if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("login_cloud_restore");}}const se=(Q==null?void 0:Q.user)||{uid:z.uid,phoneNumber:z.phoneNumber||"",displayName:z.displayName||"Người dùng",photoURL:z.photoURL||"",role:"OWNER",subscriptionStatus:((te=Q==null?void 0:Q.user)==null?void 0:te.subscriptionStatus)||"FREE",createdAt:new Date().toISOString()};se.role="OWNER";me.setUser(se);me.syncAllToCloud(z.uid);b(se);D(re.DASHBOARD)}else me.setUser(null),b(null),D(re.AUTH);f(!1)});return()=>{_();window.removeEventListener("app-data-updated",applyTheme);window.removeEventListener("cloud_data_synced",applyTheme);}},[]);const A=_=>{if(S){const z={...S,role:"OWNER"};me.setUser(z),b(z),D(re.DASHBOARD)}};if(p)return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center text-white",children:[c.jsx("div",{className:"w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"}),c.jsx("p",{className:"font-black uppercase italic text-sm",children:"Đang bảo mật kết nối..."})]});if(!S||O===re.AUTH)return c.jsx(Hm,{onSelect:A});const v=()=>{const _={setRoute:D,role:S.role};switch(O){case re.DASHBOARD:return c.jsx(Kd,{..._});case re.OVERVIEW:return c.jsx(Xm_OverviewTab,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.WEIGHING:return c.jsx(Om,{..._});case re.HISTORY:return c.jsx(_m,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.SESSION_DETAIL:return c.jsx(Dm,{..._,sessionId:U||""});case re.SALES:return c.jsx(Xm_SalesScreen,{..._,onViewDetail:z=>{Y(z);D(re.SALES_DETAIL);}});case re.FINANCE:return c.jsx(Xm_FinanceScreen,{..._});case re.CUSTOMERS:return c.jsx(Xm_CustomersScreen,{..._,onSelectForSale:z=>{D(re.SALES);}});case re.SALES_DETAIL:return c.jsx(Xm_SaleDetailScreen,{..._,sale:(typeof U==="object"?U:(me.getSales().find(s=>s.id===(typeof U==="string"?U:U?.id))||null)),onBack:()=>D(re.SALES)});case re.FARMERS:return c.jsx(Cm,{..._});case re.WORKERS:return c.jsx(Xm_WorkersScreen,{..._});case re.VEHICLES:return c.jsx(km,{..._});case re.INFO_CONFIG:return c.jsx(Xm_TraderConfig,{..._});case re.SETTINGS:return c.jsx(Um,{..._});case re.BLUETOOTH:return c.jsx(Rm,{..._});default:return c.jsx(Kd,{..._})}};return c.jsx(Tm,{activeRoute:O,setRoute:D,title:"Tôm Càng Xanh",role:S.role,onLogout:async()=>{await Mn.logout()},children:v()})},
 Bm=()=>{
   const _urlParams=new URLSearchParams(window.location.search);
   let _portalContractId=_urlParams.get("contract")||_urlParams.get("hd")||_urlParams.get("d")||_urlParams.get("c")||_urlParams.get("data")||_urlParams.get("id");

@@ -1,5 +1,5 @@
 // Service Worker for Vua Tôm Càng Xanh PWA - Version 7
-const CACHE_NAME = 'tom-cang-xanh-v25_freeze_and_full_fix';
+const CACHE_NAME = 'tom-cang-xanh-v27_gps_workers_tab';
 const STATIC_ASSETS = [
   "/",
   "/index.html",
