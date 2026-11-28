@@ -13321,13 +13321,19 @@ const SALE_GROUPS = {
 const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
   const [activeGroup, setActiveGroup] = w.useState("FACTORY");
   const [buyersList, setBuyersList] = w.useState([]);
+  const [salesList, setSalesList] = w.useState([]);
   const [searchTerm, setSearchTerm] = w.useState("");
+  const [onlyDebtors, setOnlyDebtors] = w.useState(false);
   const [showModal, setShowModal] = w.useState(false);
   const [editingBuyer, setEditingBuyer] = w.useState(null);
   const [gpsLoading, setGpsLoading] = w.useState(false);
   const [gpsSuccess, setGpsSuccess] = w.useState(false);
   const [custToast, setCustToast] = w.useState(null);
   const [confirmDeleteBuyerObj, setConfirmDeleteBuyerObj] = w.useState(null);
+  const [debtModalBuyer, setDebtModalBuyer] = w.useState(null);
+  const [debtPayAmount, setDebtPayAmount] = w.useState("");
+  const [debtTargetSaleId, setDebtTargetSaleId] = w.useState("FIFO");
+  const [debtZaloModal, setDebtZaloModal] = w.useState(null);
 
   const showCustToast = (msg, type = "success") => {
     setCustToast({ msg, type });
@@ -13353,6 +13359,7 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
   const refreshList = () => {
     try {
       setBuyersList(me.getBuyers());
+      setSalesList(me.getSales ? me.getSales() : []);
     } catch(e) {}
   };
 
@@ -13366,10 +13373,66 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
     };
   }, []);
 
+  const getBuyerDebtStats = w.useCallback((buyer) => {
+    const cleanBuyerName = (buyer && buyer.name ? String(buyer.name).trim().toLowerCase() : "");
+    const relatedSales = (salesList || []).filter(s => {
+      if (!s) return false;
+      if (buyer && buyer.id && s.buyerId && s.buyerId === buyer.id) return true;
+      const sn = s.buyerName ? String(s.buyerName).trim().toLowerCase() : "";
+      return Boolean(cleanBuyerName && sn && sn === cleanBuyerName);
+    });
+    const openDebtSales = relatedSales
+      .map(s => {
+        const bd = typeof getFinanceSaleBreakdown_v4 === "function" ? getFinanceSaleBreakdown_v4(s) : { realizedMoney: Number(s.paidAmount || 0), debtMoney: Number(s.remainingDebt || 0) };
+        return { sale: s, debtMoney: bd.debtMoney, realizedMoney: bd.realizedMoney };
+      })
+      .filter(x => x.debtMoney > 0)
+      .sort((a, b) => new Date(a.sale.date || 0) - new Date(b.sale.date || 0));
+    const salesDebt = openDebtSales.reduce((acc, x) => acc + x.debtMoney, 0);
+    const manualDebt = Math.max(0, Number((buyer && buyer.debtAmount) || 0));
+    const totalDebt = salesDebt + manualDebt;
+    return {
+      relatedSales,
+      openDebtSales,
+      salesDebt,
+      manualDebt,
+      totalDebt,
+      debtCount: openDebtSales.length
+    };
+  }, [salesList]);
+
+  const allDebtSummary = w.useMemo(() => {
+    let totalDebtAll = 0;
+    let debtorCount = 0;
+    const orphanDebtSales = [];
+    const matchedSaleIds = new Set();
+    buyersList.forEach(b => {
+      const st = getBuyerDebtStats(b);
+      if (st.totalDebt > 0) {
+        totalDebtAll += st.totalDebt;
+        debtorCount++;
+      }
+      st.openDebtSales.forEach(x => matchedSaleIds.add(x.sale.id));
+    });
+    (salesList || []).forEach(s => {
+      if (!s || matchedSaleIds.has(s.id)) return;
+      const bd = typeof getFinanceSaleBreakdown_v4 === "function" ? getFinanceSaleBreakdown_v4(s) : { debtMoney: Number(s.remainingDebt || 0) };
+      if (bd.debtMoney > 0) {
+        totalDebtAll += bd.debtMoney;
+        orphanDebtSales.push({ sale: s, debtMoney: bd.debtMoney, realizedMoney: bd.realizedMoney });
+      }
+    });
+    return { totalDebtAll, debtorCount, orphanDebtSales };
+  }, [buyersList, salesList, getBuyerDebtStats]);
+
   const filteredList = w.useMemo(() => {
     return buyersList.filter(b => {
       const matchGrp = (b.targetGroup || "FACTORY") === activeGroup;
       if (!matchGrp) return false;
+      if (onlyDebtors) {
+        const st = getBuyerDebtStats(b);
+        if (st.totalDebt <= 0) return false;
+      }
       if (!searchTerm) return true;
       const term = searchTerm.toLowerCase();
       return (
@@ -13379,7 +13442,7 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
         (b.address && b.address.toLowerCase().includes(term))
       );
     });
-  }, [buyersList, activeGroup, searchTerm]);
+  }, [buyersList, activeGroup, searchTerm, onlyDebtors, getBuyerDebtStats]);
 
   const groupCounts = w.useMemo(() => {
     const counts = { FACTORY: 0, RETAIL: 0, MARKET: 0 };
@@ -13404,9 +13467,8 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
       longitude: "",
       note: "",
       shrimpPrices: grp === "FACTORY" ? [
-        { id: "sp_init1", typeName: "Tôm càng sen size lớn (10-15 c/kg)", price: 220000 },
-        { id: "sp_init2", typeName: "Tôm càng xô công nghiệp", price: 175000 },
-        { id: "sp_init3", typeName: "Tôm lột cấp đông xuất khẩu", price: 140000 }
+        { id: "sp_init1", typeName: "Càng sen", price: 220000 },
+        { id: "sp_init2", typeName: "Càng xào", price: 175000 }
       ] : [],
       defaultVehiclePlate: "",
       defaultDriverPhone: "",
@@ -13431,8 +13493,8 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
       shrimpPrices: Array.isArray(buyer.shrimpPrices) && buyer.shrimpPrices.length > 0 
         ? [...buyer.shrimpPrices] 
         : [
-            { id: "sp_1", typeName: "Tôm càng sen size lớn (10-15 c/kg)", price: 220000 },
-            { id: "sp_2", typeName: "Tôm càng xô công nghiệp", price: 175000 }
+            { id: "sp_1", typeName: "Càng sen", price: 220000 },
+            { id: "sp_2", typeName: "Càng xào", price: 175000 }
           ],
       defaultVehiclePlate: buyer.defaultVehiclePlate || "",
       defaultDriverPhone: buyer.defaultDriverPhone || "",
@@ -13639,6 +13701,63 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
           }),
 
           c.jsxs("div", {
+            className: "p-3.5 rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-gradient-to-r from-rose-50 via-amber-50/70 to-white dark:from-rose-950/30 dark:via-gray-900 dark:to-gray-900 flex flex-wrap items-center justify-between gap-2.5",
+            children: [
+              c.jsxs("div", {
+                className: "flex items-center gap-2.5",
+                children: [
+                  c.jsx("span", { className: "text-xl", children: "📒" }),
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("span", { className: "text-[10px] font-black uppercase text-rose-700 dark:text-rose-400 block", children: "Quản Lý Công Nợ Khách Hàng" }),
+                      c.jsxs("div", {
+                        className: "text-sm font-black font-mono text-rose-600 dark:text-rose-300",
+                        children: [
+                          Number(allDebtSummary.totalDebtAll || 0).toLocaleString("vi-VN"),
+                          " đ",
+                          c.jsxs("span", { className: "text-[11px] font-sans font-bold text-gray-500 ml-1.5", children: ["(", allDebtSummary.debtorCount, " khách đang nợ)"] })
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex items-center gap-2",
+                children: [
+                  allDebtSummary.orphanDebtSales.length > 0 && c.jsx("button", {
+                    type: "button",
+                    onClick: () => {
+                      allDebtSummary.orphanDebtSales.forEach(item => {
+                        const s = item.sale;
+                        const cleanName = (s.buyerName || "Khách Ghi Nợ").trim();
+                        const newId = "b_" + Date.now().toString() + "_" + Math.random().toString(36).slice(2, 5);
+                        me.addBuyer({
+                          id: newId,
+                          targetGroup: s.targetGroup || "RETAIL",
+                          name: cleanName,
+                          phone: s.buyerPhone || "",
+                          address: s.buyerAddress || ""
+                        });
+                      });
+                      refreshList();
+                      showCustToast("✓ Đã đồng bộ khách có đơn nợ vào Danh bạ!");
+                    },
+                    className: "px-2.5 py-1.5 rounded-xl bg-amber-500 text-blue-950 font-black text-[10px] uppercase cursor-pointer",
+                    children: ["+ Đồng bộ ", allDebtSummary.orphanDebtSales.length, " đơn nợ"]
+                  }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => setOnlyDebtors(!onlyDebtors),
+                    className: `px-3 py-1.5 rounded-xl text-[11px] font-black uppercase border cursor-pointer transition-all ${onlyDebtors ? "bg-rose-600 text-white border-rose-600 shadow-sm" : "bg-white dark:bg-gray-800 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800"}`,
+                    children: onlyDebtors ? "✓ Đang lọc khách nợ" : "Chỉ xem khách nợ"
+                  })
+                ]
+              })
+            ]
+          }),
+
+          c.jsxs("div", {
             className: "p-3.5 rounded-2xl border flex items-center justify-between text-xs " + curGrpDef.badgeBg,
             children: [
               c.jsxs("div", {
@@ -13832,16 +13951,35 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
                   }),
 
                   c.jsxs("div", {
-                    className: "pt-2 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2",
+                    className: "pt-2 border-t border-gray-100 dark:border-gray-800 flex flex-wrap items-center justify-between gap-2",
                     children: [
-                      buyer.debtAmount > 0 ? c.jsxs("span", {
-                        className: "text-[11px] font-bold text-red-600 dark:text-red-400 font-mono",
-                        children: ["Nợ: ", Number(buyer.debtAmount).toLocaleString("vi-VN"), " đ"]
-                      }) : c.jsx("span", {
-                        className: "text-[11px] text-gray-400 font-medium",
-                        children: "Công nợ: 0 đ"
-                      }),
+                      (() => {
+                        const dStats = getBuyerDebtStats(buyer);
+                        return c.jsxs("div", {
+                          className: "flex items-center gap-2 flex-wrap",
+                          children: [
+                            dStats.totalDebt > 0 ? c.jsxs("span", {
+                              className: "px-2.5 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-[11px] font-black text-rose-600 dark:text-rose-400 font-mono",
+                              children: ["Nợ: ", Number(dStats.totalDebt).toLocaleString("vi-VN"), " đ", dStats.debtCount > 0 ? ` (${dStats.debtCount} đơn)` : ""]
+                            }) : c.jsxs("span", {
+                              className: "text-[11px] text-gray-400 font-medium",
+                              children: ["Công nợ: 0 đ", dStats.relatedSales.length > 0 ? ` (${dStats.relatedSales.length} đơn)` : ""]
+                            }),
+                            (dStats.totalDebt > 0 || dStats.relatedSales.length > 0) && c.jsx("button", {
+                              type: "button",
+                              onClick: () => {
+                                setDebtModalBuyer(buyer);
+                                setDebtPayAmount(dStats.totalDebt > 0 ? String(dStats.totalDebt) : "");
+                                setDebtTargetSaleId("FIFO");
+                              },
+                              className: `px-2.5 py-1.5 rounded-xl text-[11px] font-black uppercase cursor-pointer transition-all active:scale-95 ${dStats.totalDebt > 0 ? "bg-rose-600 hover:bg-rose-700 text-white shadow-xs" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"}`,
+                              children: dStats.totalDebt > 0 ? "💵 Thu Nợ" : "📒 Lịch sử"
+                            })
+                          ]
+                        });
+                      })(),
                       c.jsxs("button", {
+                        type: "button",
                         onClick: () => handleStartSaleForBuyer(buyer),
                         className: "px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-black uppercase tracking-wider shadow-md shadow-blue-500/20 active:scale-95 transition-all inline-flex items-center gap-1.5 cursor-pointer",
                         children: [
@@ -13907,8 +14045,8 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
                               targetGroup: grp.id,
                               shrimpPrices: grp.id === "FACTORY" && (!prev.shrimpPrices || prev.shrimpPrices.length === 0)
                                 ? [
-                                    { id: "sp_1", typeName: "Tôm càng sen size lớn (10-15 c/kg)", price: 220000 },
-                                    { id: "sp_2", typeName: "Tôm càng xô công nghiệp", price: 175000 }
+                                    { id: "sp_1", typeName: "Càng sen", price: 220000 },
+                                    { id: "sp_2", typeName: "Càng xào", price: 175000 }
                                   ]
                                 : prev.shrimpPrices
                             }));
@@ -14041,15 +14179,13 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
                       children: [
                         c.jsx("span", { className: "text-[10px] text-gray-500 font-bold self-center", children: "Gợi ý nhanh:" }),
                         [
-                          { name: "Tôm càng sen lớn (10-15 c/kg)", price: 220000 },
-                          { name: "Tôm càng xô", price: 175000 },
-                          { name: "Tôm lột cấp đông", price: 140000 },
-                          { name: "Tôm thẻ size 30", price: 165000 }
+                          { name: "Càng sen", price: 220000 },
+                          { name: "Càng xào", price: 175000 }
                         ].map((preset, pIdx) => c.jsx("button", {
                           key: pIdx,
                           type: "button",
                           onClick: () => addShrimpPriceRow(preset.name, preset.price),
-                          className: "px-2 py-0.5 bg-white dark:bg-gray-800 hover:bg-indigo-50 text-[10px] rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium cursor-pointer",
+                          className: "px-2.5 py-0.5 bg-white dark:bg-gray-800 hover:bg-indigo-50 text-[11px] rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-bold cursor-pointer",
                           children: "+ " + preset.name
                         }))
                       ]
@@ -14196,8 +14332,1218 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
             })
           ]
         })
+      }),
+
+      debtModalBuyer && (() => {
+        const dStats = getBuyerDebtStats(debtModalBuyer);
+        const handleCollectDebt = () => {
+          const payNum = Math.max(0, Math.round(Number(debtPayAmount) || 0));
+          if (payNum <= 0) {
+            showCustToast("Vui lòng nhập số tiền thu nợ hợp lệ!", "error");
+            return;
+          }
+          let leftToApply = payNum;
+          const orderedTargets = debtTargetSaleId !== "FIFO"
+            ? [
+                ...dStats.openDebtSales.filter(x => x.sale.id === debtTargetSaleId),
+                ...dStats.openDebtSales.filter(x => x.sale.id !== debtTargetSaleId)
+              ]
+            : dStats.openDebtSales;
+
+          orderedTargets.forEach(item => {
+            if (leftToApply <= 0) return;
+            const s = item.sale;
+            const totalMoney = Number(s.totalMoney || 0);
+            const applyHere = Math.min(leftToApply, item.debtMoney);
+            const newPaid = Math.min(totalMoney, item.realizedMoney + applyHere);
+            const newDebt = Math.max(0, totalMoney - newPaid);
+            const nextStatus = newDebt <= 0 ? "COMPLETED" : (s.targetGroup === "FACTORY" ? "PARTIAL_TRANSFER" : "PARTIAL");
+            me.updateSale(s.id, {
+              paidAmount: newPaid,
+              remainingDebt: newDebt,
+              remainingTransfer: s.targetGroup === "FACTORY" ? newDebt : 0,
+              isPaidFull: newDebt <= 0,
+              status: nextStatus,
+              settledAt: new Date().toISOString()
+            });
+            leftToApply -= applyHere;
+          });
+
+          if (leftToApply > 0 && dStats.manualDebt > 0) {
+            const nextManual = Math.max(0, dStats.manualDebt - leftToApply);
+            me.addBuyer({ ...debtModalBuyer, debtAmount: nextManual });
+          }
+
+          refreshList();
+          const collectedReal = Math.min(payNum, dStats.totalDebt);
+          showCustToast("✅ Đã thu nợ +" + Number(collectedReal).toLocaleString("vi-VN") + " đ cho " + debtModalBuyer.name + " • Đã đồng bộ vào Tài chính!");
+          if (collectedReal >= dStats.totalDebt) {
+            setDebtModalBuyer(null);
+          } else {
+            setDebtPayAmount(String(Math.max(0, dStats.totalDebt - collectedReal)));
+          }
+        };
+
+        const handleSendDebtZalo = () => {
+          let txt = "📒 [THÔNG BÁO CÔNG NỢ TÔM CÀNG XANH]\n";
+          txt += "Khách hàng: " + (debtModalBuyer.name || "") + "\n";
+          if (debtModalBuyer.phone) txt += "SĐT: " + debtModalBuyer.phone + "\n";
+          txt += "--------------------------------\n";
+          dStats.openDebtSales.forEach((item, idx) => {
+            const sl = item.sale;
+            const dStr = sl.saleDateStr ? sl.saleDateStr.split("-").reverse().join("/") : new Date(sl.date || Date.now()).toLocaleDateString("vi-VN");
+            txt += (idx + 1) + ". Đơn " + (sl.code || "") + " (" + dStr + "): Tổng " + Number(sl.totalMoney || 0).toLocaleString("vi-VN") + "đ";
+            if (item.realizedMoney > 0) txt += " • Đã trả " + Number(item.realizedMoney).toLocaleString("vi-VN") + "đ";
+            txt += " • Còn nợ: " + Number(item.debtMoney).toLocaleString("vi-VN") + "đ\n";
+          });
+          if (dStats.manualDebt > 0) {
+            txt += "• Nợ cũ tồn: " + Number(dStats.manualDebt).toLocaleString("vi-VN") + "đ\n";
+          }
+          txt += "--------------------------------\n";
+          txt += "TỔNG CÒN NỢ: " + Number(dStats.totalDebt).toLocaleString("vi-VN") + " VNĐ\n";
+          txt += "Nhờ anh/chị thanh toán giúp vựa ạ. Xin cảm ơn!";
+          copyToClipboardRobust(txt);
+          setDebtZaloModal({
+            title: "Nhắc Nợ Zalo • " + (debtModalBuyer.name || ""),
+            content: txt,
+            phone: debtModalBuyer.phone || ""
+          });
+        };
+
+        return c.jsx("div", {
+          className: "fixed inset-0 z-[120] bg-black/65 backdrop-blur-xs flex items-center justify-center p-3 overflow-y-auto",
+          onClick: () => setDebtModalBuyer(null),
+          children: c.jsxs("div", {
+            onClick: e => e.stopPropagation(),
+            className: "bg-white dark:bg-gray-900 rounded-[28px] max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl border border-rose-200 dark:border-rose-900 overflow-hidden my-auto",
+            children: [
+              c.jsxs("div", {
+                className: "bg-gradient-to-r from-rose-700 to-rose-600 text-white p-4 flex items-center justify-between shrink-0",
+                children: [
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("h3", { className: "font-black text-base uppercase tracking-tight", children: "📒 Quản Lý Công Nợ & Thu Nợ" }),
+                      c.jsxs("p", { className: "text-xs opacity-90 font-bold", children: [debtModalBuyer.name, debtModalBuyer.phone ? (" • " + debtModalBuyer.phone) : ""] })
+                    ]
+                  }),
+                  c.jsx("button", {
+                    type: "button",
+                    onClick: () => setDebtModalBuyer(null),
+                    className: "p-1.5 bg-white/15 hover:bg-white/25 rounded-full cursor-pointer text-white font-bold text-lg leading-none",
+                    children: "×"
+                  })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex-1 overflow-y-auto p-4 space-y-4",
+                children: [
+                  c.jsxs("div", {
+                    className: "p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 flex items-center justify-between",
+                    children: [
+                      c.jsxs("div", {
+                        children: [
+                          c.jsx("span", { className: "text-[10px] font-black uppercase text-rose-700 dark:text-rose-400 block", children: "Tổng Công Nợ Hiện Tại" }),
+                          c.jsxs("span", { className: "text-2xl font-black font-mono text-rose-600 dark:text-rose-300", children: [Number(dStats.totalDebt).toLocaleString("vi-VN"), " đ"] })
+                        ]
+                      }),
+                      dStats.totalDebt > 0 && c.jsx("button", {
+                        type: "button",
+                        onClick: handleSendDebtZalo,
+                        className: "px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase shadow-sm cursor-pointer",
+                        children: "📲 Gửi Zalo"
+                      })
+                    ]
+                  }),
+
+                  dStats.totalDebt > 0 && c.jsxs("div", {
+                    className: "p-3.5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 space-y-2.5",
+                    children: [
+                      c.jsx("label", { className: "text-xs font-black uppercase text-emerald-800 dark:text-emerald-300 block", children: "💵 Thu Tiền Nợ Khách Trả" }),
+                      c.jsxs("div", {
+                        className: "flex gap-2",
+                        children: [
+                          c.jsx("input", {
+                            type: "number",
+                            placeholder: "Nhập số tiền khách trả...",
+                            value: debtPayAmount,
+                            onChange: e => setDebtPayAmount(e.target.value),
+                            className: "flex-1 p-2.5 rounded-xl bg-white dark:bg-gray-900 border-2 border-emerald-400 font-mono font-black text-lg text-emerald-800 dark:text-emerald-200 outline-none"
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: handleCollectDebt,
+                            className: "px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase shadow-md cursor-pointer shrink-0",
+                            children: "✓ Thu Nợ"
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "flex flex-wrap gap-1.5",
+                        children: [
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => setDebtPayAmount(String(Math.round(dStats.totalDebt / 2))),
+                            className: "px-2.5 py-1 bg-white dark:bg-gray-800 border border-emerald-300 rounded-lg text-[11px] font-bold text-emerald-700 dark:text-emerald-300 cursor-pointer",
+                            children: "Trả 50%"
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => setDebtPayAmount(String(dStats.totalDebt)),
+                            className: "px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[11px] font-black cursor-pointer",
+                            children: "Tất toán 100%"
+                          })
+                        ]
+                      })
+                    ]
+                  }),
+
+                  c.jsxs("div", {
+                    className: "space-y-2",
+                    children: [
+                      c.jsxs("h4", { className: "text-xs font-black uppercase text-gray-600 dark:text-gray-400", children: ["Các Đơn Còn Nợ (", dStats.openDebtSales.length, ")"] }),
+                      dStats.openDebtSales.length === 0 ? c.jsx("p", {
+                        className: "text-xs text-gray-400 italic py-2",
+                        children: "Không còn đơn hàng nào ghi nợ."
+                      }) : dStats.openDebtSales.map(item => {
+                        const sl = item.sale;
+                        const dStr = sl.saleDateStr ? sl.saleDateStr.split("-").reverse().join("/") : new Date(sl.date || Date.now()).toLocaleDateString("vi-VN");
+                        const isSel = debtTargetSaleId === sl.id;
+                        return c.jsxs("div", {
+                          key: sl.id,
+                          className: `p-3 rounded-2xl border space-y-1.5 ${isSel ? "border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/20" : "border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50"}`,
+                          children: [
+                            c.jsxs("div", {
+                              className: "flex items-center justify-between gap-2",
+                              children: [
+                                c.jsxs("div", {
+                                  children: [
+                                    c.jsxs("span", { className: "font-mono font-black text-xs text-blue-600 dark:text-blue-400", children: [sl.code, " • ", dStr] }),
+                                    c.jsx("div", { className: "text-xs font-bold text-gray-800 dark:text-gray-200", children: sl.riceType || "Đơn bán tôm" })
+                                  ]
+                                }),
+                                c.jsx("button", {
+                                  type: "button",
+                                  onClick: () => {
+                                    setDebtTargetSaleId(sl.id);
+                                    setDebtPayAmount(String(item.debtMoney));
+                                  },
+                                  className: "px-2.5 py-1 bg-white dark:bg-gray-900 border border-rose-300 text-rose-600 rounded-lg text-[10px] font-black cursor-pointer",
+                                  children: "Chọn thu đơn này"
+                                })
+                              ]
+                            }),
+                            c.jsxs("div", {
+                              className: "flex flex-wrap gap-x-3 text-[11px] font-mono",
+                              children: [
+                                c.jsxs("span", { children: ["Tổng: ", Number(sl.totalMoney || 0).toLocaleString("vi-VN"), "đ"] }),
+                                c.jsxs("span", { className: "text-emerald-600", children: ["Đã trả: ", Number(item.realizedMoney).toLocaleString("vi-VN"), "đ"] }),
+                                c.jsxs("span", { className: "font-black text-rose-600", children: ["Còn nợ: ", Number(item.debtMoney).toLocaleString("vi-VN"), "đ"] })
+                              ]
+                            })
+                          ]
+                        });
+                      })
+                    ]
+                  }),
+
+                  dStats.relatedSales.filter(s => {
+                    const bd = typeof getFinanceSaleBreakdown_v4 === "function" ? getFinanceSaleBreakdown_v4(s) : { debtMoney: 0 };
+                    return bd.debtMoney <= 0;
+                  }).length > 0 && c.jsxs("div", {
+                    className: "space-y-1.5 pt-2 border-t border-gray-100 dark:border-gray-800",
+                    children: [
+                      c.jsx("h4", { className: "text-[11px] font-black uppercase text-gray-400", children: "Đơn Đã Thanh Toán Gần Đây" }),
+                      dStats.relatedSales.filter(s => {
+                        const bd = typeof getFinanceSaleBreakdown_v4 === "function" ? getFinanceSaleBreakdown_v4(s) : { debtMoney: 0 };
+                        return bd.debtMoney <= 0;
+                      }).slice(0, 5).map(sl => c.jsxs("div", {
+                        key: sl.id,
+                        className: "flex justify-between items-center text-[11px] p-2 rounded-xl bg-gray-50 dark:bg-gray-800/40",
+                        children: [
+                          c.jsxs("span", { className: "font-bold text-gray-600 dark:text-gray-300", children: [sl.code, " • ", sl.saleDateStr ? sl.saleDateStr.split("-").reverse().join("/") : new Date(sl.date || Date.now()).toLocaleDateString("vi-VN")] }),
+                          c.jsxs("span", { className: "font-mono font-bold text-emerald-600", children: [Number(sl.totalMoney || 0).toLocaleString("vi-VN"), "đ ✓"] })
+                        ]
+                      }))
+                    ]
+                  })
+                ]
+              })
+            ]
+          })
+        });
+      })(),
+
+      debtZaloModal && c.jsx(Xm_UniversalZaloModal, {
+        title: debtZaloModal.title,
+        content: debtZaloModal.content,
+        initialPhone: debtZaloModal.phone,
+        onClose: () => setDebtZaloModal(null)
+      }),
+
+      custToast && c.jsx("div", {
+        className: `fixed top-16 right-3 left-3 sm:left-auto sm:max-w-md z-[260] p-3.5 rounded-2xl shadow-2xl text-xs font-black text-white ${custToast.type === "error" ? "bg-red-600" : "bg-emerald-600"}`,
+        children: custToast.msg
+      }),
+
+      confirmDeleteBuyerObj && c.jsx("div", {
+        className: "fixed inset-0 z-[220] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4",
+        onClick: () => setConfirmDeleteBuyerObj(null),
+        children: c.jsxs("div", {
+          onClick: e => e.stopPropagation(),
+          className: "bg-white dark:bg-gray-900 rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-gray-200 dark:border-gray-800 space-y-4",
+          children: [
+            c.jsx("h3", { className: "font-black text-base text-red-600 uppercase", children: "Xóa đối tác?" }),
+            c.jsxs("p", { className: "text-xs font-bold text-gray-700 dark:text-gray-300", children: ["Xóa ", confirmDeleteBuyerObj.name, " khỏi danh bạ?"] }),
+            c.jsxs("div", {
+              className: "flex gap-2 justify-end",
+              children: [
+                c.jsx("button", { type: "button", onClick: () => setConfirmDeleteBuyerObj(null), className: "px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => {
+                    me.deleteBuyer(confirmDeleteBuyerObj.id);
+                    refreshList();
+                    setConfirmDeleteBuyerObj(null);
+                    showCustToast("✓ Đã xóa đối tác!");
+                  },
+                  className: "px-4 py-2 bg-red-600 text-white rounded-xl font-black text-xs cursor-pointer",
+                  children: "Xóa"
+                })
+              ]
+            })
+          ]
+        })
       })
     ]
+  });
+};
+
+// ==================== FACTORY SALES HELPERS & MODAL (TÔM CÀNG OXY / CTY) ====================
+const fmtKgFixed2_v5 = (n) => {
+  const num = Number(n || 0);
+  if (!Number.isFinite(num) || num <= 0) return "0.00";
+  return (Math.round(num * 100) / 100).toFixed(2);
+};
+
+const fmtKgSmart2_v5 = (n) => {
+  const num = Number(n || 0);
+  if (!Number.isFinite(num) || num <= 0) return "0";
+  const r = Math.round(num * 100) / 100;
+  return Number.isInteger(r) ? String(r) : String(r);
+};
+
+const createEmptyFactoryLot_v5 = (idx = 0) => ({
+  id: "lot_" + Date.now() + "_" + idx + "_" + Math.random().toString(36).slice(2, 6),
+  lotCode: "",
+  category: "",
+  sizeLabel: "",
+  kg: "",
+  brokenBrickPct: "",
+  defectNote: "",
+  deductionPerKg: "",
+  unitPrice: ""
+});
+
+const normalizeFactoryLotsFromSale_v5 = (sale) => {
+  if (sale && Array.isArray(sale.factoryLots) && sale.factoryLots.length > 0) {
+    return sale.factoryLots.map((l, i) => ({
+      id: l.id || ("lot_" + i + "_" + Date.now()),
+      lotCode: l.lotCode || "",
+      category: l.category || "TÔM CÀNG OXY",
+      sizeLabel: l.sizeLabel || "",
+      kg: l.kg !== undefined && l.kg !== null && Number(l.kg) > 0 ? String(l.kg) : "",
+      brokenBrickPct: l.brokenBrickPct !== undefined && l.brokenBrickPct !== null ? String(l.brokenBrickPct) : "",
+      defectNote: l.defectNote || "",
+      deductionPerKg: l.deductionPerKg !== undefined && l.deductionPerKg !== null && Number(l.deductionPerKg) > 0 ? String(l.deductionPerKg) : "",
+      unitPrice: l.unitPrice !== undefined && l.unitPrice !== null && Number(l.unitPrice) > 0 ? String(l.unitPrice) : ""
+    }));
+  }
+  if (sale && Array.isArray(sale.batches) && sale.batches.length > 0) {
+    return sale.batches.map((b, i) => ({
+      id: "lot_b_" + i + "_" + Date.now(),
+      lotCode: b.lotCode || "",
+      category: b.category || b.typeName || "TÔM CÀNG OXY",
+      sizeLabel: b.sizeLabel || "",
+      kg: b.net ? String(b.net) : "",
+      brokenBrickPct: b.brokenBrickPct ? String(b.brokenBrickPct) : "",
+      defectNote: b.defectNote || "",
+      deductionPerKg: b.deductionPerKg ? String(b.deductionPerKg) : "",
+      unitPrice: b.unitPrice ? String(b.unitPrice) : ""
+    }));
+  }
+  const initKg = Number((sale && (sale.totalNet || sale.factoryDeliveredKg || sale.totalGross)) || 0);
+  const initPrice = Number((sale && sale.unitPrice) || 0);
+  return [{
+    id: "lot_init_" + Date.now(),
+    lotCode: "",
+    category: (sale && sale.riceType) ? sale.riceType : "TÔM CÀNG OXY",
+    sizeLabel: "",
+    kg: initKg > 0 ? String(initKg) : "",
+    brokenBrickPct: "",
+    defectNote: "",
+    deductionPerKg: "",
+    unitPrice: initPrice > 0 ? String(initPrice) : ""
+  }];
+};
+
+const calcFactorySummary_v5 = (lots, feeMode, feePerKg, feeFixed, advanceAmount) => {
+  const safeLots = Array.isArray(lots) ? lots : [];
+  const computedLots = safeLots.map(l => {
+    const kgNum = Math.max(0, Number(l.kg) || 0);
+    const priceNum = Math.max(0, Number(l.unitPrice) || 0);
+    const dedNum = Math.max(0, Number(l.deductionPerKg) || 0);
+    const money = Math.round(kgNum * priceNum);
+    return {
+      ...l,
+      kgNum,
+      priceNum,
+      dedNum,
+      money
+    };
+  });
+  const totalKg = Math.round(computedLots.reduce((acc, l) => acc + l.kgNum, 0) * 100) / 100;
+  const grossTotalMoney = computedLots.reduce((acc, l) => acc + l.money, 0);
+  const perKgFeeNum = Math.max(0, Number(feePerKg) || 0);
+  const fixedFeeNum = Math.max(0, Number(feeFixed) || 0);
+  const rawFee = feeMode === "FIXED" ? Math.round(fixedFeeNum) : Math.round(totalKg * perKgFeeNum);
+  const companyFee = grossTotalMoney > 0 ? Math.min(grossTotalMoney, rawFee) : 0;
+  const netAfterFee = grossTotalMoney > 0 ? Math.max(0, grossTotalMoney - companyFee) : 0;
+  const advance = Math.max(0, Math.round(Number(advanceAmount) || 0));
+  const remainingTransfer = grossTotalMoney > 0 ? Math.max(0, netAfterFee - advance) : 0;
+  const hasAnyPrice = computedLots.some(l => l.priceNum > 0 && l.kgNum > 0);
+  return {
+    computedLots,
+    totalKg,
+    grossTotalMoney,
+    companyFee,
+    rawFee,
+    netAfterFee,
+    advance,
+    remainingTransfer,
+    hasAnyPrice
+  };
+};
+
+const buildFactorySaleData_v5 = ({
+  lots,
+  feeMode,
+  feePerKg,
+  feeFixed,
+  advanceAmount,
+  buyerName,
+  buyerMeta,
+  saleDateStr,
+  vehiclePlate,
+  recipientName,
+  recipientBankAccount,
+  settleMode, // "AWAITING" | "COMPLETED" | "PARTIAL_TRANSFER"
+  existingSale
+}) => {
+  const calc = calcFactorySummary_v5(lots, feeMode, feePerKg, feeFixed, advanceAmount);
+  const cleanLots = calc.computedLots.map(l => ({
+    id: l.id,
+    lotCode: String(l.lotCode || "").trim().toUpperCase(),
+    category: String(l.category || "Càng sen").trim(),
+    sizeLabel: String(l.sizeLabel || "").trim(),
+    kg: l.kgNum,
+    brokenBrickPct: String(l.brokenBrickPct || "").trim().replace(/%$/, ""),
+    defectNote: String(l.defectNote || "").trim(),
+    deductionPerKg: l.dedNum,
+    unitPrice: l.priceNum,
+    money: l.money
+  }));
+
+  const batches = cleanLots.map(l => {
+    const labelParts = [l.category];
+    if (l.lotCode) labelParts.push("Lô " + l.lotCode);
+    if (l.sizeLabel) labelParts.push(l.sizeLabel);
+    const qualParts = [];
+    if (l.brokenBrickPct) qualParts.push("BG " + l.brokenBrickPct + "%");
+    if (l.defectNote) qualParts.push(l.defectNote);
+    if (l.deductionPerKg > 0) qualParts.push("-" + Math.round(l.deductionPerKg / 1000) + "K");
+    return {
+      typeName: labelParts.filter(Boolean).join(" • "),
+      lotCode: l.lotCode,
+      category: l.category,
+      sizeLabel: l.sizeLabel,
+      brokenBrickPct: l.brokenBrickPct,
+      defectNote: l.defectNote,
+      qualitySummary: qualParts.join(", "),
+      deductionPerKg: l.deductionPerKg,
+      unitPrice: l.unitPrice,
+      net: l.kg,
+      gross: l.kg,
+      bales: 1,
+      money: l.money
+    };
+  });
+
+  const isCompleted = settleMode === "COMPLETED";
+  const isPartial = settleMode === "PARTIAL_TRANSFER";
+  const status = isCompleted ? "COMPLETED" : (isPartial ? "PARTIAL_TRANSFER" : "AWAITING_RESULT");
+  const totalMoney = (isCompleted || isPartial || calc.hasAnyPrice) ? calc.netAfterFee : 0;
+  const paidAmount = isCompleted
+    ? totalMoney
+    : (isPartial ? Math.min(totalMoney, calc.advance) : calc.advance);
+  const remainingDebt = isCompleted
+    ? 0
+    : (isPartial ? Math.max(0, totalMoney - paidAmount) : 0);
+
+  const uniqueCats = Array.from(new Set(cleanLots.map(l => l.category).filter(Boolean)));
+  const sizePreview = cleanLots.map(l => l.sizeLabel || l.lotCode).filter(Boolean).slice(0, 4).join(", ");
+  const riceTypeSummary = (uniqueCats.join("/") || "Tôm càng") +
+    " (" + cleanLots.length + " lô" + (sizePreview ? (": " + sizePreview) : "") + ")";
+
+  const fmtMoney = (n) => Number(n || 0).toLocaleString("vi-VN");
+  const cleanPlate = String(vehiclePlate || "").trim().toUpperCase();
+  const noteStr = isCompleted
+    ? ("Nghiệm thu Cty " + fmtKgFixed2_v5(calc.totalKg) + " kg • Thực thu " + fmtMoney(totalMoney) + "đ" + (calc.companyFee > 0 ? (" (đã trừ Phí DN " + fmtMoney(calc.companyFee) + "đ)") : ""))
+    : (isPartial
+      ? ("Đã nghiệm thu " + fmtKgFixed2_v5(calc.totalKg) + " kg • Đã ứng " + fmtMoney(paidAmount) + "đ • Chờ chuyển " + fmtMoney(remainingDebt) + "đ")
+      : ("Xuất giao Cty " + fmtKgFixed2_v5(calc.totalKg) + " kg (" + cleanLots.length + " lô)" + (cleanPlate ? (" • Xe " + cleanPlate) : "") + (calc.advance > 0 ? (" • Đã ứng " + fmtMoney(calc.advance) + "đ") : "")));
+
+  const now = new Date();
+  let dateIso = (existingSale && existingSale.date) ? existingSale.date : now.toISOString();
+  if (saleDateStr) {
+    try {
+      const parts = saleDateStr.split("-");
+      if (parts.length === 3) {
+        const dt = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), now.getHours(), now.getMinutes());
+        if (!isNaN(dt.getTime())) dateIso = dt.toISOString();
+      }
+    } catch(e) {}
+  }
+
+  return {
+    date: dateIso,
+    saleDateStr: saleDateStr || getLocalYYYYMMDD_v4(dateIso),
+    targetGroup: "FACTORY",
+    status,
+    isPaidFull: isCompleted,
+    buyerId: (buyerMeta && buyerMeta.id) || (existingSale && existingSale.buyerId) || "",
+    buyerName: String(buyerName || (existingSale && existingSale.buyerName) || "Công Ty Thu Mua").trim(),
+    buyerPhone: (buyerMeta && buyerMeta.phone) || (existingSale && existingSale.buyerPhone) || "",
+    buyerAddress: (buyerMeta && buyerMeta.address) || (existingSale && existingSale.buyerAddress) || "",
+    buyerRepresentative: (buyerMeta && buyerMeta.representative) || (existingSale && existingSale.buyerRepresentative) || "",
+    buyerLatitude: (buyerMeta && buyerMeta.latitude) || (existingSale && existingSale.buyerLatitude) || null,
+    buyerLongitude: (buyerMeta && buyerMeta.longitude) || (existingSale && existingSale.buyerLongitude) || null,
+    vehiclePlate: cleanPlate,
+    riceType: riceTypeSummary,
+    factoryDeliveredKg: calc.totalKg,
+    totalNet: calc.totalKg,
+    totalGross: calc.totalKg,
+    totalBales: cleanLots.length,
+    unitPrice: calc.totalKg > 0 && totalMoney > 0 ? Math.round(totalMoney / calc.totalKg) : 0,
+    grossTotalMoney: calc.grossTotalMoney,
+    companyFeeMode: feeMode === "FIXED" ? "FIXED" : "PER_KG",
+    companyFeePerKg: Math.max(0, Number(feePerKg) || 0),
+    companyFee: calc.companyFee,
+    totalMoney,
+    advanceAmount: calc.advance,
+    remainingTransfer: isCompleted ? 0 : calc.remainingTransfer,
+    paidAmount,
+    remainingDebt,
+    recipientName: String(recipientName || "").trim(),
+    recipientBankAccount: String(recipientBankAccount || "").trim(),
+    factoryLots: cleanLots,
+    batches,
+    settledAt: (isCompleted || isPartial) ? new Date().toISOString() : (existingSale && existingSale.settledAt) || null,
+    notes: noteStr
+  };
+};
+
+const buildFactoryZaloText_v5 = (sale) => {
+  if (!sale) return "";
+  const fmt = (n) => Number(n || 0).toLocaleString("vi-VN");
+  const d = new Date(sale.date || Date.now());
+  const dateStr = d.toLocaleDateString("vi-VN");
+  const lots = Array.isArray(sale.factoryLots) && sale.factoryLots.length > 0
+    ? sale.factoryLots
+    : (Array.isArray(sale.batches) ? sale.batches.map(b => ({
+        lotCode: b.lotCode || "",
+        category: b.category || b.typeName || "TÔM CÀNG OXY",
+        sizeLabel: b.sizeLabel || "",
+        kg: b.net || 0,
+        brokenBrickPct: b.brokenBrickPct || "",
+        defectNote: b.defectNote || "",
+        deductionPerKg: b.deductionPerKg || 0,
+        unitPrice: b.unitPrice || 0,
+        money: b.money || 0
+      })) : []);
+
+  let msg = "🏢 [BẢNG KÊ BÁN TÔM CÔNG TY]\n";
+  msg += "Mã phiếu: " + (sale.code || "") + " • Ngày: " + dateStr + "\n";
+  msg += "Đại lý / Cty: " + (sale.buyerName || "") + "\n";
+  if (sale.vehiclePlate) msg += "Biển số xe: " + sale.vehiclePlate + "\n";
+  msg += "--------------------------------\n";
+  lots.forEach((l, idx) => {
+    const title = [l.lotCode ? ("Lô " + l.lotCode) : "", l.category, l.sizeLabel].filter(Boolean).join(" • ");
+    msg += (idx + 1) + ". " + title + ": " + fmtKgFixed2_v5(l.kg) + " kg";
+    if (Number(l.unitPrice) > 0) {
+      msg += " x " + fmt(l.unitPrice) + "đ = " + fmt(l.money) + "đ";
+    }
+    msg += "\n";
+    const qParts = [];
+    if (l.brokenBrickPct) qParts.push("BG " + l.brokenBrickPct + "%");
+    if (l.defectNote) qParts.push(l.defectNote);
+    if (Number(l.deductionPerKg) > 0) qParts.push("(-" + Math.round(Number(l.deductionPerKg) / 1000) + "K/kg)");
+    if (qParts.length > 0) msg += "   (" + qParts.join(", ") + ")\n";
+  });
+  msg += "--------------------------------\n";
+  msg += "Tổng Cộng: " + fmtKgFixed2_v5(sale.totalNet || sale.factoryDeliveredKg) + " kg";
+  if (Number(sale.grossTotalMoney) > 0) msg += " • " + fmt(sale.grossTotalMoney) + " đ";
+  msg += "\n";
+  if (Number(sale.companyFee) > 0) {
+    msg += "Phí DN" + (sale.companyFeeMode !== "FIXED" && Number(sale.companyFeePerKg) > 0 ? (" (" + fmt(sale.companyFeePerKg) + "đ/kg)") : "") + ": -" + fmt(sale.companyFee) + " đ\n";
+  }
+  if (Number(sale.totalMoney) > 0) {
+    msg += "CÒN LẠI (THỰC THU): " + fmt(sale.totalMoney) + " VNĐ\n";
+  }
+  if (Number(sale.advanceAmount) > 0) {
+    msg += "Tạm ứng: -" + fmt(sale.advanceAmount) + " đ\n";
+    if (Number(sale.totalMoney) > 0) {
+      msg += "CÒN LẠI CHUYỂN: " + fmt(Math.max(0, Number(sale.totalMoney) - Number(sale.advanceAmount))) + " VNĐ\n";
+    }
+  }
+  if (sale.recipientName || sale.recipientBankAccount) {
+    msg += "TK nhận: " + [sale.recipientName, sale.recipientBankAccount].filter(Boolean).join(" • ") + "\n";
+  }
+  msg += "Trạng thái: " + (sale.status === "COMPLETED" || sale.isPaidFull
+    ? "Đã thanh toán đủ 100%"
+    : (sale.status === "PARTIAL_TRANSFER" ? ("Chờ chuyển còn lại " + fmt(sale.remainingDebt) + "đ") : "Chờ nghiệm thu công ty"));
+  return msg;
+};
+
+const Xm_FactorySettleModal = ({ sale, onClose, onSaved }) => {
+  const tp = w.useMemo(() => {
+    try { return typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {}; } catch(e) { return {}; }
+  }, []);
+  const [lots, setLots] = w.useState(() => normalizeFactoryLotsFromSale_v5(sale));
+  const [buyerName, setBuyerName] = w.useState((sale && sale.buyerName) || "");
+  const [vehiclePlate, setVehiclePlate] = w.useState((sale && sale.vehiclePlate) || "");
+  const [saleDateStr, setSaleDateStr] = w.useState((sale && sale.saleDateStr) || getLocalYYYYMMDD_v4(sale && sale.date));
+  const [feeMode, setFeeMode] = w.useState((sale && sale.companyFeeMode) || "PER_KG");
+  const [feePerKg, setFeePerKg] = w.useState(sale && sale.companyFeePerKg !== undefined && Number(sale.companyFeePerKg) > 0 ? String(sale.companyFeePerKg) : (sale && Number(sale.companyFee) > 0 ? "" : "4000"));
+  const [feeFixed, setFeeFixed] = w.useState(sale && sale.companyFeeMode === "FIXED" && Number(sale.companyFee) > 0 ? String(sale.companyFee) : "");
+  const [advanceAmount, setAdvanceAmount] = w.useState(sale && Number(sale.advanceAmount || sale.paidAmount) > 0 ? String(sale.advanceAmount || (sale.status === "COMPLETED" ? 0 : sale.paidAmount)) : "");
+  const [recipientName, setRecipientName] = w.useState((sale && sale.recipientName) || tp.bankAccountName || tp.representative || "");
+  const [recipientBankAccount, setRecipientBankAccount] = w.useState((sale && sale.recipientBankAccount) || [tp.bankAccountNumber, tp.bankName].filter(Boolean).join(" ") || "");
+  const [settleStatus, setSettleStatus] = w.useState(() => {
+    if (sale && sale.status === "PARTIAL_TRANSFER") return "PARTIAL_TRANSFER";
+    if (sale && sale.status === "COMPLETED") return "COMPLETED";
+    const adv = Number((sale && (sale.advanceAmount || sale.paidAmount)) || 0);
+    return adv > 0 ? "PARTIAL_TRANSFER" : "COMPLETED";
+  });
+  const [errMsg, setErrMsg] = w.useState("");
+
+  const calc = w.useMemo(
+    () => calcFactorySummary_v5(lots, feeMode, feePerKg, feeFixed, advanceAmount),
+    [lots, feeMode, feePerKg, feeFixed, advanceAmount]
+  );
+
+  const fmt = (n) => Number(n || 0).toLocaleString("vi-VN");
+
+  const updateLot = (idx, field, value) => {
+    setLots(prev => prev.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+  };
+  const addLot = () => {
+    const lastCat = lots.length > 0 ? lots[lots.length - 1].category : "";
+    setLots(prev => [...prev, { ...createEmptyFactoryLot_v5(prev.length), category: lastCat || "" }]);
+  };
+  const removeLot = (idx) => {
+    if (lots.length <= 1) return;
+    setLots(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleSave = (targetMode) => {
+    if (calc.totalKg <= 0) {
+      setErrMsg("Vui lòng nhập số kg ít nhất 1 lô tôm!");
+      return;
+    }
+    const modeToUse = targetMode || settleStatus;
+    if ((modeToUse === "COMPLETED" || modeToUse === "PARTIAL_TRANSFER") && calc.grossTotalMoney <= 0) {
+      setErrMsg("Vui lòng nhập đơn giá (đ/kg) cho các lô tôm để nghiệm thu tiền!");
+      return;
+    }
+    setErrMsg("");
+    const payload = buildFactorySaleData_v5({
+      lots,
+      feeMode,
+      feePerKg,
+      feeFixed,
+      advanceAmount,
+      buyerName,
+      buyerMeta: null,
+      saleDateStr,
+      vehiclePlate,
+      recipientName,
+      recipientBankAccount,
+      settleMode: modeToUse,
+      existingSale: sale
+    });
+    const saved = me.updateSale(sale.id, payload);
+    if (saved && onSaved) onSaved(saved);
+  };
+
+  return c.jsx("div", {
+    className: "fixed inset-0 z-[230] bg-black/65 backdrop-blur-xs flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto",
+    onClick: onClose,
+    children: c.jsxs("div", {
+      onClick: e => e.stopPropagation(),
+      className: "bg-white dark:bg-gray-900 rounded-[28px] w-full max-w-2xl max-h-[92vh] flex flex-col shadow-2xl border border-blue-200 dark:border-blue-800 overflow-hidden my-auto",
+      children: [
+        c.jsxs("div", {
+          className: "bg-gradient-to-r from-[#141b63] to-[#1e4ea1] text-white p-4 flex items-center justify-between shrink-0",
+          children: [
+            c.jsxs("div", {
+              children: [
+                c.jsx("h3", { className: "font-black text-base uppercase tracking-tight", children: "🏢 Nghiệm Thu & Bảng Kê Công Ty" }),
+                c.jsxs("p", { className: "text-[11px] opacity-85 font-bold", children: [sale.code || "", " • Nhập chi tiết từng lô, Phí DN & Tạm ứng"] })
+              ]
+            }),
+            c.jsx("button", {
+              type: "button",
+              onClick: onClose,
+              className: "p-1.5 bg-white/15 hover:bg-white/25 rounded-full cursor-pointer",
+              children: c.jsx(_a, { size: 18 })
+            })
+          ]
+        }),
+
+        c.jsxs("div", {
+          className: "flex-1 overflow-y-auto p-4 space-y-4",
+          children: [
+            c.jsxs("div", {
+              className: "grid grid-cols-1 sm:grid-cols-3 gap-2.5",
+              children: [
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Đại Lý / Công Ty" }),
+                    c.jsx("input", {
+                      type: "text",
+                      value: buyerName,
+                      onChange: e => setBuyerName(e.target.value),
+                      className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Ngày Phiếu" }),
+                    c.jsx("input", {
+                      type: "date",
+                      value: saleDateStr,
+                      onChange: e => setSaleDateStr(e.target.value),
+                      className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  children: [
+                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Biển Số Xe" }),
+                    c.jsx("input", {
+                      type: "text",
+                      placeholder: "VD: 66A - 367.72",
+                      value: vehiclePlate,
+                      onChange: e => setVehiclePlate(e.target.value),
+                      className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs uppercase outline-none"
+                    })
+                  ]
+                })
+              ]
+            }),
+
+            c.jsxs("div", {
+              className: "space-y-2.5",
+              children: [
+                c.jsxs("div", {
+                  className: "flex items-center justify-between",
+                  children: [
+                    c.jsxs("span", { className: "text-xs font-black uppercase text-blue-900 dark:text-blue-300", children: ["Chi tiết các Lô / Size tôm (", lots.length, " lô)"] }),
+                    c.jsx("button", {
+                      type: "button",
+                      onClick: addLot,
+                      className: "px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-black uppercase cursor-pointer",
+                      children: "+ Thêm lô / Size"
+                    })
+                  ]
+                }),
+                lots.map((l, idx) => {
+                  const comp = calc.computedLots[idx] || { money: 0 };
+                  return c.jsxs("div", {
+                    key: l.id || idx,
+                    className: "p-3 rounded-2xl bg-slate-50 dark:bg-gray-800/70 border border-slate-200 dark:border-gray-700 space-y-2",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex items-center justify-between",
+                        children: [
+                          c.jsxs("span", { className: "text-[11px] font-black text-blue-700 dark:text-blue-400 uppercase", children: ["Lô #", idx + 1, comp.money > 0 ? (" • Thành tiền: " + fmt(comp.money) + " đ") : ""] }),
+                          lots.length > 1 && c.jsx("button", {
+                            type: "button",
+                            onClick: () => removeLot(idx),
+                            className: "text-[11px] font-bold text-red-500 hover:underline cursor-pointer",
+                            children: "Xóa lô"
+                          })
+                        ]
+                      }),
+                      c.jsx("div", {
+                        className: "flex flex-wrap gap-1.5",
+                        children: ["Càng sen", "Càng xào"].map(cat => c.jsx("button", {
+                          key: cat,
+                          type: "button",
+                          onClick: () => updateLot(idx, "category", cat),
+                          className: `px-2.5 py-0.5 rounded-md text-[10px] font-black border cursor-pointer ${l.category === cat ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
+                          children: cat
+                        }))
+                      }),
+                      c.jsxs("div", {
+                        className: "grid grid-cols-3 gap-2",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[9px] font-bold text-gray-400 uppercase block", children: "Số Lô" }),
+                              c.jsx("input", {
+                                type: "text",
+                                placeholder: "TC1475",
+                                value: l.lotCode,
+                                onChange: e => updateLot(idx, "lotCode", e.target.value),
+                                className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs uppercase outline-none"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[9px] font-bold text-gray-400 uppercase block", children: "Loại tôm" }),
+                              c.jsx("input", {
+                                type: "text",
+                                placeholder: "Càng sen / Càng xào",
+                                value: l.category,
+                                onChange: e => updateLot(idx, "category", e.target.value),
+                                className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[9px] font-bold text-gray-400 uppercase block", children: "Số con / Size" }),
+                              c.jsx("input", {
+                                type: "text",
+                                placeholder: "35c / SEN 40",
+                                value: l.sizeLabel,
+                                onChange: e => updateLot(idx, "sizeLabel", e.target.value),
+                                className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                              })
+                            ]
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "grid grid-cols-2 gap-2",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[9px] font-bold text-blue-600 uppercase block", children: "Số Kg *" }),
+                              c.jsx("input", {
+                                type: "number",
+                                step: "0.01",
+                                placeholder: "150.74",
+                                value: l.kg,
+                                onChange: e => updateLot(idx, "kg", e.target.value),
+                                className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border-2 border-blue-300 dark:border-blue-800 font-mono font-black text-sm outline-none"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[9px] font-bold text-emerald-600 uppercase block", children: "Đơn giá (đ/kg) *" }),
+                              c.jsx("input", {
+                                type: "number",
+                                placeholder: "108400",
+                                value: l.unitPrice,
+                                onChange: e => updateLot(idx, "unitPrice", e.target.value),
+                                className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border-2 border-emerald-300 dark:border-emerald-800 font-mono font-black text-sm outline-none"
+                              })
+                            ]
+                          })
+                        ]
+                      }),
+                      c.jsxs("div", {
+                        className: "grid grid-cols-3 gap-2",
+                        children: [
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[9px] font-bold text-gray-400 uppercase block", children: "Bể gạch (%)" }),
+                              c.jsx("input", {
+                                type: "text",
+                                placeholder: "24%",
+                                value: l.brokenBrickPct,
+                                onChange: e => updateLot(idx, "brokenBrickPct", e.target.value),
+                                className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[9px] font-bold text-gray-400 uppercase block", children: "Ốp / MĐen / Long đầu" }),
+                              c.jsx("input", {
+                                type: "text",
+                                placeholder: "ốp, mang đen 18%",
+                                value: l.defectNote,
+                                onChange: e => updateLot(idx, "defectNote", e.target.value),
+                                className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                              })
+                            ]
+                          }),
+                          c.jsxs("div", {
+                            children: [
+                              c.jsx("label", { className: "text-[9px] font-bold text-amber-600 uppercase block", children: "Ghi chú trừ (đ/kg)" }),
+                              c.jsx("input", {
+                                type: "number",
+                                placeholder: "6000 (-6K)",
+                                value: l.deductionPerKg,
+                                onChange: e => updateLot(idx, "deductionPerKg", e.target.value),
+                                className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs outline-none"
+                              })
+                            ]
+                          })
+                        ]
+                      })
+                    ]
+                  });
+                })
+              ]
+            }),
+
+            c.jsxs("div", {
+              className: "p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 space-y-3",
+              children: [
+                c.jsxs("div", {
+                  className: "grid grid-cols-1 sm:grid-cols-2 gap-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "space-y-1",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex items-center justify-between",
+                          children: [
+                            c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-600 dark:text-gray-300", children: "Phí DN (Phí doanh nghiệp)" }),
+                            c.jsxs("div", {
+                              className: "flex gap-1",
+                              children: [
+                                c.jsx("button", { type: "button", onClick: () => setFeeMode("PER_KG"), className: `px-2 py-0.5 rounded-lg text-[10px] font-black cursor-pointer ${feeMode === "PER_KG" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600"}`, children: "đ/kg" }),
+                                c.jsx("button", { type: "button", onClick: () => setFeeMode("FIXED"), className: `px-2 py-0.5 rounded-lg text-[10px] font-black cursor-pointer ${feeMode === "FIXED" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-800 text-gray-600"}`, children: "VNĐ" })
+                              ]
+                            })
+                          ]
+                        }),
+                        feeMode === "PER_KG"
+                          ? c.jsx("input", {
+                              type: "number",
+                              placeholder: "VD: 4000",
+                              value: feePerKg,
+                              onChange: e => setFeePerKg(e.target.value),
+                              className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-blue-300 font-mono font-black text-sm outline-none"
+                            })
+                          : c.jsx("input", {
+                              type: "number",
+                              placeholder: "VD: 1130800",
+                              value: feeFixed,
+                              onChange: e => setFeeFixed(e.target.value),
+                              className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-blue-300 font-mono font-black text-sm outline-none"
+                            })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "space-y-1",
+                      children: [
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-indigo-700 dark:text-indigo-300 block", children: "Tạm ứng đã nhận (VNĐ)" }),
+                        c.jsx("input", {
+                          type: "number",
+                          placeholder: "VD: 20000000",
+                          value: advanceAmount,
+                          onChange: e => setAdvanceAmount(e.target.value),
+                          className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-indigo-300 font-mono font-black text-sm text-indigo-700 dark:text-indigo-300 outline-none"
+                        })
+                      ]
+                    })
+                  ]
+                }),
+                c.jsxs("div", {
+                  className: "grid grid-cols-1 sm:grid-cols-2 gap-2.5",
+                  children: [
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("label", { className: "text-[9px] font-bold uppercase text-gray-500 block mb-0.5", children: "Người nhận tiền" }),
+                        c.jsx("input", { type: "text", value: recipientName, onChange: e => setRecipientName(e.target.value), className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none" })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      children: [
+                        c.jsx("label", { className: "text-[9px] font-bold uppercase text-gray-500 block mb-0.5", children: "STK & Ngân hàng" }),
+                        c.jsx("input", { type: "text", value: recipientBankAccount, onChange: e => setRecipientBankAccount(e.target.value), className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs outline-none" })
+                      ]
+                    })
+                  ]
+                })
+              ]
+            }),
+
+            c.jsxs("div", {
+              className: "p-3.5 rounded-2xl bg-white dark:bg-gray-800 border-2 border-emerald-400/60 space-y-1.5 font-mono text-xs",
+              children: [
+                c.jsxs("div", { className: "flex justify-between font-bold", children: [c.jsx("span", { children: "Tổng Cộng (" + fmtKgFixed2_v5(calc.totalKg) + " kg):" }), c.jsx("span", { children: fmt(calc.grossTotalMoney) + " đ" })] }),
+                c.jsxs("div", { className: "flex justify-between text-emerald-700 dark:text-emerald-400 font-bold", children: [c.jsx("span", { children: "Phí DN" + (feeMode === "PER_KG" && Number(feePerKg) > 0 ? (" (" + fmt(feePerKg) + "đ/kg)") : "") + ":" }), c.jsx("span", { children: "-" + fmt(calc.companyFee) + " đ" })] }),
+                c.jsxs("div", { className: "flex justify-between text-sm font-black text-red-600 dark:text-red-400 pt-1 border-t border-gray-100 dark:border-gray-700", children: [c.jsx("span", { children: "Còn lại (Thực thu):" }), c.jsx("span", { children: fmt(calc.netAfterFee) + " đ" })] }),
+                c.jsxs("div", { className: "flex justify-between text-blue-700 dark:text-blue-400 font-bold", children: [c.jsx("span", { children: "Tạm ứng:" }), c.jsx("span", { children: "-" + fmt(calc.advance) + " đ" })] }),
+                c.jsxs("div", { className: "flex justify-between text-base font-black text-gray-900 dark:text-white pt-1 border-t border-gray-200 dark:border-gray-700", children: [c.jsx("span", { children: "Còn lại chuyển:" }), c.jsx("span", { children: fmt(calc.remainingTransfer) + " VNĐ" })] })
+              ]
+            }),
+
+            c.jsxs("div", {
+              className: "grid grid-cols-2 gap-2",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setSettleStatus("COMPLETED"),
+                  className: `p-2.5 rounded-xl text-xs font-black border-2 cursor-pointer transition-all ${settleStatus === "COMPLETED" ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-800 dark:text-emerald-300" : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600"}`,
+                  children: "✓ Đã chuyển đủ 100%"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setSettleStatus("PARTIAL_TRANSFER"),
+                  className: `p-2.5 rounded-xl text-xs font-black border-2 cursor-pointer transition-all ${settleStatus === "PARTIAL_TRANSFER" ? "bg-amber-50 dark:bg-amber-950/40 border-amber-500 text-amber-800 dark:text-amber-300" : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600"}`,
+                  children: "⏳ Chờ chuyển phần còn lại"
+                })
+              ]
+            }),
+
+            errMsg && c.jsx("div", { className: "p-2.5 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-bold", children: errMsg })
+          ]
+        }),
+
+        c.jsxs("div", {
+          className: "p-4 border-t border-gray-100 dark:border-gray-800 flex flex-wrap gap-2 justify-end shrink-0 bg-gray-50 dark:bg-gray-900/80",
+          children: [
+            c.jsx("button", {
+              type: "button",
+              onClick: onClose,
+              className: "px-4 py-2.5 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer",
+              children: "Hủy"
+            }),
+            c.jsx("button", {
+              type: "button",
+              onClick: () => handleSave("AWAITING_RESULT"),
+              className: "px-3.5 py-2.5 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded-xl font-black text-xs uppercase cursor-pointer",
+              children: "Lưu tạm (Chờ KQ)"
+            }),
+            c.jsx("button", {
+              type: "button",
+              onClick: () => handleSave(settleStatus),
+              className: "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase shadow-md cursor-pointer",
+              children: "Lưu Nghiệm Thu Cty"
+            })
+          ]
+        })
+      ]
+    })
+  });
+};
+
+
+// ==================== RETAIL WEIGHING HELPERS & MODAL (BÁN LẺ BẤM CÂN) ====================
+const createEmpty5x5Page_v6 = () => Array(5).fill(0).map(() => Array(5).fill(0));
+
+const createEmptyRetailLot_v6 = (idx = 0) => ({
+  id: "rlot_" + Date.now() + "_" + idx + "_" + Math.random().toString(36).slice(2, 6),
+  shrimpName: "",
+  sizeLabel: "",
+  weights: [createEmpty5x5Page_v6()],
+  manualKg: "",
+  unitPrice: ""
+});
+
+const extractWeightsListFromGrid_v6 = (grid) => {
+  const arr = [];
+  if (!Array.isArray(grid)) return arr;
+  grid.forEach(page => {
+    if (Array.isArray(page)) {
+      page.forEach(row => {
+        if (Array.isArray(row)) {
+          row.forEach(val => {
+            const n = Number(val);
+            if (Number.isFinite(n) && n > 0) arr.push(n);
+          });
+        }
+      });
+    }
+  });
+  return arr;
+};
+
+const calcRetailLotStats_v6 = (lot) => {
+  if (!lot) return { kg: 0, gridKg: 0, bales: 0, unitPrice: 0, money: 0, hasGridWeights: false };
+  const list = extractWeightsListFromGrid_v6(lot.weights);
+  const bales = list.length;
+  const gridKg = Math.round(list.reduce((a, b) => a + b, 0) * 100) / 100;
+  const manual = Math.max(0, Math.round((Number(lot.manualKg) || 0) * 100) / 100);
+  const kg = bales > 0 ? gridKg : manual;
+  const unitPrice = Math.max(0, Math.round(Number(lot.unitPrice) || 0));
+  const money = Math.round(kg * unitPrice);
+  return { kg, gridKg, bales, unitPrice, money, hasGridWeights: bales > 0 };
+};
+
+const Xm_RetailWeighModal = ({ lot, lotIndex, onClose, onSaveWeights }) => {
+  const [pages, setPages] = w.useState(() => {
+    if (lot && Array.isArray(lot.weights) && lot.weights.length > 0 && Array.isArray(lot.weights[0])) {
+      return lot.weights.map(pg => pg.map(rw => [...rw]));
+    }
+    return [createEmpty5x5Page_v6()];
+  });
+
+  const stats = w.useMemo(() => {
+    const list = extractWeightsListFromGrid_v6(pages);
+    const totalKg = Math.round(list.reduce((a, b) => a + b, 0) * 100) / 100;
+    const price = Math.max(0, Math.round(Number((lot && lot.unitPrice) || 0)));
+    return {
+      bales: list.length,
+      totalKg,
+      money: Math.round(totalKg * price),
+      price
+    };
+  }, [pages, lot]);
+
+  const handleUndoLast = () => {
+    for (let p = pages.length - 1; p >= 0; p--) {
+      for (let cIdx = 4; cIdx >= 0; cIdx--) {
+        for (let r = 4; r >= 0; r--) {
+          if (Number(pages[p][r][cIdx]) > 0) {
+            const next = pages.map((pg, pi) => pi === p ? pg.map((rw, ri) => ri === r ? rw.map((v, ci) => ci === cIdx ? 0 : v) : rw) : pg);
+            setPages(next);
+            return;
+          }
+        }
+      }
+    }
+  };
+
+  const lotTitle = [
+    "Lô " + ((lotIndex || 0) + 1),
+    lot && lot.shrimpName ? lot.shrimpName : "",
+    lot && lot.sizeLabel ? ("Size " + lot.sizeLabel) : ""
+  ].filter(Boolean).join(" • ");
+
+  return c.jsx("div", {
+    className: "fixed inset-0 z-[240] bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4",
+    onClick: onClose,
+    children: c.jsxs("div", {
+      onClick: e => e.stopPropagation(),
+      className: "bg-gray-50 dark:bg-[#121212] w-full max-w-2xl h-[92vh] rounded-[32px] shadow-2xl border border-emerald-300 dark:border-emerald-800 flex flex-col overflow-hidden",
+      children: [
+        c.jsxs("div", {
+          className: "bg-gradient-to-r from-[#1b5e20] to-[#2e7d32] text-white p-4 flex items-center justify-between shrink-0",
+          children: [
+            c.jsxs("div", {
+              className: "min-w-0",
+              children: [
+                c.jsx("h3", { className: "font-black text-base uppercase tracking-tight truncate", children: "⚖️ Bấm Cân Tôm Bán Lẻ" }),
+                c.jsx("p", { className: "text-xs opacity-90 font-bold truncate", children: lotTitle })
+              ]
+            }),
+            c.jsx("button", {
+              type: "button",
+              onClick: onClose,
+              className: "p-2 bg-white/15 hover:bg-white/25 rounded-full cursor-pointer text-white shrink-0",
+              children: c.jsx(_a, { size: 18 })
+            })
+          ]
+        }),
+
+        c.jsxs("div", {
+          className: "bg-[#fff176] dark:bg-yellow-700/90 px-4 py-3 border-b-2 border-yellow-500 flex flex-wrap items-center justify-between gap-2 shrink-0",
+          children: [
+            c.jsxs("div", {
+              className: "flex items-baseline gap-3",
+              children: [
+                c.jsxs("span", {
+                  className: "text-3xl font-black text-black dark:text-white italic tracking-tighter tabular-nums",
+                  children: [fmtKgSmart2_v5(stats.totalKg), " KG"]
+                }),
+                c.jsxs("span", {
+                  className: "text-xs font-black px-2.5 py-0.5 rounded-full bg-black/15 text-black dark:text-white",
+                  children: [stats.bales, " giỏ/mã • Không trừ bì"]
+                })
+              ]
+            }),
+            stats.price > 0 && c.jsxs("div", {
+              className: "text-right",
+              children: [
+                c.jsx("span", { className: "text-[10px] font-black uppercase text-yellow-900 dark:text-yellow-100 block", children: "Tạm tính lô" }),
+                c.jsxs("span", { className: "text-base font-black font-mono text-red-700 dark:text-white", children: [Number(stats.money).toLocaleString("vi-VN"), " đ"] })
+              ]
+            })
+          ]
+        }),
+
+        c.jsxs("div", {
+          className: "flex-1 overflow-y-auto p-3 space-y-4",
+          children: [
+            pages.map((pageGrid, pIdx) => c.jsx(Mm, {
+              weights: pageGrid,
+              onWeightsChange: nextGrid => {
+                setPages(prev => prev.map((pg, i) => i === pIdx ? nextGrid : pg));
+              },
+              page: pIdx + 1,
+              onPageChange: () => {
+                if (pIdx === pages.length - 1) {
+                  setPages(prev => [...prev, createEmpty5x5Page_v6()]);
+                }
+              }
+            }, pIdx)),
+            c.jsxs("div", {
+              className: "flex flex-wrap gap-2 justify-center pb-4",
+              children: [
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setPages(prev => [...prev, createEmpty5x5Page_v6()]),
+                  className: "px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase shadow-sm cursor-pointer",
+                  children: "+ Thêm Trang Bảng Cân"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: handleUndoLast,
+                  className: "px-4 py-2.5 bg-amber-100 dark:bg-amber-950/50 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800 rounded-xl text-xs font-black uppercase cursor-pointer",
+                  children: "↶ Xóa mã vừa nhập"
+                }),
+                c.jsx("button", {
+                  type: "button",
+                  onClick: () => setPages([createEmpty5x5Page_v6()]),
+                  className: "px-4 py-2.5 bg-rose-50 dark:bg-rose-950/40 text-rose-600 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-bold uppercase cursor-pointer",
+                  children: "Xóa làm lại"
+                })
+              ]
+            })
+          ]
+        }),
+
+        c.jsxs("div", {
+          className: "p-3.5 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 flex gap-2.5 shrink-0",
+          children: [
+            c.jsx("button", {
+              type: "button",
+              onClick: onClose,
+              className: "px-4 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-2xl font-bold text-xs uppercase cursor-pointer",
+              children: "Đóng"
+            }),
+            c.jsxs("button", {
+              type: "button",
+              onClick: () => onSaveWeights(pages),
+              className: "flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-black text-sm uppercase shadow-lg cursor-pointer active:scale-95 transition-all",
+              children: ["✓ Lưu Số Cân Lô ", (lotIndex || 0) + 1, " (", fmtKgSmart2_v5(stats.totalKg), " kg)"]
+            })
+          ]
+        })
+      ]
+    })
   });
 };
 
@@ -14205,11 +15551,7 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
 // ==================== SCREEN 2: Xm_SalesScreen ====================
 
 const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
-  const fmtKg = (n) => {
-    if (!n || n <= 0) return "0";
-    const r = Math.round(n * 10) / 10;
-    return Number.isInteger(r) ? String(r) : String(r);
-  };
+  const fmtKg = (n) => fmtKgSmart2_v5(n);
   const _e = ($) => Number($ || 0).toLocaleString("vi-VN");
   const p = w.useMemo(() => me.getSettings(), []);
 
@@ -14255,6 +15597,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
           setSelectedBuyerMeta(buyer);
           if (grp === "RETAIL") {
             setRetailBuyerName(buyer.name);
+            if (buyer.phone) setRetailBuyerPhone(buyer.phone);
           } else if (grp === "MARKET") {
             setMarketBuyerName(buyer.name);
             if (buyer.defaultVehiclePlate) setMarketVehiclePlate(buyer.defaultVehiclePlate);
@@ -14262,8 +15605,13 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
             if (buyer.marketDeliveryTime) setMarketTime(buyer.marketDeliveryTime);
           } else {
             setFactoryBuyerName(buyer.name);
+            if (buyer.defaultVehiclePlate) setFactoryVehiclePlate(buyer.defaultVehiclePlate);
             if (Array.isArray(buyer.shrimpPrices) && buyer.shrimpPrices.length > 0 && buyer.shrimpPrices[0].typeName) {
-              setFactoryShrimpType(buyer.shrimpPrices[0].typeName);
+              setFactoryLots(prev => prev.map((l, idx) => idx === 0 ? {
+                ...l,
+                category: buyer.shrimpPrices[0].typeName,
+                unitPrice: buyer.shrimpPrices[0].price ? String(buyer.shrimpPrices[0].price) : l.unitPrice
+              } : l));
             }
           }
         }
@@ -14285,7 +15633,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
   const [settlingSaleObj, setSettlingSaleObj] = w.useState(null); // For market or factory quick settle
   const [settleKg, setSettleKg] = w.useState("");
   const [settleMoney, setSettleMoney] = w.useState("");
-  const [showWeighGridModal, setShowWeighGridModal] = w.useState(false);
+  const [weighingLotIdx, setWeighingLotIdx] = w.useState(null);
   const [salesToast, setSalesToast] = w.useState(null);
   const [confirmDeleteSaleId, setConfirmDeleteSaleId] = w.useState(null);
 
@@ -14295,78 +15643,201 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
   };
 
   // Common Form States
-  // 1. RETAIL STATES (merged with Trader Profile shrimpTypes)
-  const retailTypes = w.useMemo(() => {
-    const base = [
-      "Tôm càng sen Loại 1 (10-15 con)",
-      "Tôm càng sen Loại 2 (16-25 con)",
-      "Tôm càng xô tươi",
-      "Tôm trứng / tôm ôm trứng",
-      "Tôm oxy tươi sống",
-      "Tôm lột cấp đông"
-    ];
-    const merged = [...base];
-    (profileTypes || []).forEach(n => {
-      if (n && !merged.some(x => x.toLowerCase() === n.toLowerCase())) merged.push(n);
-    });
-    return merged;
-  }, [profileTypes]);
   const retailDirectoryBuyers = w.useMemo(() => buyersList.filter(b => b.targetGroup === "RETAIL"), [buyersList]);
   const marketDirectoryBuyers = w.useMemo(() => buyersList.filter(b => b.targetGroup === "MARKET"), [buyersList]);
   const factoryDirectoryBuyers = w.useMemo(() => buyersList.filter(b => b.targetGroup === "FACTORY"), [buyersList]);
-  const [retailBuyerName, setRetailBuyerName] = w.useState("Khách Lẻ Mua Tại Vựa");
-  const [retailType, setRetailType] = w.useState(retailTypes[0]);
-  const [retailPrice, setRetailPrice] = w.useState(""); // Direct input, not fixed!
-  const [retailKg, setRetailKg] = w.useState("");
 
-  const retailMoney = (Number(retailPrice) || 0) * (Number(retailKg) || 0);
+  // 1. RETAIL STATES (Multi-lot, free input shrimp name & size, 5x5 weighing grid, sale date, payment/debt)
+  const [retailSaleDate, setRetailSaleDate] = w.useState(() => getLocalYYYYMMDD_v4());
+  const [retailBuyerName, setRetailBuyerName] = w.useState("Khách Lẻ Mua Tại Vựa");
+  const [retailBuyerPhone, setRetailBuyerPhone] = w.useState("");
+  const [retailLots, setRetailLots] = w.useState(() => [createEmptyRetailLot_v6(0)]);
+  const [retailPayMode, setRetailPayMode] = w.useState("PAID"); // "PAID" | "PARTIAL" | "DEBT"
+  const [retailPaidNow, setRetailPaidNow] = w.useState("");
+
+  const retailSummary = w.useMemo(() => {
+    const lotStats = retailLots.map(calcRetailLotStats_v6);
+    const totalKg = Math.round(lotStats.reduce((a, x) => a + x.kg, 0) * 100) / 100;
+    const totalBales = lotStats.reduce((a, x) => a + (x.bales || (x.kg > 0 ? 1 : 0)), 0);
+    const totalMoney = lotStats.reduce((a, x) => a + x.money, 0);
+    let paidAmount = totalMoney;
+    if (retailPayMode === "DEBT") paidAmount = 0;
+    else if (retailPayMode === "PARTIAL") paidAmount = Math.min(totalMoney, Math.max(0, Math.round(Number(retailPaidNow) || 0)));
+    const remainingDebt = Math.max(0, totalMoney - paidAmount);
+    return { lotStats, totalKg, totalBales, totalMoney, paidAmount, remainingDebt };
+  }, [retailLots, retailPayMode, retailPaidNow]);
+
+  const addRetailLot = () => {
+    setRetailLots(prev => [...prev, createEmptyRetailLot_v6(prev.length)]);
+  };
+  const updateRetailLot = (idx, field, val) => {
+    setRetailLots(prev => prev.map((l, i) => i === idx ? { ...l, [field]: val } : l));
+  };
+  const removeRetailLot = (idx) => {
+    if (retailLots.length <= 1) return;
+    setRetailLots(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const getRetailBuyerLiveDebt = (buyer) => {
+    if (!buyer) return 0;
+    const bn = (buyer.name || "").trim().toLowerCase();
+    const sDebt = (salesList || []).reduce((acc, s) => {
+      if (!s) return acc;
+      const match = (s.buyerId && s.buyerId === buyer.id) || (s.buyerName && bn && s.buyerName.trim().toLowerCase() === bn);
+      if (!match) return acc;
+      const bd = typeof getFinanceSaleBreakdown_v4 === "function" ? getFinanceSaleBreakdown_v4(s) : { debtMoney: Number(s.remainingDebt || 0) };
+      return acc + bd.debtMoney;
+    }, 0);
+    return sDebt + Number(buyer.debtAmount || 0);
+  };
+
+  const handleQuickSaveRetailBuyer = () => {
+    const clean = retailBuyerName.trim();
+    if (!clean) {
+      showSalesToast("Vui lòng nhập tên khách hàng trước khi lưu!", "error");
+      return;
+    }
+    const buyerId = "b_" + Date.now().toString();
+    me.addBuyer({
+      id: buyerId,
+      targetGroup: "RETAIL",
+      name: clean,
+      phone: retailBuyerPhone.trim(),
+      shrimpPrices: []
+    });
+    refreshData();
+    showSalesToast("✓ Đã lưu khách hàng \"" + clean + "\" vào Danh bạ!");
+  };
 
   const handleSaveRetail = () => {
-    const kg = Number(retailKg) || 0;
-    const price = Number(retailPrice) || 0;
-    if (kg <= 0) {
-      showSalesToast("Vui lòng nhập số kg tôm bán lẻ!", "error");
+    const validPairs = retailLots.map((lot, idx) => ({
+      lot,
+      idx,
+      stat: retailSummary.lotStats[idx]
+    })).filter(x => x.stat && x.stat.kg > 0);
+
+    if (validPairs.length === 0) {
+      showSalesToast("Vui lòng bấm cân hoặc nhập số kg cho ít nhất 1 lô tôm!", "error");
       return;
     }
-    if (price <= 0) {
-      showSalesToast("Vui lòng nhập đơn giá bán lẻ tại thời điểm này!", "error");
+    const missingPrice = validPairs.find(x => x.stat.unitPrice <= 0);
+    if (missingPrice) {
+      showSalesToast("Vui lòng nhập đơn giá bán cho Lô " + (missingPrice.idx + 1) + "!", "error");
       return;
     }
+
+    const cleanBuyerName = retailBuyerName.trim() || "Khách Lẻ Mua Tại Vựa";
+    const cleanBuyerPhone = retailBuyerPhone.trim();
+    const totalMoney = retailSummary.totalMoney;
+    const paidAmount = retailSummary.paidAmount;
+    const remainingDebt = retailSummary.remainingDebt;
+    const isPaidFull = remainingDebt <= 0;
+
+    if (retailPayMode === "PARTIAL" && paidAmount >= totalMoney && totalMoney > 0) {
+      // Treat full payment cleanly
+    }
+
+    // Resolve or auto-create buyer in Ot.BUYERS when customer is named or has debt
+    let matchedBuyer = retailDirectoryBuyers.find(b =>
+      (selectedBuyerMeta && b.id === selectedBuyerMeta.id) ||
+      (b.name && b.name.trim().toLowerCase() === cleanBuyerName.toLowerCase())
+    ) || (selectedBuyerMeta && selectedBuyerMeta.name && selectedBuyerMeta.name.trim().toLowerCase() === cleanBuyerName.toLowerCase() ? selectedBuyerMeta : null);
+
+    let finalBuyerId = matchedBuyer ? matchedBuyer.id : "";
+    let finalBuyerPhone = cleanBuyerPhone || (matchedBuyer && matchedBuyer.phone) || "";
+    const isWalkInDefault = cleanBuyerName.toLowerCase() === "khách lẻ mua tại vựa" || cleanBuyerName.toLowerCase() === "khách lẻ tại vựa";
+
+    if (!matchedBuyer && (remainingDebt > 0 || !isWalkInDefault)) {
+      finalBuyerId = "b_" + Date.now().toString();
+      me.addBuyer({
+        id: finalBuyerId,
+        targetGroup: "RETAIL",
+        name: cleanBuyerName,
+        phone: finalBuyerPhone,
+        address: "",
+        shrimpPrices: []
+      });
+    } else if (matchedBuyer && cleanBuyerPhone && !matchedBuyer.phone) {
+      me.addBuyer({ ...matchedBuyer, phone: cleanBuyerPhone });
+    }
+
+    const now = new Date();
+    let dateIso = now.toISOString();
+    if (retailSaleDate) {
+      try {
+        const dp = retailSaleDate.split("-");
+        if (dp.length === 3) {
+          const dt = new Date(Number(dp[0]), Number(dp[1]) - 1, Number(dp[2]), now.getHours(), now.getMinutes());
+          if (!isNaN(dt.getTime())) dateIso = dt.toISOString();
+        }
+      } catch(e) {}
+    }
+
+    const batches = validPairs.map(({ lot, idx, stat }) => {
+      const sName = String(lot.shrimpName || "").trim() || ("Tôm Lô " + (idx + 1));
+      const sSize = String(lot.sizeLabel || "").trim();
+      const fullLabel = [
+        "Lô " + (idx + 1),
+        sName,
+        sSize ? ("Size " + sSize) : ""
+      ].filter(Boolean).join(" • ");
+      return {
+        lotNumber: idx + 1,
+        typeName: fullLabel,
+        shrimpName: sName,
+        sizeLabel: sSize,
+        unitPrice: stat.unitPrice,
+        net: stat.kg,
+        gross: stat.kg,
+        bales: stat.bales || 1,
+        weights: stat.hasGridWeights ? lot.weights : [],
+        money: stat.money
+      };
+    });
+
+    const riceTypeSummary = batches.map(b => b.shrimpName + (b.sizeLabel ? (" (" + b.sizeLabel + ")") : "")).join(", ");
+    const avgUnitPrice = retailSummary.totalKg > 0 ? Math.round(totalMoney / retailSummary.totalKg) : 0;
+
     const newSale = {
       id: "sale_" + Date.now(),
       code: "BL-" + String(Date.now()).slice(-4),
-      date: new Date().toISOString(),
+      date: dateIso,
+      saleDateStr: retailSaleDate || getLocalYYYYMMDD_v4(dateIso),
       targetGroup: "RETAIL",
-      status: "COMPLETED",
-      isPaidFull: true,
-      buyerId: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim()) ? selectedBuyerMeta.id : "",
-      buyerName: retailBuyerName.trim() || "Khách Lẻ Tại Vựa",
-      buyerPhone: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim() && selectedBuyerMeta.phone) ? selectedBuyerMeta.phone : "",
-      buyerAddress: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim() && selectedBuyerMeta.address) ? selectedBuyerMeta.address : "Tại vựa Tôm Càng Xanh",
-      buyerLatitude: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim()) ? (selectedBuyerMeta.latitude || null) : null,
-      buyerLongitude: (selectedBuyerMeta && selectedBuyerMeta.name === retailBuyerName.trim()) ? (selectedBuyerMeta.longitude || null) : null,
-      riceType: retailType,
-      unitPrice: price,
-      totalNet: kg,
-      totalGross: kg,
-      totalBales: 1,
-      totalMoney: kg * price,
-      batches: [{
-        typeName: retailType,
-        unitPrice: price,
-        net: kg,
-        gross: kg,
-        bales: 1,
-        money: kg * price
-      }],
-      notes: "Bán lẻ thanh toán ngay - giá tại thời điểm bán"
+      status: isPaidFull ? "COMPLETED" : (paidAmount > 0 ? "PARTIAL" : "DEBT"),
+      isPaidFull,
+      paidAmount,
+      remainingDebt,
+      buyerId: finalBuyerId,
+      buyerName: cleanBuyerName,
+      buyerPhone: finalBuyerPhone,
+      buyerAddress: (matchedBuyer && matchedBuyer.address) || "Tại vựa Tôm Càng Xanh",
+      buyerLatitude: matchedBuyer ? (matchedBuyer.latitude || null) : null,
+      buyerLongitude: matchedBuyer ? (matchedBuyer.longitude || null) : null,
+      riceType: riceTypeSummary,
+      unitPrice: avgUnitPrice,
+      totalNet: retailSummary.totalKg,
+      totalGross: retailSummary.totalKg,
+      totalBales: retailSummary.totalBales,
+      totalMoney,
+      batches,
+      weights: batches.length === 1 ? batches[0].weights : [],
+      notes: isPaidFull
+        ? ("Bán lẻ " + batches.length + " lô • Đã thu đủ 100%")
+        : ("Bán lẻ " + batches.length + " lô • Đã trả " + _e(paidAmount) + "đ • Ghi nợ " + _e(remainingDebt) + "đ")
     };
 
     me.addSale(newSale);
     refreshData();
-    setRetailKg("");
-    const finRetail = me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: newSale.totalMoney, netProfit: newSale.totalMoney, isProfit: true };
-    showSalesToast("✅ ĐÃ LƯU ĐƠN BÁN LẺ: +" + _e(newSale.totalMoney) + " đ (" + fmtKg(newSale.totalNet) + " kg) • Doanh thu kỳ: " + _e(finRetail.totalRevenue) + " đ");
+    setRetailLots([createEmptyRetailLot_v6(0)]);
+    setRetailPaidNow("");
+    setRetailPayMode("PAID");
+    const finRetail = me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: paidAmount };
+    if (isPaidFull) {
+      showSalesToast("✅ ĐÃ LƯU ĐƠN BÁN LẺ (" + batches.length + " lô): +" + _e(newSale.totalMoney) + " đ (" + fmtKg(newSale.totalNet) + " kg) • Doanh thu kỳ: " + _e(finRetail.totalRevenue) + " đ");
+    } else {
+      showSalesToast("📝 ĐÃ LƯU ĐƠN GHI NỢ (" + cleanBuyerName + "): Tổng " + _e(totalMoney) + "đ • Đã trả " + _e(paidAmount) + "đ • Còn nợ " + _e(remainingDebt) + "đ (Đã lưu vào DS Khách hàng)");
+    }
   };
 
   // 2. MARKET (CHỢ ĐẦU MỐI) STATES
@@ -14415,7 +15886,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     showSalesToast("🚚 Đã lưu đơn giao chợ: " + phi + " phi oxy (" + newSale.buyerName + "). Trạng thái: ĐANG BÁN");
   };
 
-  // 3. FACTORY (CÔNG TY / NHÀ MÁY) STATES
+  // 3. FACTORY (CÔNG TY / NHÀ MÁY / TÔM CÀNG OXY) STATES
   const [factoryBuyerName, setFactoryBuyerName] = w.useState(() => {
     try {
       const f = (me.getBuyers && me.getBuyers() || []).find(b => b.targetGroup === "FACTORY");
@@ -14435,45 +15906,147 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     if (factoryBuyerName && !list.includes(factoryBuyerName)) list.unshift(factoryBuyerName);
     return list;
   }, [factoryDirectoryBuyers, factoryBuyerName]);
-  const [factoryShrimpType, setFactoryShrimpType] = w.useState("Tôm càng sen size lớn (10-15 c/kg)");
-  const [factoryDeliveredKg, setFactoryDeliveredKg] = w.useState("");
+  const vehiclesList = w.useMemo(() => {
+    try { return (me.getVehicles && me.getVehicles()) || []; } catch(e) { return []; }
+  }, []);
+  const traderBankProfile = w.useMemo(() => {
+    try { return typeof getTraderProfileV3 === "function" ? getTraderProfileV3() : {}; } catch(e) { return {}; }
+  }, []);
+  const [factorySaleDate, setFactorySaleDate] = w.useState(() => getLocalYYYYMMDD_v4());
+  const [factoryVehiclePlate, setFactoryVehiclePlate] = w.useState("");
+  const [factoryLots, setFactoryLots] = w.useState(() => [createEmptyFactoryLot_v5(0)]);
+  const [factoryFeeMode, setFactoryFeeMode] = w.useState("PER_KG");
+  const [factoryFeePerKg, setFactoryFeePerKg] = w.useState("4000");
+  const [factoryFeeFixed, setFactoryFeeFixed] = w.useState("");
+  const [factoryAdvance, setFactoryAdvance] = w.useState("");
+  const [factoryPayMode, setFactoryPayMode] = w.useState("COMPLETED"); // "COMPLETED" | "PARTIAL_TRANSFER"
+  const [factoryRecipientName, setFactoryRecipientName] = w.useState(() => traderBankProfile.bankAccountName || traderBankProfile.representative || "");
+  const [factoryRecipientBank, setFactoryRecipientBank] = w.useState(() => [traderBankProfile.bankAccountNumber, traderBankProfile.bankName].filter(Boolean).join(" "));
+  const [showFactoryBankBox, setShowFactoryBankBox] = w.useState(false);
+  const [salesZaloModal, setSalesZaloModal] = w.useState(null);
 
-  const handleSaveFactoryStep1 = () => {
-    const kg = Number(factoryDeliveredKg) || 0;
+  const factorySummary = w.useMemo(
+    () => calcFactorySummary_v5(factoryLots, factoryFeeMode, factoryFeePerKg, factoryFeeFixed, factoryAdvance),
+    [factoryLots, factoryFeeMode, factoryFeePerKg, factoryFeeFixed, factoryAdvance]
+  );
+
+  const addFactoryLot = () => {
+    const lastCat = factoryLots.length > 0 ? factoryLots[factoryLots.length - 1].category : "";
+    setFactoryLots(prev => [...prev, { ...createEmptyFactoryLot_v5(prev.length), category: lastCat || "" }]);
+  };
+  const duplicateFactoryLot = (idx) => {
+    const src = factoryLots[idx];
+    if (!src) return;
+    setFactoryLots(prev => [
+      ...prev,
+      {
+        ...src,
+        id: "lot_" + Date.now() + "_" + prev.length,
+        lotCode: "",
+        kg: ""
+      }
+    ]);
+  };
+  const updateFactoryLot = (idx, field, val) => {
+    setFactoryLots(prev => prev.map((l, i) => i === idx ? { ...l, [field]: val } : l));
+  };
+  const removeFactoryLot = (idx) => {
+    if (factoryLots.length <= 1) return;
+    setFactoryLots(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleQuickSaveFactoryBuyer = () => {
+    const clean = factoryBuyerName.trim();
+    if (!clean) {
+      showSalesToast("Vui lòng nhập tên Công ty / Đại lý trước khi lưu!", "error");
+      return;
+    }
+    me.addBuyer({
+      targetGroup: "FACTORY",
+      name: clean,
+      defaultVehiclePlate: factoryVehiclePlate.trim().toUpperCase(),
+      shrimpPrices: []
+    });
+    refreshData();
+    showSalesToast("✓ Đã lưu \"" + clean + "\" vào Danh bạ Công Ty!");
+  };
+
+  const handleSaveFactoryOrder = (mode) => {
+    const cleanBuyer = factoryBuyerName.trim();
+    if (!cleanBuyer) {
+      showSalesToast("Vui lòng nhập tên Đại lý / Công ty thu mua!", "error");
+      return;
+    }
+    if (factorySummary.totalKg <= 0) {
+      showSalesToast("Vui lòng nhập số kg cho ít nhất 1 lô tôm xuất bán!", "error");
+      return;
+    }
+    const targetMode = mode || (factorySummary.hasAnyPrice ? factoryPayMode : "AWAITING");
+    if ((targetMode === "COMPLETED" || targetMode === "PARTIAL_TRANSFER") && factorySummary.grossTotalMoney <= 0) {
+      showSalesToast("Vui lòng nhập đơn giá (đ/kg) cho các lô tôm để chốt nghiệm thu!", "error");
+      return;
+    }
+
     const now = new Date();
     const timeFullStr = now.toLocaleDateString("vi-VN") + " " + now.getHours() + ":" + String(now.getMinutes()).padStart(2, "0");
-    const matchedFactory = factoryDirectoryBuyers.find(b => b.name === factoryBuyerName.trim()) || selectedBuyerMeta || {};
+    const matchedFactory = factoryDirectoryBuyers.find(b => b.name.toLowerCase() === cleanBuyer.toLowerCase()) || selectedBuyerMeta || {};
+
+    const built = buildFactorySaleData_v5({
+      lots: factoryLots,
+      feeMode: factoryFeeMode,
+      feePerKg: factoryFeePerKg,
+      feeFixed: factoryFeeFixed,
+      advanceAmount: factoryAdvance,
+      buyerName: cleanBuyer,
+      buyerMeta: matchedFactory,
+      saleDateStr: factorySaleDate,
+      vehiclePlate: factoryVehiclePlate,
+      recipientName: factoryRecipientName,
+      recipientBankAccount: factoryRecipientBank,
+      settleMode: targetMode,
+      existingSale: null
+    });
 
     const newSale = {
       id: "sale_" + Date.now(),
       code: "CTY-" + String(Date.now()).slice(-4),
-      date: new Date().toISOString(),
-      targetGroup: "FACTORY",
-      status: "AWAITING_RESULT", // CHỜ KẾT QUẢ
-      isPaidFull: false,
-      buyerId: matchedFactory.id || "",
-      buyerName: factoryBuyerName.trim(),
-      buyerPhone: matchedFactory.phone || "",
-      buyerAddress: matchedFactory.address || "",
-      buyerRepresentative: matchedFactory.representative || "",
-      buyerLatitude: matchedFactory.latitude || null,
-      buyerLongitude: matchedFactory.longitude || null,
-      riceType: factoryShrimpType,
-      factoryDeliveredKg: kg,
-      totalNet: kg,
-      totalGross: kg,
-      totalMoney: 0,
       exportTime: timeFullStr,
-      notes: "Xuất giao công ty lúc " + timeFullStr + " - đang chờ kết quả nghiệm thu"
+      ...built
     };
 
     me.addSale(newSale);
     refreshData();
-    setFactoryDeliveredKg("");
-    showSalesToast("🏭 Đã xuất giao công ty " + newSale.buyerName + ". Trạng thái: CHỜ KẾT QUẢ");
+    setFactoryLots([createEmptyFactoryLot_v5(0)]);
+    setFactoryAdvance("");
+    const finAfter = me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: 0 };
+    if (targetMode === "COMPLETED") {
+      showSalesToast("✅ ĐÃ CHỐT ĐƠN CTY: +" + _e(newSale.totalMoney) + " đ (" + fmtKgFixed2_v5(newSale.totalNet) + " kg) • Doanh thu kỳ: " + _e(finAfter.totalRevenue) + " đ");
+    } else if (targetMode === "PARTIAL_TRANSFER") {
+      showSalesToast("🏢 ĐÃ NGHIỆM THU CTY (Ứng " + _e(newSale.paidAmount) + "đ • Chờ chuyển " + _e(newSale.remainingDebt) + "đ)");
+    } else {
+      showSalesToast("🏭 Đã xuất giao Cty " + newSale.buyerName + " (" + fmtKgFixed2_v5(newSale.totalNet) + " kg, " + newSale.totalBales + " lô) • CHỜ NGHIỆM THU");
+    }
   };
 
-  // Quick Settle Action (For Market or Factory)
+  const handleConfirmRemainingTransfer = (sale) => {
+    if (!sale) return;
+    const total = Number(sale.totalMoney || 0);
+    const saved = me.updateSale(sale.id, {
+      status: "COMPLETED",
+      isPaidFull: true,
+      paidAmount: total,
+      remainingDebt: 0,
+      remainingTransfer: 0,
+      settledAt: new Date().toISOString(),
+      notes: "Đã chuyển đủ 100%: " + _e(total) + " đ (" + fmtKgFixed2_v5(sale.totalNet) + " kg)"
+    });
+    if (saved) {
+      refreshData();
+      showSalesToast("✅ Đã xác nhận Công Ty chuyển đủ phần còn lại! Doanh thu kỳ đã cập nhật.");
+    }
+  };
+
+  // Quick Settle Action (For Market)
   const handleSaveQuickSettle = () => {
     if (!settlingSaleObj) return;
     const kg = Number(settleKg) || 0;
@@ -14486,6 +16059,8 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
     const updates = {
       status: "COMPLETED",
       isPaidFull: true,
+      remainingDebt: 0,
+      paidAmount: money,
       totalNet: kg,
       totalGross: kg,
       unitPrice: kg > 0 ? Math.round(money / kg) : 0,
@@ -14508,6 +16083,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
   // Filtered lists for in-progress items
   const activeSellingMarketSales = salesList.filter(s => s.targetGroup === "MARKET" && (s.status === "SELLING" || s.status === "PENDING_SETTLEMENT"));
   const activeAwaitingFactorySales = salesList.filter(s => s.targetGroup === "FACTORY" && s.status === "AWAITING_RESULT");
+  const activePartialFactorySales = salesList.filter(s => s.targetGroup === "FACTORY" && (s.status === "PARTIAL_TRANSFER" || (!s.isPaidFull && s.status !== "AWAITING_RESULT" && Number(s.remainingDebt || 0) > 0)));
 
   return c.jsxs("div", {
     className: "flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden text-gray-900 dark:text-gray-100",
@@ -14630,130 +16206,338 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
           className: "space-y-4",
           children: [
             // =========================================================================
-            // 1. PHƯƠNG THỨC 1: BÁN LẺ
+            // 1. PHƯƠNG THỨC 1: BÁN LẺ (NHIỀU LÔ • BẤM CÂN • NGÀY BÁN • THANH TOÁN / NỢ)
             // =========================================================================
             targetGroup === "RETAIL" && c.jsxs("div", {
-              className: "bg-white dark:bg-gray-900 rounded-[32px] p-5 border border-emerald-200 dark:border-emerald-800 shadow-lg space-y-4 animate-in fade-in duration-200",
+              className: "bg-white dark:bg-gray-900 rounded-[32px] p-4 sm:p-5 border border-emerald-200 dark:border-emerald-800 shadow-lg space-y-4 animate-in fade-in duration-200",
               children: [
                 c.jsxs("div", {
-                  className: "border-b border-gray-100 dark:border-gray-800 pb-3",
-                  children: [
-                    c.jsxs("div", {
-                      className: "flex items-center gap-2",
-                      children: [
-                        c.jsx("span", { className: "px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-black text-xs uppercase", children: "🛒 Kênh Bán Lẻ" }),
-                        c.jsx("span", { className: "text-xs font-bold text-gray-500", children: "Không áp giá cố định • Nhập giá trực tiếp" })
-                      ]
-                    }),
-                    c.jsx("h3", { className: "text-base font-black uppercase text-gray-900 dark:text-white mt-1", children: "Tạo Đơn Bán Lẻ Nhanh" })
-                  ]
-                }),
-
-                // Khách hàng (Chọn nhanh từ Danh bạ hoặc nhập tên)
-                c.jsxs("div", {
-                  className: "space-y-1.5",
-                  children: [
-                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block", children: "Tên Khách Mua Lẻ" }),
-                    retailDirectoryBuyers.length > 0 && c.jsx("div", {
-                      className: "flex flex-wrap gap-1.5",
-                      children: [
-                        { id: "_walkin", name: "Khách Lẻ Mua Tại Vựa" },
-                        ...retailDirectoryBuyers
-                      ].map(b => c.jsx("button", {
-                        key: b.id,
-                        type: "button",
-                        onClick: () => {
-                          setRetailBuyerName(b.name);
-                          setSelectedBuyerMeta(b.id === "_walkin" ? null : b);
-                        },
-                        className: `px-2.5 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer ${retailBuyerName === b.name ? "bg-emerald-600 text-white border-emerald-600 shadow-xs" : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
-                        children: b.name
-                      }))
-                    }),
-                    c.jsx("input", {
-                      type: "text",
-                      value: retailBuyerName,
-                      onChange: e => setRetailBuyerName(e.target.value),
-                      className: "w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-sm outline-none"
-                    })
-                  ]
-                }),
-
-                // Danh mục các loại tôm (Loại 1, Loại 2, Tôm trứng, Tôm xô...)
-                c.jsxs("div", {
-                  className: "space-y-1.5",
-                  children: [
-                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block", children: "Danh Mục Loại Tôm Bán Lẻ (Bấm Chọn Nhanh)" }),
-                    c.jsx("div", {
-                      className: "grid grid-cols-2 gap-1.5",
-                      children: retailTypes.map(t => c.jsxs("button", {
-                        key: t,
-                        type: "button",
-                        onClick: () => setRetailType(t),
-                        className: `p-2.5 rounded-xl text-left text-xs font-bold transition-all border ${
-                          retailType === t
-                            ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-900 dark:text-emerald-200 shadow-xs"
-                            : "bg-gray-50 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
-                        }`,
-                        children: [
-                          c.jsx("span", { className: "block truncate", children: t }),
-                          retailType === t && c.jsx("span", { className: "text-[9px] font-black text-emerald-600 block mt-0.5", children: "✓ Đang chọn" })
-                        ]
-                      }))
-                    })
-                  ]
-                }),
-
-                // 2 Ô nhập: Đơn Giá (nhập tay trực tiếp) & Số Kg
-                c.jsxs("div", {
-                  className: "grid grid-cols-2 gap-3",
-                  children: [
-                    c.jsxs("div", {
-                      className: "space-y-1",
-                      children: [
-                        c.jsx("label", { className: "text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-400 block", children: "Đơn Giá Bán (đ/kg) *" }),
-                        c.jsx("input", {
-                          type: "number",
-                          placeholder: "VD: 220000",
-                          value: retailPrice,
-                          onChange: e => setRetailPrice(e.target.value),
-                          className: "w-full p-3 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border-2 border-emerald-400 font-mono font-black text-xl text-emerald-900 dark:text-emerald-100 outline-none"
-                        }),
-                        c.jsx("span", { className: "text-[9px] text-gray-400 block", children: "Nhập giá tại thời điểm bán" })
-                      ]
-                    }),
-                    c.jsxs("div", {
-                      className: "space-y-1",
-                      children: [
-                        c.jsx("label", { className: "text-[10px] font-black uppercase text-blue-700 dark:text-blue-400 block", children: "Số Lượng (Kg) *" }),
-                        c.jsx("input", {
-                          type: "number",
-                          step: "any",
-                          placeholder: "VD: 15.5",
-                          value: retailKg,
-                          onChange: e => setRetailKg(e.target.value),
-                          className: "w-full p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border-2 border-blue-400 font-mono font-black text-xl text-blue-900 dark:text-blue-100 outline-none"
-                        }),
-                        c.jsx("span", { className: "text-[9px] text-gray-400 block", children: "Khối lượng thực tế" })
-                      ]
-                    })
-                  ]
-                }),
-
-                // Big Total Money Card
-                c.jsxs("div", {
-                  className: "p-4 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl text-white flex justify-between items-center shadow-lg",
+                  className: "border-b border-gray-100 dark:border-gray-800 pb-3 flex items-start justify-between gap-2",
                   children: [
                     c.jsxs("div", {
                       children: [
-                        c.jsx("span", { className: "text-[11px] font-black uppercase tracking-wider block opacity-90", children: "Thành Tiền Bán Lẻ" }),
                         c.jsxs("div", {
-                          className: "text-3xl font-black font-mono tracking-tight",
-                          children: [_e(retailMoney), " ", c.jsx("span", { className: "text-base font-sans font-bold", children: "VNĐ" })]
+                          className: "flex items-center gap-2 flex-wrap",
+                          children: [
+                            c.jsx("span", { className: "px-2.5 py-1 rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-black text-xs uppercase", children: "🛒 Kênh Bán Lẻ" }),
+                            c.jsx("span", { className: "text-[11px] font-bold text-gray-500", children: "Nhiều lô • Bấm cân 5x5 • Thanh toán / Ghi nợ" })
+                          ]
+                        }),
+                        c.jsx("h3", { className: "text-base font-black uppercase text-gray-900 dark:text-white mt-1.5", children: "Tạo Đơn Bán Lẻ" })
+                      ]
+                    }),
+                    c.jsxs("span", {
+                      className: "px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 font-mono font-black text-xs text-emerald-700 dark:text-emerald-300 shrink-0",
+                      children: [retailLots.length, " lô • ", fmtKg(retailSummary.totalKg), " kg"]
+                    })
+                  ]
+                }),
+
+                // Khách hàng + SĐT + Ngày bán
+                c.jsxs("div", {
+                  className: "space-y-2.5",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex items-center justify-between",
+                      children: [
+                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400", children: "Khách Mua Lẻ (Chọn hoặc nhập mới)" }),
+                        !retailDirectoryBuyers.some(b => b.name && b.name.trim().toLowerCase() === retailBuyerName.trim().toLowerCase()) && retailBuyerName.trim() && retailBuyerName.trim().toLowerCase() !== "khách lẻ mua tại vựa" && c.jsx("button", {
+                          type: "button",
+                          onClick: handleQuickSaveRetailBuyer,
+                          className: "text-[10px] font-black text-emerald-600 hover:underline cursor-pointer",
+                          children: "+ Lưu vào DS Khách hàng"
                         })
                       ]
                     }),
-                    c.jsx("div", { className: "text-3xl opacity-30", children: "💵" })
+                    c.jsx("div", {
+                      className: "flex flex-wrap gap-1.5",
+                      children: [
+                        { id: "_walkin", name: "Khách Lẻ Mua Tại Vựa", phone: "" },
+                        ...retailDirectoryBuyers
+                      ].map(b => {
+                        const liveDebt = b.id === "_walkin" ? 0 : getRetailBuyerLiveDebt(b);
+                        return c.jsxs("button", {
+                          key: b.id,
+                          type: "button",
+                          onClick: () => {
+                            setRetailBuyerName(b.name);
+                            setRetailBuyerPhone(b.phone || "");
+                            setSelectedBuyerMeta(b.id === "_walkin" ? null : b);
+                          },
+                          className: `px-2.5 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer inline-flex items-center gap-1 ${retailBuyerName === b.name ? "bg-emerald-600 text-white border-emerald-600 shadow-xs" : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
+                          children: [
+                            c.jsx("span", { children: b.name }),
+                            liveDebt > 0 && c.jsxs("span", {
+                              className: `text-[9px] font-mono px-1.5 py-0.2 rounded-full ${retailBuyerName === b.name ? "bg-rose-500 text-white" : "bg-rose-100 text-rose-700"}`,
+                              children: ["Nợ ", _e(liveDebt), "đ"]
+                            })
+                          ]
+                        });
+                      })
+                    }),
+                    c.jsxs("div", {
+                      className: "grid grid-cols-1 sm:grid-cols-3 gap-2",
+                      children: [
+                        c.jsxs("div", {
+                          className: "sm:col-span-1",
+                          children: [
+                            c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Tên Khách Hàng *" }),
+                            c.jsx("input", {
+                              type: "text",
+                              placeholder: "Nhập tên khách...",
+                              value: retailBuyerName,
+                              onChange: e => setRetailBuyerName(e.target.value),
+                              className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none focus:border-emerald-500"
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "SĐT Khách (nếu có)" }),
+                            c.jsx("input", {
+                              type: "tel",
+                              placeholder: "09xx.xxx.xxx",
+                              value: retailBuyerPhone,
+                              onChange: e => setRetailBuyerPhone(e.target.value),
+                              className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs outline-none focus:border-emerald-500"
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-400 block mb-1", children: "📅 Ngày Bán *" }),
+                            c.jsx("input", {
+                              type: "date",
+                              value: retailSaleDate,
+                              onChange: e => setRetailSaleDate(e.target.value),
+                              className: "w-full p-2.5 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 font-bold text-xs outline-none"
+                            })
+                          ]
+                        })
+                      ]
+                    })
+                  ]
+                }),
+
+                // DANH SÁCH NHIỀU LÔ BÁN LẺ (LÔ 1, LÔ 2, LÔ 3...)
+                c.jsxs("div", {
+                  className: "space-y-2.5 pt-1",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex items-center justify-between gap-2",
+                      children: [
+                        c.jsx("label", { className: "text-[11px] font-black uppercase text-emerald-900 dark:text-emerald-300", children: "Danh Sách Các Lô Tôm Bán Lẻ" }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: addRetailLot,
+                          className: "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-black uppercase shadow-xs cursor-pointer active:scale-95 transition-all",
+                          children: "+ Thêm Lô mới"
+                        })
+                      ]
+                    }),
+
+                    retailLots.map((lot, idx) => {
+                      const stat = retailSummary.lotStats[idx] || { kg: 0, bales: 0, unitPrice: 0, money: 0, hasGridWeights: false };
+                      return c.jsxs("div", {
+                        key: lot.id || idx,
+                        className: "p-3.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/70 space-y-2.5",
+                        children: [
+                          c.jsxs("div", {
+                            className: "flex items-center justify-between gap-2",
+                            children: [
+                              c.jsxs("div", {
+                                className: "flex items-center gap-2",
+                                children: [
+                                  c.jsxs("span", { className: "px-2.5 py-0.5 rounded-lg bg-emerald-600 text-white text-[11px] font-black", children: ["Lô ", idx + 1] }),
+                                  stat.money > 0 && c.jsxs("span", { className: "text-xs font-mono font-black text-emerald-700 dark:text-emerald-400", children: ["= ", _e(stat.money), " đ"] })
+                                ]
+                              }),
+                              retailLots.length > 1 && c.jsx("button", {
+                                type: "button",
+                                onClick: () => removeRetailLot(idx),
+                                className: "text-[11px] font-bold text-red-500 hover:underline cursor-pointer",
+                                children: "Xóa lô"
+                              })
+                            ]
+                          }),
+
+                          // Tên loại tôm & Size tôm (ô trống nhập tay tự do)
+                          c.jsxs("div", {
+                            className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
+                            children: [
+                              c.jsxs("div", {
+                                children: [
+                                  c.jsx("label", { className: "text-[9px] font-black text-gray-500 uppercase block mb-0.5", children: "Tên Loại Tôm" }),
+                                  c.jsx("input", {
+                                    type: "text",
+                                    placeholder: "Nhập tên loại tôm...",
+                                    value: lot.shrimpName,
+                                    onChange: e => updateRetailLot(idx, "shrimpName", e.target.value),
+                                    className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none focus:border-emerald-500"
+                                  })
+                                ]
+                              }),
+                              c.jsxs("div", {
+                                children: [
+                                  c.jsx("label", { className: "text-[9px] font-black text-gray-500 uppercase block mb-0.5", children: "Size Tôm" }),
+                                  c.jsx("input", {
+                                    type: "text",
+                                    placeholder: "Nhập size tôm (VD: 15-20 con)...",
+                                    value: lot.sizeLabel,
+                                    onChange: e => updateRetailLot(idx, "sizeLabel", e.target.value),
+                                    className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none focus:border-emerald-500"
+                                  })
+                                ]
+                              })
+                            ]
+                          }),
+
+                          // Bấm cân (giống đi cân tôm) + Đơn giá bán
+                          c.jsxs("div", {
+                            className: "grid grid-cols-1 sm:grid-cols-2 gap-2.5",
+                            children: [
+                              c.jsxs("div", {
+                                className: "space-y-1.5",
+                                children: [
+                                  c.jsx("label", { className: "text-[9px] font-black text-blue-700 dark:text-blue-400 uppercase block", children: "Số Cân Lô " + (idx + 1) + " *" }),
+                                  c.jsxs("button", {
+                                    type: "button",
+                                    onClick: () => setWeighingLotIdx(idx),
+                                    className: `w-full p-3 rounded-xl font-black text-xs uppercase flex items-center justify-between shadow-sm cursor-pointer active:scale-95 transition-all border-2 ${
+                                      stat.hasGridWeights
+                                        ? "bg-blue-600 text-white border-blue-700"
+                                        : "bg-blue-50 dark:bg-blue-950/50 text-blue-800 dark:text-blue-200 border-blue-400 hover:bg-blue-100"
+                                    }`,
+                                    children: [
+                                      c.jsxs("span", { className: "flex items-center gap-1.5", children: ["⚖️", stat.hasGridWeights ? "Sửa Mã Cân" : "Bấm Cân Tôm"] }),
+                                      c.jsx("span", {
+                                        className: "font-mono text-sm",
+                                        children: stat.hasGridWeights ? (fmtKg(stat.gridKg) + " kg (" + stat.bales + " giỏ)") : "Mở bảng cân 5x5"
+                                      })
+                                    ]
+                                  }),
+                                  !stat.hasGridWeights && c.jsxs("div", {
+                                    className: "flex items-center gap-1.5",
+                                    children: [
+                                      c.jsx("span", { className: "text-[10px] text-gray-400 font-bold shrink-0", children: "Hoặc nhập kg:" }),
+                                      c.jsx("input", {
+                                        type: "number",
+                                        step: "any",
+                                        placeholder: "0.0",
+                                        value: lot.manualKg,
+                                        onChange: e => updateRetailLot(idx, "manualKg", e.target.value),
+                                        className: "w-full p-1.5 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs text-right outline-none"
+                                      })
+                                    ]
+                                  })
+                                ]
+                              }),
+                              c.jsxs("div", {
+                                className: "space-y-1.5",
+                                children: [
+                                  c.jsx("label", { className: "text-[9px] font-black text-emerald-700 dark:text-emerald-400 uppercase block", children: "Đơn Giá Bán (đ/kg) *" }),
+                                  c.jsx("input", {
+                                    type: "number",
+                                    placeholder: "VD: 220000",
+                                    value: lot.unitPrice,
+                                    onChange: e => updateRetailLot(idx, "unitPrice", e.target.value),
+                                    className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border-2 border-emerald-400 font-mono font-black text-lg text-emerald-900 dark:text-emerald-100 outline-none"
+                                  })
+                                ]
+                              })
+                            ]
+                          })
+                        ]
+                      });
+                    })
+                  ]
+                }),
+
+                // Tổng Thành Tiền + Hình Thức Thanh Toán / Nợ
+                c.jsxs("div", {
+                  className: "p-4 bg-gradient-to-r from-emerald-600 to-green-700 rounded-2xl text-white space-y-1 shadow-lg",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center text-[11px] font-bold opacity-90",
+                      children: [
+                        c.jsxs("span", { children: ["Tổng ", retailLots.length, " lô • ", retailSummary.totalBales, " giỏ"] }),
+                        c.jsxs("span", { className: "font-mono", children: [fmtKg(retailSummary.totalKg), " KG"] })
+                      ]
+                    }),
+                    c.jsxs("div", {
+                      className: "flex justify-between items-baseline",
+                      children: [
+                        c.jsx("span", { className: "text-xs font-black uppercase tracking-wider", children: "Tổng Thành Tiền:" }),
+                        c.jsxs("div", {
+                          className: "text-2xl sm:text-3xl font-black font-mono tracking-tight",
+                          children: [_e(retailSummary.totalMoney), " ", c.jsx("span", { className: "text-sm font-sans font-bold", children: "VNĐ" })]
+                        })
+                      ]
+                    })
+                  ]
+                }),
+
+                // Chọn Hình Thức Thanh Toán hoặc Ghi Nợ
+                c.jsxs("div", {
+                  className: "p-3.5 rounded-2xl bg-slate-50 dark:bg-gray-800/70 border border-slate-200 dark:border-gray-700 space-y-2.5",
+                  children: [
+                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-500 block", children: "Hình Thức Thanh Toán / Ghi Nợ *" }),
+                    c.jsxs("div", {
+                      className: "grid grid-cols-3 gap-2",
+                      children: [
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => setRetailPayMode("PAID"),
+                          className: `p-2.5 rounded-xl text-[11px] font-black border-2 cursor-pointer transition-all ${retailPayMode === "PAID" ? "bg-emerald-50 dark:bg-emerald-950/50 border-emerald-500 text-emerald-800 dark:text-emerald-300 shadow-xs" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300"}`,
+                          children: "✓ Trả đủ 100%"
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => setRetailPayMode("PARTIAL"),
+                          className: `p-2.5 rounded-xl text-[11px] font-black border-2 cursor-pointer transition-all ${retailPayMode === "PARTIAL" ? "bg-amber-50 dark:bg-amber-950/50 border-amber-500 text-amber-800 dark:text-amber-300 shadow-xs" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300"}`,
+                          children: "⏳ Trả 1 phần"
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => setRetailPayMode("DEBT"),
+                          className: `p-2.5 rounded-xl text-[11px] font-black border-2 cursor-pointer transition-all ${retailPayMode === "DEBT" ? "bg-rose-50 dark:bg-rose-950/50 border-rose-500 text-rose-700 dark:text-rose-300 shadow-xs" : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300"}`,
+                          children: "📝 Ghi nợ hết"
+                        })
+                      ]
+                    }),
+
+                    retailPayMode === "PARTIAL" && c.jsxs("div", {
+                      className: "grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "text-[10px] font-bold text-gray-500 block mb-0.5", children: "Số tiền khách trả trước (VNĐ)" }),
+                            c.jsx("input", {
+                              type: "number",
+                              placeholder: "VD: 1000000",
+                              value: retailPaidNow,
+                              onChange: e => setRetailPaidNow(e.target.value),
+                              className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-amber-400 font-mono font-black text-sm text-emerald-700 dark:text-emerald-300 outline-none"
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 flex flex-col justify-center",
+                          children: [
+                            c.jsx("span", { className: "text-[10px] font-bold text-rose-700 dark:text-rose-400", children: "Còn ghi nợ khách hàng:" }),
+                            c.jsxs("span", { className: "font-mono font-black text-base text-rose-600 dark:text-rose-300", children: [_e(retailSummary.remainingDebt), " đ"] })
+                          ]
+                        })
+                      ]
+                    }),
+
+                    retailPayMode === "DEBT" && c.jsxs("div", {
+                      className: "p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-700 dark:text-rose-300 flex items-center justify-between",
+                      children: [
+                        c.jsx("span", { children: "📝 Ghi nợ toàn bộ vào Danh sách Khách hàng:" }),
+                        c.jsxs("span", { className: "font-mono font-black", children: [_e(retailSummary.totalMoney), " đ"] })
+                      ]
+                    })
                   ]
                 }),
 
@@ -14761,10 +16545,12 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                 c.jsxs("button", {
                   type: "button",
                   onClick: handleSaveRetail,
-                  className: "w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl text-base uppercase italic shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer",
+                  className: `w-full py-4 text-white font-black rounded-2xl text-base uppercase italic shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer ${retailSummary.remainingDebt > 0 ? "bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-700 hover:to-rose-700" : "bg-emerald-600 hover:bg-emerald-700"}`,
                   children: [
                     c.jsx(ec, { size: 22 }),
-                    "Lưu & Hoàn Tất Đơn Bán Lẻ"
+                    retailSummary.remainingDebt > 0
+                      ? ("Lưu Đơn Bán Lẻ & Ghi Nợ (" + _e(retailSummary.remainingDebt) + "đ)")
+                      : "Lưu & Hoàn Tất Đơn Bán Lẻ"
                   ]
                 })
               ]
@@ -14953,104 +16739,490 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
             }),
 
             // =========================================================================
-            // 3. PHƯƠNG THỨC 3: BÁN CHO CÔNG TY / NHÀ MÁY (2 BƯỚC)
+            // 3. PHƯƠNG THỨC 3: BÁN CHO CÔNG TY / NHÀ MÁY / ĐẠI LÝ OXY (CHUẨN PHIẾU LÔ + BẢNG KÊ)
             // =========================================================================
             targetGroup === "FACTORY" && c.jsxs("div", {
               className: "space-y-4 animate-in fade-in duration-200",
               children: [
-                // STEP 1 CARD
+                // STEP 1 CARD: XUẤT GIAO & KÊ NHIỀU LÔ TÔM CÀNG OXY / TƠ
                 c.jsxs("div", {
-                  className: "bg-white dark:bg-gray-900 rounded-[32px] p-5 border border-blue-200 dark:border-blue-800 shadow-lg space-y-4",
+                  className: "bg-white dark:bg-gray-900 rounded-[32px] p-4 sm:p-5 border border-blue-200 dark:border-blue-800 shadow-lg space-y-4",
                   children: [
                     c.jsxs("div", {
-                      className: "border-b border-gray-100 dark:border-gray-800 pb-3",
+                      className: "border-b border-gray-100 dark:border-gray-800 pb-3 flex items-start justify-between gap-2",
                       children: [
                         c.jsxs("div", {
-                          className: "flex items-center gap-2",
                           children: [
-                            c.jsx("span", { className: "px-2.5 py-1 rounded-xl bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-black text-xs uppercase", children: "Bước 1: Giao Hàng Cho Công Ty" }),
-                            c.jsx("span", { className: "text-xs font-bold text-blue-600", children: "Trạng thái: Chờ kết quả" })
+                            c.jsxs("div", {
+                              className: "flex items-center gap-2 flex-wrap",
+                              children: [
+                                c.jsx("span", { className: "px-2.5 py-1 rounded-xl bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-black text-xs uppercase", children: "🏢 Bán Tôm Công Ty" }),
+                                c.jsx("span", { className: "text-[11px] font-bold text-blue-600 dark:text-blue-400", children: "Nhiều lô • Size • BG / Ốp / MĐen • Phí DN • Tạm ứng" })
+                              ]
+                            }),
+                            c.jsx("h3", { className: "text-base font-black uppercase text-gray-900 dark:text-white mt-1.5", children: "Phiếu Xuất Lô & Bảng Kê Công Ty" })
                           ]
                         }),
-                        c.jsx("h3", { className: "text-base font-black uppercase text-gray-900 dark:text-white mt-1", children: "Xuất Tôm Cho Nhà Máy / Doanh Nghiệp" })
-                      ]
-                    }),
-
-                    // Chọn công ty từ danh mục khách hàng
-                    c.jsxs("div", {
-                      children: [
-                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Tên Công Ty / Nhà Máy Thu Mua" }),
-                        c.jsx("select", {
-                          value: factoryBuyerName,
-                          onChange: e => {
-                            const nextName = e.target.value;
-                            setFactoryBuyerName(nextName);
-                            const matched = factoryDirectoryBuyers.find(b => b.name === nextName);
-                            if (matched) {
-                              setSelectedBuyerMeta(matched);
-                              if (Array.isArray(matched.shrimpPrices) && matched.shrimpPrices.length > 0 && matched.shrimpPrices[0].typeName) {
-                                setFactoryShrimpType(matched.shrimpPrices[0].typeName);
-                              }
-                            }
-                          },
-                          className: "w-full p-3 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-sm outline-none text-gray-900 dark:text-white",
-                          children: factoryBuyers.map(fb => c.jsx("option", { value: fb, children: fb }, fb))
+                        c.jsxs("span", {
+                          className: "px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-gray-800 font-mono font-black text-xs text-blue-700 dark:text-blue-300 shrink-0",
+                          children: [factoryLots.length, " lô • ", fmtKgFixed2_v5(factorySummary.totalKg), " kg"]
                         })
                       ]
                     }),
 
-                    // Loại tôm (hiện gợi ý từ bảng giá công ty & profile)
+                    // Chọn hoặc nhập tên Đại lý / Công ty + Ngày + Biển số xe
                     c.jsxs("div", {
-                      className: "space-y-1.5",
+                      className: "space-y-2.5",
                       children: [
-                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block", children: "Loại Tôm Hợp Đồng Xuất Giao" }),
-                        (() => {
-                          const matchedF = factoryDirectoryBuyers.find(b => b.name === factoryBuyerName);
-                          const fTypes = (matchedF && Array.isArray(matchedF.shrimpPrices) ? matchedF.shrimpPrices.map(sp => sp.typeName) : []).concat(profileTypes || []);
-                          const uniqueTypes = Array.from(new Set(fTypes.filter(Boolean))).slice(0, 6);
-                          return uniqueTypes.length > 0 && c.jsx("div", {
-                            className: "flex flex-wrap gap-1.5",
-                            children: uniqueTypes.map(tn => c.jsx("button", {
-                              key: tn,
+                        c.jsxs("div", {
+                          className: "space-y-1.5",
+                          children: [
+                            c.jsxs("div", {
+                              className: "flex items-center justify-between",
+                              children: [
+                                c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400", children: "Đại Lý / Công Ty Thu Mua *" }),
+                                !factoryDirectoryBuyers.some(b => b.name.toLowerCase() === factoryBuyerName.trim().toLowerCase()) && factoryBuyerName.trim() && c.jsx("button", {
+                                  type: "button",
+                                  onClick: handleQuickSaveFactoryBuyer,
+                                  className: "text-[10px] font-black text-blue-600 hover:underline cursor-pointer",
+                                  children: "+ Lưu vào danh bạ Cty"
+                                })
+                              ]
+                            }),
+                            factoryBuyers.length > 0 && c.jsx("div", {
+                              className: "flex flex-wrap gap-1.5",
+                              children: factoryBuyers.slice(0, 6).map(fb => c.jsx("button", {
+                                key: fb,
+                                type: "button",
+                                onClick: () => {
+                                  setFactoryBuyerName(fb);
+                                  const matched = factoryDirectoryBuyers.find(b => b.name === fb);
+                                  if (matched) {
+                                    setSelectedBuyerMeta(matched);
+                                    if (matched.defaultVehiclePlate) setFactoryVehiclePlate(matched.defaultVehiclePlate);
+                                  }
+                                },
+                                className: `px-2.5 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer ${factoryBuyerName === fb ? "bg-blue-600 text-white border-blue-600 shadow-xs" : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
+                                children: fb
+                              }))
+                            }),
+                            c.jsx("input", {
+                              type: "text",
+                              placeholder: "VD: C. Dung 3 hoặc Công ty CP Thủy sản...",
+                              value: factoryBuyerName,
+                              onChange: e => setFactoryBuyerName(e.target.value),
+                              className: "w-full p-2.5 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-sm outline-none focus:border-blue-500"
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "grid grid-cols-2 gap-2.5",
+                          children: [
+                            c.jsxs("div", {
+                              children: [
+                                c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Ngày Phiếu / Xuất Xe" }),
+                                c.jsx("input", {
+                                  type: "date",
+                                  value: factorySaleDate,
+                                  onChange: e => setFactorySaleDate(e.target.value),
+                                  className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                                })
+                              ]
+                            }),
+                            c.jsxs("div", {
+                              children: [
+                                c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Biển Số Xe" }),
+                                c.jsx("input", {
+                                  type: "text",
+                                  placeholder: "VD: 66A - 367.72",
+                                  value: factoryVehiclePlate,
+                                  onChange: e => setFactoryVehiclePlate(e.target.value),
+                                  className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs uppercase outline-none"
+                                })
+                              ]
+                            })
+                          ]
+                        }),
+                        vehiclesList.length > 0 && c.jsx("div", {
+                          className: "flex flex-wrap gap-1.5",
+                          children: vehiclesList.map(v => c.jsx("button", {
+                            key: v.id || v.name,
+                            type: "button",
+                            onClick: () => setFactoryVehiclePlate(v.plate || v.name || ""),
+                            className: "px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-gray-800 text-slate-600 dark:text-gray-300 text-[10px] font-bold border border-slate-200 dark:border-gray-700 cursor-pointer",
+                            children: ["🚚 ", v.plate || v.name]
+                          }))
+                        })
+                      ]
+                    }),
+
+                    // DANH SÁCH CÁC LÔ / SIZE TÔM TRÊN CÙNG CHUYẾN XE
+                    c.jsxs("div", {
+                      className: "space-y-2.5 pt-1",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex items-center justify-between gap-2",
+                          children: [
+                            c.jsx("label", { className: "text-[11px] font-black uppercase text-blue-900 dark:text-blue-300", children: "Danh Sách Các Lô / Size Xuất Công Ty" }),
+                            c.jsx("button", {
                               type: "button",
-                              onClick: () => setFactoryShrimpType(tn),
-                              className: `px-2 py-1 rounded-lg text-[10px] font-bold border cursor-pointer ${factoryShrimpType === tn ? "bg-blue-600 text-white border-blue-600" : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
-                              children: tn
-                            }))
+                              onClick: addFactoryLot,
+                              className: "px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[11px] font-black uppercase shadow-xs cursor-pointer active:scale-95 transition-all",
+                              children: "+ Thêm Lô / Size"
+                            })
+                          ]
+                        }),
+                        factoryLots.map((lot, idx) => {
+                          const comp = factorySummary.computedLots[idx] || { money: 0 };
+                          return c.jsxs("div", {
+                            key: lot.id || idx,
+                            className: "p-3.5 rounded-2xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/70 space-y-2.5",
+                            children: [
+                              c.jsxs("div", {
+                                className: "flex items-center justify-between gap-2",
+                                children: [
+                                  c.jsxs("div", {
+                                    className: "flex items-center gap-2",
+                                    children: [
+                                      c.jsxs("span", { className: "px-2 py-0.5 rounded-lg bg-blue-600 text-white text-[10px] font-black", children: ["Lô #", idx + 1] }),
+                                      comp.money > 0 && c.jsxs("span", { className: "text-xs font-mono font-black text-emerald-700 dark:text-emerald-400", children: ["= ", _e(comp.money), " đ"] })
+                                    ]
+                                  }),
+                                  c.jsxs("div", {
+                                    className: "flex items-center gap-2",
+                                    children: [
+                                      c.jsx("button", {
+                                        type: "button",
+                                        onClick: () => duplicateFactoryLot(idx),
+                                        className: "text-[10px] font-bold text-blue-600 hover:underline cursor-pointer",
+                                        children: "Nhân bản"
+                                      }),
+                                      factoryLots.length > 1 && c.jsx("button", {
+                                        type: "button",
+                                        onClick: () => removeFactoryLot(idx),
+                                        className: "text-[10px] font-bold text-red-500 hover:underline cursor-pointer",
+                                        children: "Xóa"
+                                      })
+                                    ]
+                                  })
+                                ]
+                              }),
+
+                              // Quick category chips (chỉ gợi ý 2 loại: Càng sen, Càng xào)
+                              c.jsx("div", {
+                                className: "flex flex-wrap gap-1.5",
+                                children: ["Càng sen", "Càng xào"].map(cat => c.jsx("button", {
+                                  key: cat,
+                                  type: "button",
+                                  onClick: () => updateFactoryLot(idx, "category", cat),
+                                  className: `px-2.5 py-0.5 rounded-md text-[10px] font-black border cursor-pointer ${lot.category === cat ? "bg-blue-600 text-white border-blue-600" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
+                                  children: cat
+                                }))
+                              }),
+
+                              // Row 1: Số lô + Loại + Số con/Size
+                              c.jsxs("div", {
+                                className: "grid grid-cols-3 gap-2",
+                                children: [
+                                  c.jsxs("div", {
+                                    children: [
+                                      c.jsx("label", { className: "text-[9px] font-bold text-gray-500 uppercase block mb-0.5", children: "Số Lô" }),
+                                      c.jsx("input", {
+                                        type: "text",
+                                        placeholder: "TC1475",
+                                        value: lot.lotCode,
+                                        onChange: e => updateFactoryLot(idx, "lotCode", e.target.value),
+                                        className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs uppercase outline-none"
+                                      })
+                                    ]
+                                  }),
+                                  c.jsxs("div", {
+                                    children: [
+                                      c.jsx("label", { className: "text-[9px] font-bold text-gray-500 uppercase block mb-0.5", children: "Loại Tôm" }),
+                                      c.jsx("input", {
+                                        type: "text",
+                                        placeholder: "Càng sen / Càng xào",
+                                        value: lot.category,
+                                        onChange: e => updateFactoryLot(idx, "category", e.target.value),
+                                        className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                                      })
+                                    ]
+                                  }),
+                                  c.jsxs("div", {
+                                    children: [
+                                      c.jsx("label", { className: "text-[9px] font-bold text-gray-500 uppercase block mb-0.5", children: "Số con / Size" }),
+                                      c.jsx("input", {
+                                        type: "text",
+                                        placeholder: "35c / SEN 40",
+                                        value: lot.sizeLabel,
+                                        onChange: e => updateFactoryLot(idx, "sizeLabel", e.target.value),
+                                        className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                                      })
+                                    ]
+                                  })
+                                ]
+                              }),
+
+                              // Row 2: Số Kg + Đơn giá (tùy chọn ở bước xuất xe)
+                              c.jsxs("div", {
+                                className: "grid grid-cols-2 gap-2",
+                                children: [
+                                  c.jsxs("div", {
+                                    children: [
+                                      c.jsx("label", { className: "text-[9px] font-black text-blue-700 dark:text-blue-400 uppercase block mb-0.5", children: "Số Kg (2 số lẻ) *" }),
+                                      c.jsx("input", {
+                                        type: "number",
+                                        step: "0.01",
+                                        placeholder: "VD: 150.74",
+                                        value: lot.kg,
+                                        onChange: e => updateFactoryLot(idx, "kg", e.target.value),
+                                        className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border-2 border-blue-400 font-mono font-black text-base text-blue-900 dark:text-blue-100 outline-none"
+                                      })
+                                    ]
+                                  }),
+                                  c.jsxs("div", {
+                                    children: [
+                                      c.jsx("label", { className: "text-[9px] font-black text-emerald-700 dark:text-emerald-400 uppercase block mb-0.5", children: "Đơn giá Cty (đ/kg)" }),
+                                      c.jsx("input", {
+                                        type: "number",
+                                        placeholder: "Bỏ trống nếu chờ giá",
+                                        value: lot.unitPrice,
+                                        onChange: e => updateFactoryLot(idx, "unitPrice", e.target.value),
+                                        className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-emerald-300 dark:border-emerald-800 font-mono font-black text-base text-emerald-800 dark:text-emerald-200 outline-none"
+                                      })
+                                    ]
+                                  })
+                                ]
+                              }),
+
+                              // Row 3: Chất lượng (Bể gạch %, Ốp / Mang đen / Long đầu %, Trừ giá)
+                              c.jsxs("div", {
+                                className: "grid grid-cols-3 gap-2",
+                                children: [
+                                  c.jsxs("div", {
+                                    children: [
+                                      c.jsx("label", { className: "text-[9px] font-bold text-gray-500 uppercase block mb-0.5", children: "Bể gạch (%)" }),
+                                      c.jsx("input", {
+                                        type: "text",
+                                        placeholder: "VD: 24",
+                                        value: lot.brokenBrickPct,
+                                        onChange: e => updateFactoryLot(idx, "brokenBrickPct", e.target.value),
+                                        className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                                      })
+                                    ]
+                                  }),
+                                  c.jsxs("div", {
+                                    children: [
+                                      c.jsx("label", { className: "text-[9px] font-bold text-gray-500 uppercase block mb-0.5", children: "Ốp, mang đen, long đầu" }),
+                                      c.jsx("input", {
+                                        type: "text",
+                                        placeholder: "ốp, mang đen 18%",
+                                        value: lot.defectNote,
+                                        onChange: e => updateFactoryLot(idx, "defectNote", e.target.value),
+                                        className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                                      })
+                                    ]
+                                  }),
+                                  c.jsxs("div", {
+                                    children: [
+                                      c.jsx("label", { className: "text-[9px] font-bold text-amber-600 uppercase block mb-0.5", children: "Trừ giá (-đ/kg)" }),
+                                      c.jsx("input", {
+                                        type: "number",
+                                        placeholder: "VD: 6000",
+                                        value: lot.deductionPerKg,
+                                        onChange: e => updateFactoryLot(idx, "deductionPerKg", e.target.value),
+                                        className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs outline-none"
+                                      })
+                                    ]
+                                  })
+                                ]
+                              })
+                            ]
                           });
-                        })(),
-                        c.jsx("input", {
-                          type: "text",
-                          value: factoryShrimpType,
-                          onChange: e => setFactoryShrimpType(e.target.value),
-                          className: "w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
                         })
                       ]
                     }),
 
-                    // Số lượng giao đi sơ bộ
+                    // PHÍ DN & TẠM ỨNG & NGƯỜI NHẬN
                     c.jsxs("div", {
+                      className: "p-3.5 rounded-2xl bg-slate-50 dark:bg-gray-800/70 border border-slate-200 dark:border-gray-700 space-y-3",
                       children: [
-                        c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-400 block mb-1", children: "Số Lượng Xuất Giao (Kg) Ước Tính / Cân Vựa" }),
-                        c.jsx("input", {
-                          type: "number",
-                          step: "any",
-                          placeholder: "VD: 850.5",
-                          value: factoryDeliveredKg,
-                          onChange: e => setFactoryDeliveredKg(e.target.value),
-                          className: "w-full p-3 rounded-2xl bg-blue-50/60 dark:bg-blue-950/30 border-2 border-blue-400 font-mono font-black text-xl text-blue-900 dark:text-blue-100 outline-none"
+                        c.jsxs("div", {
+                          className: "grid grid-cols-1 sm:grid-cols-2 gap-3",
+                          children: [
+                            c.jsxs("div", {
+                              className: "space-y-1",
+                              children: [
+                                c.jsxs("div", {
+                                  className: "flex items-center justify-between",
+                                  children: [
+                                    c.jsx("label", { className: "text-[10px] font-black uppercase text-gray-500", children: "Phí DN (Phí Cty)" }),
+                                    c.jsxs("div", {
+                                      className: "flex gap-1",
+                                      children: [
+                                        c.jsx("button", { type: "button", onClick: () => setFactoryFeeMode("PER_KG"), className: `px-2 py-0.5 rounded-lg text-[10px] font-black cursor-pointer ${factoryFeeMode === "PER_KG" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-900 text-gray-500"}`, children: "đ/kg" }),
+                                        c.jsx("button", { type: "button", onClick: () => setFactoryFeeMode("FIXED"), className: `px-2 py-0.5 rounded-lg text-[10px] font-black cursor-pointer ${factoryFeeMode === "FIXED" ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-900 text-gray-500"}`, children: "VNĐ" })
+                                      ]
+                                    })
+                                  ]
+                                }),
+                                factoryFeeMode === "PER_KG"
+                                  ? c.jsx("input", {
+                                      type: "number",
+                                      placeholder: "VD: 4000",
+                                      value: factoryFeePerKg,
+                                      onChange: e => setFactoryFeePerKg(e.target.value),
+                                      className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono font-black text-sm outline-none"
+                                    })
+                                  : c.jsx("input", {
+                                      type: "number",
+                                      placeholder: "VD: 1130800",
+                                      value: factoryFeeFixed,
+                                      onChange: e => setFactoryFeeFixed(e.target.value),
+                                      className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono font-black text-sm outline-none"
+                                    })
+                              ]
+                            }),
+                            c.jsxs("div", {
+                              className: "space-y-1",
+                              children: [
+                                c.jsx("label", { className: "text-[10px] font-black uppercase text-indigo-700 dark:text-indigo-300 block", children: "Tạm Ứng Trước (VNĐ)" }),
+                                c.jsx("input", {
+                                  type: "number",
+                                  placeholder: "VD: 20000000",
+                                  value: factoryAdvance,
+                                  onChange: e => setFactoryAdvance(e.target.value),
+                                  className: "w-full p-2.5 rounded-xl bg-white dark:bg-gray-900 border border-indigo-200 dark:border-indigo-800 font-mono font-black text-sm text-indigo-700 dark:text-indigo-300 outline-none"
+                                })
+                              ]
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          className: "pt-1",
+                          children: [
+                            c.jsxs("button", {
+                              type: "button",
+                              onClick: () => setShowFactoryBankBox(!showFactoryBankBox),
+                              className: "text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer flex items-center gap-1",
+                              children: [
+                                c.jsx("span", { children: showFactoryBankBox ? "▾" : "▸" }),
+                                "Thông tin Người nhận & STK chuyển khoản: ",
+                                c.jsx("span", { className: "font-mono text-gray-700 dark:text-gray-300", children: [factoryRecipientName, factoryRecipientBank].filter(Boolean).join(" • ") || "Chưa nhập" })
+                              ]
+                            }),
+                            showFactoryBankBox && c.jsxs("div", {
+                              className: "grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2",
+                              children: [
+                                c.jsx("input", {
+                                  type: "text",
+                                  placeholder: "Tên người nhận (VD: TRẦN MINH)",
+                                  value: factoryRecipientName,
+                                  onChange: e => setFactoryRecipientName(e.target.value),
+                                  className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-bold text-xs outline-none"
+                                }),
+                                c.jsx("input", {
+                                  type: "text",
+                                  placeholder: "STK & Ngân hàng (VD: 7710205233924 Agribank)",
+                                  value: factoryRecipientBank,
+                                  onChange: e => setFactoryRecipientBank(e.target.value),
+                                  className: "w-full p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 font-mono font-bold text-xs outline-none"
+                                })
+                              ]
+                            })
+                          ]
                         })
                       ]
                     }),
 
-                    // Submit button Step 1
-                    c.jsxs("button", {
+                    // BẢNG TỔNG HỢP CHUẨN EXCEL CÔNG TY
+                    c.jsxs("div", {
+                      className: "p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-blue-950 text-white space-y-1.5 font-mono text-xs shadow-lg",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex justify-between items-center text-sm font-black",
+                          children: [
+                            c.jsxs("span", { children: ["Tổng Cộng (", fmtKgFixed2_v5(factorySummary.totalKg), " kg):"] }),
+                            c.jsxs("span", { children: [_e(factorySummary.grossTotalMoney), " đ"] })
+                          ]
+                        }),
+                        factorySummary.hasAnyPrice && c.jsxs(c.Fragment, {
+                          children: [
+                            c.jsxs("div", {
+                              className: "flex justify-between text-emerald-300 font-bold",
+                              children: [
+                                c.jsxs("span", { children: ["Phí DN", factoryFeeMode === "PER_KG" && Number(factoryFeePerKg) > 0 ? (" (" + _e(factoryFeePerKg) + "đ/kg)") : "", ":"] }),
+                                c.jsxs("span", { children: ["-", _e(factorySummary.companyFee), " đ"] })
+                              ]
+                            }),
+                            c.jsxs("div", {
+                              className: "flex justify-between text-rose-300 font-black text-sm pt-1 border-t border-white/15",
+                              children: [
+                                c.jsx("span", { children: "Còn lại (Thực thu):" }),
+                                c.jsxs("span", { children: [_e(factorySummary.netAfterFee), " đ"] })
+                              ]
+                            })
+                          ]
+                        }),
+                        factorySummary.advance > 0 && c.jsxs("div", {
+                          className: "flex justify-between text-sky-300 font-bold",
+                          children: [
+                            c.jsx("span", { children: "Tạm ứng đã nhận:" }),
+                            c.jsxs("span", { children: ["-", _e(factorySummary.advance), " đ"] })
+                          ]
+                        }),
+                        factorySummary.hasAnyPrice && c.jsxs("div", {
+                          className: "flex justify-between text-yellow-300 font-black text-base pt-1 border-t border-white/20",
+                          children: [
+                            c.jsx("span", { children: "Còn lại chuyển:" }),
+                            c.jsxs("span", { children: [_e(factorySummary.remainingTransfer), " VNĐ"] })
+                          ]
+                        })
+                      ]
+                    }),
+
+                    // Payment option when prices already entered + Action Buttons
+                    factorySummary.hasAnyPrice && c.jsxs("div", {
+                      className: "grid grid-cols-2 gap-2",
+                      children: [
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => setFactoryPayMode("COMPLETED"),
+                          className: `p-2.5 rounded-xl text-xs font-black border-2 cursor-pointer transition-all ${factoryPayMode === "COMPLETED" ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-800 dark:text-emerald-300" : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600"}`,
+                          children: "✓ Đã chuyển đủ 100%"
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => setFactoryPayMode("PARTIAL_TRANSFER"),
+                          className: `p-2.5 rounded-xl text-xs font-black border-2 cursor-pointer transition-all ${factoryPayMode === "PARTIAL_TRANSFER" ? "bg-amber-50 dark:bg-amber-950/40 border-amber-500 text-amber-800 dark:text-amber-300" : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600"}`,
+                          children: "⏳ Chờ chuyển còn lại"
+                        })
+                      ]
+                    }),
+
+                    factorySummary.hasAnyPrice ? c.jsxs("div", {
+                      className: "grid grid-cols-1 sm:grid-cols-2 gap-2.5",
+                      children: [
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => handleSaveFactoryOrder("AWAITING"),
+                          className: "py-3.5 bg-blue-100 hover:bg-blue-200 text-blue-900 font-black rounded-2xl text-xs uppercase flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all",
+                          children: [c.jsx("span", { children: "⏳" }), "Lưu 'Chờ Nghiệm Thu'"]
+                        }),
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => handleSaveFactoryOrder(factoryPayMode),
+                          className: "py-3.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-black rounded-2xl text-sm uppercase italic shadow-xl flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all",
+                          children: [c.jsx(ec, { size: 18 }), "Chốt & Lưu Phiếu Cty"]
+                        })
+                      ]
+                    }) : c.jsxs("button", {
                       type: "button",
-                      onClick: handleSaveFactoryStep1,
+                      onClick: () => handleSaveFactoryOrder("AWAITING"),
                       className: "w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black rounded-2xl text-base uppercase italic shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer",
                       children: [
                         c.jsx("span", { children: "🏭" }),
-                        "Giao Hàng Cho Công Ty (Lưu 'Chờ Kết Quả')"
+                        "Xuất Giao Công Ty (Lưu 'Chờ Kết Quả')"
                       ]
                     })
                   ]
@@ -15071,40 +17243,151 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                             c.jsx("span", { className: "text-blue-600", children: activeAwaitingFactorySales.length })
                           ]
                         }),
-                        c.jsx("span", { className: "text-[10px] text-gray-400 font-bold", children: "Bước 2: Nghiệm thu" })
+                        c.jsx("span", { className: "text-[10px] text-gray-400 font-bold", children: "Bước 2: Nhập giá & Phí DN" })
                       ]
                     }),
                     activeAwaitingFactorySales.length === 0 ? c.jsx("p", {
                       className: "text-xs text-gray-400 italic py-4 text-center",
                       children: "Không có đơn công ty nào đang chờ nghiệm thu."
-                    }) : activeAwaitingFactorySales.map(sale => c.jsxs("div", {
+                    }) : activeAwaitingFactorySales.map(sale => {
+                      const lots = Array.isArray(sale.factoryLots) ? sale.factoryLots : [];
+                      return c.jsxs("div", {
+                        key: sale.id,
+                        className: "p-3.5 bg-blue-50/60 dark:bg-blue-950/30 rounded-2xl border border-blue-200 dark:border-blue-900/50 space-y-2.5",
+                        children: [
+                          c.jsxs("div", {
+                            className: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5",
+                            children: [
+                              c.jsxs("div", {
+                                className: "space-y-0.5",
+                                children: [
+                                  c.jsxs("div", {
+                                    className: "flex items-center gap-2 flex-wrap",
+                                    children: [
+                                      c.jsx("span", { className: "font-black text-sm text-gray-900 dark:text-white", children: sale.buyerName }),
+                                      sale.vehiclePlate && c.jsxs("span", { className: "px-2 py-0.5 rounded-lg bg-slate-200 dark:bg-gray-800 font-mono text-[10px] font-black text-slate-800 dark:text-gray-200", children: ["🚚 ", sale.vehiclePlate] })
+                                    ]
+                                  }),
+                                  c.jsxs("div", {
+                                    className: "text-[11px] text-gray-500 flex flex-wrap gap-x-3",
+                                    children: [
+                                      c.jsxs("span", { children: ["📅 ", new Date(sale.date).toLocaleDateString("vi-VN")] }),
+                                      c.jsxs("span", { className: "font-mono font-bold text-blue-700 dark:text-blue-300", children: ["⚖️ ", fmtKgFixed2_v5(sale.factoryDeliveredKg || sale.totalNet), " kg"] }),
+                                      Number(sale.advanceAmount) > 0 && c.jsxs("span", { className: "font-bold text-indigo-600 dark:text-indigo-400", children: ["Đã ứng: ", _e(sale.advanceAmount), " đ"] })
+                                    ]
+                                  })
+                                ]
+                              }),
+                              c.jsxs("div", {
+                                className: "flex items-center gap-1.5 w-full sm:w-auto",
+                                children: [
+                                  c.jsx("button", {
+                                    type: "button",
+                                    onClick: () => onViewDetail && onViewDetail(sale),
+                                    className: "px-3 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold cursor-pointer",
+                                    children: "Chi tiết"
+                                  }),
+                                  c.jsxs("button", {
+                                    type: "button",
+                                    onClick: () => setSettlingSaleObj(sale),
+                                    className: "flex-1 sm:flex-initial px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
+                                    children: [
+                                      c.jsx("span", { children: "📝" }),
+                                      "Nhập Nghiệm Thu"
+                                    ]
+                                  })
+                                ]
+                              })
+                            ]
+                          }),
+                          lots.length > 0 && c.jsx("div", {
+                            className: "flex flex-wrap gap-1.5",
+                            children: lots.map((l, li) => c.jsxs("span", {
+                              key: l.id || li,
+                              className: "px-2 py-0.5 rounded-lg bg-white dark:bg-gray-900 border border-blue-100 dark:border-blue-900 text-[10px] font-bold text-gray-700 dark:text-gray-300",
+                              children: [
+                                l.lotCode ? ("Lô " + l.lotCode + " • ") : "",
+                                l.sizeLabel || l.category,
+                                ": ",
+                                fmtKgFixed2_v5(l.kg),
+                                " kg",
+                                l.brokenBrickPct ? (" • BG " + l.brokenBrickPct + "%") : ""
+                              ]
+                            }))
+                          })
+                        ]
+                      });
+                    })
+                  ]
+                }),
+
+                // STEP 3: ĐƠN CTY ĐÃ NGHIỆM THU - CHỜ CHUYỂN PHẦN CÒN LẠI
+                activePartialFactorySales.length > 0 && c.jsxs("div", {
+                  className: "bg-white dark:bg-gray-900 rounded-[32px] p-5 border border-amber-200 dark:border-amber-800 shadow-sm space-y-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center",
+                      children: [
+                        c.jsxs("h3", {
+                          className: "text-xs font-black uppercase text-amber-800 dark:text-amber-300 flex items-center gap-1.5",
+                          children: [
+                            c.jsx("span", { children: "💸" }),
+                            "Chờ Công Ty Chuyển Phần Còn Lại: ",
+                            c.jsx("span", { children: activePartialFactorySales.length })
+                          ]
+                        }),
+                        c.jsx("span", { className: "text-[10px] text-amber-600 font-bold", children: "Đã nghiệm thu" })
+                      ]
+                    }),
+                    activePartialFactorySales.map(sale => c.jsxs("div", {
                       key: sale.id,
-                      className: "p-3.5 bg-blue-50/60 dark:bg-blue-950/30 rounded-2xl border border-blue-200 dark:border-blue-900/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3",
+                      className: "p-3.5 bg-amber-50/70 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3",
                       children: [
                         c.jsxs("div", {
                           className: "space-y-0.5",
                           children: [
-                            c.jsx("div", { className: "font-black text-sm text-gray-900 dark:text-white", children: sale.buyerName }),
                             c.jsxs("div", {
-                              className: "text-[11px] text-gray-500 flex gap-3",
+                              className: "font-black text-sm text-gray-900 dark:text-white flex items-center gap-2 flex-wrap",
                               children: [
-                                c.jsxs("span", { children: ["📅 Xuất: ", sale.exportTime || new Date(sale.date).toLocaleDateString("vi-VN")] }),
-                                sale.factoryDeliveredKg > 0 && c.jsxs("span", { children: ["Giao: ", fmtKg(sale.factoryDeliveredKg), " kg"] })
+                                sale.buyerName,
+                                sale.vehiclePlate && c.jsxs("span", { className: "font-mono text-[10px] px-2 py-0.5 rounded bg-white dark:bg-gray-800 border", children: [sale.vehiclePlate] })
+                              ]
+                            }),
+                            c.jsxs("div", {
+                              className: "text-[11px] text-gray-600 dark:text-gray-300 flex flex-wrap gap-x-3 font-mono",
+                              children: [
+                                c.jsxs("span", { children: ["Thực thu: ", _e(sale.totalMoney), "đ"] }),
+                                c.jsxs("span", { className: "text-blue-600", children: ["Đã ứng: ", _e(sale.paidAmount), "đ"] }),
+                                c.jsxs("span", { className: "font-black text-red-600", children: ["Còn chuyển: ", _e(sale.remainingDebt), "đ"] })
                               ]
                             })
                           ]
                         }),
-                        c.jsxs("button", {
-                          type: "button",
-                          onClick: () => {
-                            setSettlingSaleObj(sale);
-                            setSettleKg(sale.totalNet ? String(sale.totalNet) : "");
-                            setSettleMoney(sale.totalMoney ? String(sale.totalMoney) : "");
-                          },
-                          className: "w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase flex items-center justify-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
+                        c.jsxs("div", {
+                          className: "flex flex-wrap items-center gap-1.5 w-full sm:w-auto",
                           children: [
-                            c.jsx("span", { children: "📝" }),
-                            "Nhập Nghiệm Thu"
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => {
+                                const text = buildFactoryZaloText_v5(sale);
+                                copyToClipboardRobust(text);
+                                setSalesZaloModal({ title: "Gửi Bảng Kê Cty " + (sale.code || ""), content: text, phone: sale.buyerPhone || "" });
+                              },
+                              className: "px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase cursor-pointer",
+                              children: "Zalo"
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setSettlingSaleObj(sale),
+                              className: "px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold cursor-pointer",
+                              children: "Sửa"
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleConfirmRemainingTransfer(sale),
+                              className: "flex-1 sm:flex-initial px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase shadow-md cursor-pointer",
+                              children: "✓ Đã chuyển đủ"
+                            })
                           ]
                         })
                       ]
@@ -15117,8 +17400,19 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
         })
       }),
 
-      // MODAL: CHỐT ĐƠN / NGHIỆM THU NHANH
-      settlingSaleObj && c.jsx("div", {
+      // MODAL: CHỐT ĐƠN CHỢ HOẶC NGHIỆM THU CÔNG TY
+      settlingSaleObj && settlingSaleObj.targetGroup === "FACTORY" && c.jsx(Xm_FactorySettleModal, {
+        sale: settlingSaleObj,
+        onClose: () => setSettlingSaleObj(null),
+        onSaved: (saved) => {
+          refreshData();
+          setSettlingSaleObj(null);
+          const finSettle = me.getFinanceSummary ? me.getFinanceSummary() : { totalRevenue: saved.totalMoney || 0 };
+          showSalesToast("✅ ĐÃ LƯU NGHIỆM THU CTY: " + _e(saved.totalMoney) + " đ (" + fmtKgFixed2_v5(saved.totalNet) + " kg) • Doanh thu kỳ: " + _e(finSettle.totalRevenue) + " đ");
+        }
+      }),
+
+      settlingSaleObj && settlingSaleObj.targetGroup !== "FACTORY" && c.jsx("div", {
         className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
         children: c.jsxs("div", {
           className: "bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
@@ -15282,13 +17576,19 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                               className: `text-[10px] font-black px-2 py-0.5 rounded-full ${
                                 sale.status === "COMPLETED" || sale.isPaidFull
                                   ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300"
-                                  : (sale.status === "SELLING"
-                                    ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
-                                    : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300")
+                                  : (sale.status === "DEBT" || sale.status === "PARTIAL"
+                                    ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300"
+                                    : (sale.status === "PARTIAL_TRANSFER" || sale.status === "SELLING"
+                                      ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                                      : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"))
                               }`,
                               children: sale.status === "COMPLETED" || sale.isPaidFull
                                 ? "✓ Đã Hoàn Tất"
-                                : (sale.status === "SELLING" ? "⏳ Đang Bán" : "⏳ Chờ Kết Quả")
+                                : (sale.status === "DEBT" || sale.status === "PARTIAL"
+                                  ? ("📝 Ghi nợ " + _e(sale.remainingDebt || 0) + "đ")
+                                  : (sale.status === "PARTIAL_TRANSFER"
+                                    ? ("⏳ Chờ chuyển " + _e(sale.remainingDebt || 0) + "đ")
+                                    : (sale.status === "SELLING" ? "⏳ Đang Bán" : "⏳ Chờ Kết Quả")))
                             })
                           ]
                         }),
@@ -15296,7 +17596,8 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                         c.jsxs("div", {
                           className: "text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-x-3",
                           children: [
-                            c.jsxs("span", { children: ["📅 ", new Date(sale.date).toLocaleDateString("vi-VN")] }),
+                            c.jsxs("span", { children: ["📅 ", sale.saleDateStr ? sale.saleDateStr.split("-").reverse().join("/") : new Date(sale.date).toLocaleDateString("vi-VN")] }),
+                            sale.vehiclePlate && c.jsxs("span", { className: "font-mono font-bold text-slate-700 dark:text-slate-300", children: ["🚚 ", sale.vehiclePlate] }),
                             sale.totalNet > 0 && c.jsxs("span", { className: "font-bold text-gray-700 dark:text-gray-300", children: ["⚖️ ", fmtKg(sale.totalNet), " kg"] }),
                             sale.totalMoney > 0 && c.jsxs("span", { className: "font-black text-emerald-600 dark:text-emerald-400", children: ["💰 ", _e(sale.totalMoney), " đ"] }),
                             sale.phiCount > 0 && c.jsxs("span", { className: "font-bold text-amber-600", children: [sale.phiCount, " phi oxy"] })
@@ -15307,7 +17608,7 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                     c.jsxs("div", {
                       className: "flex items-center gap-2 w-full sm:w-auto justify-end",
                       children: [
-                        (sale.status === "SELLING" || sale.status === "AWAITING_RESULT") && c.jsx("button", {
+                        (sale.status === "SELLING" || sale.status === "AWAITING_RESULT" || sale.targetGroup === "FACTORY") && c.jsx("button", {
                           type: "button",
                           onClick: () => {
                             setShowHistoryModal(false);
@@ -15315,8 +17616,8 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
                             setSettleKg(sale.totalNet ? String(sale.totalNet) : "");
                             setSettleMoney(sale.totalMoney ? String(sale.totalMoney) : "");
                           },
-                          className: "px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-black uppercase cursor-pointer",
-                          children: sale.targetGroup === "MARKET" ? "Chốt Chợ" : "Nghiệm Thu"
+                          className: `px-3 py-1.5 text-white rounded-xl text-xs font-black uppercase cursor-pointer ${sale.status === "SELLING" || sale.status === "AWAITING_RESULT" ? "bg-green-600 hover:bg-green-700" : "bg-indigo-600 hover:bg-indigo-700"}`,
+                          children: sale.targetGroup === "MARKET" ? "Chốt Chợ" : (sale.status === "AWAITING_RESULT" ? "Nghiệm Thu" : "Sửa Kê")
                         }),
                         c.jsx("button", {
                           type: "button",
@@ -15374,6 +17675,21 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
             })
           ]
         })
+      }),
+      weighingLotIdx !== null && retailLots[weighingLotIdx] && c.jsx(Xm_RetailWeighModal, {
+        lot: retailLots[weighingLotIdx],
+        lotIndex: weighingLotIdx,
+        onClose: () => setWeighingLotIdx(null),
+        onSaveWeights: (nextPages) => {
+          setRetailLots(prev => prev.map((l, i) => i === weighingLotIdx ? { ...l, weights: nextPages } : l));
+          setWeighingLotIdx(null);
+        }
+      }),
+      salesZaloModal && c.jsx(Xm_UniversalZaloModal, {
+        title: salesZaloModal.title,
+        content: salesZaloModal.content,
+        initialPhone: salesZaloModal.phone,
+        onClose: () => setSalesZaloModal(null)
       })
     ]
   });
@@ -15519,14 +17835,24 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
 
   const handleShareZalo = () => {
     if (!sale) return;
+    if (sale.targetGroup === "FACTORY") {
+      const msgFactory = buildFactoryZaloText_v5(sale);
+      copyToClipboardRobust(msgFactory);
+      setSaleZaloModal({
+        title: "Gửi Bảng Kê Cty " + (sale.code || ""),
+        content: msgFactory,
+        phone: sale.buyerPhone || ""
+      });
+      return;
+    }
+    const saleDisplayDate = sale.saleDateStr ? sale.saleDateStr.split("-").reverse().join("/") : d.toLocaleDateString("vi-VN");
     let msg = "🦐 [PHIẾU XUẤT BÁN TÔM CÀNG XANH]\n";
-    msg += "Mã phiếu: " + (sale.code || "") + "\n";
+    msg += "Mã phiếu: " + (sale.code || "") + " • Ngày bán: " + saleDisplayDate + "\n";
     msg += "Khách hàng: " + (sale.buyerName || "Khách mua") + "\n";
     if (sale.buyerPhone) msg += "Điện thoại: " + sale.buyerPhone + "\n";
-    if (sale.buyerAddress) msg += "Địa chỉ: " + sale.buyerAddress + "\n";
+    if (sale.buyerAddress && sale.buyerAddress !== "Tại vựa Tôm Càng Xanh") msg += "Địa chỉ: " + sale.buyerAddress + "\n";
     if (sale.buyerRepresentative) msg += "Người đại diện: " + sale.buyerRepresentative + "\n";
     if (sale.vehiclePlate) msg += "Biển số xe: " + sale.vehiclePlate + (sale.driverName ? (" (" + sale.driverName + ")") : "") + "\n";
-    msg += "Thời gian: " + timeStr + "\n";
     msg += "--------------------------------\n";
     if (sale.batches && sale.batches.length > 0) {
       sale.batches.forEach((b, idx) => {
@@ -15544,7 +17870,12 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
     if (typeof numberToWordsVN_v3 === "function") {
       msg += "(Bằng chữ: " + numberToWordsVN_v3(sale.totalMoney) + ")\n";
     }
-    msg += "Trạng thái: " + (sale.status === "PENDING_SETTLEMENT" ? "Chờ quyết toán chợ" : (sale.isPaidFull ? "Đã thu đủ 100%" : ("Ghi nợ: " + _e(sale.remainingDebt) + " đ"))) + "\n";
+    const debtBd = typeof getFinanceSaleBreakdown_v4 === "function" ? getFinanceSaleBreakdown_v4(sale) : { realizedMoney: Number(sale.paidAmount || 0), debtMoney: Number(sale.remainingDebt || 0) };
+    if (debtBd.debtMoney > 0 && debtBd.realizedMoney > 0) {
+      msg += "Đã thanh toán: " + _e(debtBd.realizedMoney) + " VNĐ\n";
+      msg += "CÒN NỢ LẠI: " + _e(debtBd.debtMoney) + " VNĐ\n";
+    }
+    msg += "Trạng thái: " + (sale.status === "PENDING_SETTLEMENT" || sale.status === "SELLING" ? "Chờ quyết toán chợ" : (debtBd.debtMoney <= 0 ? "Đã thu đủ 100%" : ("Ghi nợ: " + _e(debtBd.debtMoney) + " đ"))) + "\n";
     copyToClipboardRobust(msg);
     setSaleZaloModal({
       title: "Gửi Phiếu Xuất Bán " + (sale.code || ""),
@@ -15617,6 +17948,7 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
       c.jsx("div", {
         className: "flex-1 overflow-y-auto p-4 space-y-4 max-w-2xl mx-auto w-full pb-24",
         children: c.jsxs("div", {
+          id: "contract-print-area",
           className: "bg-white dark:bg-gray-900 rounded-3xl p-5 border border-gray-200 dark:border-gray-800 shadow-sm space-y-4",
           children: [
             // Header badge & buyer info
@@ -15640,6 +17972,20 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
                   className: "text-xl font-black text-gray-900 dark:text-white",
                   children: sale.buyerName
                 }),
+                c.jsxs("div", {
+                  className: "text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5",
+                  children: [
+                    c.jsx("span", { children: "📅 Ngày bán:" }),
+                    c.jsx("span", { children: sale.saleDateStr ? sale.saleDateStr.split("-").reverse().join("/") : d.toLocaleDateString("vi-VN") })
+                  ]
+                }),
+                sale.targetGroup === "FACTORY" && (sale.vehiclePlate || sale.recipientName || sale.recipientBankAccount) && c.jsxs("div", {
+                  className: "p-2.5 bg-blue-50 dark:bg-blue-950/30 rounded-xl border border-blue-200 dark:border-blue-900 text-xs space-y-1",
+                  children: [
+                    sale.vehiclePlate && c.jsxs("div", { children: ["🚚 Biển số xe: ", c.jsx("b", { className: "font-mono text-blue-900 dark:text-blue-200", children: sale.vehiclePlate })] }),
+                    (sale.recipientName || sale.recipientBankAccount) && c.jsxs("div", { children: ["🏦 TK nhận tiền: ", c.jsx("b", { className: "font-mono", children: [sale.recipientName, sale.recipientBankAccount].filter(Boolean).join(" • ") })] })
+                  ]
+                }),
                 sale.buyerRepresentative && c.jsxs("div", {
                   className: "text-xs text-gray-600 dark:text-gray-400 font-bold",
                   children: ["👤 Người đại diện: ", c.jsx("b", { className: "text-gray-900 dark:text-white", children: sale.buyerRepresentative })]
@@ -15655,7 +18001,7 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
                     c.jsxs("button", {
                       type: "button",
                       onClick: openDirections,
-                      className: "text-[11px] text-blue-600 dark:text-blue-400 font-black hover:underline shrink-0 inline-flex items-center gap-1 cursor-pointer",
+                      className: "text-[11px] text-blue-600 dark:text-blue-400 font-black hover:underline shrink-0 inline-flex items-center gap-1 cursor-pointer print:hidden",
                       children: [c.jsx("span", { children: "🗺️" }), "Chỉ đường Maps"]
                     })
                   ]
@@ -15837,6 +18183,30 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
                     })
                   ]
                 }),
+                Number(sale.paidAmount || 0) > 0 && Number(sale.remainingDebt || 0) > 0 && c.jsxs("div", {
+                  className: "flex justify-between items-center text-xs font-mono text-gray-600 dark:text-gray-300",
+                  children: [
+                    c.jsxs("span", { children: ["Đã trả trước: ", _e(sale.paidAmount), " đ"] }),
+                    c.jsxs("span", { className: "font-black text-rose-600", children: ["Còn nợ: ", _e(sale.remainingDebt), " đ"] })
+                  ]
+                }),
+                !sale.isPaidFull && Number(sale.remainingDebt || 0) > 0 && sale.status !== "SELLING" && sale.status !== "AWAITING_RESULT" && c.jsx("button", {
+                  type: "button",
+                  onClick: () => {
+                    const total = Number(sale.totalMoney || 0);
+                    const saved = me.updateSale(sale.id, {
+                      status: "COMPLETED",
+                      isPaidFull: true,
+                      paidAmount: total,
+                      remainingDebt: 0,
+                      remainingTransfer: 0,
+                      settledAt: new Date().toISOString()
+                    });
+                    if (saved) setSale(saved);
+                  },
+                  className: "w-full py-2.5 mt-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs uppercase shadow-sm cursor-pointer",
+                  children: "💵 Xác Nhận Đã Thu Đủ Nợ (" + _e(sale.remainingDebt) + " đ)"
+                }),
                 (sale.status === "PENDING_SETTLEMENT" || sale.status === "SELLING" || sale.status === "AWAITING_RESULT") && c.jsx("button", {
                   onClick: () => {
                     setSettleData({
@@ -15938,7 +18308,15 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
       }),
 
       // Settlement Modal
-      showSettlement && c.jsx("div", {
+      showSettlement && sale.targetGroup === "FACTORY" && c.jsx(Xm_FactorySettleModal, {
+        sale,
+        onClose: () => setShowSettlement(false),
+        onSaved: (saved) => {
+          setSale(saved);
+          setShowSettlement(false);
+        }
+      }),
+      showSettlement && sale.targetGroup !== "FACTORY" && c.jsx("div", {
         className: "fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm",
         children: c.jsxs("div", {
           className: "bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in duration-200",
@@ -16060,11 +18438,7 @@ const Xm_SaleDetailScreen = ({ setRoute, sale: initialSale, onBack }) => {
 const Xm_FinanceScreen = ({ setRoute, role }) => {
   // Formatters
   const _fmt = (n) => Number(n || 0).toLocaleString("vi-VN");
-  const _fmtKg = (n) => {
-    if (!n || n <= 0) return "0";
-    const r = Math.round(n * 10) / 10;
-    return Number.isInteger(r) ? String(r) : String(r);
-  };
+  const _fmtKg = (n) => fmtKgSmart2_v5(n);
 
   // Convert numbers to Vietnamese words for amount clarity
   const _readVietnameseMoney = (num) => {
@@ -17955,7 +20329,7 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                         c.jsxs("div", {
                           children: [
                             c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-amber-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "⏳" }), "Đơn Đang Giao Chợ & Chờ Nghiệm Thu Công Ty"] }),
-                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Bấm 'Chốt tiền' để cập nhật số kg và tiền thực nhận — tự động cộng ngay vào Tài Chính" })
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Bấm 'Nghiệm thu / Chốt tiền' để cập nhật chi tiết lô, Phí DN & tự động cộng vào Tài Chính" })
                           ]
                         })
                       ]
@@ -17973,13 +20347,16 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                                 className: "font-black text-slate-900 flex items-center gap-1.5 truncate",
                                 children: [
                                   c.jsx("span", { children: ps.targetGroup === "FACTORY" ? "🏢" : "🏪" }),
-                                  ps.buyerName || "Đơn chờ chốt"
+                                  ps.buyerName || "Đơn chờ chốt",
+                                  ps.vehiclePlate && c.jsx("span", { className: "font-mono text-[10px] px-1.5 py-0.5 rounded bg-white border border-amber-200", children: ps.vehiclePlate })
                                 ]
                               }),
                               c.jsxs("span", {
-                                className: "text-[10px] text-slate-600 font-mono",
+                                className: "text-[10px] text-slate-600 font-mono block",
                                 children: [
-                                  ps.targetGroup === "MARKET" ? ((ps.phiCount || ps.totalBales || 0) + " phi oxy đang bán") : (_fmtKg(ps.factoryDeliveredKg || ps.totalNet) + " kg chờ nghiệm thu"),
+                                  ps.targetGroup === "MARKET"
+                                    ? ((ps.phiCount || ps.totalBales || 0) + " phi oxy đang bán")
+                                    : (_fmtKg(ps.factoryDeliveredKg || ps.totalNet) + " kg (" + (Array.isArray(ps.factoryLots) && ps.factoryLots.length > 0 ? (ps.factoryLots.length + " lô") : "chờ nghiệm thu") + ")" + (Number(ps.advanceAmount) > 0 ? (" • Đã ứng: " + _fmt(ps.advanceAmount) + "đ") : "")),
                                   " • ", new Date(ps.date || Date.now()).toLocaleDateString("vi-VN")
                                 ]
                               })
@@ -17997,6 +20374,71 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
                           })
                         ]
                       }))
+                    })
+                  ]
+                }),
+
+                // Receivables / Partial Transfer Factory Orders (1-tap Confirm in Finance)
+                debtSalesList.length > 0 && c.jsxs("div", {
+                  className: "bg-white rounded-3xl border border-blue-200 p-4 sm:p-5 shadow-xs space-y-3",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex justify-between items-center border-b border-blue-100 pb-3",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("h2", { className: "text-xs sm:text-sm font-black uppercase text-blue-900 flex items-center gap-1.5", children: [c.jsx("span", { children: "💸" }), "Công Nợ Phải Thu / Chờ Chuyển Phần Còn Lại"] }),
+                            c.jsx("p", { className: "text-[10px] text-slate-500 font-medium", children: "Các đơn công ty/khách hàng đã ứng một phần — bấm 'Đã thu đủ' khi nhận chuyển khoản nốt" })
+                          ]
+                        }),
+                        c.jsxs("span", { className: "font-mono font-black text-xs text-blue-700", children: [_fmt(pendingReceivableDebt), " đ"] })
+                      ]
+                    }),
+                    c.jsx("div", {
+                      className: "space-y-2",
+                      children: debtSalesList.map(ds => {
+                        const dbd = getFinanceSaleBreakdown_v4(ds);
+                        return c.jsxs("div", {
+                          key: ds.id,
+                          className: "p-3 bg-blue-50/70 rounded-2xl border border-blue-200 flex items-center justify-between gap-3 text-xs",
+                          children: [
+                            c.jsxs("div", {
+                              className: "min-w-0",
+                              children: [
+                                c.jsxs("span", { className: "font-black text-slate-900 block truncate", children: [ds.targetGroup === "FACTORY" ? "🏢 " : "", ds.buyerName || "Khách hàng"] }),
+                                c.jsxs("span", { className: "text-[10px] text-slate-600 font-mono", children: ["Đã thu: ", _fmt(dbd.realizedMoney), "đ • Còn lại chuyển: ", c.jsx("b", { className: "text-red-600", children: _fmt(dbd.debtMoney) + "đ" })] })
+                              ]
+                            }),
+                            c.jsxs("div", {
+                              className: "flex items-center gap-1.5 shrink-0",
+                              children: [
+                                ds.targetGroup === "FACTORY" && c.jsx("button", {
+                                  type: "button",
+                                  onClick: () => setQuickSettleSale(ds),
+                                  className: "px-2.5 py-1.5 bg-white border border-blue-200 text-blue-700 rounded-xl font-bold text-[11px] cursor-pointer",
+                                  children: "Sửa"
+                                }),
+                                c.jsx("button", {
+                                  type: "button",
+                                  onClick: () => {
+                                    me.updateSale(ds.id, {
+                                      status: "COMPLETED",
+                                      isPaidFull: true,
+                                      paidAmount: Number(ds.totalMoney || 0),
+                                      remainingDebt: 0,
+                                      remainingTransfer: 0,
+                                      settledAt: new Date().toISOString()
+                                    });
+                                    showFinToast("✅ Đã thu đủ công nợ +" + _fmt(dbd.debtMoney) + " đ vào doanh thu!");
+                                  },
+                                  className: "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-black text-[11px] uppercase cursor-pointer shadow-xs",
+                                  children: "✓ Đã thu đủ"
+                                })
+                              ]
+                            })
+                          ]
+                        });
+                      })
                     })
                   ]
                 }),
@@ -18415,7 +20857,15 @@ const Xm_FinanceScreen = ({ setRoute, role }) => {
       // =========================================================================
       // MODAL QUICK SETTLE TRONG TÀI CHÍNH
       // =========================================================================
-      quickSettleSale && c.jsx("div", {
+      quickSettleSale && quickSettleSale.targetGroup === "FACTORY" && c.jsx(Xm_FactorySettleModal, {
+        sale: quickSettleSale,
+        onClose: () => setQuickSettleSale(null),
+        onSaved: (saved) => {
+          setQuickSettleSale(null);
+          showFinToast("✅ Đã nghiệm thu đơn công ty (" + _fmt(saved.totalMoney) + " đ) và đồng bộ Tài Chính!");
+        }
+      }),
+      quickSettleSale && quickSettleSale.targetGroup !== "FACTORY" && c.jsx("div", {
         className: "fixed inset-0 z-[210] bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs",
         children: c.jsxs("div", {
           className: "bg-white text-slate-900 border border-slate-200 rounded-3xl w-full max-w-sm p-5 sm:p-6 shadow-2xl animate-in zoom-in duration-200 space-y-4",
@@ -19104,15 +21554,16 @@ const DISPATCH_STATUS_META = {
 
 const Xm_WorkersScreen = ({ setRoute }) => {
   const todayStr = typeof getLocalYYYYMMDD_v4 === "function" ? getLocalYYYYMMDD_v4() : new Date().toISOString().slice(0, 10);
-  const [subTab, setSubTab] = w.useState("ROSTER"); // ROSTER | DISPATCH | ATTENDANCE | PAYROLL
   const [workersData, setWorkersData] = w.useState(() => me.getWorkersData());
+  const [subTab, setSubTab] = w.useState(() => (me.getWorkersData().workers || []).length > 0 ? "ATTENDANCE" : "ROSTER"); // ATTENDANCE | DISPATCH | ROSTER | PAYROLL
   const [ponds, setPonds] = w.useState(() => (me.getFarmers ? me.getFarmers() : []));
   const [contracts, setContracts] = w.useState(() => (typeof getContracts === "function" ? getContracts() : []));
 
   // Filters & search
   const [searchQ, setSearchQ] = w.useState("");
   const [roleFilter, setRoleFilter] = w.useState("ALL");
-  const [dispatchFilter, setDispatchFilter] = w.useState("ACTIVE"); // ACTIVE | DONE | ALL
+  const [statusFilter, setStatusFilter] = w.useState("ALL"); // ALL | AVAILABLE | ON_JOB | OFF
+  const [dispatchFilter, setDispatchFilter] = w.useState("ACTIVE"); // ACTIVE | TODAY | DONE | ALL
 
   // Toast & In-app Confirm Modal
   const [toast, setToast] = w.useState(null);
@@ -19132,9 +21583,12 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     note: ""
   });
 
-  // Add/Edit Dispatch Modal
+  // Add/Edit Dispatch Modal + Inline Crew Drawer
   const [dispatchModalOpen, setDispatchModalOpen] = w.useState(false);
   const [editingDispatchId, setEditingDispatchId] = w.useState(null);
+  const [inlineCrewDispatchId, setInlineCrewDispatchId] = w.useState(null);
+  const [dispatchWorkerSearch, setDispatchWorkerSearch] = w.useState("");
+  const [newToolText, setNewToolText] = w.useState("");
   const [dispatchForm, setDispatchForm] = w.useState({
     pondId: "",
     contractId: "",
@@ -19160,18 +21614,20 @@ const Xm_WorkersScreen = ({ setRoute }) => {
   // Zalo share modal
   const [zaloShare, setZaloShare] = w.useState(null); // { title, content, initialPhone, shareUrl }
 
-  // Attendance date
+  // Attendance date & expanded row
   const [attDate, setAttDate] = w.useState(todayStr);
+  const [expandedAttId, setExpandedAttId] = w.useState(null);
 
-  // Payroll period & finance modals
+  // Payroll period, expanded detail & finance modals
   const [periodMode, setPeriodMode] = w.useState("THIS_MONTH"); // THIS_MONTH | PREV_MONTH | THIS_WEEK | CUSTOM
   const [customStart, setCustomStart] = w.useState(todayStr.slice(0, 8) + "01");
   const [customEnd, setCustomEnd] = w.useState(todayStr);
+  const [expandedPayrollId, setExpandedPayrollId] = w.useState(null);
   const [txModal, setTxModal] = w.useState(null); // { type: "ADVANCE" | "PAY", workerId, amount, date, note, syncFinance: true }
 
   const notify = (msg, type = "ok") => {
     setToast({ msg, type });
-    setTimeout(() => setToast(null), 3200);
+    setTimeout(() => setToast(null), 3000);
   };
 
   const refreshAll = () => {
@@ -19195,6 +21651,37 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     me.saveWorkersData(next);
   };
 
+  const formatDateDelta = (baseStr, delta) => {
+    const parts = (baseStr || todayStr).split("-").map(Number);
+    const dt = new Date(parts[0] || 2026, (parts[1] || 1) - 1, parts[2] || 1);
+    dt.setDate(dt.getDate() + delta);
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, "0");
+    const d = String(dt.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  // 7-day quick date strip centered near today
+  const quickAttDays = w.useMemo(() => {
+    const dayNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+    const attMap = workersData.attendance || {};
+    const list = [];
+    for (let i = -5; i <= 1; i++) {
+      const ds = formatDateDelta(todayStr, i);
+      const pts = ds.split("-").map(Number);
+      const dt = new Date(pts[0], pts[1] - 1, pts[2]);
+      const dayEntries = attMap[ds] || {};
+      const loggedCount = Object.values(dayEntries).filter(e => e && (Number(e.units || 0) > 0 || Number(e.kg || 0) > 0 || Number(e.trips || 0) > 0 || Number(e.otHours || 0) > 0)).length;
+      list.push({
+        dateStr: ds,
+        wd: ds === todayStr ? "Nay" : dayNames[dt.getDay()],
+        dd: String(pts[2]).padStart(2, "0") + "/" + String(pts[1]).padStart(2, "0"),
+        loggedCount
+      });
+    }
+    return list;
+  }, [todayStr, workersData.attendance]);
+
   // Compute pay of one attendance entry
   const computeEntryPay = (entry, worker) => {
     if (!entry || !worker) return 0;
@@ -19215,6 +21702,15 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     return Math.round(basePay + otPay + bonus);
   };
 
+  const defaultFullEntry = (wk, note = "", estYield = 0) => ({
+    units: wk.payType === "DAY" ? 1 : (wk.payType === "HOUR" ? 8 : 0),
+    otHours: 0,
+    kg: wk.payType === "KG" ? (Number(estYield || 0) || 100) : 0,
+    trips: wk.payType === "TRIP" ? 1 : 0,
+    bonus: 0,
+    note: note || ""
+  });
+
   // Resolve date range for Payroll
   const periodRange = w.useMemo(() => {
     const now = new Date();
@@ -19225,8 +21721,7 @@ const Xm_WorkersScreen = ({ setRoute }) => {
       return `${y}-${m}-${d}`;
     };
     if (periodMode === "THIS_MONTH") {
-      const start = `${todayStr.slice(0, 7)}-01`;
-      return { start, end: todayStr };
+      return { start: `${todayStr.slice(0, 7)}-01`, end: todayStr };
     }
     if (periodMode === "PREV_MONTH") {
       const firstPrev = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -19243,7 +21738,7 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     };
   }, [periodMode, customStart, customEnd, todayStr]);
 
-  // Payroll summary calculation
+  // Payroll summary calculation (includes dayLogs for expandable breakdown)
   const payrollRows = w.useMemo(() => {
     const { start, end } = periodRange;
     const inRange = (dStr) => !!dStr && dStr >= start && dStr <= end;
@@ -19257,14 +21752,18 @@ const Xm_WorkersScreen = ({ setRoute }) => {
       let totalBonus = 0;
       let grossEarned = 0;
       let daysWorkedCount = 0;
+      const dayLogs = [];
 
-      Object.keys(attMap).forEach(dateKey => {
+      Object.keys(attMap).sort((a, b) => b.localeCompare(a)).forEach(dateKey => {
         if (!inRange(dateKey)) return;
         const entry = attMap[dateKey]?.[wk.id];
         if (!entry) return;
         const pay = computeEntryPay(entry, wk);
         const hasActivity = Number(entry.units || 0) > 0 || Number(entry.kg || 0) > 0 || Number(entry.trips || 0) > 0 || Number(entry.otHours || 0) > 0 || Number(entry.bonus || 0) > 0;
-        if (hasActivity) daysWorkedCount += 1;
+        if (hasActivity) {
+          daysWorkedCount += 1;
+          dayLogs.push({ date: dateKey, entry, pay });
+        }
         totalUnits += Number(entry.units || 0);
         totalOtHours += Number(entry.otHours || 0);
         totalKg += Number(entry.kg || 0);
@@ -19291,7 +21790,8 @@ const Xm_WorkersScreen = ({ setRoute }) => {
         grossEarned,
         totalAdvance,
         totalPaid,
-        netDue
+        netDue,
+        dayLogs
       };
     });
   }, [workersData, periodRange]);
@@ -19321,7 +21821,23 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     return { activeCount, totalPay };
   }, [workersData, todayStr]);
 
-  // Combined Pond + Contract picker options for Dispatch
+  const selectedDayStats = w.useMemo(() => {
+    const dayObj = (workersData.attendance && workersData.attendance[attDate]) || {};
+    let activeCount = 0;
+    let totalPay = 0;
+    workersData.workers.forEach(wk => {
+      const entry = dayObj[wk.id];
+      if (!entry) return;
+      const pay = computeEntryPay(entry, wk);
+      if (pay > 0 || Number(entry.units || 0) > 0 || Number(entry.kg || 0) > 0 || Number(entry.trips || 0) > 0) {
+        activeCount += 1;
+        totalPay += pay;
+      }
+    });
+    return { activeCount, totalPay };
+  }, [workersData, attDate]);
+
+  // Combined Pond + Contract picker options for Dispatch & Quick Pond Suggestions
   const pondOptions = w.useMemo(() => {
     const list = [];
     const seenIds = new Set();
@@ -19367,6 +21883,35 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     });
     return list;
   }, [ponds, contracts, todayStr]);
+
+  // Ponds that do not yet have an active (non-DONE) dispatch
+  const pendingPondsForDispatch = w.useMemo(() => {
+    const activeKeys = new Set(
+      (workersData.dispatches || [])
+        .filter(d => d && d.status !== "DONE")
+        .map(d => (d.pondId || d.contractId || d.pondName || "").toLowerCase())
+    );
+    return pondOptions.filter(opt => {
+      const k1 = (opt.pondId || "").toLowerCase();
+      const k2 = (opt.contractId || "").toLowerCase();
+      const k3 = (opt.pondName || "").toLowerCase();
+      return !((k1 && activeKeys.has(k1)) || (k2 && activeKeys.has(k2)) || (k3 && activeKeys.has(k3)));
+    }).slice(0, 8);
+  }, [pondOptions, workersData.dispatches]);
+
+  // Map workerId -> active dispatch info for a given date (conflict detection)
+  const getWorkerDispatchesOnDate = (dateStr, excludeDispatchId = null) => {
+    const map = {};
+    (workersData.dispatches || []).forEach(d => {
+      if (!d || d.status === "DONE" || d.id === excludeDispatchId) return;
+      if ((d.scheduledDate || todayStr) !== (dateStr || todayStr)) return;
+      (d.workerIds || []).forEach(wId => {
+        if (!map[wId]) map[wId] = [];
+        map[wId].push(d.pondName || "Ao khác");
+      });
+    });
+    return map;
+  };
 
   // Sync updated pond GPS across Dispatch + Ot.FARMERS + Linked Contract
   const syncPondLocationEverywhere = ({ pondId, contractId, lat, lng, accuracy, accessNote }) => {
@@ -19462,18 +22007,30 @@ const Xm_WorkersScreen = ({ setRoute }) => {
       : [wkObj, ...workersData.workers];
     persistWorkersData({ ...workersData, workers: nextList });
     setWorkerModalOpen(false);
-    notify(editingWorkerId ? `✓ Đã cập nhật thông tin "${wkObj.name}"` : `✓ Đã thêm công nhân "${wkObj.name}"`);
+    notify(editingWorkerId ? `✓ Đã cập nhật "${wkObj.name}"` : `✓ Đã thêm "${wkObj.name}"`);
   };
 
-  const handleToggleWorkerStatus = (wkId) => {
-    const order = ["AVAILABLE", "ON_JOB", "OFF"];
-    const nextList = workersData.workers.map(wItem => {
-      if (wItem.id !== wkId) return wItem;
-      const curIdx = order.indexOf(wItem.status || "AVAILABLE");
-      const nextSt = order[(curIdx + 1) % order.length];
-      return { ...wItem, status: nextSt };
-    });
+  const handleSetWorkerStatus = (wkId, nextSt) => {
+    const nextList = workersData.workers.map(wItem => wItem.id === wkId ? { ...wItem, status: nextSt } : wItem);
     persistWorkersData({ ...workersData, workers: nextList });
+  };
+
+  const handleToggleWorkerTodayAttend = (wk) => {
+    const curAtt = { ...(workersData.attendance || {}) };
+    const dayObj = { ...(curAtt[todayStr] || {}) };
+    const curEntry = dayObj[wk.id];
+    const hasLogged = curEntry && computeEntryPay(curEntry, wk) > 0;
+    if (hasLogged) {
+      dayObj[wk.id] = { ...curEntry, units: 0, kg: 0, trips: 0, otHours: 0, bonus: 0 };
+      curAtt[todayStr] = dayObj;
+      persistWorkersData({ ...workersData, attendance: curAtt });
+      notify(`Đã bỏ chấm hôm nay cho ${wk.name}`);
+    } else {
+      dayObj[wk.id] = defaultFullEntry(wk, curEntry?.note || "");
+      curAtt[todayStr] = dayObj;
+      persistWorkersData({ ...workersData, attendance: curAtt });
+      notify(`✓ Đã chấm đủ công hôm nay cho ${wk.name}`);
+    }
   };
 
   const requestDeleteWorker = (wk) => {
@@ -19493,23 +22050,25 @@ const Xm_WorkersScreen = ({ setRoute }) => {
   };
 
   // ==================== HANDLERS: DISPATCH ====================
-  const openCreateDispatch = (presetWorkerId = null) => {
-    const firstOpt = pondOptions[0] || null;
+  const openCreateDispatch = (presetWorkerId = null, presetPond = null) => {
+    const opt = presetPond || pondOptions[0] || null;
     setEditingDispatchId(null);
+    setDispatchWorkerSearch("");
+    setNewToolText("");
     setDispatchForm({
-      pondId: firstOpt?.pondId || "",
-      contractId: firstOpt?.contractId || "",
-      pondName: firstOpt?.pondName || "",
-      farmerPhone: firstOpt?.farmerPhone || "",
-      pondAddress: firstOpt?.pondAddress || "",
-      estimatedYield: firstOpt?.estimatedYield ? String(firstOpt.estimatedYield) : "",
+      pondId: opt?.pondId || "",
+      contractId: opt?.contractId || "",
+      pondName: opt?.pondName || "",
+      farmerPhone: opt?.farmerPhone || "",
+      pondAddress: opt?.pondAddress || "",
+      estimatedYield: opt?.estimatedYield ? String(opt.estimatedYield) : "",
       roleId: "HARVEST",
-      scheduledDate: firstOpt?.weighingDate || todayStr,
-      assemblyTime: firstOpt?.weighingTime || "05:30",
-      lat: firstOpt?.lat || null,
-      lng: firstOpt?.lng || null,
-      gpsAccuracy: firstOpt?.gpsAccuracy || null,
-      accessNote: firstOpt?.accessNote || "",
+      scheduledDate: opt?.weighingDate || todayStr,
+      assemblyTime: opt?.weighingTime || "05:30",
+      lat: opt?.lat || null,
+      lng: opt?.lng || null,
+      gpsAccuracy: opt?.gpsAccuracy || null,
+      accessNote: opt?.accessNote || "",
       customNote: "",
       tools: ["Lưới kéo ao & chài", "Rổ/Thau nhựa đựng tôm", "Cân điện tử & sổ ghi", "Áo mưa & đèn pin"],
       workerIds: presetWorkerId ? [presetWorkerId] : [],
@@ -19520,6 +22079,8 @@ const Xm_WorkersScreen = ({ setRoute }) => {
 
   const openEditDispatch = (dsp) => {
     setEditingDispatchId(dsp.id);
+    setDispatchWorkerSearch("");
+    setNewToolText("");
     setDispatchForm({
       pondId: dsp.pondId || "",
       contractId: dsp.contractId || "",
@@ -19540,6 +22101,33 @@ const Xm_WorkersScreen = ({ setRoute }) => {
       status: dsp.status || "SCHEDULED"
     });
     setDispatchModalOpen(true);
+  };
+
+  const handleDuplicateDispatch = (dsp) => {
+    setEditingDispatchId(null);
+    setDispatchWorkerSearch("");
+    setNewToolText("");
+    setDispatchForm({
+      pondId: "",
+      contractId: "",
+      pondName: dsp.pondName ? `${dsp.pondName} (Ca mới)` : "",
+      farmerPhone: dsp.farmerPhone || "",
+      pondAddress: dsp.pondAddress || "",
+      estimatedYield: dsp.estimatedYield ? String(dsp.estimatedYield) : "",
+      roleId: dsp.roleId || "HARVEST",
+      scheduledDate: todayStr,
+      assemblyTime: dsp.assemblyTime || "05:30",
+      lat: dsp.lat || null,
+      lng: dsp.lng || null,
+      gpsAccuracy: dsp.gpsAccuracy || null,
+      accessNote: dsp.accessNote || "",
+      customNote: dsp.customNote || "",
+      tools: Array.isArray(dsp.tools) ? [...dsp.tools] : [],
+      workerIds: Array.isArray(dsp.workerIds) ? [...dsp.workerIds] : [],
+      status: "SCHEDULED"
+    });
+    setDispatchModalOpen(true);
+    notify("Đã sao chép tổ thợ & dụng cụ — chọn ao hoặc sửa tên rồi lưu!");
   };
 
   const handleSelectPondForDispatch = (optKey) => {
@@ -19613,7 +22201,6 @@ const Xm_WorkersScreen = ({ setRoute }) => {
       ? workersData.dispatches.map(d => d.id === editingDispatchId ? item : d)
       : [item, ...workersData.dispatches];
 
-    // If ON_SITE, mark assigned workers ON_JOB; if DONE, release back to AVAILABLE
     let nextWorkers = workersData.workers;
     if (dispatchForm.workerIds.length > 0 && (item.status === "ON_SITE" || item.status === "DONE")) {
       nextWorkers = workersData.workers.map(wk => {
@@ -19635,24 +22222,42 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     }
     setDispatchModalOpen(false);
     setSubTab("DISPATCH");
-    notify(editingDispatchId ? `✓ Đã cập nhật lịch điều động ao "${item.pondName}"` : `✓ Đã tạo lệnh điều động đến ao "${item.pondName}"!`);
+    notify(editingDispatchId ? `✓ Đã cập nhật điều động ao "${item.pondName}"` : `✓ Đã điều động đến ao "${item.pondName}"!`);
   };
 
-  const handleCycleDispatchStatus = (dsp) => {
-    const order = ["SCHEDULED", "ON_SITE", "DONE"];
-    const nextSt = order[(order.indexOf(dsp.status || "SCHEDULED") + 1) % order.length];
+  const handleSetDispatchStatus = (dsp, nextSt) => {
     const nextDispatches = workersData.dispatches.map(d => d.id === dsp.id ? { ...d, status: nextSt, updatedAt: new Date().toISOString() } : d);
     let nextWorkers = workersData.workers;
     if (Array.isArray(dsp.workerIds) && dsp.workerIds.length > 0) {
       nextWorkers = workersData.workers.map(wk => {
         if (!dsp.workerIds.includes(wk.id)) return wk;
         if (nextSt === "ON_SITE") return { ...wk, status: "ON_JOB" };
-        if (nextSt === "DONE") return { ...wk, status: "AVAILABLE" };
+        if (nextSt === "DONE" || nextSt === "SCHEDULED") return { ...wk, status: "AVAILABLE" };
         return wk;
       });
     }
     persistWorkersData({ ...workersData, dispatches: nextDispatches, workers: nextWorkers });
-    notify(`✓ Chuyển trạng thái ao "${dsp.pondName}" sang: ${DISPATCH_STATUS_META[nextSt]?.label}`);
+    notify(`✓ "${dsp.pondName}": ${DISPATCH_STATUS_META[nextSt]?.label}`);
+  };
+
+  // Toggle individual worker directly on a dispatch card without opening the modal
+  const handleToggleWorkerInDispatch = (dsp, wk) => {
+    const curIds = Array.isArray(dsp.workerIds) ? dsp.workerIds : [];
+    const exists = curIds.includes(wk.id);
+    const nextIds = exists ? curIds.filter(id => id !== wk.id) : [...curIds, wk.id];
+    const nextNames = workersData.workers.filter(wItem => nextIds.includes(wItem.id)).map(wItem => wItem.name);
+    const nextDispatches = workersData.dispatches.map(d => d.id === dsp.id ? {
+      ...d,
+      workerIds: nextIds,
+      workerNames: nextNames,
+      workerPhone: workersData.workers.find(wItem => wItem.id === nextIds[0])?.phone || "",
+      updatedAt: new Date().toISOString()
+    } : d);
+    let nextWorkers = workersData.workers;
+    if (dsp.status === "ON_SITE") {
+      nextWorkers = workersData.workers.map(wItem => wItem.id === wk.id ? { ...wItem, status: exists ? "AVAILABLE" : "ON_JOB" } : wItem);
+    }
+    persistWorkersData({ ...workersData, dispatches: nextDispatches, workers: nextWorkers });
   };
 
   const handleSendDispatchZalo = (dsp) => {
@@ -19723,7 +22328,7 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     notify(`✓ Đã chấm công tự động cho ${addedCount || crewIds.length} người tại ao "${dsp.pondName}"!`);
   };
 
-  // ==================== HANDLERS: ATTENDANCE ====================
+  // ==================== HANDLERS: ATTENDANCE (BULK & SINGLE) ====================
   const updateWorkerAttendance = (workerId, patch) => {
     const curAtt = { ...(workersData.attendance || {}) };
     const dayObj = { ...(curAtt[attDate] || {}) };
@@ -19731,6 +22336,77 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     dayObj[workerId] = { ...prevEntry, ...patch };
     curAtt[attDate] = dayObj;
     persistWorkersData({ ...workersData, attendance: curAtt });
+  };
+
+  const handleBulkAttendFiltered = (targetWorkers) => {
+    if (!targetWorkers || targetWorkers.length === 0) {
+      notify("Không có công nhân nào để chấm!", "error");
+      return;
+    }
+    const curAtt = { ...(workersData.attendance || {}) };
+    const dayObj = { ...(curAtt[attDate] || {}) };
+    let touched = 0;
+    targetWorkers.forEach(wk => {
+      if (wk.status === "OFF") return;
+      const ex = dayObj[wk.id];
+      const alreadyHas = ex && (Number(ex.units || 0) > 0 || Number(ex.kg || 0) > 0 || Number(ex.trips || 0) > 0);
+      if (!alreadyHas) {
+        dayObj[wk.id] = {
+          ...(ex || {}),
+          ...defaultFullEntry(wk, ex?.note || "")
+        };
+        touched += 1;
+      }
+    });
+    if (touched === 0) {
+      notify("Tất cả nhân công đang hiển thị đã được chấm công rồi.");
+      return;
+    }
+    curAtt[attDate] = dayObj;
+    persistWorkersData({ ...workersData, attendance: curAtt });
+    notify(`✓ Đã chấm đủ 1 công cho ${touched} người ngày ${attDate}!`);
+  };
+
+  const handleCopyPreviousDayAttendance = () => {
+    const prevDateStr = formatDateDelta(attDate, -1);
+    const prevObj = (workersData.attendance && workersData.attendance[prevDateStr]) || {};
+    const prevKeys = Object.keys(prevObj).filter(k => {
+      const e = prevObj[k];
+      return e && (Number(e.units || 0) > 0 || Number(e.kg || 0) > 0 || Number(e.trips || 0) > 0);
+    });
+    if (prevKeys.length === 0) {
+      notify(`Ngày hôm trước (${prevDateStr}) chưa có dữ liệu chấm công.`, "error");
+      return;
+    }
+    const curAtt = { ...(workersData.attendance || {}) };
+    const dayObj = { ...(curAtt[attDate] || {}) };
+    let count = 0;
+    prevKeys.forEach(wId => {
+      const ex = dayObj[wId];
+      const alreadyHas = ex && (Number(ex.units || 0) > 0 || Number(ex.kg || 0) > 0 || Number(ex.trips || 0) > 0);
+      if (!alreadyHas) {
+        dayObj[wId] = { ...prevObj[wId] };
+        count += 1;
+      }
+    });
+    curAtt[attDate] = dayObj;
+    persistWorkersData({ ...workersData, attendance: curAtt });
+    notify(`✓ Đã chép công từ ${prevDateStr} cho ${count} người!`);
+  };
+
+  const handleClearDayAttendance = () => {
+    setConfirmDlg({
+      title: "Xoá chấm công ngày này?",
+      msg: `Xoá toàn bộ công đã chấm trong ngày ${attDate} để chấm lại từ đầu?`,
+      danger: true,
+      confirmText: "Xoá ngày này",
+      onConfirm: () => {
+        const curAtt = { ...(workersData.attendance || {}) };
+        delete curAtt[attDate];
+        persistWorkersData({ ...workersData, attendance: curAtt });
+        notify(`✓ Đã xoá trắng chấm công ngày ${attDate}.`);
+      }
+    });
   };
 
   const handleImportDayDispatchesToAttendance = () => {
@@ -19827,6 +22503,75 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     setTxModal(null);
   };
 
+  const handlePayAllDueWorkers = () => {
+    const unpaidRows = payrollRows.filter(r => r.netDue > 0);
+    if (unpaidRows.length === 0) {
+      notify("Không có khoản lương nào còn thiếu trong kỳ này!");
+      return;
+    }
+    const totalAmt = unpaidRows.reduce((s, r) => s + r.netDue, 0);
+    setConfirmDlg({
+      title: `Thanh toán đủ ${unpaidRows.length} người?`,
+      msg: `Chốt trả hết tổng cộng ${totalAmt.toLocaleString()} đ tiền lương còn lại trong kỳ (${periodRange.start} → ${periodRange.end}) và tự động ghi vào Tài chính?`,
+      danger: false,
+      confirmText: "Trả đủ tất cả",
+      onConfirm: () => {
+        const newPayments = [];
+        unpaidRows.forEach((r, idx) => {
+          const amt = Math.round(r.netDue);
+          const txId = `pay_${Date.now()}_${idx}`;
+          let financeTxId = null;
+          if (typeof me.recordWorkerExpenseToFinance === "function") {
+            const finTx = me.recordWorkerExpenseToFinance({
+              id: "fin_" + txId,
+              category: "Tiền nhân công kéo / lựa tôm",
+              amount: amt,
+              person: r.worker.name,
+              note: `[Trả đủ lương] ${r.worker.name} (${periodRange.start} → ${periodRange.end})`,
+              date: todayStr
+            });
+            if (finTx) financeTxId = finTx.id;
+          }
+          newPayments.push({
+            id: txId,
+            workerId: r.worker.id,
+            workerName: r.worker.name,
+            amount: amt,
+            date: todayStr,
+            note: `Thanh toán đủ kỳ ${periodRange.start} → ${periodRange.end}`,
+            financeTxId,
+            createdAt: new Date().toISOString()
+          });
+        });
+        persistWorkersData({ ...workersData, payrollPayments: [...newPayments, ...workersData.payrollPayments] });
+        notify(`✓ Đã thanh toán đủ ${totalAmt.toLocaleString()}đ cho ${unpaidRows.length} nhân công!`);
+      }
+    });
+  };
+
+  const handleShareAllPayrollZalo = () => {
+    const activeRows = payrollRows.filter(r => r.grossEarned > 0 || r.totalAdvance > 0 || r.totalPaid > 0);
+    if (activeRows.length === 0) {
+      notify("Chưa có dữ liệu bảng lương trong kỳ để chia sẻ!", "error");
+      return;
+    }
+    const lines = [
+      `📊 BẢNG TỔNG HỢP LƯƠNG NHÂN CÔNG`,
+      `• Kỳ lương: ${periodRange.start} → ${periodRange.end}`,
+      `• Tổng phát sinh: ${payrollTotals.gross.toLocaleString()} đ`,
+      `• Đã ứng / Đã trả: ${(payrollTotals.advance + payrollTotals.paid).toLocaleString()} đ`,
+      `• Còn phải trả: ${payrollTotals.net.toLocaleString()} đ`,
+      "",
+      ...activeRows.map((r, i) => `${i + 1}. ${r.worker.name} (${r.daysWorkedCount} ngày): Làm ${r.grossEarned.toLocaleString()}đ · Ứng/Trả ${(r.totalAdvance + r.totalPaid).toLocaleString()}đ → Còn ${r.netDue.toLocaleString()}đ`)
+    ];
+    setZaloShare({
+      title: `Bảng Lương ${periodRange.start}`,
+      content: lines.join("\n"),
+      initialPhone: "",
+      shareUrl: ""
+    });
+  };
+
   const handleDeleteWorkerTx = (txType, item) => {
     setConfirmDlg({
       title: txType === "ADVANCE" ? "Xoá khoản tạm ứng?" : "Xoá phiếu trả lương?",
@@ -19876,30 +22621,37 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     const q = searchQ.trim().toLowerCase();
     return workersData.workers.filter(wk => {
       if (roleFilter !== "ALL" && wk.role !== roleFilter) return false;
+      if (statusFilter !== "ALL" && (wk.status || "AVAILABLE") !== statusFilter) return false;
       if (!q) return true;
       return (wk.name || "").toLowerCase().includes(q) || (wk.phone || "").includes(q) || (wk.note || "").toLowerCase().includes(q);
     });
-  }, [workersData.workers, roleFilter, searchQ]);
+  }, [workersData.workers, roleFilter, statusFilter, searchQ]);
+
+  const filteredPayrollRows = w.useMemo(() => {
+    const q = searchQ.trim().toLowerCase();
+    return payrollRows.filter(r => {
+      if (roleFilter !== "ALL" && r.worker.role !== roleFilter) return false;
+      if (!q) return true;
+      return (r.worker.name || "").toLowerCase().includes(q) || (r.worker.phone || "").includes(q);
+    });
+  }, [payrollRows, roleFilter, searchQ]);
 
   const filteredDispatches = w.useMemo(() => {
     const q = searchQ.trim().toLowerCase();
     return workersData.dispatches.filter(d => {
       if (dispatchFilter === "ACTIVE" && d.status === "DONE") return false;
+      if (dispatchFilter === "TODAY" && (d.scheduledDate || todayStr) !== todayStr) return false;
       if (dispatchFilter === "DONE" && d.status !== "DONE") return false;
       if (!q) return true;
       return (d.pondName || "").toLowerCase().includes(q) || (d.pondAddress || "").toLowerCase().includes(q) || (Array.isArray(d.workerNames) && d.workerNames.join(" ").toLowerCase().includes(q));
     });
-  }, [workersData.dispatches, dispatchFilter, searchQ]);
+  }, [workersData.dispatches, dispatchFilter, searchQ, todayStr]);
 
   const activeDispatchesCount = workersData.dispatches.filter(d => d && d.status !== "DONE").length;
+  const todayDispatchesList = workersData.dispatches.filter(d => d && (d.scheduledDate || todayStr) === attDate);
 
   const shiftAttDate = (deltaDays) => {
-    const dt = new Date(attDate || todayStr);
-    dt.setDate(dt.getDate() + deltaDays);
-    const y = dt.getFullYear();
-    const m = String(dt.getMonth() + 1).padStart(2, "0");
-    const d = String(dt.getDate()).padStart(2, "0");
-    setAttDate(`${y}-${m}-${d}`);
+    setAttDate(formatDateDelta(attDate || todayStr, deltaDays));
   };
 
   const ledgerTransactions = w.useMemo(() => {
@@ -19915,21 +22667,24 @@ const Xm_WorkersScreen = ({ setRoute }) => {
     children: [
       // Header Bar
       c.jsxs("header", {
-        className: "bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex flex-wrap items-center justify-between gap-2 sticky top-0 z-30",
+        className: "bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 sticky top-0 z-30",
         children: [
           c.jsxs("div", {
-            className: "flex items-center gap-3",
+            className: "flex items-center gap-2.5",
             children: [
               c.jsx("button", {
                 type: "button",
                 onClick: () => setRoute(re.DASHBOARD),
-                className: "p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl cursor-pointer transition-colors",
+                className: "min-h-[44px] min-w-[44px] flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl cursor-pointer transition-colors",
                 children: c.jsx(On, { size: 20 })
               }),
               c.jsxs("div", {
                 children: [
-                  c.jsx("h2", { className: "text-base sm:text-lg font-black uppercase tracking-tight text-slate-900 dark:text-white leading-tight", children: "Quản Lý Nhân Công" }),
-                  c.jsx("p", { className: "text-[11px] font-semibold text-slate-500 dark:text-slate-400", children: "Điều động ao GPS • Chấm công ngày • Tạm ứng & Tính lương" })
+                  c.jsx("h2", { className: "text-base sm:text-lg font-black uppercase tracking-tight text-slate-900 dark:text-white leading-tight", children: "Công Nhân & Điều Động" }),
+                  c.jsxs("p", {
+                    className: "text-[11px] font-semibold text-slate-500 dark:text-slate-400 tabular-nums",
+                    children: [workersData.workers.length, " thợ · ", activeDispatchesCount, " lịch ao · Hôm nay ", todayStats.activeCount, " người"]
+                  })
                 ]
               })
             ]
@@ -19940,13 +22695,13 @@ const Xm_WorkersScreen = ({ setRoute }) => {
               c.jsxs("button", {
                 type: "button",
                 onClick: () => openCreateDispatch(),
-                className: "px-3 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95",
-                children: [c.jsx(tc, { size: 15 }), "Điều động ao"]
+                className: "min-h-[44px] px-3.5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 whitespace-nowrap shrink-0",
+                children: [c.jsx(tc, { size: 15 }), "Điều động"]
               }),
               c.jsxs("button", {
                 type: "button",
                 onClick: openAddWorker,
-                className: "px-3 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95",
+                className: "min-h-[44px] px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95 whitespace-nowrap shrink-0",
                 children: [c.jsx(As, { size: 15 }), "Thêm thợ"]
               })
             ]
@@ -19956,42 +22711,50 @@ const Xm_WorkersScreen = ({ setRoute }) => {
 
       // Main Scrollable Workspace
       c.jsxs("div", {
-        className: "flex-1 overflow-y-auto p-3 sm:p-5 space-y-4 pb-24 max-w-6xl w-full mx-auto",
+        className: "flex-1 overflow-y-auto p-3 sm:p-5 space-y-3.5 pb-24 max-w-6xl w-full mx-auto",
         children: [
-          // 4 KPI Summary Cards
+          // Compact 4-Metric Strip (Click to jump directly to section)
           c.jsxs("div", {
-            className: "grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3",
+            className: "grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3",
             children: [
-              c.jsxs("div", {
-                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => setSubTab("ATTENDANCE"),
+                className: "text-left bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-400 transition-colors cursor-pointer",
                 children: [
-                  c.jsx("span", { className: "text-[10px] font-bold uppercase text-slate-400 block", children: "Tổng nhân sự" }),
-                  c.jsxs("div", { className: "text-xl font-black text-slate-900 dark:text-white mt-0.5 tabular-nums", children: [workersData.workers.length, " người"] }),
-                  c.jsxs("span", { className: "text-[11px] font-semibold text-emerald-600 dark:text-emerald-400", children: [workersData.workers.filter(x => x.status === "AVAILABLE").length, " sẵn sàng • ", workersData.workers.filter(x => x.status === "ON_JOB").length, " đang đi ao"] })
+                  c.jsx("span", { className: "text-[11px] font-bold text-slate-400 block", children: "Chấm công hôm nay" }),
+                  c.jsxs("div", { className: "text-lg sm:text-xl font-black text-blue-700 dark:text-blue-400 mt-0.5 tabular-nums", children: [todayStats.activeCount, " / ", workersData.workers.length, " người"] }),
+                  c.jsxs("span", { className: "text-[11px] font-semibold text-slate-500 tabular-nums", children: [todayStats.totalPay.toLocaleString(), " đ tiền công"] })
                 ]
               }),
-              c.jsxs("div", {
-                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => setSubTab("DISPATCH"),
+                className: "text-left bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-orange-400 transition-colors cursor-pointer",
                 children: [
-                  c.jsx("span", { className: "text-[10px] font-bold uppercase text-slate-400 block", children: "Lệnh điều động" }),
-                  c.jsxs("div", { className: "text-xl font-black text-orange-600 dark:text-orange-400 mt-0.5 tabular-nums", children: [activeDispatchesCount, " lịch chờ/đang chạy"] }),
-                  c.jsxs("span", { className: "text-[11px] font-semibold text-slate-500", children: ["Tổng ", workersData.dispatches.length, " lượt điều ao"] })
+                  c.jsx("span", { className: "text-[11px] font-bold text-slate-400 block", children: "Điều phối đi ao" }),
+                  c.jsxs("div", { className: "text-lg sm:text-xl font-black text-orange-600 dark:text-orange-400 mt-0.5 tabular-nums", children: [activeDispatchesCount, " lịch chạy"] }),
+                  c.jsxs("span", { className: "text-[11px] font-semibold text-slate-500 tabular-nums", children: [pendingPondsForDispatch.length, " ao mới chờ sắp tổ"] })
                 ]
               }),
-              c.jsxs("div", {
-                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => setSubTab("ROSTER"),
+                className: "text-left bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-400 transition-colors cursor-pointer",
                 children: [
-                  c.jsx("span", { className: "text-[10px] font-bold uppercase text-slate-400 block", children: "Chấm công hôm nay" }),
-                  c.jsxs("div", { className: "text-xl font-black text-blue-700 dark:text-blue-400 mt-0.5 tabular-nums", children: [todayStats.activeCount, " người làm"] }),
-                  c.jsxs("span", { className: "text-[11px] font-bold text-slate-500 tabular-nums", children: ["Ước tính ", todayStats.totalPay.toLocaleString(), " đ"] })
+                  c.jsx("span", { className: "text-[11px] font-bold text-slate-400 block", children: "Quân số sẵn sàng" }),
+                  c.jsxs("div", { className: "text-lg sm:text-xl font-black text-emerald-700 dark:text-emerald-400 mt-0.5 tabular-nums", children: [workersData.workers.filter(x => (x.status || "AVAILABLE") === "AVAILABLE").length, " thợ rảnh"] }),
+                  c.jsxs("span", { className: "text-[11px] font-semibold text-slate-500 tabular-nums", children: [workersData.workers.filter(x => x.status === "ON_JOB").length, " đang đi ao · ", workersData.workers.filter(x => x.status === "OFF").length, " nghỉ"] })
                 ]
               }),
-              c.jsxs("div", {
-                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => setSubTab("PAYROLL"),
+                className: "text-left bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-rose-400 transition-colors cursor-pointer",
                 children: [
-                  c.jsx("span", { className: "text-[10px] font-bold uppercase text-slate-400 block", children: "Còn phải trả kỳ này" }),
-                  c.jsxs("div", { className: `text-xl font-black mt-0.5 tabular-nums ${payrollTotals.net > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`, children: [payrollTotals.net.toLocaleString(), " đ"] }),
-                  c.jsxs("span", { className: "text-[11px] font-semibold text-slate-500 tabular-nums", children: ["Đã ứng/trả ", (payrollTotals.advance + payrollTotals.paid).toLocaleString(), " đ"] })
+                  c.jsx("span", { className: "text-[11px] font-bold text-slate-400 block", children: "Còn phải trả kỳ này" }),
+                  c.jsxs("div", { className: `text-lg sm:text-xl font-black mt-0.5 tabular-nums ${payrollTotals.net > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`, children: [payrollTotals.net.toLocaleString(), " đ"] }),
+                  c.jsxs("span", { className: "text-[11px] font-semibold text-slate-500 tabular-nums", children: ["Đã chi ", (payrollTotals.advance + payrollTotals.paid).toLocaleString(), " đ"] })
                 ]
               })
             ]
@@ -19999,18 +22762,18 @@ const Xm_WorkersScreen = ({ setRoute }) => {
 
           // 4 Sub-Tab Switcher
           c.jsxs("div", {
-            className: "grid grid-cols-4 gap-1.5 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs",
+            className: "grid grid-cols-4 gap-1.5 bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800",
             children: [
-              { id: "ROSTER", label: "Nhân sự", count: workersData.workers.length },
-              { id: "DISPATCH", label: "Điều động", count: activeDispatchesCount },
               { id: "ATTENDANCE", label: "Chấm công", count: todayStats.activeCount },
+              { id: "DISPATCH", label: "Điều phối", count: activeDispatchesCount },
+              { id: "ROSTER", label: "Nhân sự", count: workersData.workers.length },
               { id: "PAYROLL", label: "Tính lương", count: null }
             ].map(tab => {
               const active = subTab === tab.id;
               return c.jsxs("button", {
                 type: "button",
                 onClick: () => setSubTab(tab.id),
-                className: `py-2.5 px-2 rounded-xl text-xs font-black uppercase transition-all cursor-pointer flex items-center justify-center gap-1.5 ${active ? "bg-emerald-700 text-white shadow-sm" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}`,
+                className: `min-h-[44px] py-2 px-1.5 sm:px-3 rounded-xl text-xs font-black uppercase transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${active ? "bg-emerald-700 text-white shadow-sm" : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}`,
                 children: [
                   c.jsx("span", { className: "truncate", children: tab.label }),
                   tab.count !== null && c.jsx("span", {
@@ -20027,28 +22790,50 @@ const Xm_WorkersScreen = ({ setRoute }) => {
             className: "space-y-3",
             children: [
               c.jsxs("div", {
-                className: "bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-2",
+                className: "bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5",
                 children: [
-                  c.jsx("input", {
-                    type: "text",
-                    value: searchQ,
-                    onChange: (e) => setSearchQ(e.target.value),
-                    placeholder: "Tìm tên công nhân, SĐT, ghi chú...",
-                    className: "flex-1 min-w-[180px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold outline-none focus:border-emerald-500"
+                  c.jsxs("div", {
+                    className: "flex flex-wrap items-center gap-2",
+                    children: [
+                      c.jsx("input", {
+                        type: "text",
+                        value: searchQ,
+                        onChange: (e) => setSearchQ(e.target.value),
+                        placeholder: "Tìm tên công nhân, SĐT, ghi chú...",
+                        className: "flex-1 min-w-[180px] min-h-[42px] px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold outline-none focus:border-emerald-500"
+                      }),
+                      c.jsxs("div", {
+                        className: "flex flex-wrap gap-1.5",
+                        children: [
+                          { id: "ALL", label: "Tất cả tổ" },
+                          { id: "HARVEST", label: "Gạt tôm" },
+                          { id: "BOAT", label: "Ghe / Xe" },
+                          { id: "CARRY", label: "Cân & Bốc" }
+                        ].map(fBtn => c.jsx("button", {
+                          type: "button",
+                          onClick: () => setRoleFilter(fBtn.id),
+                          className: `min-h-[40px] px-3 py-1.5 rounded-xl text-[11px] font-black uppercase border cursor-pointer whitespace-nowrap ${roleFilter === fBtn.id ? "bg-slate-900 dark:bg-emerald-600 text-white border-slate-900 dark:border-emerald-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                          children: fBtn.label
+                        }, fBtn.id))
+                      })
+                    ]
                   }),
                   c.jsxs("div", {
-                    className: "flex flex-wrap gap-1.5",
+                    className: "flex flex-wrap items-center gap-1.5",
                     children: [
-                      { id: "ALL", label: "Tất cả" },
-                      { id: "HARVEST", label: "Gạt tôm" },
-                      { id: "BOAT", label: "Ghe / Xe" },
-                      { id: "CARRY", label: "Cân & Bốc" }
-                    ].map(fBtn => c.jsx("button", {
-                      type: "button",
-                      onClick: () => setRoleFilter(fBtn.id),
-                      className: `px-3 py-2 rounded-xl text-[11px] font-black uppercase border cursor-pointer ${roleFilter === fBtn.id ? "bg-slate-900 dark:bg-emerald-600 text-white border-slate-900 dark:border-emerald-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
-                      children: fBtn.label
-                    }, fBtn.id))
+                      c.jsx("span", { className: "text-[11px] font-bold text-slate-400 mr-1", children: "Trạng thái:" }),
+                      [
+                        { id: "ALL", label: "Tất cả" },
+                        { id: "AVAILABLE", label: "Sẵn sàng" },
+                        { id: "ON_JOB", label: "Đang đi ao" },
+                        { id: "OFF", label: "Nghỉ phép" }
+                      ].map(stBtn => c.jsx("button", {
+                        type: "button",
+                        onClick: () => setStatusFilter(stBtn.id),
+                        className: `px-2.5 py-1 rounded-lg text-[11px] font-bold border cursor-pointer ${statusFilter === stBtn.id ? "bg-emerald-700 text-white border-emerald-700" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                        children: stBtn.label
+                      }, stBtn.id))
+                    ]
                   })
                 ]
               }),
@@ -20061,18 +22846,20 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                   c.jsx("button", {
                     type: "button",
                     onClick: openAddWorker,
-                    className: "px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
+                    className: "min-h-[44px] px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
                     children: "+ Thêm công nhân đầu tiên"
                   })
                 ]
               }) : c.jsx("div", {
                 className: "grid grid-cols-1 md:grid-cols-2 gap-3",
                 children: filteredWorkers.map(wk => {
-                  const stMeta = WORKER_STATUS_META[wk.status || "AVAILABLE"] || WORKER_STATUS_META.AVAILABLE;
                   const rlMeta = WORKER_ROLE_META[wk.role || "HARVEST"] || WORKER_ROLE_META.HARVEST;
                   const pRow = payrollRows.find(r => r.worker.id === wk.id);
+                  const todayEntry = workersData.attendance?.[todayStr]?.[wk.id];
+                  const isTodayAttended = !!(todayEntry && computeEntryPay(todayEntry, wk) > 0);
+                  const curStatus = wk.status || "AVAILABLE";
                   return c.jsxs("div", {
-                    className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3",
+                    className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3",
                     children: [
                       c.jsxs("div", {
                         className: "flex items-start justify-between gap-2",
@@ -20080,42 +22867,44 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                           c.jsxs("div", {
                             className: "min-w-0",
                             children: [
+                              c.jsx("h3", { className: "font-black text-base text-slate-900 dark:text-white uppercase truncate", children: wk.name }),
                               c.jsxs("div", {
-                                className: "flex flex-wrap items-center gap-1.5",
+                                className: "flex flex-wrap items-center gap-1.5 mt-0.5 text-xs text-slate-500 dark:text-slate-400 font-semibold",
                                 children: [
-                                  c.jsx("h3", { className: "font-black text-base text-slate-900 dark:text-white uppercase", children: wk.name }),
-                                  c.jsx("span", { className: `px-2 py-0.5 rounded-lg text-[10px] font-black border ${rlMeta.cls}`, children: rlMeta.short })
-                                ]
-                              }),
-                              c.jsxs("div", {
-                                className: "flex flex-wrap items-center gap-2 mt-1 text-xs text-slate-500 dark:text-slate-400 font-semibold",
-                                children: [
+                                  c.jsx("span", { className: "font-bold text-slate-700 dark:text-slate-300", children: rlMeta.short }),
+                                  c.jsx("span", { "aria-hidden": "true", children: "·" }),
                                   wk.phone ? c.jsxs("a", {
                                     href: `tel:${wk.phone}`,
-                                    className: "inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold hover:underline",
+                                    className: "inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold hover:underline tabular-nums",
                                     children: [c.jsx(hm, { size: 12 }), wk.phone]
                                   }) : c.jsx("span", { children: "Chưa có SĐT" }),
-                                  wk.note && c.jsxs("span", { className: "truncate max-w-[200px]", children: ["• ", wk.note] })
+                                  wk.note && c.jsxs("span", { className: "truncate max-w-[180px]", children: ["· ", wk.note] })
                                 ]
                               })
                             ]
                           }),
-                          c.jsx("button", {
-                            type: "button",
-                            onClick: () => handleToggleWorkerStatus(wk.id),
-                            title: "Bấm đổi trạng thái",
-                            className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase border cursor-pointer shrink-0 ${stMeta.cls}`,
-                            children: stMeta.label
+                          c.jsxs("div", {
+                            className: "flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl shrink-0",
+                            children: [
+                              { id: "AVAILABLE", label: "Rảnh", activeCls: "bg-emerald-600 text-white" },
+                              { id: "ON_JOB", label: "Đi ao", activeCls: "bg-amber-500 text-slate-950" },
+                              { id: "OFF", label: "Nghỉ", activeCls: "bg-slate-600 text-white" }
+                            ].map(opt => c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleSetWorkerStatus(wk.id, opt.id),
+                              className: `px-2 py-1 rounded-lg text-[10px] font-black uppercase cursor-pointer transition-colors ${curStatus === opt.id ? opt.activeCls : "text-slate-500 dark:text-slate-400 hover:text-slate-800"}`,
+                              children: opt.label
+                            }, opt.id))
                           })
                         ]
                       }),
 
                       c.jsxs("div", {
-                        className: "grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-800/70 p-2.5 rounded-xl text-xs",
+                        className: "grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs",
                         children: [
                           c.jsxs("div", {
                             children: [
-                              c.jsx("span", { className: "text-[10px] text-slate-400 uppercase block font-bold", children: "Đơn giá công" }),
+                              c.jsx("span", { className: "text-[10px] text-slate-400 uppercase block font-bold", children: "Đơn giá" }),
                               c.jsxs("span", { className: "font-black text-slate-800 dark:text-slate-100 tabular-nums", children: [Number(wk.baseRate || 0).toLocaleString(), " ", PAY_UNIT_SUFFIX[wk.payType || "DAY"]] })
                             ]
                           }),
@@ -20135,28 +22924,28 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                       }),
 
                       c.jsxs("div", {
-                        className: "flex flex-wrap items-center justify-between gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800",
+                        className: "flex flex-wrap items-center justify-between gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800",
                         children: [
                           c.jsxs("div", {
                             className: "flex flex-wrap gap-1.5",
                             children: [
                               c.jsx("button", {
                                 type: "button",
+                                onClick: () => handleToggleWorkerTodayAttend(wk),
+                                className: `min-h-[38px] px-3 py-1.5 rounded-xl font-black text-[11px] uppercase cursor-pointer border transition-colors ${isTodayAttended ? "bg-emerald-600 text-white border-emerald-600" : "bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"}`,
+                                children: isTodayAttended ? "✓ Đã chấm nay" : "⏰ Chấm nay"
+                              }),
+                              c.jsx("button", {
+                                type: "button",
                                 onClick: () => openCreateDispatch(wk.id),
-                                className: "px-2.5 py-1.5 bg-orange-50 hover:bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                                className: "min-h-[38px] px-3 py-1.5 bg-orange-50 hover:bg-orange-100 dark:bg-orange-950/40 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800 rounded-xl font-black text-[11px] uppercase cursor-pointer",
                                 children: "📍 Điều ao"
                               }),
                               c.jsx("button", {
                                 type: "button",
-                                onClick: () => { setSubTab("ATTENDANCE"); },
-                                className: "px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 rounded-xl font-black text-[11px] uppercase cursor-pointer",
-                                children: "⏰ Chấm công"
-                              }),
-                              c.jsx("button", {
-                                type: "button",
                                 onClick: () => openTxModal("ADVANCE", wk.id),
-                                className: "px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 rounded-xl font-black text-[11px] uppercase cursor-pointer",
-                                children: "💸 Ứng lương"
+                                className: "min-h-[38px] px-3 py-1.5 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                                children: "💸 Ứng"
                               })
                             ]
                           }),
@@ -20166,13 +22955,13 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                               c.jsx("button", {
                                 type: "button",
                                 onClick: () => openEditWorker(wk),
-                                className: "px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-[11px] cursor-pointer",
+                                className: "min-h-[38px] px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-[11px] cursor-pointer",
                                 children: "✏️ Sửa"
                               }),
                               c.jsx("button", {
                                 type: "button",
                                 onClick: () => requestDeleteWorker(wk),
-                                className: "p-2 text-slate-400 hover:text-rose-600 rounded-xl cursor-pointer",
+                                className: "min-h-[38px] min-w-[38px] flex items-center justify-center text-slate-400 hover:text-rose-600 rounded-xl cursor-pointer",
                                 title: "Xóa nhân công",
                                 children: c.jsx(Iu, { size: 15 })
                               })
@@ -20187,31 +22976,79 @@ const Xm_WorkersScreen = ({ setRoute }) => {
             ]
           }),
 
-          // ==================== SUB-TAB 2: SẮP XẾP & ĐIỀU ĐỘNG AO GPS ====================
+          // ==================== SUB-TAB 2: SẮP XẾP & ĐIỀU PHỐI AO GPS ====================
           subTab === "DISPATCH" && c.jsxs("div", {
             className: "space-y-3",
             children: [
-              c.jsxs("div", {
-                className: "bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2",
+              // Quick Pending Ponds Strip (1-tap dispatch for unscheduled ponds/contracts)
+              pendingPondsForDispatch.length > 0 && c.jsxs("div", {
+                className: "bg-orange-50/70 dark:bg-orange-950/20 p-3 rounded-2xl border border-orange-200 dark:border-orange-900/50 space-y-2",
                 children: [
                   c.jsxs("div", {
-                    className: "flex flex-wrap gap-1.5",
+                    className: "flex items-center justify-between gap-2",
                     children: [
-                      { id: "ACTIVE", label: `Đang chờ / chạy (${activeDispatchesCount})` },
-                      { id: "DONE", label: "Đã hoàn tất" },
-                      { id: "ALL", label: "Tất cả" }
-                    ].map(fBtn => c.jsx("button", {
-                      type: "button",
-                      onClick: () => setDispatchFilter(fBtn.id),
-                      className: `px-3 py-2 rounded-xl text-[11px] font-black uppercase border cursor-pointer ${dispatchFilter === fBtn.id ? "bg-orange-600 text-white border-orange-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
-                      children: fBtn.label
-                    }, fBtn.id))
+                      c.jsxs("span", { className: "text-xs font-black uppercase text-orange-800 dark:text-orange-300", children: ["Ao chưa điều thợ (", pendingPondsForDispatch.length, ")"] }),
+                      c.jsx("span", { className: "text-[11px] font-semibold text-orange-700/80 dark:text-orange-300/80", children: "Bấm chọn để sắp tổ đi ngay" })
+                    ]
                   }),
-                  c.jsxs("button", {
-                    type: "button",
-                    onClick: () => openCreateDispatch(),
-                    className: "px-3.5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer",
-                    children: [c.jsx(As, { size: 15 }), "Tạo lệnh điều động"]
+                  c.jsx("div", {
+                    className: "flex gap-2 overflow-x-auto pb-1",
+                    children: pendingPondsForDispatch.map((pOpt, pIdx) => c.jsxs("button", {
+                      type: "button",
+                      onClick: () => openCreateDispatch(null, pOpt),
+                      className: "shrink-0 text-left bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-orange-200 dark:border-orange-800 hover:border-orange-500 transition-colors cursor-pointer min-w-[175px]",
+                      children: [
+                        c.jsx("div", { className: "font-black text-xs text-slate-900 dark:text-white truncate max-w-[165px]", children: pOpt.pondName }),
+                        c.jsxs("div", {
+                          className: "text-[11px] font-semibold text-slate-500 tabular-nums mt-0.5",
+                          children: [
+                            pOpt.weighingDate || todayStr,
+                            pOpt.estimatedYield ? ` · ~${Number(pOpt.estimatedYield).toLocaleString()}kg` : "",
+                            pOpt.lat && pOpt.lng ? " · Có GPS" : ""
+                          ]
+                        }),
+                        c.jsx("span", { className: "text-[11px] font-black text-orange-600 dark:text-orange-400 block mt-1", children: "⚡ Điều nhanh →" })
+                      ]
+                    }, `${pOpt.pondId}_${pOpt.contractId}_${pIdx}`))
+                  })
+                ]
+              }),
+
+              // Dispatch Filter & Search Toolbar
+              c.jsxs("div", {
+                className: "bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex flex-wrap items-center justify-between gap-2",
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex flex-wrap gap-1.5",
+                        children: [
+                          { id: "ACTIVE", label: `Đang chạy (${activeDispatchesCount})` },
+                          { id: "TODAY", label: "Hôm nay" },
+                          { id: "DONE", label: "Hoàn tất" },
+                          { id: "ALL", label: "Tất cả" }
+                        ].map(fBtn => c.jsx("button", {
+                          type: "button",
+                          onClick: () => setDispatchFilter(fBtn.id),
+                          className: `min-h-[40px] px-3 py-1.5 rounded-xl text-[11px] font-black uppercase border cursor-pointer whitespace-nowrap ${dispatchFilter === fBtn.id ? "bg-orange-600 text-white border-orange-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                          children: fBtn.label
+                        }, fBtn.id))
+                      }),
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: () => openCreateDispatch(),
+                        className: "min-h-[40px] px-3.5 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap",
+                        children: [c.jsx(As, { size: 15 }), "Tạo lệnh mới"]
+                      })
+                    ]
+                  }),
+                  c.jsx("input", {
+                    type: "text",
+                    value: searchQ,
+                    onChange: (e) => setSearchQ(e.target.value),
+                    placeholder: "Tìm tên ao, địa chỉ, hoặc tên công nhân được điều...",
+                    className: "w-full min-h-[40px] px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold outline-none focus:border-orange-500"
                   })
                 ]
               }),
@@ -20220,11 +23057,11 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                 className: "bg-white dark:bg-slate-900 p-10 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-3",
                 children: [
                   c.jsx(tc, { size: 42, className: "mx-auto text-slate-300 dark:text-slate-600" }),
-                  c.jsx("p", { className: "text-sm font-black uppercase text-slate-500", children: "Chưa có lệnh điều động nhân công nào" }),
+                  c.jsx("p", { className: "text-sm font-black uppercase text-slate-500", children: "Chưa có lệnh điều động nào trong mục này" }),
                   c.jsx("button", {
                     type: "button",
                     onClick: () => openCreateDispatch(),
-                    className: "px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
+                    className: "min-h-[44px] px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
                     children: "+ Sắp xếp tổ đi gạt tôm"
                   })
                 ]
@@ -20233,14 +23070,16 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                 children: filteredDispatches.map(dsp => {
                   const hasGps = !!(dsp.lat && dsp.lng);
                   const mapsUrl = hasGps ? `https://www.google.com/maps/dir/?api=1&destination=${dsp.lat},${dsp.lng}` : null;
-                  const dspSt = DISPATCH_STATUS_META[dsp.status || "SCHEDULED"] || DISPATCH_STATUS_META.SCHEDULED;
-                  const crewList = Array.isArray(dsp.workerIds) && dsp.workerIds.length > 0
-                    ? workersData.workers.filter(wk => dsp.workerIds.includes(wk.id))
-                    : [];
+                  const crewIds = Array.isArray(dsp.workerIds) ? dsp.workerIds : [];
+                  const crewList = workersData.workers.filter(wk => crewIds.includes(wk.id));
+                  const isInlineOpen = inlineCrewDispatchId === dsp.id;
+                  const conflictMap = isInlineOpen ? getWorkerDispatchesOnDate(dsp.scheduledDate || todayStr, dsp.id) : {};
+                  const curStatus = dsp.status || "SCHEDULED";
 
                   return c.jsxs("div", {
-                    className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3",
+                    className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3",
                     children: [
+                      // Title + Direct 3-Step Status Segmented Control
                       c.jsxs("div", {
                         className: "flex flex-wrap items-start justify-between gap-2",
                         children: [
@@ -20251,56 +23090,70 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                                 className: "flex flex-wrap items-center gap-1.5",
                                 children: [
                                   c.jsx("h3", { className: "font-black text-base text-slate-900 dark:text-white uppercase", children: dsp.pondName || "Ao thu hoạch" }),
-                                  dsp.contractId && c.jsxs("span", { className: "px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-md font-mono text-[10px] font-black", children: ["#", dsp.contractId] }),
-                                  c.jsx("span", { className: "px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md text-[10px] font-bold", children: dsp.roleTitle || "ĐỘI GẠT TÔM" })
+                                  dsp.contractId && c.jsxs("span", { className: "font-mono text-[11px] font-black text-emerald-700 dark:text-emerald-400", children: ["#", dsp.contractId] })
                                 ]
                               }),
                               c.jsxs("p", {
-                                className: "text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5",
+                                className: "text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5 tabular-nums",
                                 children: [
-                                  "📅 ", dsp.scheduledDate || todayStr, " lúc ", dsp.assemblyTime || "05:30",
-                                  Number(dsp.estimatedYield || 0) > 0 ? ` • ~${Number(dsp.estimatedYield).toLocaleString()} kg` : "",
-                                  dsp.pondAddress ? ` • ${dsp.pondAddress}` : ""
+                                  dsp.roleTitle || "ĐỘI GẠT TÔM",
+                                  " · ",
+                                  dsp.scheduledDate || todayStr,
+                                  " ",
+                                  dsp.assemblyTime || "05:30",
+                                  Number(dsp.estimatedYield || 0) > 0 ? ` · ~${Number(dsp.estimatedYield).toLocaleString()} kg` : "",
+                                  dsp.pondAddress ? ` · ${dsp.pondAddress}` : ""
                                 ]
                               })
                             ]
                           }),
-                          c.jsx("button", {
-                            type: "button",
-                            onClick: () => handleCycleDispatchStatus(dsp),
-                            title: "Bấm chuyển trạng thái",
-                            className: `px-2.5 py-1 rounded-xl text-[10px] font-black uppercase border cursor-pointer shrink-0 ${dspSt.cls}`,
-                            children: dspSt.label
+                          c.jsxs("div", {
+                            className: "flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl shrink-0",
+                            children: [
+                              { id: "SCHEDULED", label: "Chờ đi", activeCls: "bg-blue-600 text-white" },
+                              { id: "ON_SITE", label: "Đang đi", activeCls: "bg-amber-500 text-slate-950" },
+                              { id: "DONE", label: "Xong", activeCls: "bg-emerald-600 text-white" }
+                            ].map(st => c.jsx("button", {
+                              type: "button",
+                              onClick: () => handleSetDispatchStatus(dsp, st.id),
+                              className: `px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase cursor-pointer transition-colors whitespace-nowrap ${curStatus === st.id ? st.activeCls : "text-slate-500 dark:text-slate-400 hover:text-slate-800"}`,
+                              children: st.label
+                            }, st.id))
                           })
                         ]
                       }),
 
-                      // GPS Bar inside Dispatch card
+                      // GPS Row (clean unboxed separation)
                       c.jsxs("div", {
-                        className: "flex flex-wrap items-center justify-between gap-2 bg-slate-50 dark:bg-slate-800/70 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs",
+                        className: "flex flex-wrap items-center justify-between gap-2 bg-slate-50 dark:bg-slate-800/70 p-2.5 rounded-xl text-xs",
                         children: [
                           hasGps ? c.jsxs("div", {
                             className: "flex flex-wrap items-center gap-1.5",
                             children: [
-                              c.jsx("span", { className: "font-black text-blue-700 dark:text-blue-300", children: "📍 Tọa độ bờ ao:" }),
+                              c.jsx("span", { className: "font-black text-blue-700 dark:text-blue-300", children: "📍 GPS ao:" }),
                               c.jsx("span", { className: "font-mono font-bold tabular-nums text-slate-800 dark:text-slate-100", children: `${Number(dsp.lat).toFixed(6)}, ${Number(dsp.lng).toFixed(6)}` }),
-                              dsp.gpsAccuracy && c.jsxs("span", { className: "px-1.5 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 rounded text-[10px] font-black tabular-nums", children: ["±", Math.round(Number(dsp.gpsAccuracy)), "m"] })
+                              dsp.gpsAccuracy && c.jsxs("span", { className: "text-[11px] font-bold text-emerald-700 dark:text-emerald-400 tabular-nums", children: ["(±", Math.round(Number(dsp.gpsAccuracy)), "m)"] })
                             ]
-                          }) : c.jsx("span", { className: "font-bold text-amber-700 dark:text-amber-300", children: "⚠️ Chưa ghim tọa độ GPS ao — hãy ghim để thợ đi đúng bờ ao" }),
+                          }) : c.jsx("span", { className: "font-bold text-amber-700 dark:text-amber-300", children: "⚠️ Chưa ghim GPS ao — hãy ghim để thợ đi đúng bờ ao" }),
                           c.jsxs("div", {
                             className: "flex items-center gap-1.5 ml-auto",
                             children: [
+                              dsp.farmerPhone && c.jsxs("a", {
+                                href: `tel:${dsp.farmerPhone}`,
+                                className: "px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-bold inline-flex items-center gap-1",
+                                children: [c.jsx(hm, { size: 12 }), "Chủ ao"]
+                              }),
                               c.jsx("button", {
                                 type: "button",
                                 onClick: () => setInlineGpsDispatch(dsp),
-                                className: "px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-black cursor-pointer",
-                                children: hasGps ? "🛰️ Sửa ghim GPS" : "🛰️ Ghim GPS ao"
+                                className: "px-2.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] font-black cursor-pointer",
+                                children: hasGps ? "Sửa GPS" : "Ghim GPS"
                               }),
                               mapsUrl && c.jsxs("a", {
                                 href: mapsUrl,
                                 target: "_blank",
                                 rel: "noopener noreferrer",
-                                className: "px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-black",
+                                className: "px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-black",
                                 children: ["Maps ↗"]
                               })
                             ]
@@ -20308,23 +23161,62 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                         ]
                       }),
 
-                      // Assigned crew & access note
+                      // Assigned Crew + 1-Tap Inline Crew Swapper
                       c.jsxs("div", {
-                        className: "space-y-1.5 text-xs",
+                        className: "space-y-2 text-xs",
                         children: [
                           c.jsxs("div", {
-                            className: "flex flex-wrap items-center gap-1.5",
+                            className: "flex flex-wrap items-center justify-between gap-2",
                             children: [
-                              c.jsx("span", { className: "text-[11px] font-bold text-slate-500", children: "Nhân công phân công:" }),
-                              crewList.length > 0 ? crewList.map(wk => c.jsxs("span", {
-                                className: "px-2 py-0.5 bg-orange-50 dark:bg-orange-950/40 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-800 rounded-lg text-[11px] font-bold",
-                                children: [wk.name, wk.phone ? ` (${wk.phone})` : ""]
-                              }, wk.id)) : (Array.isArray(dsp.workerNames) && dsp.workerNames.length > 0 ? dsp.workerNames.map((nm, i) => c.jsx("span", {
-                                className: "px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-bold",
-                                children: nm
-                              }, i)) : c.jsx("span", { className: "text-[11px] italic text-slate-400", children: "Chưa chọn cụ thể trong tổ" }))
+                              c.jsxs("div", {
+                                className: "flex flex-wrap items-center gap-1.5",
+                                children: [
+                                  c.jsxs("span", { className: "text-[11px] font-bold text-slate-500", children: ["Tổ đi ao (", crewList.length || (dsp.workerNames?.length || 0), "):"] }),
+                                  crewList.length > 0 ? crewList.map(wk => c.jsxs("span", {
+                                    className: "text-[11px] font-black text-slate-800 dark:text-slate-100",
+                                    children: [wk.name, wk.phone ? ` (${wk.phone})` : ""]
+                                  }, wk.id)) : (Array.isArray(dsp.workerNames) && dsp.workerNames.length > 0 ? c.jsx("span", {
+                                    className: "text-[11px] font-bold text-slate-700 dark:text-slate-200",
+                                    children: dsp.workerNames.join(", ")
+                                  }) : c.jsx("span", { className: "text-[11px] italic text-slate-400", children: "Chưa chọn người" }))
+                                ]
+                              }),
+                              c.jsx("button", {
+                                type: "button",
+                                onClick: () => setInlineCrewDispatchId(isInlineOpen ? null : dsp.id),
+                                className: `px-2.5 py-1 rounded-lg text-[11px] font-black border cursor-pointer ${isInlineOpen ? "bg-orange-600 text-white border-orange-600" : "bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800"}`,
+                                children: isInlineOpen ? "✓ Xong đổi thợ" : "👥 Đổi / Thêm thợ"
+                              })
                             ]
                           }),
+
+                          // Inline Crew Picker right inside the Dispatch Card
+                          isInlineOpen && c.jsxs("div", {
+                            className: "p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2",
+                            children: [
+                              workersData.workers.length === 0 ? c.jsx("p", {
+                                className: "text-[11px] text-slate-500",
+                                children: "Chưa có thợ trong danh sách. Hãy bấm 'Thêm thợ' ở góc trên."
+                              }) : c.jsx("div", {
+                                className: "flex flex-wrap gap-1.5",
+                                children: workersData.workers.map(wk => {
+                                  const picked = crewIds.includes(wk.id);
+                                  const busyPonds = conflictMap[wk.id];
+                                  return c.jsxs("button", {
+                                    type: "button",
+                                    onClick: () => handleToggleWorkerInDispatch(dsp, wk),
+                                    className: `min-h-[36px] px-2.5 py-1 rounded-xl text-[11px] font-bold border cursor-pointer flex items-center gap-1 ${picked ? "bg-orange-600 text-white border-orange-600" : busyPonds ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700" : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700"}`,
+                                    children: [
+                                      picked ? "✓ " : "",
+                                      wk.name,
+                                      busyPonds ? ` (Bận: ${busyPonds[0]})` : ""
+                                    ]
+                                  }, wk.id);
+                                })
+                              })
+                            ]
+                          }),
+
                           dsp.accessNote && c.jsxs("p", { className: "text-[11px] text-amber-800 dark:text-amber-300 font-semibold", children: ["🛣️ Đường vào ao: ", dsp.accessNote] }),
                           Array.isArray(dsp.tools) && dsp.tools.length > 0 && c.jsxs("p", { className: "text-[11px] text-slate-500 dark:text-slate-400", children: ["🧰 Dụng cụ: ", dsp.tools.join(", ")] })
                         ]
@@ -20340,14 +23232,14 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                               c.jsxs("button", {
                                 type: "button",
                                 onClick: () => handleSendDispatchZalo(dsp),
-                                className: "px-3 py-2 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-[11px] uppercase flex items-center gap-1.5 cursor-pointer shadow-xs",
-                                children: [c.jsx(ZaloIcon, { size: 14 }), "Gửi Zalo GPS cho thợ"]
+                                className: "min-h-[40px] px-3 py-1.5 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-[11px] uppercase flex items-center gap-1.5 cursor-pointer shadow-xs",
+                                children: [c.jsx(ZaloIcon, { size: 14 }), "Gửi Zalo GPS"]
                               }),
                               c.jsx("button", {
                                 type: "button",
                                 onClick: () => handleQuickAttendFromDispatch(dsp),
-                                className: "px-3 py-2 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl font-black text-[11px] uppercase cursor-pointer",
-                                children: "⚡ Chấm công tổ này"
+                                className: "min-h-[40px] px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                                children: "⚡ Chấm công tổ"
                               })
                             ]
                           }),
@@ -20356,8 +23248,15 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                             children: [
                               c.jsx("button", {
                                 type: "button",
+                                onClick: () => handleDuplicateDispatch(dsp),
+                                className: "min-h-[38px] px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-[11px] cursor-pointer",
+                                title: "Nhân bản sang ca/ao mới",
+                                children: "📋 Nhân bản"
+                              }),
+                              c.jsx("button", {
+                                type: "button",
                                 onClick: () => openEditDispatch(dsp),
-                                className: "px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-[11px] cursor-pointer",
+                                className: "min-h-[38px] px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-[11px] cursor-pointer",
                                 children: "✏️ Sửa"
                               }),
                               c.jsx("button", {
@@ -20372,7 +23271,7 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                                     notify("✓ Đã xoá lệnh điều động.");
                                   }
                                 }),
-                                className: "p-2 text-slate-400 hover:text-rose-600 rounded-xl cursor-pointer",
+                                className: "min-h-[38px] min-w-[38px] flex items-center justify-center text-slate-400 hover:text-rose-600 rounded-xl cursor-pointer",
                                 children: c.jsx(Iu, { size: 15 })
                               })
                             ]
@@ -20387,187 +23286,397 @@ const Xm_WorkersScreen = ({ setRoute }) => {
           }),
 
           // ==================== SUB-TAB 3: CHẤM CÔNG HÀNG NGÀY ====================
-          subTab === "ATTENDANCE" && c.jsxs("div", {
-            className: "space-y-3",
-            children: [
-              c.jsxs("div", {
-                className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2",
-                children: [
-                  c.jsxs("div", {
-                    className: "flex items-center gap-1.5",
-                    children: [
-                      c.jsx("button", { type: "button", onClick: () => shiftAttDate(-1), className: "px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded-xl font-black text-xs cursor-pointer", children: "←" }),
-                      c.jsx("input", {
-                        type: "date",
-                        value: attDate,
-                        onChange: (e) => setAttDate(e.target.value),
-                        className: "p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black text-xs outline-none"
-                      }),
-                      c.jsx("button", { type: "button", onClick: () => shiftAttDate(1), className: "px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded-xl font-black text-xs cursor-pointer", children: "→" }),
-                      c.jsx("button", { type: "button", onClick: () => setAttDate(todayStr), className: "px-2.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 rounded-xl font-black text-[11px] cursor-pointer", children: "Hôm nay" })
-                    ]
-                  }),
-                  c.jsx("button", {
-                    type: "button",
-                    onClick: handleImportDayDispatchesToAttendance,
-                    className: "px-3.5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer shadow-xs",
-                    children: "⚡ Lấy từ lịch điều động ngày này"
-                  })
-                ]
-              }),
+          subTab === "ATTENDANCE" && (() => {
+            const qAtt = searchQ.trim().toLowerCase();
+            const attendanceWorkers = workersData.workers.filter(wk => {
+              if (roleFilter !== "ALL" && wk.role !== roleFilter) return false;
+              if (!qAtt) return true;
+              return (wk.name || "").toLowerCase().includes(qAtt) || (wk.phone || "").includes(qAtt);
+            });
+            const quickPondNotes = [];
+            const seenNotePonds = new Set();
+            todayDispatchesList.forEach(d => {
+              if (d?.pondName && !seenNotePonds.has(d.pondName)) {
+                seenNotePonds.add(d.pondName);
+                quickPondNotes.push(d.pondName);
+              }
+            });
+            pondOptions.slice(0, 5).forEach(p => {
+              if (p?.pondName && !seenNotePonds.has(p.pondName)) {
+                seenNotePonds.add(p.pondName);
+                quickPondNotes.push(p.pondName);
+              }
+            });
 
-              workersData.workers.length === 0 ? c.jsxs("div", {
-                className: "bg-white dark:bg-slate-900 p-10 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-3",
-                children: [
-                  c.jsx("p", { className: "text-sm font-black uppercase text-slate-500", children: "Chưa có nhân công để chấm công" }),
-                  c.jsx("button", { type: "button", onClick: openAddWorker, className: "px-4 py-2.5 bg-emerald-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "+ Thêm công nhân" })
-                ]
-              }) : c.jsx("div", {
-                className: "space-y-2.5",
-                children: workersData.workers.map(wk => {
-                  const entry = (workersData.attendance && workersData.attendance[attDate] && workersData.attendance[attDate][wk.id]) || { units: 0, otHours: 0, kg: 0, trips: 0, bonus: 0, note: "" };
-                  const dayPay = computeEntryPay(entry, wk);
-
-                  return c.jsxs("div", {
-                    className: `bg-white dark:bg-slate-900 p-4 rounded-2xl border transition-colors space-y-3 ${dayPay > 0 ? "border-emerald-300 dark:border-emerald-800" : "border-slate-200 dark:border-slate-800"}`,
-                    children: [
-                      c.jsxs("div", {
-                        className: "flex flex-wrap items-center justify-between gap-2",
-                        children: [
-                          c.jsxs("div", {
-                            children: [
-                              c.jsxs("div", {
-                                className: "flex items-center gap-2",
-                                children: [
-                                  c.jsx("h4", { className: "font-black text-sm text-slate-900 dark:text-white uppercase", children: wk.name }),
-                                  c.jsx("span", { className: "text-[10px] font-bold text-slate-400 uppercase", children: PAY_TYPE_LABELS[wk.payType || "DAY"] })
-                                ]
-                              }),
-                              c.jsxs("p", { className: "text-[11px] font-semibold text-slate-500 tabular-nums", children: ["Đơn giá: ", Number(wk.baseRate || 0).toLocaleString(), " ", PAY_UNIT_SUFFIX[wk.payType || "DAY"], " • TC: ", Number(wk.overtimeRate || 0).toLocaleString(), "đ/h"] })
-                            ]
-                          }),
-                          c.jsxs("div", {
-                            className: "text-right",
-                            children: [
-                              c.jsx("span", { className: "text-[10px] text-slate-400 uppercase font-bold block", children: "Lương ngày" }),
-                              c.jsxs("span", { className: `text-base font-black tabular-nums ${dayPay > 0 ? "text-emerald-700 dark:text-emerald-400" : "text-slate-400"}`, children: [dayPay.toLocaleString(), " đ"] })
-                            ]
+            return c.jsxs("div", {
+              className: "space-y-3",
+              children: [
+                // 7-Day Quick Date Scroller + Exact Date Picker
+                c.jsxs("div", {
+                  className: "bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5",
+                  children: [
+                    c.jsxs("div", {
+                      className: "flex items-center justify-between gap-2 flex-wrap",
+                      children: [
+                        c.jsx("div", {
+                          className: "flex gap-1.5 overflow-x-auto pb-0.5 flex-1",
+                          children: quickAttDays.map(d => {
+                            const active = attDate === d.dateStr;
+                            return c.jsxs("button", {
+                              type: "button",
+                              onClick: () => setAttDate(d.dateStr),
+                              className: `min-h-[46px] min-w-[54px] px-2.5 py-1.5 rounded-xl border text-center cursor-pointer transition-colors shrink-0 ${active ? "bg-emerald-700 text-white border-emerald-700 shadow-xs" : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-emerald-400"}`,
+                              children: [
+                                c.jsx("div", { className: `text-[10px] font-black uppercase ${active ? "text-emerald-100" : "text-slate-400"}`, children: d.wd }),
+                                c.jsx("div", { className: "text-xs font-black tabular-nums", children: d.dd }),
+                                d.loggedCount > 0 && c.jsxs("div", { className: `text-[9px] font-black tabular-nums ${active ? "text-emerald-200" : "text-emerald-600 dark:text-emerald-400"}`, children: [d.loggedCount, "✓"] })
+                              ]
+                            }, d.dateStr);
                           })
-                        ]
-                      }),
+                        }),
+                        c.jsxs("div", {
+                          className: "flex items-center gap-1 shrink-0",
+                          children: [
+                            c.jsx("button", { type: "button", onClick: () => shiftAttDate(-1), className: "min-h-[44px] min-w-[38px] px-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded-xl font-black text-xs cursor-pointer", children: "←" }),
+                            c.jsx("input", {
+                              type: "date",
+                              value: attDate,
+                              onChange: (e) => setAttDate(e.target.value),
+                              className: "min-h-[44px] px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black text-xs outline-none tabular-nums"
+                            }),
+                            c.jsx("button", { type: "button", onClick: () => shiftAttDate(1), className: "min-h-[44px] min-w-[38px] px-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 rounded-xl font-black text-xs cursor-pointer", children: "→" })
+                          ]
+                        })
+                      ]
+                    }),
 
-                      // Units / Kg / Trips Control by payType
-                      c.jsxs("div", {
-                        className: "grid grid-cols-1 sm:grid-cols-12 gap-2 items-end text-xs",
-                        children: [
-                          c.jsxs("div", {
-                            className: "sm:col-span-5",
-                            children: [
-                              wk.payType === "DAY" && c.jsxs("div", {
-                                className: "flex gap-1.5",
-                                children: [
-                                  { val: 1, label: "✓ Đủ 1 công", cls: "bg-emerald-600 text-white border-emerald-600" },
-                                  { val: 0.5, label: "½ Nửa công", cls: "bg-amber-500 text-slate-950 border-amber-500" },
-                                  { val: 0, label: "Nghỉ", cls: "bg-slate-700 text-white border-slate-700" }
-                                ].map(btn => {
-                                  const active = Number(entry.units || 0) === btn.val;
+                    // Search + Role Filter
+                    c.jsxs("div", {
+                      className: "flex flex-wrap items-center gap-2",
+                      children: [
+                        c.jsx("input", {
+                          type: "text",
+                          value: searchQ,
+                          onChange: (e) => setSearchQ(e.target.value),
+                          placeholder: "Tìm nhanh tên thợ để chấm công...",
+                          className: "flex-1 min-w-[160px] min-h-[40px] px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold outline-none focus:border-emerald-500"
+                        }),
+                        c.jsx("div", {
+                          className: "flex flex-wrap gap-1",
+                          children: [
+                            { id: "ALL", label: "Tất cả" },
+                            { id: "HARVEST", label: "Gạt tôm" },
+                            { id: "BOAT", label: "Ghe/Xe" },
+                            { id: "CARRY", label: "Cân/Bốc" }
+                          ].map(fBtn => c.jsx("button", {
+                            type: "button",
+                            onClick: () => setRoleFilter(fBtn.id),
+                            className: `min-h-[38px] px-2.5 py-1 rounded-xl text-[11px] font-black uppercase border cursor-pointer whitespace-nowrap ${roleFilter === fBtn.id ? "bg-slate-900 dark:bg-emerald-600 text-white border-slate-900 dark:border-emerald-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                            children: fBtn.label
+                          }, fBtn.id))
+                        })
+                      ]
+                    }),
+
+                    // 1-Tap Bulk Actions Bar
+                    c.jsxs("div", {
+                      className: "flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800",
+                      children: [
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: () => handleBulkAttendFiltered(attendanceWorkers),
+                          className: "min-h-[40px] px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-[11px] uppercase cursor-pointer shadow-xs whitespace-nowrap",
+                          children: ["✓ Chấm đủ cả nhóm (", attendanceWorkers.filter(w => w.status !== "OFF").length, ")"]
+                        }),
+                        c.jsxs("button", {
+                          type: "button",
+                          onClick: handleImportDayDispatchesToAttendance,
+                          className: "min-h-[40px] px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-[11px] uppercase cursor-pointer shadow-xs whitespace-nowrap",
+                          children: ["⚡ Lấy từ điều động (", todayDispatchesList.length, ")"]
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: handleCopyPreviousDayAttendance,
+                          className: "min-h-[40px] px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-xl font-black text-[11px] uppercase cursor-pointer whitespace-nowrap",
+                          children: "📋 Chép hôm qua"
+                        }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: handleClearDayAttendance,
+                          className: "min-h-[40px] px-3 py-1.5 bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 text-slate-600 hover:text-rose-600 dark:text-slate-300 rounded-xl font-bold text-[11px] cursor-pointer ml-auto whitespace-nowrap",
+                          children: "↺ Xoá trắng"
+                        })
+                      ]
+                    })
+                  ]
+                }),
+
+                // Selected Day Summary Strip
+                c.jsxs("div", {
+                  className: "bg-emerald-50/80 dark:bg-emerald-950/30 px-3.5 py-2.5 rounded-2xl border border-emerald-200 dark:border-emerald-800 flex flex-wrap items-center justify-between gap-2 text-xs",
+                  children: [
+                    c.jsxs("div", {
+                      className: "font-bold text-emerald-900 dark:text-emerald-200 tabular-nums",
+                      children: [
+                        "Ngày ",
+                        c.jsx("span", { className: "font-black", children: attDate }),
+                        " · ",
+                        c.jsxs("span", { className: "font-black", children: [selectedDayStats.activeCount, " người"] }),
+                        " có chấm · Tổng công: ",
+                        c.jsxs("span", { className: "font-black text-emerald-700 dark:text-emerald-300", children: [selectedDayStats.totalPay.toLocaleString(), " đ"] })
+                      ]
+                    }),
+                    c.jsx("button", {
+                      type: "button",
+                      onClick: () => setSubTab("PAYROLL"),
+                      className: "font-black text-[11px] uppercase text-emerald-700 dark:text-emerald-300 hover:underline cursor-pointer whitespace-nowrap",
+                      children: "Xem bảng lương →"
+                    })
+                  ]
+                }),
+
+                // Worker Attendance Cards
+                workersData.workers.length === 0 ? c.jsxs("div", {
+                  className: "bg-white dark:bg-slate-900 p-10 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-3",
+                  children: [
+                    c.jsx("p", { className: "text-sm font-black uppercase text-slate-500", children: "Chưa có nhân công để chấm công" }),
+                    c.jsx("button", { type: "button", onClick: openAddWorker, className: "min-h-[44px] px-4 py-2.5 bg-emerald-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "+ Thêm công nhân" })
+                  ]
+                }) : attendanceWorkers.length === 0 ? c.jsx("div", {
+                  className: "bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs font-bold text-slate-500",
+                  children: "Không có công nhân nào khớp bộ lọc tìm kiếm."
+                }) : c.jsx("div", {
+                  className: "space-y-2.5",
+                  children: attendanceWorkers.map(wk => {
+                    const entry = (workersData.attendance && workersData.attendance[attDate] && workersData.attendance[attDate][wk.id]) || { units: 0, otHours: 0, kg: 0, trips: 0, bonus: 0, note: "" };
+                    const dayPay = computeEntryPay(entry, wk);
+                    const isExpanded = expandedAttId === wk.id;
+                    const rlShort = WORKER_ROLE_META[wk.role || "HARVEST"]?.short || "";
+
+                    return c.jsxs("div", {
+                      className: `bg-white dark:bg-slate-900 p-3.5 sm:p-4 rounded-2xl border transition-colors space-y-2.5 ${dayPay > 0 ? "border-emerald-400 dark:border-emerald-700 shadow-xs" : "border-slate-200 dark:border-slate-800"}`,
+                      children: [
+                        // Row 1: Name, Rate, Pay
+                        c.jsxs("div", {
+                          className: "flex items-start justify-between gap-2",
+                          children: [
+                            c.jsxs("div", {
+                              className: "min-w-0",
+                              children: [
+                                c.jsxs("div", {
+                                  className: "flex flex-wrap items-center gap-1.5",
+                                  children: [
+                                    c.jsx("h4", { className: "font-black text-sm sm:text-base text-slate-900 dark:text-white uppercase truncate", children: wk.name }),
+                                    wk.status === "OFF" && c.jsx("span", { className: "text-[10px] font-black uppercase text-slate-400", children: "(Đang nghỉ)" })
+                                  ]
+                                }),
+                                c.jsxs("p", {
+                                  className: "text-[11px] font-semibold text-slate-500 dark:text-slate-400 tabular-nums",
+                                  children: [
+                                    rlShort,
+                                    " · ",
+                                    Number(wk.baseRate || 0).toLocaleString(),
+                                    " ",
+                                    PAY_UNIT_SUFFIX[wk.payType || "DAY"],
+                                    Number(wk.overtimeRate || 0) > 0 ? ` · TC ${Number(wk.overtimeRate).toLocaleString()}đ/h` : ""
+                                  ]
+                                })
+                              ]
+                            }),
+                            c.jsxs("div", {
+                              className: "text-right shrink-0",
+                              children: [
+                                c.jsx("span", { className: "text-[10px] text-slate-400 uppercase font-bold block", children: "Lương ngày" }),
+                                c.jsxs("span", { className: `text-base font-black tabular-nums ${dayPay > 0 ? "text-emerald-700 dark:text-emerald-400" : "text-slate-400"}`, children: [dayPay.toLocaleString(), " đ"] })
+                              ]
+                            })
+                          ]
+                        }),
+
+                        // Row 2: Primary 1-Tap Touch Controls by payType
+                        c.jsxs("div", {
+                          className: "space-y-2",
+                          children: [
+                            wk.payType === "DAY" && c.jsx("div", {
+                              className: "grid grid-cols-3 gap-1.5",
+                              children: [
+                                { val: 1, label: "✓ 1 Công", cls: "bg-emerald-600 text-white border-emerald-600 shadow-xs" },
+                                { val: 0.5, label: "½ Công", cls: "bg-amber-500 text-slate-950 border-amber-500 shadow-xs" },
+                                { val: 0, label: "Nghỉ (0)", cls: "bg-slate-700 text-white border-slate-700" }
+                              ].map(btn => {
+                                const active = Number(entry.units || 0) === btn.val;
+                                return c.jsx("button", {
+                                  type: "button",
+                                  onClick: () => updateWorkerAttendance(wk.id, { units: btn.val }),
+                                  className: `min-h-[44px] px-2 rounded-xl font-black text-xs border cursor-pointer transition-colors ${active ? btn.cls : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400"}`,
+                                  children: btn.label
+                                }, btn.val);
+                              })
+                            }),
+
+                            wk.payType === "HOUR" && c.jsxs("div", {
+                              className: "flex flex-wrap items-center gap-1.5",
+                              children: [
+                                [4, 8, 10, 0].map(h => {
+                                  const active = Number(entry.units || 0) === h;
                                   return c.jsx("button", {
                                     type: "button",
-                                    onClick: () => updateWorkerAttendance(wk.id, { units: btn.val }),
-                                    className: `flex-1 py-2.5 px-2 rounded-xl font-black text-[11px] border cursor-pointer ${active ? btn.cls : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
-                                    children: btn.label
-                                  }, btn.val);
+                                    onClick: () => updateWorkerAttendance(wk.id, { units: h }),
+                                    className: `min-h-[44px] px-3 rounded-xl font-black text-xs border cursor-pointer tabular-nums ${active ? "bg-emerald-600 text-white border-emerald-600" : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700"}`,
+                                    children: h === 0 ? "Nghỉ" : `${h}h`
+                                  }, h);
+                                }),
+                                c.jsxs("div", {
+                                  className: "flex items-center gap-1 ml-auto",
+                                  children: [
+                                    c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { units: Math.max(0, Number(entry.units || 0) - 1) }), className: "min-h-[44px] min-w-[40px] bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "-" }),
+                                    c.jsx("input", { type: "number", step: "0.5", value: entry.units ?? 0, onChange: (e) => updateWorkerAttendance(wk.id, { units: Math.max(0, Number(e.target.value) || 0) }), className: "w-16 min-h-[44px] p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-black text-xs tabular-nums" }),
+                                    c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { units: Number(entry.units || 0) + 1 }), className: "min-h-[44px] min-w-[40px] bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "+" })
+                                  ]
                                 })
-                              }),
-                              wk.payType === "HOUR" && c.jsxs("div", {
-                                children: [
-                                  c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Số giờ làm" }),
-                                  c.jsxs("div", {
-                                    className: "flex items-center gap-1",
-                                    children: [
-                                      c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { units: Math.max(0, Number(entry.units || 0) - 1) }), className: "px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "-" }),
-                                      c.jsx("input", { type: "number", step: "0.5", value: entry.units ?? 0, onChange: (e) => updateWorkerAttendance(wk.id, { units: Math.max(0, Number(e.target.value) || 0) }), className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-black tabular-nums" }),
-                                      c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { units: Number(entry.units || 0) + 1 }), className: "px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "+" })
-                                    ]
-                                  })
-                                ]
-                              }),
-                              wk.payType === "KG" && c.jsxs("div", {
-                                children: [
-                                  c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Sản lượng kéo/lựa (kg)" }),
-                                  c.jsx("input", { type: "number", value: entry.kg ?? 0, onChange: (e) => updateWorkerAttendance(wk.id, { kg: Math.max(0, Number(e.target.value) || 0) }), className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums" })
-                                ]
-                              }),
-                              wk.payType === "TRIP" && c.jsxs("div", {
-                                children: [
-                                  c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Số chuyến ghe / xe" }),
-                                  c.jsxs("div", {
-                                    className: "flex items-center gap-1",
-                                    children: [
-                                      c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { trips: Math.max(0, Number(entry.trips || 0) - 1) }), className: "px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "-" }),
-                                      c.jsx("input", { type: "number", value: entry.trips ?? 0, onChange: (e) => updateWorkerAttendance(wk.id, { trips: Math.max(0, Number(e.target.value) || 0) }), className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-black tabular-nums" }),
-                                      c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { trips: Number(entry.trips || 0) + 1 }), className: "px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "+" })
-                                    ]
-                                  })
-                                ]
-                              })
-                            ]
-                          }),
+                              ]
+                            }),
 
-                          c.jsxs("div", {
-                            className: "sm:col-span-2",
-                            children: [
-                              c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Tăng ca (giờ)" }),
-                              c.jsx("input", {
-                                type: "number",
-                                step: "0.5",
-                                value: entry.otHours ?? 0,
-                                onChange: (e) => updateWorkerAttendance(wk.id, { otHours: Math.max(0, Number(e.target.value) || 0) }),
-                                className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums"
-                              })
-                            ]
-                          }),
+                            wk.payType === "KG" && c.jsxs("div", {
+                              className: "flex flex-wrap items-center gap-1.5",
+                              children: [
+                                c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { kg: Number(entry.kg || 0) + 50 }), className: "min-h-[44px] px-3 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl font-black text-xs cursor-pointer tabular-nums", children: "+50 kg" }),
+                                c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { kg: Number(entry.kg || 0) + 100 }), className: "min-h-[44px] px-3 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl font-black text-xs cursor-pointer tabular-nums", children: "+100 kg" }),
+                                c.jsx("input", { type: "number", value: entry.kg ?? 0, onChange: (e) => updateWorkerAttendance(wk.id, { kg: Math.max(0, Number(e.target.value) || 0) }), placeholder: "Số kg", className: "flex-1 min-w-[85px] min-h-[44px] px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black text-xs text-center tabular-nums" }),
+                                Number(entry.kg || 0) > 0 && c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { kg: 0 }), className: "min-h-[44px] px-2.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-xl font-bold text-xs cursor-pointer", children: "0" })
+                              ]
+                            }),
 
-                          c.jsxs("div", {
-                            className: "sm:col-span-2",
-                            children: [
-                              c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Thưởng/Cơm (đ)" }),
-                              c.jsx("input", {
-                                type: "number",
-                                value: entry.bonus ?? 0,
-                                onChange: (e) => updateWorkerAttendance(wk.id, { bonus: Number(e.target.value) || 0 }),
-                                className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums"
-                              })
-                            ]
-                          }),
+                            wk.payType === "TRIP" && c.jsxs("div", {
+                              className: "flex flex-wrap items-center gap-1.5",
+                              children: [
+                                [
+                                  { val: 1, label: "1 Chuyến" },
+                                  { val: 2, label: "2 Chuyến" },
+                                  { val: 0, label: "Nghỉ (0)" }
+                                ].map(t => {
+                                  const active = Number(entry.trips || 0) === t.val;
+                                  return c.jsx("button", {
+                                    type: "button",
+                                    onClick: () => updateWorkerAttendance(wk.id, { trips: t.val }),
+                                    className: `min-h-[44px] px-3 rounded-xl font-black text-xs border cursor-pointer tabular-nums ${active ? (t.val === 0 ? "bg-slate-700 text-white border-slate-700" : "bg-emerald-600 text-white border-emerald-600") : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700"}`,
+                                    children: t.label
+                                  }, t.val);
+                                }),
+                                c.jsxs("div", {
+                                  className: "flex items-center gap-1 ml-auto",
+                                  children: [
+                                    c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { trips: Math.max(0, Number(entry.trips || 0) - 1) }), className: "min-h-[44px] min-w-[40px] bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "-" }),
+                                    c.jsx("input", { type: "number", value: entry.trips ?? 0, onChange: (e) => updateWorkerAttendance(wk.id, { trips: Math.max(0, Number(e.target.value) || 0) }), className: "w-14 min-h-[44px] p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-center font-black text-xs tabular-nums" }),
+                                    c.jsx("button", { type: "button", onClick: () => updateWorkerAttendance(wk.id, { trips: Number(entry.trips || 0) + 1 }), className: "min-h-[44px] min-w-[40px] bg-slate-100 dark:bg-slate-800 rounded-xl font-black cursor-pointer", children: "+" })
+                                  ]
+                                })
+                              ]
+                            })
+                          ]
+                        }),
 
-                          c.jsxs("div", {
-                            className: "sm:col-span-3",
-                            children: [
-                              c.jsx("label", { className: "text-[10px] font-bold text-slate-400 block mb-0.5 uppercase", children: "Ao làm / Ghi chú" }),
-                              c.jsx("input", {
-                                type: "text",
-                                value: entry.note || "",
-                                onChange: (e) => updateWorkerAttendance(wk.id, { note: e.target.value }),
-                                placeholder: "Vd: Ao chú Bảy...",
-                                className: "w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold"
-                              })
-                            ]
-                          })
-                        ]
-                      })
-                    ]
-                  }, wk.id);
+                        // Row 3: Quick OT / Meal Chips + Expand Toggle
+                        c.jsxs("div", {
+                          className: "flex flex-wrap items-center gap-1.5 pt-1",
+                          children: [
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => updateWorkerAttendance(wk.id, { otHours: Number(entry.otHours || 0) + 1 }),
+                              className: `px-2.5 py-1.5 rounded-lg text-[11px] font-bold border cursor-pointer tabular-nums ${Number(entry.otHours || 0) > 0 ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                              children: Number(entry.otHours || 0) > 0 ? `+1h TC (đang ${entry.otHours}h)` : "+1h Tăng ca"
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => updateWorkerAttendance(wk.id, { bonus: Number(entry.bonus || 0) + 50000 }),
+                              className: `px-2.5 py-1.5 rounded-lg text-[11px] font-bold border cursor-pointer tabular-nums ${Number(entry.bonus || 0) > 0 ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                              children: Number(entry.bonus || 0) > 0 ? `+50k cơm (${Number(entry.bonus).toLocaleString()}đ)` : "+50k Tiền cơm"
+                            }),
+                            entry.note && !isExpanded && c.jsxs("span", {
+                              className: "text-[11px] font-semibold text-slate-500 truncate max-w-[160px]",
+                              children: ["· ", entry.note]
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => setExpandedAttId(isExpanded ? null : wk.id),
+                              className: "px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg text-[11px] font-bold cursor-pointer ml-auto whitespace-nowrap",
+                              children: isExpanded ? "▲ Thu gọn" : "▼ Tăng ca / Ghi chú"
+                            })
+                          ]
+                        }),
+
+                        // Collapsible Extra Details (OT exact, Bonus exact, Pond Note + Quick Chips)
+                        isExpanded && c.jsxs("div", {
+                          className: "p-3 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs",
+                          children: [
+                            c.jsxs("div", {
+                              className: "grid grid-cols-2 sm:grid-cols-3 gap-2",
+                              children: [
+                                c.jsxs("div", {
+                                  children: [
+                                    c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-1 uppercase", children: "Tăng ca (giờ)" }),
+                                    c.jsx("input", {
+                                      type: "number",
+                                      step: "0.5",
+                                      value: entry.otHours ?? 0,
+                                      onChange: (e) => updateWorkerAttendance(wk.id, { otHours: Math.max(0, Number(e.target.value) || 0) }),
+                                      className: "w-full p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums"
+                                    })
+                                  ]
+                                }),
+                                c.jsxs("div", {
+                                  children: [
+                                    c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-1 uppercase", children: "Thưởng / Cơm (đ)" }),
+                                    c.jsx("input", {
+                                      type: "number",
+                                      value: entry.bonus ?? 0,
+                                      onChange: (e) => updateWorkerAttendance(wk.id, { bonus: Number(e.target.value) || 0 }),
+                                      className: "w-full p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums"
+                                    })
+                                  ]
+                                }),
+                                c.jsxs("div", {
+                                  className: "col-span-2 sm:col-span-1",
+                                  children: [
+                                    c.jsx("label", { className: "text-[10px] font-bold text-slate-500 block mb-1 uppercase", children: "Ao làm / Ghi chú" }),
+                                    c.jsx("input", {
+                                      type: "text",
+                                      value: entry.note || "",
+                                      onChange: (e) => updateWorkerAttendance(wk.id, { note: e.target.value }),
+                                      placeholder: "Vd: Ao chú Bảy...",
+                                      className: "w-full p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold"
+                                    })
+                                  ]
+                                })
+                              ]
+                            }),
+                            quickPondNotes.length > 0 && c.jsxs("div", {
+                              className: "flex flex-wrap items-center gap-1.5",
+                              children: [
+                                c.jsx("span", { className: "text-[10px] font-bold text-slate-400 uppercase", children: "Gắn nhanh ao:" }),
+                                quickPondNotes.map(pn => c.jsxs("button", {
+                                  type: "button",
+                                  onClick: () => updateWorkerAttendance(wk.id, { note: `Ao ${pn}` }),
+                                  className: `px-2 py-1 rounded-lg text-[11px] font-bold border cursor-pointer ${entry.note === `Ao ${pn}` ? "bg-emerald-600 text-white border-emerald-600" : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                                  children: ["Ao ", pn]
+                                }, pn))
+                              ]
+                            })
+                          ]
+                        })
+                      ]
+                    }, wk.id);
+                  })
                 })
-              })
-            ]
-          }),
+              ]
+            });
+          })(),
 
           // ==================== SUB-TAB 4: TÍNH LƯƠNG & TẠM ỨNG ====================
           subTab === "PAYROLL" && c.jsxs("div", {
             className: "space-y-3",
             children: [
-              // Period Picker & Quick Advance / Pay actions
+              // Period Picker, Search & Quick Bulk Actions
               c.jsxs("div", {
                 className: "bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5",
                 children: [
@@ -20584,29 +23693,56 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                         ].map(pm => c.jsx("button", {
                           type: "button",
                           onClick: () => setPeriodMode(pm.id),
-                          className: `px-3 py-2 rounded-xl text-[11px] font-black uppercase border cursor-pointer ${periodMode === pm.id ? "bg-slate-900 dark:bg-emerald-600 text-white border-slate-900 dark:border-emerald-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                          className: `min-h-[40px] px-3 py-1.5 rounded-xl text-[11px] font-black uppercase border cursor-pointer whitespace-nowrap ${periodMode === pm.id ? "bg-slate-900 dark:bg-emerald-600 text-white border-slate-900 dark:border-emerald-600" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
                           children: pm.label
                         }, pm.id))
                       }),
                       c.jsxs("div", {
-                        className: "flex gap-1.5",
+                        className: "flex flex-wrap gap-1.5",
                         children: [
                           c.jsx("button", {
                             type: "button",
                             onClick: () => openTxModal("ADVANCE"),
-                            className: "px-3 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl font-black text-xs uppercase cursor-pointer",
+                            className: "min-h-[40px] px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl font-black text-xs uppercase cursor-pointer whitespace-nowrap",
                             children: "+ Ghi Tạm Ứng"
                           }),
                           c.jsx("button", {
                             type: "button",
                             onClick: () => openTxModal("PAY"),
-                            className: "px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
-                            children: "✓ Thanh Toán Lương"
+                            className: "min-h-[40px] px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer whitespace-nowrap",
+                            children: "✓ Trả Lương Lẻ"
                           })
                         ]
                       })
                     ]
                   }),
+
+                  // Search + Role Filter + Bulk Pay/Share
+                  c.jsxs("div", {
+                    className: "flex flex-wrap items-center gap-2",
+                    children: [
+                      c.jsx("input", {
+                        type: "text",
+                        value: searchQ,
+                        onChange: (e) => setSearchQ(e.target.value),
+                        placeholder: "Tìm tên thợ trong bảng lương...",
+                        className: "flex-1 min-w-[160px] min-h-[40px] px-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold outline-none focus:border-emerald-500"
+                      }),
+                      c.jsx("button", {
+                        type: "button",
+                        onClick: handlePayAllDueWorkers,
+                        className: "min-h-[40px] px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-black text-[11px] uppercase cursor-pointer shadow-xs whitespace-nowrap",
+                        children: "⚡ Trả đủ tất cả"
+                      }),
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: handleShareAllPayrollZalo,
+                        className: "min-h-[40px] px-3 py-1.5 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-[11px] uppercase flex items-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap",
+                        children: [c.jsx(ZaloIcon, { size: 13 }), "Gửi bảng tổng"]
+                      })
+                    ]
+                  }),
+
                   periodMode === "CUSTOM" && c.jsxs("div", {
                     className: "flex flex-wrap items-center gap-2 text-xs pt-1",
                     children: [
@@ -20616,6 +23752,7 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                       c.jsx("input", { type: "date", value: customEnd, onChange: e => setCustomEnd(e.target.value), className: "p-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
                     ]
                   }),
+
                   c.jsxs("div", {
                     className: "grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs",
                     children: [
@@ -20629,13 +23766,14 @@ const Xm_WorkersScreen = ({ setRoute }) => {
               }),
 
               // Worker Payroll Cards
-              payrollRows.length === 0 ? c.jsx("div", {
+              filteredPayrollRows.length === 0 ? c.jsx("div", {
                 className: "bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 text-center text-xs font-bold text-slate-500",
-                children: "Chưa có nhân công nào để tính lương."
+                children: workersData.workers.length === 0 ? "Chưa có nhân công nào để tính lương." : "Không tìm thấy công nhân khớp bộ lọc."
               }) : c.jsx("div", {
                 className: "space-y-2.5",
-                children: payrollRows.map(row => {
+                children: filteredPayrollRows.map(row => {
                   const wk = row.worker;
+                  const isExpanded = expandedPayrollId === wk.id;
                   return c.jsxs("div", {
                     className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2.5",
                     children: [
@@ -20644,13 +23782,13 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                         children: [
                           c.jsxs("div", {
                             children: [
-                              c.jsx("h4", { className: "font-black text-sm uppercase text-slate-900 dark:text-white", children: wk.name }),
+                              c.jsx("h4", { className: "font-black text-sm sm:text-base uppercase text-slate-900 dark:text-white", children: wk.name }),
                               c.jsxs("p", {
                                 className: "text-[11px] font-semibold text-slate-500 tabular-nums",
                                 children: [
                                   row.daysWorkedCount, " ngày có mặt",
-                                  wk.payType === "KG" ? ` • ${row.totalKg.toLocaleString()} kg` : wk.payType === "TRIP" ? ` • ${row.totalTrips} chuyến` : ` • ${row.totalUnits} ${wk.payType === "HOUR" ? "giờ" : "công"}`,
-                                  row.totalOtHours > 0 ? ` • TC ${row.totalOtHours}h` : ""
+                                  wk.payType === "KG" ? ` · ${row.totalKg.toLocaleString()} kg` : wk.payType === "TRIP" ? ` · ${row.totalTrips} chuyến` : ` · ${row.totalUnits} ${wk.payType === "HOUR" ? "giờ" : "công"}`,
+                                  row.totalOtHours > 0 ? ` · TC ${row.totalOtHours}h` : ""
                                 ]
                               })
                             ]
@@ -20674,26 +23812,61 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                         ]
                       }),
 
+                      // Expandable Day-by-day Log Breakdown
+                      isExpanded && c.jsx("div", {
+                        className: "p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200 dark:border-slate-700 space-y-1.5 text-xs",
+                        children: row.dayLogs.length === 0 ? c.jsx("p", {
+                          className: "text-[11px] text-slate-400 italic",
+                          children: "Chưa có ngày chấm công nào trong kỳ này."
+                        }) : row.dayLogs.map(dl => c.jsxs("div", {
+                          className: "flex items-center justify-between gap-2 py-1 border-b last:border-b-0 border-slate-200/70 dark:border-slate-700/70",
+                          children: [
+                            c.jsxs("div", {
+                              className: "min-w-0",
+                              children: [
+                                c.jsx("span", { className: "font-black text-slate-800 dark:text-slate-100 tabular-nums", children: dl.date }),
+                                c.jsxs("span", {
+                                  className: "text-[11px] text-slate-500 ml-1.5 tabular-nums",
+                                  children: [
+                                    wk.payType === "KG" ? `${Number(dl.entry.kg || 0).toLocaleString()} kg` : wk.payType === "TRIP" ? `${dl.entry.trips || 0} chuyến` : `${dl.entry.units || 0} ${wk.payType === "HOUR" ? "giờ" : "công"}`,
+                                    Number(dl.entry.otHours || 0) > 0 ? ` · TC ${dl.entry.otHours}h` : "",
+                                    Number(dl.entry.bonus || 0) > 0 ? ` · +${Number(dl.entry.bonus).toLocaleString()}đ` : "",
+                                    dl.entry.note ? ` · ${dl.entry.note}` : ""
+                                  ]
+                                })
+                              ]
+                            }),
+                            c.jsxs("span", { className: "font-black text-emerald-700 dark:text-emerald-400 tabular-nums shrink-0", children: [dl.pay.toLocaleString(), " đ"] })
+                          ]
+                        }, dl.date))
+                      }),
+
                       c.jsxs("div", {
                         className: "flex flex-wrap items-center gap-1.5 pt-1",
                         children: [
                           c.jsx("button", {
                             type: "button",
                             onClick: () => openTxModal("ADVANCE", wk.id),
-                            className: "px-3 py-1.5 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-xl font-black text-[11px] cursor-pointer",
+                            className: "min-h-[38px] px-3 py-1.5 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-xl font-black text-[11px] cursor-pointer",
                             children: "💸 Ứng tiền"
                           }),
                           c.jsx("button", {
                             type: "button",
                             onClick: () => openTxModal("PAY", wk.id, row.netDue > 0 ? row.netDue : ""),
-                            className: "px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-[11px] cursor-pointer",
+                            className: "min-h-[38px] px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-[11px] cursor-pointer",
                             children: "✓ Trả lương"
                           }),
                           c.jsxs("button", {
                             type: "button",
+                            onClick: () => setExpandedPayrollId(isExpanded ? null : wk.id),
+                            className: "min-h-[38px] px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-[11px] cursor-pointer",
+                            children: [isExpanded ? "▲ Ẩn chi tiết" : `📅 Chi tiết (${row.dayLogs.length})`]
+                          }),
+                          c.jsxs("button", {
+                            type: "button",
                             onClick: () => handleSendPayslipZalo(row),
-                            className: "px-3 py-1.5 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-[11px] flex items-center gap-1 cursor-pointer ml-auto",
-                            children: [c.jsx(ZaloIcon, { size: 13 }), "Gửi phiếu lương"]
+                            className: "min-h-[38px] px-3 py-1.5 bg-[#0068FF] hover:bg-[#0052cc] text-white rounded-xl font-black text-[11px] flex items-center gap-1 cursor-pointer ml-auto",
+                            children: [c.jsx(ZaloIcon, { size: 13 }), "Gửi phiếu"]
                           })
                         ]
                       })
@@ -20720,10 +23893,10 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                               children: [
                                 c.jsx("span", { className: `px-2 py-0.5 rounded text-[10px] font-black uppercase ${item.txKind === "ADVANCE" ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300" : "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"}`, children: item.txKind === "ADVANCE" ? "Tạm ứng" : "Trả lương" }),
                                 c.jsx("span", { className: "font-black text-slate-900 dark:text-white", children: item.workerName || "Nhân công" }),
-                                item.financeTxId && c.jsx("span", { className: "text-[10px] font-bold text-emerald-600 dark:text-emerald-400", children: "• Đã vào Tài chính" })
+                                item.financeTxId && c.jsx("span", { className: "text-[10px] font-bold text-emerald-600 dark:text-emerald-400", children: "· Đã vào Tài chính" })
                               ]
                             }),
-                            c.jsxs("p", { className: "text-[11px] text-slate-500 truncate mt-0.5", children: [item.date, item.note ? ` • ${item.note}` : ""] })
+                            c.jsxs("p", { className: "text-[11px] text-slate-500 truncate mt-0.5", children: [item.date, item.note ? ` · ${item.note}` : ""] })
                           ]
                         }),
                         c.jsxs("div", {
@@ -20768,19 +23941,41 @@ const Xm_WorkersScreen = ({ setRoute }) => {
               c.jsxs("div", {
                 className: "space-y-2.5 text-xs",
                 children: [
+                  // 1-Tap Wage Preset Chips
+                  c.jsxs("div", {
+                    className: "space-y-1",
+                    children: [
+                      c.jsx("span", { className: "text-[10px] font-bold text-slate-400 uppercase block", children: "Chọn nhanh mẫu công & đơn giá:" }),
+                      c.jsx("div", {
+                        className: "flex flex-wrap gap-1.5",
+                        children: [
+                          { label: "Gạt tôm 350k/ngày", role: "HARVEST", payType: "DAY", baseRate: "350000", overtimeRate: "50000" },
+                          { label: "Ghe/Xe 500k/chuyến", role: "BOAT", payType: "TRIP", baseRate: "500000", overtimeRate: "0" },
+                          { label: "Khoán 3.000đ/kg", role: "CARRY", payType: "KG", baseRate: "3000", overtimeRate: "0" },
+                          { label: "Theo giờ 45k/h", role: "HARVEST", payType: "HOUR", baseRate: "45000", overtimeRate: "55000" }
+                        ].map(pre => c.jsx("button", {
+                          type: "button",
+                          onClick: () => setWorkerForm(prev => ({ ...prev, role: pre.role, payType: pre.payType, baseRate: pre.baseRate, overtimeRate: pre.overtimeRate })),
+                          className: "px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl font-bold text-[11px] cursor-pointer",
+                          children: pre.label
+                        }, pre.label))
+                      })
+                    ]
+                  }),
+
                   c.jsxs("div", {
                     className: "grid grid-cols-2 gap-2",
                     children: [
                       c.jsxs("div", {
                         children: [
                           c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Họ và tên (*)" }),
-                          c.jsx("input", { type: "text", value: workerForm.name, onChange: e => setWorkerForm({ ...workerForm, name: e.target.value }), placeholder: "Vd: Anh Ba Tèo", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none" })
+                          c.jsx("input", { type: "text", value: workerForm.name, onChange: e => setWorkerForm({ ...workerForm, name: e.target.value }), placeholder: "Vd: Anh Ba Tèo", className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none" })
                         ]
                       }),
                       c.jsxs("div", {
                         children: [
                           c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Số điện thoại (Zalo)" }),
-                          c.jsx("input", { type: "tel", value: workerForm.phone, onChange: e => setWorkerForm({ ...workerForm, phone: e.target.value }), placeholder: "09xx...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none" })
+                          c.jsx("input", { type: "tel", value: workerForm.phone, onChange: e => setWorkerForm({ ...workerForm, phone: e.target.value }), placeholder: "09xx...", className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none" })
                         ]
                       })
                     ]
@@ -20794,7 +23989,7 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                           c.jsxs("select", {
                             value: workerForm.role,
                             onChange: e => setWorkerForm({ ...workerForm, role: e.target.value }),
-                            className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none",
+                            className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none",
                             children: [
                               c.jsx("option", { value: "HARVEST", children: "Đội gạt tôm / Kéo lưới" }),
                               c.jsx("option", { value: "BOAT", children: "Tài xế ghe / Xe oxy" }),
@@ -20809,7 +24004,7 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                           c.jsxs("select", {
                             value: workerForm.payType,
                             onChange: e => setWorkerForm({ ...workerForm, payType: e.target.value }),
-                            className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none",
+                            className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none",
                             children: [
                               c.jsx("option", { value: "DAY", children: "Theo ngày công" }),
                               c.jsx("option", { value: "HOUR", children: "Theo giờ" }),
@@ -20827,13 +24022,13 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                       c.jsxs("div", {
                         children: [
                           c.jsxs("label", { className: "font-bold text-slate-500 block mb-1", children: ["Đơn giá (", PAY_UNIT_SUFFIX[workerForm.payType || "DAY"], ")"] }),
-                          c.jsx("input", { type: "number", value: workerForm.baseRate, onChange: e => setWorkerForm({ ...workerForm, baseRate: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums outline-none" })
+                          c.jsx("input", { type: "number", value: workerForm.baseRate, onChange: e => setWorkerForm({ ...workerForm, baseRate: e.target.value }), className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums outline-none" })
                         ]
                       }),
                       c.jsxs("div", {
                         children: [
                           c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Đơn giá tăng ca (đ/giờ)" }),
-                          c.jsx("input", { type: "number", value: workerForm.overtimeRate, onChange: e => setWorkerForm({ ...workerForm, overtimeRate: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums outline-none" })
+                          c.jsx("input", { type: "number", value: workerForm.overtimeRate, onChange: e => setWorkerForm({ ...workerForm, overtimeRate: e.target.value }), className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums outline-none" })
                         ]
                       })
                     ]
@@ -20841,7 +24036,7 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                   c.jsxs("div", {
                     children: [
                       c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Ghi chú / Tay nghề" }),
-                      c.jsx("input", { type: "text", value: workerForm.note, onChange: e => setWorkerForm({ ...workerForm, note: e.target.value }), placeholder: "Vd: Kéo lưới giỏi, có xe máy...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold outline-none" })
+                      c.jsx("input", { type: "text", value: workerForm.note, onChange: e => setWorkerForm({ ...workerForm, note: e.target.value }), placeholder: "Vd: Kéo lưới giỏi, có xe máy...", className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold outline-none" })
                     ]
                   })
                 ]
@@ -20849,8 +24044,8 @@ const Xm_WorkersScreen = ({ setRoute }) => {
               c.jsxs("div", {
                 className: "flex gap-2 pt-2",
                 children: [
-                  c.jsx("button", { type: "button", onClick: () => setWorkerModalOpen(false), className: "flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
-                  c.jsx("button", { type: "button", onClick: handleSaveWorker, className: "flex-[2] py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "💾 Lưu Nhân Công" })
+                  c.jsx("button", { type: "button", onClick: () => setWorkerModalOpen(false), className: "flex-1 min-h-[44px] py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                  c.jsx("button", { type: "button", onClick: handleSaveWorker, className: "flex-[2] min-h-[44px] py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "💾 Lưu Nhân Công" })
                 ]
               })
             ]
@@ -20875,148 +24070,254 @@ const Xm_WorkersScreen = ({ setRoute }) => {
                 ]
               }),
 
-              c.jsxs("div", {
-                className: "space-y-2.5 text-xs",
-                children: [
-                  pondOptions.length > 0 && c.jsxs("div", {
-                    children: [
-                      c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Chọn Ao Tôm / Hợp Đồng Đã Ghim:" }),
-                      c.jsxs("select", {
-                        value: `${dispatchForm.pondId}::${dispatchForm.contractId}`,
-                        onChange: (e) => handleSelectPondForDispatch(e.target.value),
-                        className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none",
-                        children: [
-                          c.jsx("option", { value: "::", children: "-- Nhập ao tùy chỉnh --" }),
-                          pondOptions.map((opt, idx) => c.jsx("option", {
-                            value: `${opt.pondId}::${opt.contractId}`,
-                            children: `${opt.pondName}${opt.lat && opt.lng ? " ✓GPS" : " (Chưa GPS)"}${opt.estimatedYield ? ` • ~${Number(opt.estimatedYield).toLocaleString()}kg` : ""}`
-                          }, idx))
-                        ]
-                      })
-                    ]
-                  }),
-
-                  c.jsxs("div", {
-                    className: "grid grid-cols-2 gap-2",
-                    children: [
-                      c.jsxs("div", {
-                        children: [
-                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Tên chủ ao / Địa điểm (*)" }),
-                          c.jsx("input", { type: "text", value: dispatchForm.pondName, onChange: e => setDispatchForm({ ...dispatchForm, pondName: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
-                        ]
-                      }),
-                      c.jsxs("div", {
-                        children: [
-                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Tổ công việc" }),
-                          c.jsxs("select", {
-                            value: dispatchForm.roleId,
-                            onChange: e => {
-                              const rid = e.target.value;
-                              const pObj = (typeof WORKER_ROLE_PRESETS_V4 !== "undefined" ? WORKER_ROLE_PRESETS_V4 : []).find(x => x.id === rid);
-                              setDispatchForm(prev => ({ ...prev, roleId: rid, tools: pObj ? pObj.defaultTools : prev.tools }));
-                            },
-                            className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold",
-                            children: [
-                              c.jsx("option", { value: "HARVEST", children: "Đội gạt tôm / Kéo lưới" }),
-                              c.jsx("option", { value: "BOAT", children: "Tài xế ghe / Xe oxy" }),
-                              c.jsx("option", { value: "CARRY", children: "Đội cân & Bốc xếp" })
-                            ]
-                          })
-                        ]
-                      }),
-                      c.jsxs("div", {
-                        children: [
-                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Ngày thu hoạch" }),
-                          c.jsx("input", { type: "date", value: dispatchForm.scheduledDate, onChange: e => setDispatchForm({ ...dispatchForm, scheduledDate: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
-                        ]
-                      }),
-                      c.jsxs("div", {
-                        children: [
-                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Giờ tập trung" }),
-                          c.jsx("input", { type: "time", value: dispatchForm.assemblyTime, onChange: e => setDispatchForm({ ...dispatchForm, assemblyTime: e.target.value }), className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
-                        ]
-                      })
-                    ]
-                  }),
-
-                  // GPS Pin Box inside Dispatch Modal
-                  c.jsxs("div", {
-                    className: "p-3 bg-blue-50/70 dark:bg-blue-950/30 rounded-2xl border border-blue-200 dark:border-blue-800 flex flex-wrap items-center justify-between gap-2",
-                    children: [
-                      dispatchForm.lat && dispatchForm.lng ? c.jsxs("div", {
-                        children: [
-                          c.jsx("span", { className: "text-[10px] font-black uppercase text-blue-800 dark:text-blue-300 block", children: "📍 Tọa độ bờ ao đã ghim:" }),
-                          c.jsx("span", { className: "font-mono font-bold tabular-nums text-slate-900 dark:text-white", children: `${Number(dispatchForm.lat).toFixed(6)}, ${Number(dispatchForm.lng).toFixed(6)}` })
-                        ]
-                      }) : c.jsx("span", { className: "font-bold text-amber-700 dark:text-amber-300", children: "⚠️ Chưa có tọa độ GPS ao — hãy ghim ngay!" }),
-                      c.jsx("button", {
-                        type: "button",
-                        onClick: () => setDispatchGpsPickerOpen(true),
-                        className: "px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[11px] uppercase cursor-pointer",
-                        children: dispatchForm.lat && dispatchForm.lng ? "🛰️ Chỉnh ghim bản đồ" : "🛰️ Ghim vị trí trên bản đồ"
-                      })
-                    ]
-                  }),
-
-                  // Multi-select Workers in crew
-                  c.jsxs("div", {
-                    className: "space-y-1.5",
-                    children: [
-                      c.jsxs("div", {
-                        className: "flex items-center justify-between",
-                        children: [
-                          c.jsx("label", { className: "font-bold text-slate-500 uppercase text-[11px]", children: "Chọn công nhân trong tổ:" }),
-                          c.jsxs("span", { className: "text-[11px] font-black text-orange-600", children: ["Đã chọn ", dispatchForm.workerIds.length, " người"] })
-                        ]
-                      }),
-                      workersData.workers.length === 0 ? c.jsx("p", {
-                        className: "text-[11px] text-slate-400 italic",
-                        children: "Chưa có nhân công nào trong danh sách. Bạn vẫn có thể lưu lệnh điều động trước."
-                      }) : c.jsx("div", {
-                        className: "flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-2 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700",
-                        children: workersData.workers.map(wk => {
-                          const picked = dispatchForm.workerIds.includes(wk.id);
-                          return c.jsx("button", {
-                            type: "button",
-                            onClick: () => setDispatchForm(prev => ({
-                              ...prev,
-                              workerIds: picked ? prev.workerIds.filter(id => id !== wk.id) : [...prev.workerIds, wk.id]
-                            })),
-                            className: `px-2.5 py-1.5 rounded-xl text-[11px] font-bold border cursor-pointer ${picked ? "bg-orange-600 text-white border-orange-600" : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
-                            children: `${picked ? "✓ " : ""}${wk.name} (${WORKER_ROLE_META[wk.role || "HARVEST"]?.short || ""})`
-                          }, wk.id);
+              (() => {
+                const modalConflicts = getWorkerDispatchesOnDate(dispatchForm.scheduledDate, editingDispatchId);
+                const wSearchQ = dispatchWorkerSearch.trim().toLowerCase();
+                const modalWorkers = workersData.workers.filter(wk => !wSearchQ || (wk.name || "").toLowerCase().includes(wSearchQ));
+                const pickByFilter = (fn) => {
+                  const ids = workersData.workers.filter(fn).map(wk => wk.id);
+                  setDispatchForm(prev => ({ ...prev, workerIds: Array.from(new Set([...prev.workerIds, ...ids])) }));
+                };
+                return c.jsxs("div", {
+                  className: "space-y-2.5 text-xs",
+                  children: [
+                    pondOptions.length > 0 && c.jsxs("div", {
+                      children: [
+                        c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Chọn Ao Tôm / Hợp Đồng Đã Ghim:" }),
+                        c.jsxs("select", {
+                          value: `${dispatchForm.pondId}::${dispatchForm.contractId}`,
+                          onChange: (e) => handleSelectPondForDispatch(e.target.value),
+                          className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold outline-none",
+                          children: [
+                            c.jsx("option", { value: "::", children: "-- Nhập ao tùy chỉnh --" }),
+                            pondOptions.map((opt, idx) => c.jsx("option", {
+                              value: `${opt.pondId}::${opt.contractId}`,
+                              children: `${opt.pondName}${opt.lat && opt.lng ? " ✓GPS" : " (Chưa GPS)"}${opt.estimatedYield ? ` · ~${Number(opt.estimatedYield).toLocaleString()}kg` : ""}`
+                            }, idx))
+                          ]
                         })
-                      })
-                    ]
-                  }),
+                      ]
+                    }),
 
-                  c.jsxs("div", {
-                    className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
-                    children: [
-                      c.jsxs("div", {
-                        children: [
-                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Chỉ dẫn đường vào ao" }),
-                          c.jsx("input", { type: "text", value: dispatchForm.accessNote, onChange: e => setDispatchForm({ ...dispatchForm, accessNote: e.target.value }), placeholder: "Vd: Qua cầu sắt rẽ phải...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold" })
-                        ]
-                      }),
-                      c.jsxs("div", {
-                        children: [
-                          c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Dặn dò tổ gạt tôm" }),
-                          c.jsx("input", { type: "text", value: dispatchForm.customNote, onChange: e => setDispatchForm({ ...dispatchForm, customNote: e.target.value }), placeholder: "Vd: Mang thêm 2 bình oxy...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold" })
-                        ]
-                      })
-                    ]
-                  })
-                ]
-              }),
+                    c.jsxs("div", {
+                      className: "grid grid-cols-2 gap-2",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Tên chủ ao / Địa điểm (*)" }),
+                            c.jsx("input", { type: "text", value: dispatchForm.pondName, onChange: e => setDispatchForm({ ...dispatchForm, pondName: e.target.value }), className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "SĐT Chủ ao" }),
+                            c.jsx("input", { type: "tel", value: dispatchForm.farmerPhone, onChange: e => setDispatchForm({ ...dispatchForm, farmerPhone: e.target.value }), placeholder: "09xx...", className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Tổ công việc" }),
+                            c.jsxs("select", {
+                              value: dispatchForm.roleId,
+                              onChange: e => {
+                                const rid = e.target.value;
+                                const pObj = (typeof WORKER_ROLE_PRESETS_V4 !== "undefined" ? WORKER_ROLE_PRESETS_V4 : []).find(x => x.id === rid);
+                                setDispatchForm(prev => ({ ...prev, roleId: rid, tools: pObj ? pObj.defaultTools : prev.tools }));
+                              },
+                              className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold",
+                              children: [
+                                c.jsx("option", { value: "HARVEST", children: "Đội gạt tôm / Kéo lưới" }),
+                                c.jsx("option", { value: "BOAT", children: "Tài xế ghe / Xe oxy" }),
+                                c.jsx("option", { value: "CARRY", children: "Đội cân & Bốc xếp" })
+                              ]
+                            })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Ước lượng sản lượng (kg)" }),
+                            c.jsx("input", { type: "number", value: dispatchForm.estimatedYield, onChange: e => setDispatchForm({ ...dispatchForm, estimatedYield: e.target.value }), placeholder: "Vd: 500", className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-black tabular-nums" })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Ngày thu hoạch" }),
+                            c.jsx("input", { type: "date", value: dispatchForm.scheduledDate, onChange: e => setDispatchForm({ ...dispatchForm, scheduledDate: e.target.value }), className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Giờ tập trung" }),
+                            c.jsx("input", { type: "time", value: dispatchForm.assemblyTime, onChange: e => setDispatchForm({ ...dispatchForm, assemblyTime: e.target.value }), className: "w-full min-h-[42px] p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-bold" })
+                          ]
+                        })
+                      ]
+                    }),
 
-              c.jsxs("div", {
-                className: "flex gap-2 pt-2",
-                children: [
-                  c.jsx("button", { type: "button", onClick: () => setDispatchModalOpen(false), className: "flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
-                  c.jsx("button", { type: "button", onClick: handleSaveDispatch, className: "flex-[2] py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "💾 Lưu Lệnh Điều Động" })
-                ]
-              })
+                    // Status Selector
+                    c.jsxs("div", {
+                      className: "flex items-center justify-between gap-2 bg-slate-50 dark:bg-slate-800/70 p-2 rounded-xl border border-slate-200 dark:border-slate-700",
+                      children: [
+                        c.jsx("span", { className: "text-[11px] font-bold text-slate-500 uppercase", children: "Trạng thái:" }),
+                        c.jsx("div", {
+                          className: "flex gap-1",
+                          children: [
+                            { id: "SCHEDULED", label: "Chờ xuất phát" },
+                            { id: "ON_SITE", label: "Đang đi ao" },
+                            { id: "DONE", label: "Đã xong" }
+                          ].map(st => c.jsx("button", {
+                            type: "button",
+                            onClick: () => setDispatchForm({ ...dispatchForm, status: st.id }),
+                            className: `px-2.5 py-1.5 rounded-lg text-[11px] font-black cursor-pointer ${dispatchForm.status === st.id ? "bg-orange-600 text-white" : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"}`,
+                            children: st.label
+                          }, st.id))
+                        })
+                      ]
+                    }),
+
+                    // GPS Pin Box inside Dispatch Modal
+                    c.jsxs("div", {
+                      className: "p-3 bg-blue-50/70 dark:bg-blue-950/30 rounded-2xl border border-blue-200 dark:border-blue-800 flex flex-wrap items-center justify-between gap-2",
+                      children: [
+                        dispatchForm.lat && dispatchForm.lng ? c.jsxs("div", {
+                          children: [
+                            c.jsx("span", { className: "text-[10px] font-black uppercase text-blue-800 dark:text-blue-300 block", children: "📍 Tọa độ bờ ao đã ghim:" }),
+                            c.jsx("span", { className: "font-mono font-bold tabular-nums text-slate-900 dark:text-white", children: `${Number(dispatchForm.lat).toFixed(6)}, ${Number(dispatchForm.lng).toFixed(6)}` })
+                          ]
+                        }) : c.jsx("span", { className: "font-bold text-amber-700 dark:text-amber-300", children: "⚠️ Chưa có tọa độ GPS ao — hãy ghim ngay!" }),
+                        c.jsx("button", {
+                          type: "button",
+                          onClick: () => setDispatchGpsPickerOpen(true),
+                          className: "min-h-[40px] px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-[11px] uppercase cursor-pointer",
+                          children: dispatchForm.lat && dispatchForm.lng ? "🛰️ Chỉnh ghim bản đồ" : "🛰️ Ghim vị trí trên bản đồ"
+                        })
+                      ]
+                    }),
+
+                    // Multi-select Workers in crew with Bulk Picks & Conflict Detection
+                    c.jsxs("div", {
+                      className: "space-y-1.5",
+                      children: [
+                        c.jsxs("div", {
+                          className: "flex items-center justify-between gap-2",
+                          children: [
+                            c.jsx("label", { className: "font-bold text-slate-500 uppercase text-[11px]", children: "Chọn công nhân trong tổ:" }),
+                            c.jsxs("span", { className: "text-[11px] font-black text-orange-600 tabular-nums", children: ["Đã chọn ", dispatchForm.workerIds.length, " người"] })
+                          ]
+                        }),
+                        workersData.workers.length > 0 && c.jsxs("div", {
+                          className: "flex flex-wrap gap-1",
+                          children: [
+                            c.jsx("button", { type: "button", onClick: () => pickByFilter(wk => (wk.status || "AVAILABLE") === "AVAILABLE"), className: "px-2 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-lg text-[10px] font-black cursor-pointer", children: "✓ Chọn hết Rảnh" }),
+                            c.jsx("button", { type: "button", onClick: () => pickByFilter(wk => wk.role === "HARVEST"), className: "px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg text-[10px] font-bold cursor-pointer", children: "+ Gạt tôm" }),
+                            c.jsx("button", { type: "button", onClick: () => pickByFilter(wk => wk.role === "BOAT"), className: "px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg text-[10px] font-bold cursor-pointer", children: "+ Ghe/Xe" }),
+                            c.jsx("button", { type: "button", onClick: () => pickByFilter(wk => wk.role === "CARRY"), className: "px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg text-[10px] font-bold cursor-pointer", children: "+ Cân/Bốc" }),
+                            dispatchForm.workerIds.length > 0 && c.jsx("button", { type: "button", onClick: () => setDispatchForm(prev => ({ ...prev, workerIds: [] })), className: "px-2 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-600 rounded-lg text-[10px] font-bold cursor-pointer ml-auto", children: "Bỏ chọn" })
+                          ]
+                        }),
+                        workersData.workers.length > 4 && c.jsx("input", {
+                          type: "text",
+                          value: dispatchWorkerSearch,
+                          onChange: e => setDispatchWorkerSearch(e.target.value),
+                          placeholder: "Tìm nhanh tên thợ...",
+                          className: "w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-bold outline-none"
+                        }),
+                        workersData.workers.length === 0 ? c.jsx("p", {
+                          className: "text-[11px] text-slate-400 italic",
+                          children: "Chưa có nhân công nào trong danh sách. Bạn vẫn có thể lưu lệnh điều động trước."
+                        }) : c.jsx("div", {
+                          className: "flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-2 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700",
+                          children: modalWorkers.map(wk => {
+                            const picked = dispatchForm.workerIds.includes(wk.id);
+                            const busy = modalConflicts[wk.id];
+                            return c.jsxs("button", {
+                              type: "button",
+                              onClick: () => setDispatchForm(prev => ({
+                                ...prev,
+                                workerIds: picked ? prev.workerIds.filter(id => id !== wk.id) : [...prev.workerIds, wk.id]
+                              })),
+                              className: `min-h-[36px] px-2.5 py-1 rounded-xl text-[11px] font-bold border cursor-pointer ${picked ? "bg-orange-600 text-white border-orange-600" : busy ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700" : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"}`,
+                              children: [
+                                picked ? "✓ " : "",
+                                wk.name,
+                                ` (${WORKER_ROLE_META[wk.role || "HARVEST"]?.short || ""})`,
+                                busy ? ` · Bận: ${busy[0]}` : ""
+                              ]
+                            }, wk.id);
+                          })
+                        })
+                      ]
+                    }),
+
+                    // Tools Checklist + Quick Add
+                    c.jsxs("div", {
+                      className: "space-y-1.5",
+                      children: [
+                        c.jsx("label", { className: "font-bold text-slate-500 uppercase text-[11px] block", children: "Dụng cụ mang theo:" }),
+                        c.jsx("div", {
+                          className: "flex flex-wrap gap-1.5",
+                          children: (dispatchForm.tools || []).map((tl, tIdx) => c.jsxs("button", {
+                            type: "button",
+                            onClick: () => setDispatchForm(prev => ({ ...prev, tools: prev.tools.filter((_, i) => i !== tIdx) })),
+                            className: "px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 text-slate-700 dark:text-slate-200 hover:text-rose-600 rounded-lg text-[11px] font-bold cursor-pointer",
+                            title: "Bấm để bỏ",
+                            children: [tl, " ✕"]
+                          }, tIdx))
+                        }),
+                        c.jsxs("div", {
+                          className: "flex gap-1.5",
+                          children: [
+                            c.jsx("input", {
+                              type: "text",
+                              value: newToolText,
+                              onChange: e => setNewToolText(e.target.value),
+                              placeholder: "Thêm dụng cụ (vd: Bình oxy, bạt lót...)",
+                              className: "flex-1 px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[11px] font-semibold outline-none"
+                            }),
+                            c.jsx("button", {
+                              type: "button",
+                              onClick: () => {
+                                const val = newToolText.trim();
+                                if (!val) return;
+                                setDispatchForm(prev => ({ ...prev, tools: [...(prev.tools || []), val] }));
+                                setNewToolText("");
+                              },
+                              className: "px-3 py-1.5 bg-slate-800 dark:bg-slate-700 text-white rounded-xl text-[11px] font-black cursor-pointer",
+                              children: "+ Thêm"
+                            })
+                          ]
+                        })
+                      ]
+                    }),
+
+                    c.jsxs("div", {
+                      className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
+                      children: [
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Chỉ dẫn đường vào ao" }),
+                            c.jsx("input", { type: "text", value: dispatchForm.accessNote, onChange: e => setDispatchForm({ ...dispatchForm, accessNote: e.target.value }), placeholder: "Vd: Qua cầu sắt rẽ phải...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold" })
+                          ]
+                        }),
+                        c.jsxs("div", {
+                          children: [
+                            c.jsx("label", { className: "font-bold text-slate-500 block mb-1", children: "Dặn dò tổ gạt tôm" }),
+                            c.jsx("input", { type: "text", value: dispatchForm.customNote, onChange: e => setDispatchForm({ ...dispatchForm, customNote: e.target.value }), placeholder: "Vd: Mang thêm 2 bình oxy...", className: "w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-semibold" })
+                          ]
+                        })
+                      ]
+                    }),
+
+                    c.jsxs("div", {
+                      className: "flex gap-2 pt-2",
+                      children: [
+                        c.jsx("button", { type: "button", onClick: () => setDispatchModalOpen(false), className: "flex-1 min-h-[44px] py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                        c.jsx("button", { type: "button", onClick: handleSaveDispatch, className: "flex-[2] min-h-[44px] py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer", children: "💾 Lưu Lệnh Điều Động" })
+                      ]
+                    })
+                  ]
+                });
+              })()
             ]
           })
         ]
