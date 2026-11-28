@@ -296,7 +296,7 @@ Error generating stack: `+a.message+`
  *
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
- */const Zd=K("Zap",[["path",{d:"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",key:"1xq2db"}]]),Tm=({children:S,activeRoute:b,setRoute:p,title:f,role:O,onLogout:D})=>{const[U,Y]=w.useState(!1);const touchRef=w.useRef({startX:0,startY:0});const A=b===re.DASHBOARD;const _=[{route:re.DASHBOARD,label:"Bàn làm việc",icon:c.jsx(sm,{size:22}),roles:["OWNER","FARMER"]},{route:re.OVERVIEW,label:"Tổng quan",icon:c.jsx(I1,{size:22}),roles:["OWNER","FARMER"]},{route:re.SALES,label:"Bán ra & Xuất tôm",icon:c.jsx(F1,{size:22}),roles:["OWNER","FARMER"]},{route:re.FINANCE,label:"Tài chính",icon:c.jsx(Ds,{size:22}),roles:["OWNER","FARMER"]},{route:re.CUSTOMERS,label:"Khách hàng",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},{route:re.FARMERS,label:"Danh sách ao tôm",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},{route:re.WORKERS,label:"Công nhân",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},/* Vehicles menu tab removed */{route:re.HISTORY,label:"Lịch sử thu mua",icon:c.jsx(Fd,{size:22}),roles:["OWNER","FARMER"]},{route:re.INFO_CONFIG,label:"Thiết lập thông tin",icon:c.jsx(im,{size:22}),roles:["OWNER","FARMER"]},{route:re.SETTINGS,label:"Cấu hình hệ thống",icon:c.jsx(ym,{size:22}),roles:["OWNER","FARMER"]}].filter(z=>z.roles.includes(O));return c.jsxs("div",{className:"flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden transition-colors relative",onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(!U&&touchRef.current.startX<35&&dx>45&&dy<80){Y(!0)}},children:[A&&c.jsxs("header",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] text-white p-4 flex items-center justify-between shadow-lg z-30 animate-in slide-in-from-top duration-300",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("button",{onClick:()=>Y(!0),className:"p-1.5 hover:bg-green-700 dark:hover:bg-green-900 rounded-xl active:scale-90 transition-all",children:c.jsx(dm,{size:28})}),c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shadow-sm"}),c.jsxs("div",{children:[c.jsx("h1",{className:"text-xl font-black uppercase tracking-tight",children:"Vua Tôm Càng Xanh"}),c.jsx("p",{className:"text-[10px] uppercase font-bold opacity-70 tracking-widest",children:f})]})]}),c.jsx("div",{className:"flex items-center gap-2",children:c.jsx("span",{className:"text-[10px] font-black bg-white/20 px-2 py-1 rounded uppercase",children:O==="OWNER"?"Chủ Vựa":"Nông Dân"})})]}),U&&c.jsx("div",{className:"fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-in fade-in duration-200",onClick:()=>Y(!1)}),c.jsxs("aside",{onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(dx<-40&&dy<120){Y(!1)}},className:`fixed top-0 left-0 h-full max-h-[100dvh] w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 transform transition-all duration-300 ease-in-out shadow-2xl flex flex-col overflow-hidden ${U?"translate-x-0":"-translate-x-full pointer-events-none"}`,children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-6 text-white relative shrink-0",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-14 h-14 object-contain rounded-2xl mb-3 shadow-md bg-white/10 p-1"}),c.jsx("h2",{className:"text-3xl font-black italic mb-1 uppercase tracking-tighter",children:"Tôm Càng Xanh Pro"}),c.jsx("p",{className:"text-xs opacity-70",children:"Quản lý thủy sản & nông sản hiện đại"}),c.jsx("button",{onClick:()=>Y(!1),className:"absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full active:scale-90 transition-all",children:c.jsx(_a,{size:24})})]}),c.jsxs("nav",{className:"p-4 space-y-2 mt-1 flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y pb-28",children:[_.map(z=>c.jsxs("button",{onClick:()=>{p(z.route);Y(!1)},className:`w-full flex items-center gap-4 p-4 rounded-2xl font-bold transition-all ${b===z.route?"bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-400 font-black shadow-sm":"text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700 active:scale-[0.98]"}`,children:[c.jsx("span",{className:b===z.route?"text-green-600 dark:text-green-400":"text-gray-400 dark:text-gray-500",children:z.icon}),z.label]},z.route)),c.jsx("div",{className:"pt-4 mt-4 border-t dark:border-gray-800",children:c.jsxs("button",{onClick:()=>{Y(!1);D()},className:"w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95 transition-all",children:[c.jsx(rm,{size:22})," Đăng xuất"]})})]})]}),c.jsx("main",{className:"flex-1 overflow-auto bg-gray-50 dark:bg-[#121212]",children:S})]})},Ot={SESSIONS:"annong_sessions",FARMERS:"annong_farmers",VEHICLES:"annong_vehicles",SETTINGS:"annong_settings",LOGS:"annong_logs",SALES:"annong_sales",BUYERS:"annong_buyers"},Em={apiKey:"AIzaSyD8GC7v21FaMvs8Wgrq3RXmeKnrrO2wpEo",authDomain:"appcan-2c24e.firebaseapp.com",projectId:"appcan-2c24e",storageBucket:"appcan-2c24e.firebasestorage.app",messagingSenderId:"633698227291",appId:"1:633698227291:web:b3cbc303311dd125c75b7e"},eo=E1(Em),Wu=null/* Disabled dead remote Firestore to eliminate backend timeout */,Pu=A1(eo);const sanitizeForFirestore = (val) => {
+ */const Zd=K("Zap",[["path",{d:"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",key:"1xq2db"}]]),Tm=({children:S,activeRoute:b,setRoute:p,title:f,role:O,onLogout:D})=>{const[U,Y]=w.useState(!1);const touchRef=w.useRef({startX:0,startY:0});const A=b===re.DASHBOARD;const _=[{route:re.DASHBOARD,label:"Bàn làm việc",icon:c.jsx(sm,{size:22}),roles:["OWNER","FARMER"]},{route:re.OVERVIEW,label:"Tổng quan",icon:c.jsx(I1,{size:22}),roles:["OWNER","FARMER"]},{route:re.SALES,label:"Bán ra & Xuất tôm",icon:c.jsx(F1,{size:22}),roles:["OWNER","FARMER"]},{route:re.FINANCE,label:"Tài chính",icon:c.jsx(Ds,{size:22}),roles:["OWNER","FARMER"]},{route:re.CUSTOMERS,label:"Khách hàng",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},{route:re.FARMERS,label:"Danh sách ao tôm",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},{route:re.WORKERS,label:"Công nhân",icon:c.jsx(Os,{size:22}),roles:["OWNER","FARMER"]},/* Vehicles menu tab removed */{route:re.HISTORY,label:"Lịch sử thu mua",icon:c.jsx(Fd,{size:22}),roles:["OWNER","FARMER"]},{route:re.INFO_CONFIG,label:"Thiết lập thông tin",icon:c.jsx(im,{size:22}),roles:["OWNER","FARMER"]},{route:re.SETTINGS,label:"Cấu hình hệ thống",icon:c.jsx(ym,{size:22}),roles:["OWNER","FARMER"]}].filter(z=>z.roles.includes(O));return c.jsxs("div",{className:"flex flex-col h-screen bg-gray-50 dark:bg-[#121212] overflow-hidden transition-colors relative",onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(!U&&touchRef.current.startX<35&&dx>45&&dy<80){Y(!0)}},children:[A&&c.jsxs("header",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] text-white p-4 flex items-center justify-between shadow-lg z-30 animate-in slide-in-from-top duration-300",children:[c.jsxs("div",{className:"flex items-center gap-4",children:[c.jsx("button",{onClick:()=>Y(!0),className:"p-1.5 hover:bg-green-700 dark:hover:bg-green-900 rounded-xl active:scale-90 transition-all",children:c.jsx(dm,{size:28})}),c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-9 h-9 object-contain rounded-xl bg-white/10 p-0.5 shadow-sm"}),c.jsxs("div",{children:[c.jsx("h1",{className:"text-xl font-black uppercase tracking-tight",children:"Vua Tôm Càng Xanh"}),c.jsx("p",{className:"text-[10px] uppercase font-bold opacity-70 tracking-widest",children:f})]})]}),c.jsx("div",{className:"flex items-center gap-2",children:c.jsx("span",{className:"text-[10px] font-black bg-white/20 px-2 py-1 rounded uppercase",children:O==="OWNER"?"Chủ Vựa":"Nông Dân"})})]}),U&&c.jsx("div",{className:"fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-in fade-in duration-200",onClick:()=>Y(!1)}),c.jsxs("aside",{onTouchStart:e=>{touchRef.current={startX:e.touches[0].clientX,startY:e.touches[0].clientY}},onTouchEnd:e=>{if(!touchRef.current)return;const dx=e.changedTouches[0].clientX-touchRef.current.startX;const dy=Math.abs(e.changedTouches[0].clientY-touchRef.current.startY);if(dx<-40&&dy<120){Y(!1)}},className:`fixed top-0 left-0 h-full max-h-[100dvh] w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 transform transition-all duration-300 ease-in-out shadow-2xl flex flex-col overflow-hidden ${U?"translate-x-0":"-translate-x-full pointer-events-none"}`,children:[c.jsxs("div",{className:"bg-[#2e7d32] dark:bg-[#1b4d1e] p-6 text-white relative shrink-0",children:[c.jsx("img",{src:"https://iili.io/nue4riJ.png",alt:"Logo",className:"w-14 h-14 object-contain rounded-2xl mb-3 shadow-md bg-white/10 p-1"}),c.jsx("h2",{className:"text-3xl font-black italic mb-1 uppercase tracking-tighter",children:"Tôm Càng Xanh Pro"}),c.jsx("p",{className:"text-xs opacity-70",children:"Quản lý thủy sản & nông sản hiện đại"}),c.jsx("button",{onClick:()=>Y(!1),className:"absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full active:scale-90 transition-all",children:c.jsx(_a,{size:24})})]}),c.jsxs("nav",{className:"p-4 space-y-2 mt-1 flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y pb-28",children:[_.map(z=>c.jsxs("button",{onClick:()=>{p(z.route);Y(!1)},className:`w-full flex items-center gap-4 p-4 rounded-2xl font-bold transition-all ${b===z.route?"bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-400 font-black shadow-sm":"text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700 active:scale-[0.98]"}`,children:[c.jsx("span",{className:b===z.route?"text-green-600 dark:text-green-400":"text-gray-400 dark:text-gray-500",children:z.icon}),z.label]},z.route)),c.jsx("div",{className:"pt-4 mt-4 border-t dark:border-gray-800",children:c.jsxs("button",{onClick:()=>{Y(!1);D()},className:"w-full flex items-center gap-4 p-4 rounded-2xl font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95 transition-all",children:[c.jsx(rm,{size:22})," Đăng xuất"]})})]})]}),c.jsx("main",{className:"flex-1 overflow-auto bg-gray-50 dark:bg-[#121212]",children:S})]})},Ot={SESSIONS:"annong_sessions",FARMERS:"annong_farmers",VEHICLES:"annong_vehicles",SETTINGS:"annong_settings",LOGS:"annong_logs",SALES:"annong_sales",BUYERS:"annong_buyers",TOMBSTONES:"annong_deleted_tombstones_v1"},Em={apiKey:"AIzaSyD8GC7v21FaMvs8Wgrq3RXmeKnrrO2wpEo",authDomain:"appcan-2c24e.firebaseapp.com",projectId:"appcan-2c24e",storageBucket:"appcan-2c24e.firebasestorage.app",messagingSenderId:"633698227291",appId:"1:633698227291:web:b3cbc303311dd125c75b7e"},eo=E1(Em),Wu=null/* Disabled dead remote Firestore to eliminate backend timeout */,Pu=A1(eo);const sanitizeForFirestore = (val) => {
   if (val === null || val === undefined || typeof val !== "object") {
     return val === undefined ? null : val;
   }
@@ -340,7 +340,7 @@ const deserializeFromFirestore = (val) => {
   return result;
 };
 
-class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0});if(p.billingHistory&&Array.isArray(p.billingHistory)){for(const O of p.billingHistory){O&&O.farmerPhone&&await this.pushToFarmerInbox(O);}}}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p));if(b===Ot.SETTINGS&&typeof document!=="undefined"){p&&p.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){console.warn("Storage save error",e)}emitAppDataUpdated_v4(b);const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(uidOverride){const f=this.getUser();const uid=uidOverride||(f&&f.uid);if(!uid||typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==uid)return;try{const p=this.getSessions(),dir=this.getFarmers(),veh=this.getVehicles();const sl=(this.getSales&&this.getSales())||JSON.parse(localStorage.getItem(Ot.SALES)||"[]");const fin=(this.getFinanceData&&this.getFinanceData())||JSON.parse(localStorage.getItem(Ot.FINANCE)||"null");const buy=(this.getBuyers&&this.getBuyers())||JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");const ctc=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");const prof=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");const wrk=(this.getWorkersData&&this.getWorkersData())||JSON.parse(localStorage.getItem(Ot.WORKERS)||"null");const D={user:f,lastUpdated:new Date().toISOString(),farmerDirectory:dir,transportation:{list:veh},billingHistory:p,config:this.getSettings(),sales:sl,finance:fin,buyers:buy,contracts:ctc,traderProfile:prof,workersData:wrk};Mn.syncToCloud(uid,D);}catch(err){console.warn("syncAllToCloud error:",err);}}static restoreFromCloud(Q){if(!Q||typeof Q!=="object")return;try{if(Array.isArray(Q.billingHistory)&&Q.billingHistory.length>0){const local=this.getSessions();const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.billingHistory.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SESSIONS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.farmerDirectory)&&Q.farmerDirectory.length>0){const local=this.getFarmers();const m=new Map();local.forEach(f=>f&&f.id&&m.set(f.id,f));Q.farmerDirectory.forEach(f=>f&&f.id&&m.set(f.id,f));localStorage.setItem(Ot.FARMERS,JSON.stringify(Array.from(m.values())));}if(Q.transportation&&Array.isArray(Q.transportation.list)&&Q.transportation.list.length>0){const local=this.getVehicles();const m=new Map();local.forEach(v=>v&&v.id&&m.set(v.id,v));Q.transportation.list.forEach(v=>v&&v.id&&m.set(v.id,v));localStorage.setItem(Ot.VEHICLES,JSON.stringify(Array.from(m.values())));}if(Q.config&&typeof Q.config==="object"){const cur=this.getSettings();localStorage.setItem(Ot.SETTINGS,JSON.stringify({...cur,...Q.config}));}if(Array.isArray(Q.sales)&&Q.sales.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.SALES)||"[]");}catch(e){}const m=new Map();local.forEach(s=>s&&s.id&&m.set(s.id,s));Q.sales.forEach(s=>s&&s.id&&m.set(s.id,s));localStorage.setItem(Ot.SALES,JSON.stringify(Array.from(m.values())));}if(Q.finance&&typeof Q.finance==="object"){const localRaw=localStorage.getItem(Ot.FINANCE);if(!localRaw){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}else{try{const localFin=JSON.parse(localRaw);const sL=(localFin&&localFin.savedTrips)||[];const sC=(Q.finance&&Q.finance.savedTrips)||[];const tm=new Map();sL.forEach(t=>t&&t.id&&tm.set(t.id,t));sC.forEach(t=>t&&t.id&&tm.set(t.id,t));const mergedFin={...Q.finance,...localFin,savedTrips:Array.from(tm.values()),activeTrip:(localFin&&localFin.activeTrip)?localFin.activeTrip:Q.finance.activeTrip};localStorage.setItem(Ot.FINANCE,JSON.stringify(mergedFin));}catch(e){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}}}if(Array.isArray(Q.buyers)&&Q.buyers.length>0){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");}catch(e){}const m=new Map();local.forEach(b=>b&&b.id&&m.set(b.id,b));Q.buyers.forEach(b=>b&&b.id&&m.set(b.id,b));localStorage.setItem(Ot.BUYERS,JSON.stringify(Array.from(m.values())));}if(Array.isArray(Q.contracts)&&Q.contracts.length>0){let local=[];try{local=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");}catch(e){}const m=new Map();local.forEach(c=>c&&c.id&&m.set(c.id,c));Q.contracts.forEach(c=>c&&c.id&&m.set(c.id,c));localStorage.setItem("tom_electronic_contracts",JSON.stringify(Array.from(m.values())));}if(Q.traderProfile&&typeof Q.traderProfile==="object"){let cur={};try{cur=JSON.parse(localStorage.getItem("tom_trader_profile")||"{}");}catch(e){}const merged={...cur,...Q.traderProfile};localStorage.setItem("tom_trader_profile",JSON.stringify(merged));if(typeof window!=="undefined")window._cachedTraderProfile=merged;}if(Q.workersData&&typeof Q.workersData==="object"){let curW={workers:[],dispatches:[],attendance:{},advances:[],payrollPayments:[]};try{const rawW=localStorage.getItem(Ot.WORKERS);if(rawW)curW={...curW,...JSON.parse(rawW)};}catch(e){}const mergeById=(a,b)=>{const mp=new Map();(Array.isArray(a)?a:[]).forEach(x=>x&&x.id&&mp.set(x.id,x));(Array.isArray(b)?b:[]).forEach(x=>x&&x.id&&mp.set(x.id,x));return Array.from(mp.values());};const mergedW={workers:mergeById(curW.workers,Q.workersData.workers),dispatches:mergeById(curW.dispatches,Q.workersData.dispatches),attendance:{...(curW.attendance||{}),...(Q.workersData.attendance||{})},advances:mergeById(curW.advances,Q.workersData.advances),payrollPayments:mergeById(curW.payrollPayments,Q.workersData.payrollPayments)};localStorage.setItem(Ot.WORKERS,JSON.stringify(mergedW));}}catch(err){console.warn("restoreFromCloud warning:",err);}}static async performCloudSync(){const u=this.getUser();if(!u||!u.uid)return{ok:false,message:"Chưa đăng nhập tài khoản Chủ Vựa"};try{const doc=await Mn.loadFromCloud(u.uid);if(doc){this.restoreFromCloud(doc);}this.syncAllToCloud(u.uid);try{const st=this.getSettings();if(typeof document!=="undefined"){st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){}if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("cloud_sync");}return{ok:true,message:"Đồng bộ đám mây thành công!"};}catch(err){return{ok:false,message:err&&err.message?err.message:"Lỗi đồng bộ"};}}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static syncActiveTripAfterSession(sessionId,isDelete){try{const raw=localStorage.getItem(Ot.FINANCE);if(!raw)return;const fin=JSON.parse(raw);if(!fin||!fin.activeTrip)return;const at=fin.activeTrip;if(isDelete){if(Array.isArray(at.selectedSessionIds)){at.selectedSessionIds=at.selectedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}}else{at.shrimpPurchaseAuto=true;if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>id!==sessionId);}if(Array.isArray(at.selectedSessionIds)&&sessionId&&!at.selectedSessionIds.includes(sessionId)){at.selectedSessionIds=[...at.selectedSessionIds,sessionId];}}localStorage.setItem(Ot.FINANCE,JSON.stringify(fin));}catch(e){}}static deleteSession(b){const p=this.getSessions().filter(f=>f.id!==b);this.syncActiveTripAfterSession(b,true);this.save(Ot.SESSIONS,p)}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return !1;const f=this.getSessions();f.unshift(b);this.syncActiveTripAfterSession(b&&b.id,false);this.save(Ot.SESSIONS,f);return !0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){let tpTare=1;try{const tp=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");if(tp&&tp.tarePer100Kg!==undefined&&tp.tarePer100Kg!=="")tpTare=Number(tp.tarePer100Kg);}catch(e){}const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,tarePer100Kg:tpTare,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
+class Mn{static async loginWithGoogle(){const b=new M1;return O1(Pu,b)}static async logout(){return _1(Pu)}static async syncToCloud(b,p){try{if(typeof Wu==="undefined"||!Wu||!b)return;if(typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==b)return;const cleanPayload=sanitizeForFirestore(p);const f=Ju(Wu,"users_v2",b);await Hd(f,{...cleanPayload,uid:b,_lastSync:new Date().toISOString()},{merge:!0});if(p.billingHistory&&Array.isArray(p.billingHistory)){for(const O of p.billingHistory){O&&O.farmerPhone&&await this.pushToFarmerInbox(O);}}}catch(f){console.warn("Cloud Sync deferred (permissions/offline):",f&&f.message?f.message:f)}}static async pushToFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return;const p=b.farmerPhone.replace(/[^0-9]/g,"");if(p.length<9)return;const f=Ju(Wu,"farmer_inbox",p),O=await ps(f);let D=O.exists()?O.data().sessions||[]:[];const cleanSession=sanitizeForFirestore(b);const idx=D.findIndex(U=>U&&U.id===b.id);idx>=0?D[idx]=cleanSession:D.unshift(cleanSession);await Hd(f,{sessions:sanitizeForFirestore(D.slice(0,50))},{merge:!0})}catch(err){console.warn("Push to farmer inbox warning:",err&&err.message?err.message:err)}}static async loadFromCloud(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return null;const p=Ju(Wu,"users_v2",b),f=await ps(p);if(f.exists())return deserializeFromFirestore(f.data())}catch(err){console.warn("Cloud load failed, using local cache",err&&err.message?err.message:err)}return null}static async loadFarmerInbox(b){try{if(typeof Wu==="undefined"||!Wu||!b||typeof Pu==="undefined"||!Pu||!Pu.currentUser)return [];const p=b.replace(/[^0-9]/g,""),f=Ju(Wu,"farmer_inbox",p),O=await ps(f);if(O.exists()){const d=deserializeFromFirestore(O.data());return d.sessions||[]}}catch(err){console.warn("Load farmer inbox warning:",err&&err.message?err.message:err)}return []}}const Cs=class Cs{static getTombstones(){try{const raw=localStorage.getItem(Ot.TOMBSTONES||"annong_deleted_tombstones_v1");const parsed=raw?JSON.parse(raw):{};return(parsed&&typeof parsed==="object")?parsed:{};}catch(e){return {};}}static markDeleted(bucket,ids){try{const arr=Array.isArray(ids)?ids.filter(Boolean):(ids?[ids]:[]);if(arr.length===0)return;const all=this.getTombstones();const map={...(all[bucket]||{})};const now=Date.now();arr.forEach(id=>{map[String(id)]=now;});const entries=Object.entries(map).sort((a,b)=>Number(b[1]||0)-Number(a[1]||0)).slice(0,500);all[bucket]=Object.fromEntries(entries);localStorage.setItem(Ot.TOMBSTONES||"annong_deleted_tombstones_v1",JSON.stringify(all));}catch(e){}}static unmarkDeleted(bucket,ids){try{const arr=Array.isArray(ids)?ids.filter(Boolean):(ids?[ids]:[]);if(arr.length===0)return;const all=this.getTombstones();if(!all[bucket])return;let changed=false;arr.forEach(id=>{if(all[bucket][String(id)]!==undefined){delete all[bucket][String(id)];changed=true;}});if(changed)localStorage.setItem(Ot.TOMBSTONES||"annong_deleted_tombstones_v1",JSON.stringify(all));}catch(e){}}static _recordTimeMs(item){if(!item||typeof item!=="object")return 0;const raw=item.updatedAt||item.settledAt||item.lastPaymentAt||item.createdAt||item.date;if(!raw)return 0;const ms=new Date(raw).getTime();return Number.isFinite(ms)?ms:0;}static _mergeWithTombstones(localArr,cloudArr,bucketTomb){const tomb=bucketTomb||{};const map=new Map();const consider=(item,isCloud)=>{if(!item||!item.id)return;const delAt=Number(tomb[String(item.id)]||0);const itemMs=this._recordTimeMs(item);if(delAt>0&&delAt>=itemMs)return;const prev=map.get(item.id);if(!prev){map.set(item.id,item);}else{const prevMs=this._recordTimeMs(prev);if(isCloud?(itemMs>=prevMs):(itemMs>prevMs)){map.set(item.id,item);}}};(Array.isArray(localArr)?localArr:[]).forEach(x=>consider(x,false));(Array.isArray(cloudArr)?cloudArr:[]).forEach(x=>consider(x,true));return Array.from(map.values());}static setUser(b){if(!b){this.currentUser=null;try{localStorage.removeItem("annong_user")}catch(e){}return;}const safeUser={uid:b.uid||"",phoneNumber:b.phoneNumber||"",displayName:b.displayName||"Người dùng",photoURL:typeof b.photoURL==="string"?b.photoURL:"",role:b.role||"OWNER",subscriptionStatus:b.subscriptionStatus||"FREE",createdAt:b.createdAt||new Date().toISOString()};this.currentUser=safeUser;try{localStorage.setItem("annong_user",JSON.stringify(safeUser))}catch(e){console.warn("Save user error",e)}}static getUser(){if(this.currentUser)return this.currentUser;try{const b=localStorage.getItem("annong_user");return b?JSON.parse(b):null}catch(e){return null}}static isPremium(){return true;}static checkQuota(b){return {canAdd:true};}static save(b,p){try{localStorage.setItem(b,JSON.stringify(p));if(b===Ot.SETTINGS&&typeof document!=="undefined"){p&&p.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){console.warn("Storage save error",e)}emitAppDataUpdated_v4(b);const f=this.getUser();f&&f.uid&&typeof Pu!=="undefined"&&Pu&&Pu.currentUser&&Pu.currentUser.uid===f.uid&&this.syncAllToCloud(f.uid)}static syncAllToCloud(uidOverride){const f=this.getUser();const uid=uidOverride||(f&&f.uid);if(!uid||typeof Pu==="undefined"||!Pu||!Pu.currentUser||Pu.currentUser.uid!==uid)return;try{const p=this.getSessions(),dir=this.getFarmers(),veh=this.getVehicles();const sl=(this.getSales&&this.getSales())||JSON.parse(localStorage.getItem(Ot.SALES)||"[]");const fin=(this.getFinanceData&&this.getFinanceData())||JSON.parse(localStorage.getItem(Ot.FINANCE)||"null");const buy=(this.getBuyers&&this.getBuyers())||JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");const ctc=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");const prof=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");const wrk=(this.getWorkersData&&this.getWorkersData())||JSON.parse(localStorage.getItem(Ot.WORKERS)||"null");const tomb=this.getTombstones();const D={user:f,lastUpdated:new Date().toISOString(),farmerDirectory:dir,transportation:{list:veh},billingHistory:p,config:this.getSettings(),sales:sl,finance:fin,buyers:buy,contracts:ctc,traderProfile:prof,workersData:wrk,tombstones:tomb};Mn.syncToCloud(uid,D);}catch(err){console.warn("syncAllToCloud error:",err);}}static restoreFromCloud(Q){if(!Q||typeof Q!=="object")return;try{const localTomb=this.getTombstones();const cloudTomb=(Q.tombstones&&typeof Q.tombstones==="object")?Q.tombstones:{};const mergedTomb={...localTomb};Object.keys(cloudTomb).forEach(bk=>{const cMap=cloudTomb[bk]||{};const lMap=mergedTomb[bk]||{};const nextMap={...lMap};Object.keys(cMap).forEach(id=>{nextMap[id]=Math.max(Number(nextMap[id]||0),Number(cMap[id]||0));});mergedTomb[bk]=nextMap;});localStorage.setItem(Ot.TOMBSTONES||"annong_deleted_tombstones_v1",JSON.stringify(mergedTomb));if(Array.isArray(Q.billingHistory)){const local=this.getSessions();const merged=this._mergeWithTombstones(local,Q.billingHistory,mergedTomb.sessions);localStorage.setItem(Ot.SESSIONS,JSON.stringify(merged));}if(Array.isArray(Q.farmerDirectory)){const local=this.getFarmers();const merged=this._mergeWithTombstones(local,Q.farmerDirectory,mergedTomb.farmers);localStorage.setItem(Ot.FARMERS,JSON.stringify(merged));}if(Q.transportation&&Array.isArray(Q.transportation.list)){const local=this.getVehicles();const merged=this._mergeWithTombstones(local,Q.transportation.list,mergedTomb.vehicles);localStorage.setItem(Ot.VEHICLES,JSON.stringify(merged));}if(Q.config&&typeof Q.config==="object"){const cur=this.getSettings();localStorage.setItem(Ot.SETTINGS,JSON.stringify({...cur,...Q.config}));}if(Array.isArray(Q.sales)){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.SALES)||"[]");}catch(e){}const merged=this._mergeWithTombstones(local,Q.sales,mergedTomb.sales);localStorage.setItem(Ot.SALES,JSON.stringify(merged));}if(Q.finance&&typeof Q.finance==="object"){const localRaw=localStorage.getItem(Ot.FINANCE);if(!localRaw){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}else{try{const localFin=JSON.parse(localRaw);const sL=(localFin&&localFin.savedTrips)||[];const sC=(Q.finance&&Q.finance.savedTrips)||[];const tm=new Map();sL.forEach(t=>t&&t.id&&tm.set(t.id,t));sC.forEach(t=>t&&t.id&&tm.set(t.id,t));const mergedFin={...Q.finance,...localFin,savedTrips:Array.from(tm.values()),activeTrip:(localFin&&localFin.activeTrip)?localFin.activeTrip:Q.finance.activeTrip};localStorage.setItem(Ot.FINANCE,JSON.stringify(mergedFin));}catch(e){localStorage.setItem(Ot.FINANCE,JSON.stringify(Q.finance));}}}if(Array.isArray(Q.buyers)){let local=[];try{local=JSON.parse(localStorage.getItem(Ot.BUYERS)||"[]");}catch(e){}const merged=this._mergeWithTombstones(local,Q.buyers,mergedTomb.buyers);localStorage.setItem(Ot.BUYERS,JSON.stringify(merged));}if(Array.isArray(Q.contracts)){let local=[];try{local=JSON.parse(localStorage.getItem("tom_electronic_contracts")||"[]");}catch(e){}const merged=this._mergeWithTombstones(local,Q.contracts,mergedTomb.contracts);localStorage.setItem("tom_electronic_contracts",JSON.stringify(merged));}if(Q.traderProfile&&typeof Q.traderProfile==="object"){let cur={};try{cur=JSON.parse(localStorage.getItem("tom_trader_profile")||"{}");}catch(e){}const merged={...cur,...Q.traderProfile};localStorage.setItem("tom_trader_profile",JSON.stringify(merged));if(typeof window!=="undefined")window._cachedTraderProfile=merged;}if(Q.workersData&&typeof Q.workersData==="object"){let curW={workers:[],dispatches:[],attendance:{},advances:[],payrollPayments:[]};try{const rawW=localStorage.getItem(Ot.WORKERS);if(rawW)curW={...curW,...JSON.parse(rawW)};}catch(e){}const mergeById=(a,b,bk)=>this._mergeWithTombstones(a,b,mergedTomb[bk]);const mergedW={workers:mergeById(curW.workers,Q.workersData.workers,"workers"),dispatches:mergeById(curW.dispatches,Q.workersData.dispatches,"dispatches"),attendance:{...(curW.attendance||{}),...(Q.workersData.attendance||{})},advances:mergeById(curW.advances,Q.workersData.advances,"advances"),payrollPayments:mergeById(curW.payrollPayments,Q.workersData.payrollPayments,"payrollPayments")};localStorage.setItem(Ot.WORKERS,JSON.stringify(mergedW));}}catch(err){console.warn("restoreFromCloud warning:",err);}}static async performCloudSync(){const u=this.getUser();if(!u||!u.uid)return{ok:false,message:"Chưa đăng nhập tài khoản Chủ Vựa"};try{const doc=await Mn.loadFromCloud(u.uid);if(doc){this.restoreFromCloud(doc);}this.syncAllToCloud(u.uid);try{const st=this.getSettings();if(typeof document!=="undefined"){st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}}catch(e){}if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("cloud_sync");}return{ok:true,message:"Đồng bộ đám mây thành công!"};}catch(err){return{ok:false,message:err&&err.message?err.message:"Lỗi đồng bộ"};}}static getSessions(){return JSON.parse(localStorage.getItem(Ot.SESSIONS)||"[]")}static syncActiveTripAfterSession(sessionId,isDelete){try{const raw=localStorage.getItem(Ot.FINANCE);if(!raw)return;const fin=JSON.parse(raw);if(!fin||!fin.activeTrip)return;const at=fin.activeTrip;const delSet=new Set(Array.isArray(sessionId)?sessionId:(sessionId?[sessionId]:[]));if(isDelete){if(Array.isArray(at.selectedSessionIds)){at.selectedSessionIds=at.selectedSessionIds.filter(id=>!delSet.has(id));}if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>!delSet.has(id));}}else{at.shrimpPurchaseAuto=true;if(Array.isArray(at.archivedSessionIds)){at.archivedSessionIds=at.archivedSessionIds.filter(id=>!delSet.has(id));}if(Array.isArray(at.selectedSessionIds)){delSet.forEach(id=>{if(id&&!at.selectedSessionIds.includes(id))at.selectedSessionIds=[...at.selectedSessionIds,id];});}}localStorage.setItem(Ot.FINANCE,JSON.stringify(fin));emitAppDataUpdated_v4(Ot.FINANCE);}catch(e){}}static deleteSessions(ids){const delArr=Array.isArray(ids)?ids.filter(Boolean):(ids?[ids]:[]);if(delArr.length===0)return 0;const delSet=new Set(delArr);const cur=this.getSessions();const next=cur.filter(f=>f&&!delSet.has(f.id));this.markDeleted("sessions",delArr);this.syncActiveTripAfterSession(delArr,true);this.save(Ot.SESSIONS,next);return cur.length-next.length;}static deleteSession(b){return this.deleteSessions([b]);}static addSession(b){const p=this.checkQuota("SESSIONS");if(!p.canAdd)return !1;if(b&&b.id)this.unmarkDeleted("sessions",b.id);const f=this.getSessions();f.unshift(b);this.syncActiveTripAfterSession(b&&b.id,false);this.save(Ot.SESSIONS,f);return !0}static getFarmers(){return JSON.parse(localStorage.getItem(Ot.FARMERS)||"[]")}static addFarmer(b){if(b&&b.id)this.unmarkDeleted("farmers",b.id);const p=this.getFarmers();p.unshift(b),this.save(Ot.FARMERS,p)}static deleteFarmer(b){this.markDeleted("farmers",[b]);const p=this.getFarmers().filter(f=>f.id!==b);this.save(Ot.FARMERS,p)}static getVehicles(){return JSON.parse(localStorage.getItem(Ot.VEHICLES)||"[]")}static getSettings(){let tpTare=1;try{const tp=JSON.parse(localStorage.getItem("tom_trader_profile")||"null");if(tp&&tp.tarePer100Kg!==undefined&&tp.tarePer100Kg!=="")tpTare=Number(tp.tarePer100Kg);}catch(e){}const b=localStorage.getItem(Ot.SETTINGS),p={useVoice:!0,voiceSpeed:"vừa",defaultPrice:7e3,tareRatioValue:8,tarePer100Kg:tpTare,darkMode:!1,enableBluetooth:!0,currencyRounding:"none",autoDeleteDays:30};return b?{...p,...JSON.parse(b)}:p}static getLogs(){return JSON.parse(localStorage.getItem(Ot.LOGS)||"[]")}static addLog(b,p,f){const O=this.getLogs(),D={id:Date.now().toString(),timestamp:new Date().toISOString(),action:b,target:p,details:f};O.unshift(D),localStorage.setItem(Ot.LOGS,JSON.stringify(O.slice(0,100)))}};Cs.currentUser=null;let me=Cs;const Kd=({setRoute:S,role:b})=>{
   const [dashDate, setDashDate] = w.useState(() => getLocalYYYYMMDD_v4());
   const [dashSessions, setDashSessions] = w.useState(() => {
     try { return (me.getSessions && me.getSessions()) || []; } catch(e) { return []; }
@@ -413,7 +413,7 @@ const[p,f]=w.useState(!1),[O,D]=w.useState(!1),[dashToast,setDashToast]=w.useSta
         className: "bg-white dark:bg-gray-900 rounded-[35px] p-5 border border-gray-200 dark:border-gray-800 shadow-lg space-y-4 mt-2",
         children: [
           c.jsxs("div", {
-            className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3",
+            className: "flex justify-between items-center border-b border-gray-100 dark:border-gray-800 pb-3 gap-2",
             children: [
               c.jsxs("div", {
                 className: "flex items-center gap-2",
@@ -427,13 +427,29 @@ const[p,f]=w.useState(!1),[O,D]=w.useState(!1),[dashToast,setDashToast]=w.useSta
                   })
                 ]
               }),
-              c.jsxs("button", {
-                type: "button",
-                onClick: () => S(re.FINANCE),
-                className: "px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-black uppercase tracking-tight flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
+              c.jsxs("div", {
+                className: "flex items-center gap-1.5 shrink-0",
                 children: [
-                  c.jsx("span", { children: "💰" }),
-                  "Tài Chính"
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: async () => {
+                      const res = me.syncBuySellAll ? await me.syncBuySellAll() : { ok: true };
+                      setDashToast("✓ Đã đồng bộ " + (res.sessionsCount ?? dashSessions.length) + " phiếu mua & " + (res.salesCount ?? dashSales.length) + " đơn bán!");
+                      setTimeout(() => setDashToast(""), 3500);
+                    },
+                    title: "Đồng bộ dữ liệu mua bán toàn app",
+                    className: "px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-black uppercase flex items-center gap-1 active:scale-95 transition-all cursor-pointer",
+                    children: [c.jsx(gm, { size: 13 }), "Đồng bộ"]
+                  }),
+                  c.jsxs("button", {
+                    type: "button",
+                    onClick: () => S(re.FINANCE),
+                    className: "px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-black uppercase tracking-tight flex items-center gap-1 shadow-md active:scale-95 transition-all cursor-pointer",
+                    children: [
+                      c.jsx("span", { children: "💰" }),
+                      "Tài Chính"
+                    ]
+                  })
                 ]
               })
             ]
@@ -832,10 +848,16 @@ const parseNumericSetting_v4 = (val, fallback) => {
   return Number.isFinite(n) ? n : fallback;
 };
 
-const emitAppDataUpdated_v4 = (source) => {
+const emitAppDataUpdated_v4 = (source, fromBroadcast) => {
   try {
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("app-data-updated", { detail: { source: source || "app", at: Date.now() } }));
+      if (!fromBroadcast && typeof BroadcastChannel !== "undefined") {
+        try {
+          if (!window._tomBroadcastCh) window._tomBroadcastCh = new BroadcastChannel("tom_cang_xanh_sync_v1");
+          window._tomBroadcastCh.postMessage({ source: source || "app", at: Date.now() });
+        } catch (bcErr) {}
+      }
     }
   } catch (e) {}
 };
@@ -1068,10 +1090,24 @@ if (typeof window !== "undefined") {
               })
             ]
           }),
-          c.jsx("button", {
-            onClick: () => setRoute(re.WEIGHING),
-            className: "bg-yellow-400 text-green-950 px-3 py-1.5 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-md active:scale-95",
-            children: [c.jsx($u, { size: 16 }), "Cân ngay"]
+          c.jsxs("div", {
+            className: "flex items-center gap-2",
+            children: [
+              c.jsxs("button", {
+                type: "button",
+                onClick: async () => {
+                  if (me.syncBuySellAll) await me.syncBuySellAll();
+                  try { setSessions(me.getSessions() || []); } catch(e) {}
+                },
+                className: "bg-white/15 hover:bg-white/25 text-white px-2.5 py-1.5 rounded-xl font-black text-xs uppercase flex items-center gap-1 active:scale-95 cursor-pointer",
+                children: [c.jsx(gm, { size: 14 }), "Đồng bộ"]
+              }),
+              c.jsxs("button", {
+                onClick: () => setRoute(re.WEIGHING),
+                className: "bg-yellow-400 text-green-950 px-3 py-1.5 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer",
+                children: [c.jsx($u, { size: 16 }), "Cân ngay"]
+              })
+            ]
           })
         ]
       }),
@@ -3084,7 +3120,16 @@ const Om = ({ setRoute: S, role: b }) => {
 const _m = ({ setRoute: S, onViewDetail: b }) => {
   const [p, f] = w.useState([]);
   const [O, D] = w.useState("");
-  const [confirmDeleteSessionId, setConfirmDeleteSessionId] = w.useState(null);
+  const [confirmDeleteSessionsPayload, setConfirmDeleteSessionsPayload] = w.useState(null);
+  const [selectMode, setSelectMode] = w.useState(false);
+  const [selectedIds, setSelectedIds] = w.useState([]);
+  const [isSyncing, setIsSyncing] = w.useState(false);
+  const [histToast, setHistToast] = w.useState(null);
+
+  const showHistToast = (msg, type = "success") => {
+    setHistToast({ msg, type });
+    setTimeout(() => setHistToast(prev => (prev && prev.msg === msg ? null : prev)), 4000);
+  };
 
   w.useEffect(() => {
     const refreshSessions = () => {
@@ -3104,9 +3149,33 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
     };
   }, []);
 
-  const U = (sessionId, e) => {
+  const handleRefreshSync = async () => {
+    setIsSyncing(true);
+    try {
+      const res = me.syncBuySellAll ? await me.syncBuySellAll() : { ok: true };
+      const list = me.getSessions() || [];
+      f(list);
+      showHistToast("✓ Đã làm mới & đồng bộ " + list.length + " phiếu thu mua (" + (res.salesCount ?? (me.getSales ? me.getSales().length : 0)) + " đơn bán)!");
+    } catch(e) {
+      showHistToast("Lỗi đồng bộ: " + (e && e.message ? e.message : "Thử lại"), "error");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const toggleSelectSession = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const U = (sessionObj, e) => {
     e?.stopPropagation?.();
-    setConfirmDeleteSessionId(sessionId);
+    const sid = typeof sessionObj === "string" ? sessionObj : sessionObj?.id;
+    const label = typeof sessionObj === "object" && sessionObj?.farmerName ? sessionObj.farmerName : "phiếu cân này";
+    setConfirmDeleteSessionsPayload({
+      ids: [sid],
+      title: "Xóa Phiếu Cân Khỏi Lịch Sử?",
+      desc: "Xóa phiếu thu mua của \"" + label + "\" và tự động cập nhật lại Tài chính?"
+    });
   };
 
   const Y = (p || []).filter(A => {
@@ -3118,39 +3187,62 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
     return name.includes(q) || type.includes(q) || phone.includes(q);
   });
 
+  const filteredKg = Y.reduce((acc, s) => acc + Number(s?.totalNet || 0), 0);
+  const filteredMoney = Y.reduce((acc, s) => acc + Number(s?.totalMoney || 0), 0);
+
   return c.jsxs("div", {
     className: "flex flex-col h-full bg-[#f8f9fa] dark:bg-[#121212] font-roboto",
     children: [
       // Header
       c.jsxs("div", {
-        className: "p-4 flex items-center justify-between bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-800 sticky top-0 z-30",
+        className: "p-4 flex items-center justify-between gap-2 bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-800 sticky top-0 z-30",
         children: [
           c.jsxs("div", {
-            className: "flex items-center gap-3",
+            className: "flex items-center gap-3 min-w-0",
             children: [
               c.jsx("button", {
                 onClick: () => S?.(re.DASHBOARD),
-                className: "p-2 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 active:scale-95 transition-all",
-                children: c.jsx(On, { size: 24 })
+                className: "p-2 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 active:scale-95 transition-all shrink-0 cursor-pointer",
+                children: c.jsx(On, { size: 22 })
               }),
               c.jsxs("div", {
+                className: "min-w-0",
                 children: [
-                  c.jsx("h2", { className: "text-lg font-black uppercase italic text-gray-800 dark:text-gray-100 tracking-tight", children: "Lịch Sử Thu Mua Tôm" }),
-                  c.jsx("p", { className: "text-[10px] text-gray-400 font-bold uppercase", children: `Tổng cộng ${p.length} phiếu cân đã lưu` })
+                  c.jsx("h2", { className: "text-base sm:text-lg font-black uppercase italic text-gray-800 dark:text-gray-100 tracking-tight truncate", children: "Lịch Sử Thu Mua Tôm" }),
+                  c.jsx("p", { className: "text-[10px] text-gray-400 font-bold uppercase tabular-nums", children: `${p.length} phiếu • ${filteredKg.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} kg` })
                 ]
               })
             ]
           }),
-          c.jsxs("button", {
-            onClick: () => S?.(re.WEIGHING),
-            className: "bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-xl font-black text-xs uppercase flex items-center gap-1.5 shadow-md active:scale-95",
-            children: [c.jsx(As, { size: 16 }), "Cân Mới"]
+          c.jsxs("div", {
+            className: "flex items-center gap-1.5 shrink-0",
+            children: [
+              c.jsxs("button", {
+                type: "button",
+                onClick: handleRefreshSync,
+                disabled: isSyncing,
+                title: "Làm mới & đồng bộ mua bán",
+                className: "px-2.5 py-2 bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-xl font-black text-xs uppercase flex items-center gap-1 active:scale-95 cursor-pointer disabled:opacity-60",
+                children: [c.jsx(gm, { size: 14, className: isSyncing ? "animate-spin" : "" }), c.jsx("span", { className: "hidden sm:inline", children: "Làm mới" })]
+              }),
+              c.jsx("button", {
+                type: "button",
+                onClick: () => { setSelectMode(!selectMode); setSelectedIds([]); },
+                className: `px-2.5 py-2 rounded-xl font-black text-xs uppercase border cursor-pointer transition-all ${selectMode ? "bg-amber-500 text-blue-950 border-amber-500" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700"}`,
+                children: selectMode ? "Xong" : "Chọn xóa"
+              }),
+              c.jsxs("button", {
+                onClick: () => S?.(re.WEIGHING),
+                className: "bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-xl font-black text-xs uppercase flex items-center gap-1 shadow-md active:scale-95 cursor-pointer",
+                children: [c.jsx(As, { size: 15 }), "Cân Mới"]
+              })
+            ]
           })
         ]
       }),
       // Content
       c.jsxs("div", {
-        className: "p-4 space-y-4 pb-28 overflow-auto max-w-4xl mx-auto w-full",
+        className: "p-4 space-y-3 pb-28 overflow-auto max-w-4xl mx-auto w-full",
         children: [
           // Search box
           c.jsxs("div", {
@@ -3166,6 +3258,54 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
               })
             ]
           }),
+          // Summary + Bulk Delete Bar
+          Y.length > 0 && c.jsxs("div", {
+            className: "flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xs",
+            children: [
+              c.jsxs("div", {
+                className: "text-[11px] font-bold text-gray-600 dark:text-gray-300 tabular-nums",
+                children: [
+                  "Hiển thị ", c.jsx("span", { className: "font-black text-gray-900 dark:text-white", children: Y.length }),
+                  " phiếu • ", c.jsxs("span", { className: "font-black text-emerald-600", children: [filteredMoney.toLocaleString("vi-VN"), " đ"] })
+                ]
+              }),
+              c.jsxs("div", {
+                className: "flex flex-wrap items-center gap-1.5",
+                children: [
+                  selectMode && c.jsx("button", {
+                    type: "button",
+                    onClick: () => {
+                      const allFilteredIds = Y.map(x => x.id).filter(Boolean);
+                      const allSelected = allFilteredIds.length > 0 && allFilteredIds.every(id => selectedIds.includes(id));
+                      setSelectedIds(allSelected ? [] : allFilteredIds);
+                    },
+                    className: "px-2.5 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-[11px] font-black uppercase cursor-pointer",
+                    children: Y.every(x => selectedIds.includes(x.id)) ? "Bỏ chọn hết" : `Chọn tất cả (${Y.length})`
+                  }),
+                  selectMode && selectedIds.length > 0 && c.jsxs("button", {
+                    type: "button",
+                    onClick: () => setConfirmDeleteSessionsPayload({
+                      ids: selectedIds,
+                      title: `Xóa ${selectedIds.length} phiếu thu mua đã chọn?`,
+                      desc: "Các phiếu cân đã chọn sẽ bị xóa vĩnh viễn và tự động cập nhật lại Tài chính."
+                    }),
+                    className: "px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-[11px] font-black uppercase flex items-center gap-1 shadow-sm cursor-pointer",
+                    children: [c.jsx(Iu, { size: 13 }), `Xóa đã chọn (${selectedIds.length})`]
+                  }),
+                  !selectMode && c.jsxs("button", {
+                    type: "button",
+                    onClick: () => setConfirmDeleteSessionsPayload({
+                      ids: Y.map(x => x.id).filter(Boolean),
+                      title: O ? `Xóa ${Y.length} phiếu đang lọc?` : `Xóa toàn bộ ${Y.length} phiếu thu mua?`,
+                      desc: "Thao tác này sẽ xóa toàn bộ các phiếu đang hiển thị khỏi Lịch sử thu mua và đồng bộ Tài chính."
+                    }),
+                    className: "px-2.5 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 text-[11px] font-black uppercase flex items-center gap-1 cursor-pointer",
+                    children: [c.jsx(Iu, { size: 13 }), O ? `Xóa đang lọc (${Y.length})` : "Xóa tất cả"]
+                  })
+                ]
+              })
+            ]
+          }),
           // List of sessions
           c.jsx("div", {
             className: "space-y-3",
@@ -3173,10 +3313,11 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
               const netVal = Number(A?.totalNet || 0);
               const priceVal = Number(A?.unitPrice || A?.price || 0);
               const moneyVal = Number(A?.totalMoney || 0);
+              const isChecked = selectedIds.includes(A.id);
               const dateStr = A?.date ? new Date(A.date).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "Gần đây";
               return c.jsxs("div", {
-                onClick: () => b?.(A.id),
-                className: "bg-white dark:bg-gray-900 rounded-[24px] shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden active:scale-[0.99] transition-all cursor-pointer hover:border-green-300 dark:hover:border-green-800",
+                onClick: () => selectMode ? toggleSelectSession(A.id) : b?.(A.id),
+                className: `bg-white dark:bg-gray-900 rounded-[24px] shadow-sm border overflow-hidden active:scale-[0.99] transition-all cursor-pointer ${isChecked ? "border-red-500 ring-2 ring-red-500/20" : "border-gray-100 dark:border-gray-800 hover:border-green-300 dark:hover:border-green-800"}`,
                 children: [
                   c.jsxs("div", {
                     className: "p-4 flex justify-between items-start",
@@ -3184,6 +3325,10 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
                       c.jsxs("div", {
                         className: "flex gap-3 items-center",
                         children: [
+                          selectMode && c.jsx("div", {
+                            className: `w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors ${isChecked ? "bg-red-600 border-red-600 text-white" : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"}`,
+                            children: isChecked && c.jsx(P1, { size: 14, strokeWidth: 3 })
+                          }),
                           c.jsx("div", {
                             className: "w-12 h-12 bg-green-50 dark:bg-green-950/40 rounded-2xl flex items-center justify-center text-green-600 dark:text-green-400 shrink-0 text-xl font-black",
                             children: "🦐"
@@ -3219,9 +3364,9 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
                             className: `text-[10px] font-black uppercase px-2 py-1 rounded-lg ${A?.isPaidFull ? "bg-green-100 text-green-800 dark:bg-green-950/60 dark:text-green-300" : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"}`,
                             children: A?.isPaidFull ? "Đã Trả Đủ" : "Còn Lại"
                           }),
-                          c.jsx("button", {
-                            onClick: (e) => U(A.id, e),
-                            className: "p-2 text-gray-300 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-colors",
+                          !selectMode && c.jsx("button", {
+                            onClick: (e) => U(A, e),
+                            className: "p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-colors cursor-pointer",
                             title: "Xóa phiếu cân",
                             children: c.jsx(Iu, { size: 16 })
                           })
@@ -3237,21 +3382,21 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
                         className: "text-center pr-2",
                         children: [
                           c.jsx("div", { className: "text-[9px] font-bold text-gray-400 uppercase", children: "Sản Lượng (Net)" }),
-                          c.jsxs("div", { className: "font-black text-green-700 dark:text-green-400 text-sm", children: [netVal.toLocaleString("vi-VN", { maximumFractionDigits: 1 }), " kg"] })
+                          c.jsxs("div", { className: "font-black text-green-700 dark:text-green-400 text-sm tabular-nums", children: [netVal.toLocaleString("vi-VN", { maximumFractionDigits: 1 }), " kg"] })
                         ]
                       }),
                       c.jsxs("div", {
                         className: "text-center px-2",
                         children: [
                           c.jsx("div", { className: "text-[9px] font-bold text-gray-400 uppercase", children: "Giá Cân" }),
-                          c.jsxs("div", { className: "font-black text-gray-800 dark:text-gray-100 text-sm", children: [priceVal.toLocaleString("vi-VN"), " đ"] })
+                          c.jsxs("div", { className: "font-black text-gray-800 dark:text-gray-100 text-sm tabular-nums", children: [priceVal.toLocaleString("vi-VN"), " đ"] })
                         ]
                       }),
                       c.jsxs("div", {
                         className: "text-center pl-2",
                         children: [
                           c.jsx("div", { className: "text-[9px] font-bold text-gray-400 uppercase", children: "Thành Tiền" }),
-                          c.jsxs("div", { className: "font-black text-red-600 dark:text-red-400 text-sm", children: [moneyVal.toLocaleString("vi-VN"), " đ"] })
+                          c.jsxs("div", { className: "font-black text-red-600 dark:text-red-400 text-sm tabular-nums", children: [moneyVal.toLocaleString("vi-VN"), " đ"] })
                         ]
                       })
                     ]
@@ -3268,28 +3413,35 @@ const _m = ({ setRoute: S, onViewDetail: b }) => {
           })
         ]
       }),
-      confirmDeleteSessionId && c.jsx("div", {
+      histToast && c.jsx("div", {
+        className: `fixed top-16 right-3 left-3 sm:left-auto sm:max-w-md z-[260] p-3.5 rounded-2xl shadow-2xl text-xs font-black text-white ${histToast.type === "error" ? "bg-red-600" : "bg-emerald-600"}`,
+        children: histToast.msg
+      }),
+      confirmDeleteSessionsPayload && c.jsx("div", {
         className: "fixed inset-0 z-[200] bg-black/75 backdrop-blur-sm flex items-center justify-center p-4",
-        onClick: () => setConfirmDeleteSessionId(null),
+        onClick: () => setConfirmDeleteSessionsPayload(null),
         children: c.jsxs("div", {
           onClick: e => e.stopPropagation(),
           className: "bg-white dark:bg-gray-900 rounded-[28px] max-w-sm w-full p-5 shadow-2xl border border-red-200 dark:border-red-900 space-y-4 text-center",
           children: [
-            c.jsx("h3", { className: "font-black text-base uppercase text-gray-900 dark:text-white", children: "Xóa Phiếu Cân Khỏi Lịch Sử?" }),
-            c.jsx("p", { className: "text-xs text-gray-500 dark:text-gray-400", children: "Thao tác này sẽ xóa phiếu cân và tự cập nhật lại báo cáo tài chính." }),
+            c.jsx("h3", { className: "font-black text-base uppercase text-red-600", children: confirmDeleteSessionsPayload.title }),
+            c.jsx("p", { className: "text-xs text-gray-600 dark:text-gray-300 font-bold", children: confirmDeleteSessionsPayload.desc }),
             c.jsxs("div", {
               className: "flex gap-2",
               children: [
-                c.jsx("button", { type: "button", onClick: () => setConfirmDeleteSessionId(null), className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                c.jsx("button", { type: "button", onClick: () => setConfirmDeleteSessionsPayload(null), className: "flex-1 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
                 c.jsx("button", {
                   type: "button",
                   onClick: () => {
-                    me.deleteSession(confirmDeleteSessionId);
-                    f(me.getSessions());
-                    setConfirmDeleteSessionId(null);
+                    const count = me.deleteSessions ? me.deleteSessions(confirmDeleteSessionsPayload.ids) : (confirmDeleteSessionsPayload.ids.forEach(id => me.deleteSession(id)), confirmDeleteSessionsPayload.ids.length);
+                    f(me.getSessions() || []);
+                    setSelectedIds([]);
+                    setSelectMode(false);
+                    setConfirmDeleteSessionsPayload(null);
+                    showHistToast("✓ Đã xóa " + count + " phiếu thu mua & tự đồng bộ Tài chính!");
                   },
-                  className: "flex-1 py-2.5 bg-red-600 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
-                  children: "Xóa ngay"
+                  className: "flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
+                  children: "Xác nhận xóa"
                 })
               ]
             })
@@ -12822,23 +12974,27 @@ me.syncActiveTripAfterSale = function(saleId, isDelete) {
     const fin = JSON.parse(raw);
     if (!fin || !fin.activeTrip) return;
     const at = fin.activeTrip;
+    const idSet = new Set(Array.isArray(saleId) ? saleId : (saleId ? [saleId] : []));
     if (isDelete) {
       if (Array.isArray(at.selectedSaleIds)) {
-        at.selectedSaleIds = at.selectedSaleIds.filter(id => id !== saleId);
+        at.selectedSaleIds = at.selectedSaleIds.filter(id => !idSet.has(id));
       }
       if (Array.isArray(at.archivedSaleIds)) {
-        at.archivedSaleIds = at.archivedSaleIds.filter(id => id !== saleId);
+        at.archivedSaleIds = at.archivedSaleIds.filter(id => !idSet.has(id));
       }
     } else {
       at.revenueAuto = true;
       if (Array.isArray(at.archivedSaleIds)) {
-        at.archivedSaleIds = at.archivedSaleIds.filter(id => id !== saleId);
+        at.archivedSaleIds = at.archivedSaleIds.filter(id => !idSet.has(id));
       }
-      if (Array.isArray(at.selectedSaleIds) && saleId && !at.selectedSaleIds.includes(saleId)) {
-        at.selectedSaleIds = [...at.selectedSaleIds, saleId];
+      if (Array.isArray(at.selectedSaleIds)) {
+        idSet.forEach(id => {
+          if (id && !at.selectedSaleIds.includes(id)) at.selectedSaleIds = [...at.selectedSaleIds, id];
+        });
       }
     }
     localStorage.setItem(Ot.FINANCE, JSON.stringify(fin));
+    emitAppDataUpdated_v4(Ot.FINANCE);
   } catch(e) {}
 };
 
@@ -12846,7 +13002,7 @@ me.updateSale = function(id, updates) {
   const list = me.getSales();
   const index = list.findIndex(s => s.id === id);
   if (index !== -1) {
-    list[index] = { ...list[index], ...updates };
+    list[index] = { ...list[index], ...updates, updatedAt: new Date().toISOString() };
     me.syncActiveTripAfterSale(id, false);
     me.saveSales(list);
     return list[index];
@@ -12854,17 +13010,118 @@ me.updateSale = function(id, updates) {
   return null;
 };
 me.addSale = function(sale) {
+  if (sale && sale.id && me.unmarkDeleted) me.unmarkDeleted("sales", sale.id);
   const list = me.getSales();
-  list.unshift(sale);
-  me.syncActiveTripAfterSale(sale && sale.id, false);
+  const stamped = sale ? { ...sale, updatedAt: sale.updatedAt || new Date().toISOString() } : sale;
+  list.unshift(stamped);
+  me.syncActiveTripAfterSale(stamped && stamped.id, false);
   me.saveSales(list);
-  return sale;
+  return stamped;
+};
+
+me.deleteSales = function(ids) {
+  const delArr = Array.isArray(ids) ? ids.filter(Boolean) : (ids ? [ids] : []);
+  if (delArr.length === 0) return 0;
+  const delSet = new Set(delArr);
+  const cur = me.getSales();
+  const next = cur.filter(s => s && !delSet.has(s.id));
+  if (me.markDeleted) me.markDeleted("sales", delArr);
+  me.syncActiveTripAfterSale(delArr, true);
+  me.saveSales(next);
+  return cur.length - next.length;
+};
+
+me.clearSales = function(targetGroupFilter) {
+  const cur = me.getSales();
+  const toDelete = (!targetGroupFilter || targetGroupFilter === "ALL")
+    ? cur.map(s => s && s.id).filter(Boolean)
+    : cur.filter(s => s && s.targetGroup === targetGroupFilter).map(s => s.id).filter(Boolean);
+  return me.deleteSales(toDelete);
 };
 
 me.deleteSale = function(id) {
-  const list = me.getSales().filter(s => s.id !== id);
-  me.syncActiveTripAfterSale(id, true);
-  me.saveSales(list);
+  return me.deleteSales([id]);
+};
+
+me.syncBuySellAll = async function() {
+  try {
+    const sessions = (me.getSessions && me.getSessions()) || [];
+    const sales = (me.getSales && me.getSales()) || [];
+    const buyers = (me.getBuyers && me.getBuyers()) || [];
+    const farmers = (me.getFarmers && me.getFarmers()) || [];
+    const sessionIds = new Set(sessions.map(s => s && s.id).filter(Boolean));
+    const saleIds = new Set(sales.map(s => s && s.id).filter(Boolean));
+
+    // 1. Reconcile farmers weighed status from sessions so deposits don't double count
+    let farmersChanged = false;
+    const nextFarmers = farmers.map(fm => {
+      if (!fm || fm.weighed || fm.status === "WEIGHED") return fm;
+      const matched = sessions.some(s => s && ((fm.sessionId && s.id === fm.sessionId) || (fm.contractId && s.contractId === fm.contractId) || (fm.id && s.pondId === fm.id)));
+      if (matched) {
+        farmersChanged = true;
+        return { ...fm, weighed: true, status: "WEIGHED", updatedAt: new Date().toISOString() };
+      }
+      return fm;
+    });
+    if (farmersChanged) {
+      localStorage.setItem(Ot.FARMERS, JSON.stringify(nextFarmers));
+    }
+
+    // 2. Reconcile finance activeTrip selections with live sessions & sales
+    const fin = me.getFinanceData ? me.getFinanceData() : null;
+    if (fin && fin.activeTrip) {
+      const at = fin.activeTrip;
+      const archSessSet = new Set(Array.isArray(at.archivedSessionIds) ? at.archivedSessionIds.filter(id => sessionIds.has(id)) : []);
+      const archSaleSet = new Set(Array.isArray(at.archivedSaleIds) ? at.archivedSaleIds.filter(id => saleIds.has(id)) : []);
+      at.archivedSessionIds = Array.from(archSessSet);
+      at.archivedSaleIds = Array.from(archSaleSet);
+
+      if (Array.isArray(at.selectedSessionIds)) {
+        const curSel = new Set(at.selectedSessionIds.filter(id => sessionIds.has(id) && !archSessSet.has(id)));
+        sessions.forEach(s => { if (s && s.id && !archSessSet.has(s.id)) curSel.add(s.id); });
+        at.selectedSessionIds = Array.from(curSel);
+      }
+      if (Array.isArray(at.selectedSaleIds)) {
+        const curSel = new Set(at.selectedSaleIds.filter(id => saleIds.has(id) && !archSaleSet.has(id)));
+        sales.forEach(s => { if (s && s.id && !archSaleSet.has(s.id)) curSel.add(s.id); });
+        at.selectedSaleIds = Array.from(curSel);
+      }
+      at.shrimpPurchaseAuto = true;
+      at.revenueAuto = true;
+      at.lastSyncedAt = new Date().toISOString();
+      localStorage.setItem(Ot.FINANCE, JSON.stringify(fin));
+    }
+
+    // 3. Perform cloud sync if logged in
+    let syncedCloud = false;
+    const u = me.getUser ? me.getUser() : null;
+    if (u && u.uid && typeof Pu !== "undefined" && Pu && Pu.currentUser && Pu.currentUser.uid === u.uid && me.performCloudSync) {
+      try {
+        const cloudRes = await me.performCloudSync();
+        syncedCloud = !!(cloudRes && cloudRes.ok);
+      } catch(ce) {}
+    }
+
+    // 4. Emit full app sync events across all screens & open tabs
+    emitAppDataUpdated_v4("sync_all");
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("cloud_data_synced", { detail: { timestamp: new Date().toISOString() } }));
+      window.dispatchEvent(new CustomEvent("tom_contract_updated"));
+    }
+    const finSummary = me.getFinanceSummary ? me.getFinanceSummary() : null;
+    return {
+      ok: true,
+      syncedCloud,
+      sessionsCount: sessions.length,
+      salesCount: sales.length,
+      buyersCount: buyers.length,
+      farmersCount: nextFarmers.length,
+      financeSummary: finSummary,
+      timestamp: new Date().toISOString()
+    };
+  } catch (err) {
+    return { ok: false, message: err && err.message ? err.message : "Lỗi đồng bộ dữ liệu" };
+  }
 };
 
 // Shared breakdown helpers for sales & unweighed pond deposits
@@ -13248,10 +13505,12 @@ me.addBuyer = function(buyer) {
       createdAt: new Date().toISOString()
     });
   }
+  if (buyer && buyer.id && me.unmarkDeleted) me.unmarkDeleted("buyers", buyer.id);
   me.saveBuyers(list);
 };
 
 me.deleteBuyer = function(id) {
+  if (me.markDeleted) me.markDeleted("buyers", [id]);
   const list = me.getBuyers().filter(b => b.id !== id);
   me.saveBuyers(list);
 };
@@ -13646,12 +13905,30 @@ const Xm_CustomersScreen = ({ setRoute, onSelectForSale, role }) => {
               })
             ]
           }),
-          c.jsxs("button", {
-            onClick: () => openAddModal(),
-            className: "flex items-center gap-1.5 px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-gray-950 rounded-xl font-black text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer",
+          c.jsxs("div", {
+            className: "flex items-center gap-2",
             children: [
-              c.jsx(As, { size: 16 }),
-              "Thêm Mới"
+              c.jsxs("button", {
+                type: "button",
+                onClick: async () => {
+                  if (me.syncBuySellAll) await me.syncBuySellAll();
+                  refreshList();
+                  showCustToast("✓ Đã đồng bộ danh bạ & công nợ khách hàng!");
+                },
+                className: "flex items-center gap-1 px-2.5 py-2 bg-white/15 hover:bg-white/25 text-white rounded-xl font-black text-xs uppercase active:scale-95 transition-all cursor-pointer",
+                children: [
+                  c.jsx(gm, { size: 15 }),
+                  c.jsx("span", { className: "hidden sm:inline", children: "Đồng bộ" })
+                ]
+              }),
+              c.jsxs("button", {
+                onClick: () => openAddModal(),
+                className: "flex items-center gap-1.5 px-3.5 py-2 bg-amber-400 hover:bg-amber-300 text-gray-950 rounded-xl font-black text-xs uppercase tracking-wider shadow-md active:scale-95 transition-all cursor-pointer",
+                children: [
+                  c.jsx(As, { size: 16 }),
+                  "Thêm Mới"
+                ]
+              })
             ]
           })
         ]
@@ -15630,16 +15907,40 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
   // Modal states
   const [showHistoryModal, setShowHistoryModal] = w.useState(false);
   const [historyFilter, setHistoryFilter] = w.useState("ALL");
+  const [historySearchQ, setHistorySearchQ] = w.useState("");
+  const [historySelectMode, setHistorySelectMode] = w.useState(false);
+  const [selectedHistoryIds, setSelectedHistoryIds] = w.useState([]);
+  const [isSyncingSales, setIsSyncingSales] = w.useState(false);
   const [settlingSaleObj, setSettlingSaleObj] = w.useState(null); // For market or factory quick settle
   const [settleKg, setSettleKg] = w.useState("");
   const [settleMoney, setSettleMoney] = w.useState("");
   const [weighingLotIdx, setWeighingLotIdx] = w.useState(null);
   const [salesToast, setSalesToast] = w.useState(null);
-  const [confirmDeleteSaleId, setConfirmDeleteSaleId] = w.useState(null);
+  const [confirmDeleteSalesPayload, setConfirmDeleteSalesPayload] = w.useState(null);
 
   const showSalesToast = (msg, type = "success") => {
     setSalesToast({ msg, type });
     setTimeout(() => setSalesToast(prev => (prev && prev.msg === msg ? null : prev)), 5000);
+  };
+
+  const handleSyncAllBuySell = async () => {
+    setIsSyncingSales(true);
+    try {
+      const res = me.syncBuySellAll ? await me.syncBuySellAll() : { ok: true };
+      refreshData();
+      const sCount = res && res.salesCount !== undefined ? res.salesCount : (me.getSales ? me.getSales().length : 0);
+      const bCount = res && res.sessionsCount !== undefined ? res.sessionsCount : (me.getSessions ? me.getSessions().length : 0);
+      const rev = res && res.financeSummary ? res.financeSummary.totalRevenue : (me.getFinanceSummary ? me.getFinanceSummary().totalRevenue : 0);
+      showSalesToast("🔄 Đã làm mới & đồng bộ: " + bCount + " phiếu mua • " + sCount + " đơn bán • Doanh thu: " + _e(rev) + " đ");
+    } catch(err) {
+      showSalesToast("Lỗi đồng bộ dữ liệu: " + (err && err.message ? err.message : "Thử lại"), "error");
+    } finally {
+      setIsSyncingSales(false);
+    }
+  };
+
+  const toggleSelectHistorySale = (id) => {
+    setSelectedHistoryIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
 
   // Common Form States
@@ -16119,11 +16420,19 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
             ]
           }),
           c.jsxs("div", {
-            className: "flex items-center gap-2",
+            className: "flex items-center gap-1.5 sm:gap-2",
             children: [
               c.jsxs("button", {
                 type: "button",
-                onClick: () => setShowHistoryModal(true),
+                onClick: handleSyncAllBuySell,
+                disabled: isSyncingSales,
+                title: "Làm mới & đồng bộ dữ liệu mua bán toàn app",
+                className: "px-2.5 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-xl text-xs font-black uppercase flex items-center gap-1 active:scale-95 transition-all cursor-pointer disabled:opacity-60",
+                children: [c.jsx(gm, { size: 14, className: isSyncingSales ? "animate-spin" : "" }), c.jsx("span", { className: "hidden sm:inline", children: "Đồng Bộ" })]
+              }),
+              c.jsxs("button", {
+                type: "button",
+                onClick: () => { setHistorySelectMode(false); setSelectedHistoryIds([]); setShowHistoryModal(true); },
                 className: "px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase flex items-center gap-1 active:scale-95 transition-all cursor-pointer",
                 children: [c.jsx(Fd, { size: 14 }), "Lịch Sử"]
               }),
@@ -17482,193 +17791,326 @@ const Xm_SalesScreen = ({ setRoute, onViewDetail, role }) => {
       }),
 
       // MODAL: LỊCH SỬ XUẤT BÁN
-      showHistoryModal && c.jsx("div", {
-        className: "fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm",
-        children: c.jsxs("div", {
-          className: "bg-white dark:bg-gray-900 w-full max-w-2xl rounded-[35px] p-6 shadow-2xl space-y-4 border border-gray-200 dark:border-gray-800 max-h-[90vh] flex flex-col",
-          children: [
-            c.jsxs("div", {
-              className: "flex justify-between items-center border-b pb-3",
-              children: [
-                c.jsxs("div", {
-                  children: [
-                    c.jsx("h3", {
-                      className: "text-xl font-black uppercase italic tracking-tight text-gray-900 dark:text-white",
-                      children: "Lịch Sử Xuất Bán Tôm"
-                    }),
-                    c.jsxs("p", {
-                      className: "text-xs text-gray-500 font-bold",
-                      children: ["Tổng số: ", salesList.length, " đơn hàng"]
-                    })
-                  ]
-                }),
-                c.jsx("button", {
-                  type: "button",
-                  onClick: () => setShowHistoryModal(false),
-                  className: "p-2 text-gray-400 hover:text-gray-600 rounded-full cursor-pointer",
-                  children: c.jsx(_a, { size: 20 })
-                })
-              ]
-            }),
-            // Quick Filter Tabs
-            c.jsxs("div", {
-              className: "flex gap-1.5 flex-wrap",
-              children: [
-                c.jsx("button", {
-                  type: "button",
-                  onClick: () => setHistoryFilter("ALL"),
-                  className: `px-3 py-1 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "ALL" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
-                  children: "Tất cả"
-                }),
-                c.jsx("button", {
-                  type: "button",
-                  onClick: () => setHistoryFilter("RETAIL"),
-                  className: `px-3 py-1 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "RETAIL" ? "bg-emerald-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
-                  children: "🛒 Bán Lẻ"
-                }),
-                c.jsx("button", {
-                  type: "button",
-                  onClick: () => setHistoryFilter("MARKET"),
-                  className: `px-3 py-1 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "MARKET" ? "bg-amber-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
-                  children: "🏪 Chợ Đầu Mối"
-                }),
-                c.jsx("button", {
-                  type: "button",
-                  onClick: () => setHistoryFilter("FACTORY"),
-                  className: `px-3 py-1 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "FACTORY" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
-                  children: "🏢 Công Ty"
-                })
-              ]
-            }),
-            // Sales tickets list
-            c.jsx("div", {
-              className: "overflow-y-auto flex-1 space-y-3 pr-1",
-              children: (() => {
-                const filteredSales = salesList.filter(s => {
-                  if (historyFilter === "ALL") return true;
-                  return s.targetGroup === historyFilter;
-                });
+      showHistoryModal && (() => {
+        const qHist = (historySearchQ || "").toLowerCase().trim();
+        const filteredSales = (salesList || []).filter(s => {
+          if (!s) return false;
+          if (historyFilter !== "ALL" && s.targetGroup !== historyFilter) return false;
+          if (!qHist) return true;
+          const bName = (s.buyerName || "").toLowerCase();
+          const code = (s.code || "").toLowerCase();
+          const plate = (s.vehiclePlate || "").toLowerCase();
+          const rType = (s.riceType || "").toLowerCase();
+          const dateLabel = (s.saleDateStr || "").toLowerCase();
+          return bName.includes(qHist) || code.includes(qHist) || plate.includes(qHist) || rType.includes(qHist) || dateLabel.includes(qHist);
+        });
+        const filteredKgTotal = filteredSales.reduce((acc, s) => acc + Number(s.totalNet || s.factoryDeliveredKg || 0), 0);
+        const filteredMoneyTotal = filteredSales.reduce((acc, s) => acc + Number(s.totalMoney || 0), 0);
+        const countByGroup = {
+          ALL: salesList.length,
+          RETAIL: salesList.filter(s => s && s.targetGroup === "RETAIL").length,
+          MARKET: salesList.filter(s => s && s.targetGroup === "MARKET").length,
+          FACTORY: salesList.filter(s => s && s.targetGroup === "FACTORY").length
+        };
+        const allFilteredSelected = filteredSales.length > 0 && filteredSales.every(s => selectedHistoryIds.includes(s.id));
 
-                if (filteredSales.length === 0) {
-                  return c.jsx("p", {
-                    className: "text-center text-gray-400 py-12 italic font-bold",
-                    children: "Chưa có đơn hàng nào."
-                  });
-                }
+        return c.jsx("div", {
+          className: "fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-3 sm:p-4 backdrop-blur-sm",
+          onClick: () => setShowHistoryModal(false),
+          children: c.jsxs("div", {
+            onClick: e => e.stopPropagation(),
+            className: "bg-white dark:bg-gray-900 w-full max-w-2xl rounded-[32px] p-4 sm:p-6 shadow-2xl space-y-3 border border-gray-200 dark:border-gray-800 max-h-[92vh] flex flex-col",
+            children: [
+              // Modal Header with Refresh/Sync & Multi-select Delete toggle
+              c.jsxs("div", {
+                className: "flex flex-wrap justify-between items-center gap-2 border-b border-gray-100 dark:border-gray-800 pb-3",
+                children: [
+                  c.jsxs("div", {
+                    children: [
+                      c.jsx("h3", {
+                        className: "text-lg sm:text-xl font-black uppercase italic tracking-tight text-gray-900 dark:text-white",
+                        children: "Lịch Sử Xuất Bán Tôm"
+                      }),
+                      c.jsxs("p", {
+                        className: "text-[11px] text-gray-500 font-bold tabular-nums",
+                        children: [
+                          "Tổng: ", salesList.length, " đơn • Lọc: ", filteredSales.length, " đơn (",
+                          fmtKg(filteredKgTotal), " kg • ", _e(filteredMoneyTotal), " đ)"
+                        ]
+                      })
+                    ]
+                  }),
+                  c.jsxs("div", {
+                    className: "flex items-center gap-1.5",
+                    children: [
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: handleSyncAllBuySell,
+                        disabled: isSyncingSales,
+                        title: "Làm mới & đồng bộ dữ liệu mua bán",
+                        className: "px-2.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-black uppercase flex items-center gap-1 cursor-pointer active:scale-95 disabled:opacity-60",
+                        children: [
+                          c.jsx(gm, { size: 14, className: isSyncingSales ? "animate-spin" : "" }),
+                          "Làm mới"
+                        ]
+                      }),
+                      filteredSales.length > 0 && c.jsx("button", {
+                        type: "button",
+                        onClick: () => {
+                          setHistorySelectMode(!historySelectMode);
+                          setSelectedHistoryIds([]);
+                        },
+                        className: `px-2.5 py-2 rounded-xl text-xs font-black uppercase border cursor-pointer transition-all ${historySelectMode ? "bg-amber-500 text-blue-950 border-amber-500" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700"}`,
+                        children: historySelectMode ? "Xong" : "Chọn xóa"
+                      }),
+                      c.jsx("button", {
+                        type: "button",
+                        onClick: () => setShowHistoryModal(false),
+                        className: "p-2 text-gray-400 hover:text-gray-600 rounded-full cursor-pointer",
+                        children: c.jsx(_a, { size: 20 })
+                      })
+                    ]
+                  })
+                ]
+              }),
 
-                return filteredSales.map(sale => c.jsxs("div", {
-                  key: sale.id,
-                  className: "p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border border-gray-200 dark:border-gray-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3",
-                  children: [
-                    c.jsxs("div", {
-                      className: "space-y-1 flex-1",
-                      children: [
-                        c.jsxs("div", {
-                          className: "flex items-center gap-2",
-                          children: [
-                            c.jsx("span", { className: "font-mono font-bold text-xs text-blue-600 dark:text-blue-400", children: sale.code }),
-                            c.jsx("span", {
-                              className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-200",
-                              children: sale.targetGroup === "FACTORY" ? "🏢 Công Ty" : (sale.targetGroup === "MARKET" ? "🏪 Chợ" : "🛒 Bán Lẻ")
+              // Search Bar inside Sales History
+              c.jsxs("div", {
+                className: "relative",
+                children: [
+                  c.jsx(Id, { size: 16, className: "absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" }),
+                  c.jsx("input", {
+                    type: "text",
+                    value: historySearchQ,
+                    onChange: e => setHistorySearchQ(e.target.value),
+                    placeholder: "Tìm tên khách, công ty, mã đơn (BL-/CTY-/CHO-), biển số xe...",
+                    className: "w-full pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-xs font-bold outline-none focus:border-blue-500"
+                  }),
+                  historySearchQ && c.jsx("button", {
+                    type: "button",
+                    onClick: () => setHistorySearchQ(""),
+                    className: "absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 cursor-pointer",
+                    children: c.jsx(_a, { size: 14 })
+                  })
+                ]
+              }),
+
+              // Quick Filter Tabs with counts
+              c.jsxs("div", {
+                className: "flex gap-1.5 flex-wrap items-center justify-between",
+                children: [
+                  c.jsxs("div", {
+                    className: "flex gap-1.5 flex-wrap",
+                    children: [
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: () => { setHistoryFilter("ALL"); setSelectedHistoryIds([]); },
+                        className: `px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "ALL" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
+                        children: ["Tất cả (", countByGroup.ALL, ")"]
+                      }),
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: () => { setHistoryFilter("RETAIL"); setSelectedHistoryIds([]); },
+                        className: `px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "RETAIL" ? "bg-emerald-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
+                        children: ["🛒 Bán Lẻ (", countByGroup.RETAIL, ")"]
+                      }),
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: () => { setHistoryFilter("MARKET"); setSelectedHistoryIds([]); },
+                        className: `px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "MARKET" ? "bg-amber-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
+                        children: ["🏪 Chợ (", countByGroup.MARKET, ")"]
+                      }),
+                      c.jsxs("button", {
+                        type: "button",
+                        onClick: () => { setHistoryFilter("FACTORY"); setSelectedHistoryIds([]); },
+                        className: `px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer ${historyFilter === "FACTORY" ? "bg-blue-600 text-white" : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"}`,
+                        children: ["🏢 Công Ty (", countByGroup.FACTORY, ")"]
+                      })
+                    ]
+                  }),
+
+                  // Bulk Delete / Clear Filtered bar
+                  filteredSales.length > 0 && c.jsxs("div", {
+                    className: "flex items-center gap-1.5 flex-wrap",
+                    children: [
+                      historySelectMode && c.jsx("button", {
+                        type: "button",
+                        onClick: () => {
+                          const allIds = filteredSales.map(s => s.id).filter(Boolean);
+                          setSelectedHistoryIds(allFilteredSelected ? [] : allIds);
+                        },
+                        className: "px-2.5 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-[11px] font-black uppercase cursor-pointer",
+                        children: allFilteredSelected ? "Bỏ chọn hết" : ("Chọn tất cả (" + filteredSales.length + ")")
+                      }),
+                      historySelectMode && selectedHistoryIds.length > 0 && c.jsxs("button", {
+                        type: "button",
+                        onClick: () => setConfirmDeleteSalesPayload({
+                          ids: selectedHistoryIds,
+                          title: "Xóa " + selectedHistoryIds.length + " đơn đã chọn?",
+                          desc: "Các đơn xuất bán đã chọn sẽ bị xóa khỏi Lịch sử, Công nợ khách hàng và tự động cập nhật Tài chính."
+                        }),
+                        className: "px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-[11px] font-black uppercase flex items-center gap-1 shadow-sm cursor-pointer",
+                        children: [c.jsx(Iu, { size: 13 }), "Xóa đã chọn (", selectedHistoryIds.length, ")"]
+                      }),
+                      !historySelectMode && c.jsxs("button", {
+                        type: "button",
+                        onClick: () => setConfirmDeleteSalesPayload({
+                          ids: filteredSales.map(s => s.id).filter(Boolean),
+                          title: (historyFilter === "ALL" && !qHist)
+                            ? ("Xóa toàn bộ " + filteredSales.length + " đơn xuất bán?")
+                            : ("Xóa " + filteredSales.length + " đơn đang lọc?"),
+                          desc: "Thao tác này sẽ xóa toàn bộ các đơn đang hiển thị trong danh sách và tự động đồng bộ lại Công nợ & Tài chính."
+                        }),
+                        className: "px-2.5 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 text-[11px] font-black uppercase flex items-center gap-1 cursor-pointer",
+                        children: [
+                          c.jsx(Iu, { size: 13 }),
+                          (historyFilter === "ALL" && !qHist) ? "Xóa tất cả" : ("Xóa mục lọc (" + filteredSales.length + ")")
+                        ]
+                      })
+                    ]
+                  })
+                ]
+              }),
+
+              // Sales tickets list
+              c.jsx("div", {
+                className: "overflow-y-auto flex-1 space-y-3 pr-1",
+                children: filteredSales.length === 0 ? c.jsx("p", {
+                  className: "text-center text-gray-400 py-12 italic font-bold",
+                  children: "Chưa có đơn hàng nào."
+                }) : filteredSales.map(sale => {
+                  const isSelected = selectedHistoryIds.includes(sale.id);
+                  return c.jsxs("div", {
+                    key: sale.id,
+                    onClick: () => { if (historySelectMode) toggleSelectHistorySale(sale.id); },
+                    className: `p-4 bg-gray-50 dark:bg-gray-800/60 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 transition-all ${historySelectMode ? "cursor-pointer" : ""} ${isSelected ? "border-red-500 ring-2 ring-red-500/20 bg-red-50/40 dark:bg-red-950/20" : "border-gray-200 dark:border-gray-700/60"}`,
+                    children: [
+                      c.jsxs("div", {
+                        className: "flex items-start gap-3 flex-1 w-full",
+                        children: [
+                          historySelectMode && c.jsx("div", {
+                            className: `w-6 h-6 mt-0.5 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors ${isSelected ? "bg-red-600 border-red-600 text-white" : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900"}`,
+                            children: isSelected && c.jsx(P1, { size: 14, strokeWidth: 3 })
+                          }),
+                          c.jsxs("div", {
+                            className: "space-y-1 flex-1 min-w-0",
+                            children: [
+                              c.jsxs("div", {
+                                className: "flex items-center gap-2 flex-wrap",
+                                children: [
+                                  c.jsx("span", { className: "font-mono font-bold text-xs text-blue-600 dark:text-blue-400", children: sale.code }),
+                                  c.jsx("span", {
+                                    className: "text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-200",
+                                    children: sale.targetGroup === "FACTORY" ? "🏢 Công Ty" : (sale.targetGroup === "MARKET" ? "🏪 Chợ" : "🛒 Bán Lẻ")
+                                  }),
+                                  c.jsx("span", {
+                                    className: `text-[10px] font-black px-2 py-0.5 rounded-full ${
+                                      sale.status === "COMPLETED" || sale.isPaidFull
+                                        ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300"
+                                        : (sale.status === "DEBT" || sale.status === "PARTIAL"
+                                          ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300"
+                                          : (sale.status === "PARTIAL_TRANSFER" || sale.status === "SELLING"
+                                            ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                                            : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"))
+                                    }`,
+                                    children: sale.status === "COMPLETED" || sale.isPaidFull
+                                      ? "✓ Đã Hoàn Tất"
+                                      : (sale.status === "DEBT" || sale.status === "PARTIAL"
+                                        ? ("📝 Ghi nợ " + _e(sale.remainingDebt || 0) + "đ")
+                                        : (sale.status === "PARTIAL_TRANSFER"
+                                          ? ("⏳ Chờ chuyển " + _e(sale.remainingDebt || 0) + "đ")
+                                          : (sale.status === "SELLING" ? "⏳ Đang Bán" : "⏳ Chờ Kết Quả")))
+                                  })
+                                ]
+                              }),
+                              c.jsx("h4", { className: "font-black text-base text-gray-900 dark:text-white uppercase truncate", children: sale.buyerName }),
+                              c.jsxs("div", {
+                                className: "text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-x-3 tabular-nums",
+                                children: [
+                                  c.jsxs("span", { children: ["📅 ", sale.saleDateStr ? sale.saleDateStr.split("-").reverse().join("/") : new Date(sale.date).toLocaleDateString("vi-VN")] }),
+                                  sale.vehiclePlate && c.jsxs("span", { className: "font-mono font-bold text-slate-700 dark:text-slate-300", children: ["🚚 ", sale.vehiclePlate] }),
+                                  (sale.totalNet > 0 || sale.factoryDeliveredKg > 0) && c.jsxs("span", { className: "font-bold text-gray-700 dark:text-gray-300", children: ["⚖️ ", fmtKg(sale.totalNet || sale.factoryDeliveredKg), " kg"] }),
+                                  sale.totalMoney > 0 && c.jsxs("span", { className: "font-black text-emerald-600 dark:text-emerald-400", children: ["💰 ", _e(sale.totalMoney), " đ"] }),
+                                  sale.phiCount > 0 && c.jsxs("span", { className: "font-bold text-amber-600", children: [sale.phiCount, " phi oxy"] })
+                                ]
+                              })
+                            ]
+                          })
+                        ]
+                      }),
+                      !historySelectMode && c.jsxs("div", {
+                        className: "flex items-center gap-2 w-full sm:w-auto justify-end",
+                        onClick: e => e.stopPropagation(),
+                        children: [
+                          (sale.status === "SELLING" || sale.status === "AWAITING_RESULT" || sale.targetGroup === "FACTORY") && c.jsx("button", {
+                            type: "button",
+                            onClick: () => {
+                              setShowHistoryModal(false);
+                              setSettlingSaleObj(sale);
+                              setSettleKg(sale.totalNet ? String(sale.totalNet) : "");
+                              setSettleMoney(sale.totalMoney ? String(sale.totalMoney) : "");
+                            },
+                            className: `px-3 py-1.5 text-white rounded-xl text-xs font-black uppercase cursor-pointer ${sale.status === "SELLING" || sale.status === "AWAITING_RESULT" ? "bg-green-600 hover:bg-green-700" : "bg-indigo-600 hover:bg-indigo-700"}`,
+                            children: sale.targetGroup === "MARKET" ? "Chốt Chợ" : (sale.status === "AWAITING_RESULT" ? "Nghiệm Thu" : "Sửa Kê")
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            onClick: () => {
+                              setShowHistoryModal(false);
+                              if (onViewDetail) onViewDetail(sale);
+                            },
+                            className: "px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold uppercase cursor-pointer",
+                            children: "Chi Tiết"
+                          }),
+                          c.jsx("button", {
+                            type: "button",
+                            title: "Xóa đơn xuất bán này",
+                            onClick: () => setConfirmDeleteSalesPayload({
+                              ids: [sale.id],
+                              title: "Xác nhận xóa đơn",
+                              desc: "Bạn có chắc chắn muốn xóa đơn \"" + (sale.code || "") + " - " + (sale.buyerName || "") + "\"? Dữ liệu Tài chính & Công nợ sẽ tự động cập nhật."
                             }),
-                            // Status Badge
-                            c.jsx("span", {
-                              className: `text-[10px] font-black px-2 py-0.5 rounded-full ${
-                                sale.status === "COMPLETED" || sale.isPaidFull
-                                  ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300"
-                                  : (sale.status === "DEBT" || sale.status === "PARTIAL"
-                                    ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300"
-                                    : (sale.status === "PARTIAL_TRANSFER" || sale.status === "SELLING"
-                                      ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
-                                      : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"))
-                              }`,
-                              children: sale.status === "COMPLETED" || sale.isPaidFull
-                                ? "✓ Đã Hoàn Tất"
-                                : (sale.status === "DEBT" || sale.status === "PARTIAL"
-                                  ? ("📝 Ghi nợ " + _e(sale.remainingDebt || 0) + "đ")
-                                  : (sale.status === "PARTIAL_TRANSFER"
-                                    ? ("⏳ Chờ chuyển " + _e(sale.remainingDebt || 0) + "đ")
-                                    : (sale.status === "SELLING" ? "⏳ Đang Bán" : "⏳ Chờ Kết Quả")))
-                            })
-                          ]
-                        }),
-                        c.jsx("h4", { className: "font-black text-base text-gray-900 dark:text-white uppercase", children: sale.buyerName }),
-                        c.jsxs("div", {
-                          className: "text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-x-3",
-                          children: [
-                            c.jsxs("span", { children: ["📅 ", sale.saleDateStr ? sale.saleDateStr.split("-").reverse().join("/") : new Date(sale.date).toLocaleDateString("vi-VN")] }),
-                            sale.vehiclePlate && c.jsxs("span", { className: "font-mono font-bold text-slate-700 dark:text-slate-300", children: ["🚚 ", sale.vehiclePlate] }),
-                            sale.totalNet > 0 && c.jsxs("span", { className: "font-bold text-gray-700 dark:text-gray-300", children: ["⚖️ ", fmtKg(sale.totalNet), " kg"] }),
-                            sale.totalMoney > 0 && c.jsxs("span", { className: "font-black text-emerald-600 dark:text-emerald-400", children: ["💰 ", _e(sale.totalMoney), " đ"] }),
-                            sale.phiCount > 0 && c.jsxs("span", { className: "font-bold text-amber-600", children: [sale.phiCount, " phi oxy"] })
-                          ]
-                        })
-                      ]
-                    }),
-                    c.jsxs("div", {
-                      className: "flex items-center gap-2 w-full sm:w-auto justify-end",
-                      children: [
-                        (sale.status === "SELLING" || sale.status === "AWAITING_RESULT" || sale.targetGroup === "FACTORY") && c.jsx("button", {
-                          type: "button",
-                          onClick: () => {
-                            setShowHistoryModal(false);
-                            setSettlingSaleObj(sale);
-                            setSettleKg(sale.totalNet ? String(sale.totalNet) : "");
-                            setSettleMoney(sale.totalMoney ? String(sale.totalMoney) : "");
-                          },
-                          className: `px-3 py-1.5 text-white rounded-xl text-xs font-black uppercase cursor-pointer ${sale.status === "SELLING" || sale.status === "AWAITING_RESULT" ? "bg-green-600 hover:bg-green-700" : "bg-indigo-600 hover:bg-indigo-700"}`,
-                          children: sale.targetGroup === "MARKET" ? "Chốt Chợ" : (sale.status === "AWAITING_RESULT" ? "Nghiệm Thu" : "Sửa Kê")
-                        }),
-                        c.jsx("button", {
-                          type: "button",
-                          onClick: () => {
-                            setShowHistoryModal(false);
-                            if (onViewDetail) onViewDetail(sale);
-                          },
-                          className: "px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold uppercase cursor-pointer",
-                          children: "Chi Tiết"
-                        }),
-                        c.jsx("button", {
-                          type: "button",
-                          onClick: () => setConfirmDeleteSaleId(sale.id),
-                          className: "p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg cursor-pointer",
-                          children: c.jsx(xm, { size: 16 })
-                        })
-                      ]
-                    })
-                  ]
-                }, sale.id));
-              })()
-            })
-          ]
-        })
-      }),
+                            className: "p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-xl cursor-pointer transition-colors",
+                            children: c.jsx(Iu, { size: 17 })
+                          })
+                        ]
+                      })
+                    ]
+                  }, sale.id);
+                })
+              })
+            ]
+          })
+        });
+      })(),
       salesToast && c.jsx("div", {
         className: `fixed top-16 right-3 left-3 sm:left-auto sm:max-w-md z-[260] p-3.5 rounded-2xl shadow-2xl text-xs font-black text-white ${salesToast.type === "error" ? "bg-red-600" : "bg-emerald-600"}`,
         children: salesToast.msg
       }),
-      confirmDeleteSaleId && c.jsx("div", {
+      confirmDeleteSalesPayload && c.jsx("div", {
         className: "fixed inset-0 z-[220] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4",
-        onClick: () => setConfirmDeleteSaleId(null),
+        onClick: () => setConfirmDeleteSalesPayload(null),
         children: c.jsxs("div", {
           onClick: e => e.stopPropagation(),
           className: "bg-white dark:bg-gray-900 rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-gray-200 dark:border-gray-800 space-y-4",
           children: [
-            c.jsx("h3", { className: "font-black text-base text-red-600 uppercase", children: "Xác nhận xóa đơn" }),
-            c.jsx("p", { className: "text-xs font-bold text-gray-700 dark:text-gray-300", children: "Bạn có chắc chắn muốn xóa đơn xuất bán này?" }),
+            c.jsx("h3", { className: "font-black text-base text-red-600 uppercase", children: confirmDeleteSalesPayload.title }),
+            c.jsx("p", { className: "text-xs font-bold text-gray-700 dark:text-gray-300", children: confirmDeleteSalesPayload.desc }),
             c.jsxs("div", {
               className: "flex gap-2 justify-end",
               children: [
-                c.jsx("button", { type: "button", onClick: () => setConfirmDeleteSaleId(null), className: "px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
+                c.jsx("button", { type: "button", onClick: () => setConfirmDeleteSalesPayload(null), className: "px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-xs cursor-pointer", children: "Huỷ" }),
                 c.jsx("button", {
                   type: "button",
                   onClick: () => {
-                    me.deleteSale(confirmDeleteSaleId);
+                    const delCount = me.deleteSales ? me.deleteSales(confirmDeleteSalesPayload.ids) : (confirmDeleteSalesPayload.ids.forEach(id => me.deleteSale(id)), confirmDeleteSalesPayload.ids.length);
                     refreshData();
-                    setConfirmDeleteSaleId(null);
-                    showSalesToast("✓ Đã xóa đơn xuất bán!");
+                    setSelectedHistoryIds([]);
+                    setHistorySelectMode(false);
+                    setConfirmDeleteSalesPayload(null);
+                    showSalesToast("✓ Đã xóa " + delCount + " đơn xuất bán & tự động đồng bộ Tài chính!");
                   },
-                  className: "px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs cursor-pointer",
+                  className: "px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs uppercase cursor-pointer",
                   children: "Xác nhận xóa"
                 })
               ]
@@ -24514,7 +24956,7 @@ const Xm_WorkersScreen = ({ setRoute }) => {
   });
 };
 
-const BmMainApp=()=>{const[S,b]=w.useState(()=>{const u=me.getUser();if(u)u.role="OWNER";return u;}),[p,f]=w.useState(!0),[O,D]=w.useState(()=>me.getUser()?re.DASHBOARD:re.AUTH),[U,Y]=w.useState(null);w.useEffect(()=>{const applyTheme=()=>{try{const st=me.getSettings();st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}catch(e){}};applyTheme();window.addEventListener("app-data-updated",applyTheme);window.addEventListener("cloud_data_synced",applyTheme);const _=D1(Pu,async z=>{var L,te;if(z){const Q=await Mn.loadFromCloud(z.uid);if(Q){me.restoreFromCloud(Q);applyTheme();if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("login_cloud_restore");}}const se=(Q==null?void 0:Q.user)||{uid:z.uid,phoneNumber:z.phoneNumber||"",displayName:z.displayName||"Người dùng",photoURL:z.photoURL||"",role:"OWNER",subscriptionStatus:((te=Q==null?void 0:Q.user)==null?void 0:te.subscriptionStatus)||"FREE",createdAt:new Date().toISOString()};se.role="OWNER";me.setUser(se);me.syncAllToCloud(z.uid);b(se);D(re.DASHBOARD)}else me.setUser(null),b(null),D(re.AUTH);f(!1)});return()=>{_();window.removeEventListener("app-data-updated",applyTheme);window.removeEventListener("cloud_data_synced",applyTheme);}},[]);const A=_=>{if(S){const z={...S,role:"OWNER"};me.setUser(z),b(z),D(re.DASHBOARD)}};if(p)return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center text-white",children:[c.jsx("div",{className:"w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"}),c.jsx("p",{className:"font-black uppercase italic text-sm",children:"Đang bảo mật kết nối..."})]});if(!S||O===re.AUTH)return c.jsx(Hm,{onSelect:A});const v=()=>{const _={setRoute:D,role:S.role};switch(O){case re.DASHBOARD:return c.jsx(Kd,{..._});case re.OVERVIEW:return c.jsx(Xm_OverviewTab,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.WEIGHING:return c.jsx(Om,{..._});case re.HISTORY:return c.jsx(_m,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.SESSION_DETAIL:return c.jsx(Dm,{..._,sessionId:U||""});case re.SALES:return c.jsx(Xm_SalesScreen,{..._,onViewDetail:z=>{Y(z);D(re.SALES_DETAIL);}});case re.FINANCE:return c.jsx(Xm_FinanceScreen,{..._});case re.CUSTOMERS:return c.jsx(Xm_CustomersScreen,{..._,onSelectForSale:z=>{D(re.SALES);}});case re.SALES_DETAIL:return c.jsx(Xm_SaleDetailScreen,{..._,sale:(typeof U==="object"?U:(me.getSales().find(s=>s.id===(typeof U==="string"?U:U?.id))||null)),onBack:()=>D(re.SALES)});case re.FARMERS:return c.jsx(Cm,{..._});case re.WORKERS:return c.jsx(Xm_WorkersScreen,{..._});case re.VEHICLES:return c.jsx(km,{..._});case re.INFO_CONFIG:return c.jsx(Xm_TraderConfig,{..._});case re.SETTINGS:return c.jsx(Um,{..._});case re.BLUETOOTH:return c.jsx(Rm,{..._});default:return c.jsx(Kd,{..._})}};return c.jsx(Tm,{activeRoute:O,setRoute:D,title:"Tôm Càng Xanh",role:S.role,onLogout:async()=>{await Mn.logout()},children:v()})},
+const BmMainApp=()=>{const[S,b]=w.useState(()=>{const u=me.getUser();if(u)u.role="OWNER";return u;}),[p,f]=w.useState(!0),[O,D]=w.useState(()=>me.getUser()?re.DASHBOARD:re.AUTH),[U,Y]=w.useState(null);w.useEffect(()=>{const applyTheme=()=>{try{const st=me.getSettings();st&&st.darkMode?document.documentElement.classList.add("dark"):document.documentElement.classList.remove("dark");}catch(e){}};applyTheme();window.addEventListener("app-data-updated",applyTheme);window.addEventListener("cloud_data_synced",applyTheme);const onCrossTabStorage=(ev)=>{try{if(!ev||!ev.key)return;if(ev.key.startsWith("annong_")||ev.key.startsWith("tom_")){emitAppDataUpdated_v4(ev.key,true);}}catch(e){}};window.addEventListener("storage",onCrossTabStorage);let bc=null;if(typeof BroadcastChannel!=="undefined"){try{bc=new BroadcastChannel("tom_cang_xanh_sync_v1");bc.onmessage=(msg)=>{if(msg&&msg.data)emitAppDataUpdated_v4(msg.data.source||"broadcast",true);};}catch(e){}}const _=D1(Pu,async z=>{var L,te;if(z){const Q=await Mn.loadFromCloud(z.uid);if(Q){me.restoreFromCloud(Q);applyTheme();if(typeof window!=="undefined"){window.dispatchEvent(new CustomEvent("cloud_data_synced",{detail:{timestamp:new Date().toISOString()}}));window.dispatchEvent(new CustomEvent("trader-profile-updated",{detail:typeof getTraderProfileV3==="function"?getTraderProfileV3():{}}));emitAppDataUpdated_v4("login_cloud_restore");}}const se=(Q==null?void 0:Q.user)||{uid:z.uid,phoneNumber:z.phoneNumber||"",displayName:z.displayName||"Người dùng",photoURL:z.photoURL||"",role:"OWNER",subscriptionStatus:((te=Q==null?void 0:Q.user)==null?void 0:te.subscriptionStatus)||"FREE",createdAt:new Date().toISOString()};se.role="OWNER";me.setUser(se);me.syncAllToCloud(z.uid);b(se);D(re.DASHBOARD)}else me.setUser(null),b(null),D(re.AUTH);f(!1)});return()=>{_();window.removeEventListener("app-data-updated",applyTheme);window.removeEventListener("cloud_data_synced",applyTheme);window.removeEventListener("storage",onCrossTabStorage);if(bc){try{bc.close();}catch(e){}}}},[]);const A=_=>{if(S){const z={...S,role:"OWNER"};me.setUser(z),b(z),D(re.DASHBOARD)}};if(p)return c.jsxs("div",{className:"min-h-screen bg-[#2e7d32] flex flex-col items-center justify-center text-white",children:[c.jsx("div",{className:"w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"}),c.jsx("p",{className:"font-black uppercase italic text-sm",children:"Đang bảo mật kết nối..."})]});if(!S||O===re.AUTH)return c.jsx(Hm,{onSelect:A});const v=()=>{const _={setRoute:D,role:S.role};switch(O){case re.DASHBOARD:return c.jsx(Kd,{..._});case re.OVERVIEW:return c.jsx(Xm_OverviewTab,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.WEIGHING:return c.jsx(Om,{..._});case re.HISTORY:return c.jsx(_m,{..._,onViewDetail:z=>{Y(z),D(re.SESSION_DETAIL)}});case re.SESSION_DETAIL:return c.jsx(Dm,{..._,sessionId:U||""});case re.SALES:return c.jsx(Xm_SalesScreen,{..._,onViewDetail:z=>{Y(z);D(re.SALES_DETAIL);}});case re.FINANCE:return c.jsx(Xm_FinanceScreen,{..._});case re.CUSTOMERS:return c.jsx(Xm_CustomersScreen,{..._,onSelectForSale:z=>{D(re.SALES);}});case re.SALES_DETAIL:return c.jsx(Xm_SaleDetailScreen,{..._,sale:(typeof U==="object"?U:(me.getSales().find(s=>s.id===(typeof U==="string"?U:U?.id))||null)),onBack:()=>D(re.SALES)});case re.FARMERS:return c.jsx(Cm,{..._});case re.WORKERS:return c.jsx(Xm_WorkersScreen,{..._});case re.VEHICLES:return c.jsx(km,{..._});case re.INFO_CONFIG:return c.jsx(Xm_TraderConfig,{..._});case re.SETTINGS:return c.jsx(Um,{..._});case re.BLUETOOTH:return c.jsx(Rm,{..._});default:return c.jsx(Kd,{..._})}};return c.jsx(Tm,{activeRoute:O,setRoute:D,title:"Tôm Càng Xanh",role:S.role,onLogout:async()=>{await Mn.logout()},children:v()})},
 Bm=()=>{
   const _urlParams=new URLSearchParams(window.location.search);
   let _portalContractId=_urlParams.get("contract")||_urlParams.get("hd")||_urlParams.get("d")||_urlParams.get("c")||_urlParams.get("data")||_urlParams.get("id");

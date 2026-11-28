@@ -1,5 +1,5 @@
 // Service Worker for Vua Tôm Càng Xanh PWA - Version 7
-const CACHE_NAME = 'tom-cang-xanh-v30_workers_fast_ux';
+const CACHE_NAME = 'tom-cang-xanh-v31_sales_history_sync';
 const STATIC_ASSETS = [
   "/",
   "/index.html",
